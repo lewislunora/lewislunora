@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>翔川 Lewis - DevOps/AI 顧問服務</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Noto Sans TC', Arial, sans-serif; background: linear-gradient(135deg, #0f0f1a, #1a1a2e); color: white; min-height: 100vh; }
+        .container { max-width: 900px; margin: 0 auto; padding: 20px; }
+        
+        .header { display: flex; justify-content: space-between; align-items: center; padding: 20px 0; border-bottom: 1px solid rgba(255,255,255,0.1); }
+        .logo { font-size: 24px; font-weight: bold; }
+        .logo span { color: #00ff88; }
+        .contact-btn { background: #00ff88; color: #0f0f1a; padding: 12px 24px; border-radius: 25px; text-decoration: none; font-weight: bold; }
+        
+        .hero { text-align: center; padding: 60px 0; }
+        .hero h1 { font-size: 36px; margin-bottom: 15px; }
+        .hero h1 span { color: #00ff88; }
+        .hero p { color: #aaa; font-size: 18px; line-height: 1.6; }
+        
+        .services { margin: 40px 0; }
+        .section-title { font-size: 24px; margin-bottom: 25px; display: flex; align-items: center; gap: 10px; }
+        
+        .service-card { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); padding: 30px; border-radius: 20px; margin-bottom: 20px; }
+        .service-card:hover { border-color: #00ff88; transform: translateY(-5px); }
+        
+        .service-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
+        .service-name { font-size: 22px; font-weight: bold; }
+        .service-name span { font-size: 28px; margin-right: 10px; }
+        .price { font-size: 24px; color: #00ff88; font-weight: bold; }
+        
+        .service-desc { color: #aaa; margin-bottom: 15px; line-height: 1.6; }
+        .service-tags { display: flex; gap: 10px; flex-wrap: wrap; }
+        .tag { background: rgba(0,255,136,0.2); color: #00ff88; padding: 6px 14px; border-radius: 15px; font-size: 13px; }
+        
+        .cta { text-align: center; padding: 40px 0; }
+        .cta-button { background: linear-gradient(135deg, #00ff88, #00cc6a); color: #0f0f1a; padding: 18px 40px; border-radius: 30px; text-decoration: none; font-size: 18px; font-weight: bold; display: inline-block; }
+        
+        .footer { text-align: center; padding: 30px; color: #666; font-size: 14px; border-top: 1px solid rgba(255,255,255,0.1); margin-top: 40px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="logo">🚀 <span>Lewis</span> DevOps/AI</div>
+            <a href="mailto:contact@neoxiang.ai" class="contact-btn">聯繫諮詢</a>
+        </div>
+        
+        <div class="hero">
+            <h1>專業 <span>DevOps/AI</span> 顧問服務</h1>
+            <p>幫企業建構高效 AI 系統 │ 10+ 年資深技術經驗 │ K8s 生產環境實戰</p>
+        </div>
+        
+        <div class="services">
+            <h2 class="section-title">💼 服務項目</h2>
+            
+            <div class="service-card">
+                <div class="service-header">
+                    <div class="service-name"><span>☸️</span> K8s 架構顧問</div>
+                    <div class="price">$1000/次</div>
+                </div>
+                <div class="service-desc">
+                    評估現有架構、提供 K8s 遷移方案、生產環境優化建議
+                </div>
+                <div class="service-tags">
+                    <span class="tag">K8s</span>
+                    <span class="tag">Docker</span>
+                    <span class="tag">架構規劃</span>
+                </div>
+            </div>
+            
+            <div class="service-card">
+                <div class="service-header">
+                    <div class="service-name"><span>🤖</span> AI 系統整合</div>
+                    <div class="price">$5000+</div>
+                </div>
+                <div class="service-desc">
+                    整合 SiliconFlow/Hugging Face API，建構企業 AI 系統
+                </div>
+                <div class="service-tags">
+                    <span class="tag">AI</span>
+                    <span class="tag">Python</span>
+                    <span class="tag">API 整合</span>
+                </div>
+            </div>
+            
+            <div class="service-card">
+                <div class="service-header">
+                    <div class="service-name"><span>⚡</span> CI/CD 自動化</div>
+                    <div class="price">$3000</div>
+                </div>
+                <div class="service-desc">
+                    建構自動化部署流程、優化開發效率
+                </div>
+                <div class="service-tags">
+                    <span class="tag">Jenkins</span>
+                    <span class="tag">GitLab</span>
+                    <span class="tag">Ansible</span>
+                </div>
+            </div>
+            
+            <div class="service-card">
+                <div class="service-header">
+                    <div class="service-name"><span>📊</span> 技術團隊顧問</div>
+                    <div class="price">$2000/月</div>
+                </div>
+                <div class="service-desc">
+                    長期技術支援、團隊培訓、系統維運
+                </div>
+                <div class="service-tags">
+                    <span class="tag">維運</span>
+                    <span class="tag">培訓</span>
+                    <span class="tag">顧問</span>
+                </div>
+            </div>
+        </div>
+        
+        <div class="cta">
+            <a href="mailto:contact@neoxiang.ai" class="cta-button">立即諮詢 📧</a>
+        </div>
+        
+        <div class="footer">
+            <p>📧 contact@neoxiang.ai | 📱 @NeoXiangAI</p>
+            <p>© 2026 翔川 Lewis | DevOps/AI Consultant</p>
+        </div>
+    </div>
+</body>
+</html>

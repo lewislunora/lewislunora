@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <title>翔川 Lewis - 靈感源頭</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Noto Sans TC', 'Microsoft JhengHei', Arial, sans-serif; background: linear-gradient(135deg, #f5f7fa 0%, #e8f5e9 100%); color: #333; }
+        .hero { background: linear-gradient(135deg, #27ae60 0%, #2ecc71 100%); color: white; padding: 80px 40px; text-align: center; }
+        .hero h1 { font-size: 56px; margin-bottom: 15px; text-shadow: 2px 2px 4px rgba(0,0,0,0.2); }
+        .hero p { font-size: 22px; opacity: 0.95; }
+        .tagline { background: rgba(255,255,255,0.2); display: inline-block; padding: 10px 30px; border-radius: 30px; margin-top: 20px; font-size: 18px; }
+        .container { max-width: 900px; margin: -30px auto 0; padding: 0 20px; position: relative; }
+        .card { background: white; padding: 30px; border-radius: 20px; margin-bottom: 20px; box-shadow: 0 10px 40px rgba(39,174,96,0.15); }
+        .section-title { color: #27ae60; font-size: 28px; margin-bottom: 20px; display: flex; align-items: center; gap: 10px; }
+        .section-title::before { content: ''; width: 5px; height: 30px; background: #27ae60; border-radius: 3px; }
+        .service-card { background: linear-gradient(135deg, #f8f9fa 0%, #e8f5e9 100%); padding: 25px; border-radius: 15px; margin: 15px 0; border-left: 5px solid #27ae60; transition: all 0.3s; }
+        .service-card:hover { transform: translateX(10px); box-shadow: 0 5px 20px rgba(39,174,96,0.2); }
+        .service-icon { font-size: 36px; margin-bottom: 10px; }
+        .service-title { color: #27ae60; font-size: 20px; font-weight: bold; margin-bottom: 8px; }
+        .about-section { display: grid; grid-template-columns: 1fr 1fr; gap: 30px; align-items: center; }
+        .about-text { font-size: 18px; line-height: 1.8; }
+        .about-stats { display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; }
+        .stat { background: #27ae60; color: white; padding: 20px; border-radius: 15px; text-align: center; }
+        .stat-num { font-size: 32px; font-weight: bold; }
+        .stat-label { font-size: 14px; opacity: 0.9; }
+        .advantage { display: flex; align-items: center; gap: 15px; margin: 15px 0; padding: 15px; background: #f8f9fa; border-radius: 10px; }
+        .advantage-icon { font-size: 32px; }
+        .advantage-text h4 { color: #27ae60; margin-bottom: 5px; }
+        .contact-section { background: linear-gradient(135deg, #27ae60 0%, #2ecc71 100%); color: white; padding: 40px; border-radius: 20px; text-align: center; margin: 30px 0; }
+        .contact-section h2 { margin-bottom: 20px; }
+        .contact-item { font-size: 18px; margin: 10px 0; }
+        .slogan { background: #2c3e50; color: white; padding: 30px; border-radius: 15px; text-align: center; font-size: 24px; font-weight: bold; margin: 30px 0; }
+        .footer { text-align: center; padding: 30px; color: #888; }
+    </style>
+</head>
+<body>
+    <div class="hero">
+        <h1>🌊 翔川 Lewis</h1>
+        <p>靈感源頭，智慧啟動，創新飛翔</p>
+        <div class="tagline">AI × 命理 × 創作 × 未來</div>
+    </div>
+    <div class="container">
+        <div class="card">
+            <h2 class="section-title">🌟 關於我們</h2>
+            <div class="about-section">
+                <div class="about-text">
+                    <p>10 年以上資訊科技經驗，曾任上市公司 DevOps 主管，帶領 20+ 人團隊。</p>
+                    <p style="margin-top: 15px;">現在創立「<strong style="color: #27ae60;">翔森科技</strong>」，用 <strong>AI + 命理 + 系統思維</strong> 幫助創作者與創業者快速建立自己的數位產品。</p>
+                    <p style="margin-top: 15px;">我們相信科技與傳統智慧可以完美結合，為您創造獨一無二的價值。</p>
+                </div>
+                <div class="about-stats">
+                    <div class="stat"><div class="stat-num">10+</div><div class="stat-label">年經驗</div></div>
+                    <div class="stat"><div class="stat-num">20+</div><div class="stat-label">人團隊</div></div>
+                    <div class="stat"><div class="stat-num">100+</div><div class="stat-label">專案</div></div>
+                    <div class="stat"><div class="stat-num">50+</div><div class="stat-label">客戶</div></div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card">
+            <h2 class="section-title">🎯 服務項目</h2>
+            <div class="service-card">
+                <div class="service-icon">🤖</div>
+                <div class="service-title">AI 工具開發</div>
+                <p>Telegram Bot 開發、自動化流程、AI 助理建置、系統整合</p>
+            </div>
+            <div class="service-card">
+                <div class="service-icon">🪐</div>
+                <div class="service-title">命理諮詢服務</div>
+                <p>八字分析、五行平衡、星座運勢、專業命名建議</p>
+            </div>
+            <div class="service-card">
+                <div class="service-icon">🎵</div>
+                <div class="service-title">AI 內容創作</div>
+                <p>AI 音樂製作、影片剪輯、創意內容生成、品牌形象設計</p>
+            </div>
+            <div class="service-card">
+                <div class="service-icon">💼</div>
+                <div class="service-title">技術顧問</div>
+                <p>系統架構規劃、DevOps 流程優化、K8s 集群管理、雲端整合</p>
+            </div>
+        </div>
+        
+        <div class="card">
+            <h2 class="section-title">🏆 核心優勢</h2>
+            <div class="advantage">
+                <div class="advantage-icon">🚀</div>
+                <div class="advantage-text">
+                    <h4>技術實力</h4>
+                    <p>Kubernetes、AWS/GCP、自動化系統、資料庫管理專家</p>
+                </div>
+            </div>
+            <div class="advantage">
+                <div class="advantage-icon">🧠</div>
+                <div class="advantage-text">
+                    <h4>創新思維</h4>
+                    <p>結合命理智慧與 AI 科技，創造獨特差異化服務</p>
+                </div>
+            </div>
+            <div class="advantage">
+                <div class="advantage-icon">🤝</div>
+                <div class="advantage-text">
+                    <h4>誠信服務</h4>
+                    <p>從需求分析到落地執行，提供完整解決方案</p>
+                </div>
+            </div>
+            <div class="advantage">
+                <div class="advantage-icon">💡</div>
+                <div class="advantage-text">
+                    <h4>持續進化</h4>
+                    <p>不斷學習最新技術，為您提供最佳解決方案</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="contact-section">
+            <h2>📮 聯絡我們</h2>
+            <div class="contact-item">📱 Telegram：@NeoXiangAI</div>
+            <div class="contact-item">📧 Email：contact@neoxiang.ai</div>
+            <div class="contact-item">🏢 翔森科技</div>
+            <div style="margin-top: 25px;">
+                <a href="https://t.me/NeoXiangAI" style="background: white; color: #27ae60; padding: 15px 40px; border-radius: 30px; text-decoration: none; font-weight: bold; display: inline-block;">立即聯繫</a>
+            </div>
+        </div>
+        
+        <div class="slogan">
+            🌟 連接靈感與未來 🌟
+        </div>
+    </div>
+    <div class="footer">
+        <p>© 2026 翔川 Lewis | 翔森科技 | NeoXiang AI</p>
+        <p>用 AI 打造讓靈感落地的工具</p>
+    </div>
+</body>
+</html>

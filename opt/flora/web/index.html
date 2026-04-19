@@ -1,0 +1,644 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Flora - 你的專屬小宇宙 🌸</title>
+    <meta name="theme-color" content="#FFB6C1">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        :root {
+            --primary: #FFB6C1;
+            --secondary: #E6E6FA;
+            --accent: #98FB98;
+            --bg: #FFF5F5;
+            --text: #4A4A4A;
+            --white: #FFFFFF;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+        }
+        
+        /* App Container */
+        .app {
+            max-width: 480px;
+            margin: 0 auto;
+            background: var(--white);
+            min-height: 100vh;
+            box-shadow: 0 0 30px rgba(255,182,193,0.2);
+        }
+        
+        /* Header */
+        .header {
+            background: linear-gradient(135deg, var(--primary), #FFC0CB);
+            padding: 15px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        
+        .logo {
+            font-size: 22px;
+            font-weight: 700;
+            color: var(--white);
+            text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        .header-icons {
+            display: flex;
+            gap: 15px;
+        }
+        
+        .header-icon {
+            font-size: 20px;
+            cursor: pointer;
+        }
+        
+        /* Tab Bar */
+        .tab-bar {
+            background: var(--white);
+            padding: 10px 0;
+            display: flex;
+            justify-content: space-around;
+            border-top: 1px solid #eee;
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+            max-width: 480px;
+        }
+        
+        .tab-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+            cursor: pointer;
+            padding: 8px 15px;
+        }
+        
+        .tab-icon {
+            font-size: 22px;
+        }
+        
+        .tab-name {
+            font-size: 10px;
+            color: #999;
+        }
+        
+        .tab-item.active .tab-name {
+            color: var(--primary);
+            font-weight: 600;
+        }
+        
+        /* Content Area */
+        .content {
+            padding-bottom: 70px;
+        }
+        
+        /* Home Feed */
+        .feed-item {
+            padding: 15px;
+            border-bottom: 1px solid #f5f5f5;
+        }
+        
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+        
+        .avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+        }
+        
+        .username {
+            font-weight: 600;
+            font-size: 14px;
+        }
+        
+        .time {
+            font-size: 12px;
+            color: #999;
+        }
+        
+        .post-content {
+            font-size: 14px;
+            line-height: 1.6;
+            margin-bottom: 12px;
+        }
+        
+        .post-image {
+            width: 100%;
+            height: 200px;
+            background: linear-gradient(135deg, var(--secondary), var(--accent));
+            border-radius: 12px;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 14px;
+        }
+        
+        .post-actions {
+            display: flex;
+            gap: 20px;
+        }
+        
+        .action-btn {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            cursor: pointer;
+            font-size: 14px;
+            color: #666;
+        }
+        
+        .action-btn:hover {
+            color: var(--primary);
+        }
+        
+        /* Create Post */
+        .create-post {
+            padding: 15px;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .create-input {
+            display: flex;
+            gap: 10px;
+            align-items: flex-start;
+        }
+        
+        .input-box {
+            flex: 1;
+            background: #f8f8f8;
+            border-radius: 20px;
+            padding: 12px 15px;
+            font-size: 14px;
+            border: none;
+            outline: none;
+        }
+        
+        .input-box::placeholder {
+            color: #999;
+        }
+        
+        .create-btn {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 20px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+        
+        /* Community */
+        .category-tabs {
+            display: flex;
+            gap: 10px;
+            padding: 15px;
+            overflow-x: auto;
+            background: var(--white);
+        }
+        
+        .category-tab {
+            background: #f5f5f5;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 13px;
+            white-space: nowrap;
+            cursor: pointer;
+        }
+        
+        .category-tab.active {
+            background: var(--primary);
+            color: white;
+        }
+        
+        /* Messages */
+        .message-list {
+            padding: 10px;
+        }
+        
+        .message-item {
+            display: flex;
+            gap: 12px;
+            padding: 12px;
+            border-radius: 12px;
+            cursor: pointer;
+        }
+        
+        .message-item:hover {
+            background: #fafafa;
+        }
+        
+        .message-preview {
+            flex: 1;
+        }
+        
+        .message-name {
+            font-weight: 600;
+            font-size: 14px;
+        }
+        
+        .message-text {
+            font-size: 13px;
+            color: #666;
+            margin-top: 4px;
+        }
+        
+        .message-time {
+            font-size: 11px;
+            color: #999;
+        }
+        
+        /* Profile */
+        .profile-header {
+            text-align: center;
+            padding: 30px 20px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+        }
+        
+        .profile-avatar {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: white;
+            margin: 0 auto 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 30px;
+        }
+        
+        .profile-name {
+            font-size: 20px;
+            font-weight: 700;
+            margin-bottom: 5px;
+        }
+        
+        .profile-bio {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+        
+        .profile-stats {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            margin-top: 20px;
+        }
+        
+        .stat-item {
+            text-align: center;
+        }
+        
+        .stat-num {
+            font-size: 18px;
+            font-weight: 700;
+        }
+        
+        .stat-label {
+            font-size: 12px;
+            opacity: 0.8;
+        }
+        
+        /* Floating Action Button */
+        .fab {
+            position: fixed;
+            bottom: 80px;
+            right: 20px;
+            width: 56px;
+            height: 56px;
+            background: linear-gradient(135deg, var(--primary), #FF69B4);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            color: white;
+            box-shadow: 0 4px 15px rgba(255,182,193,0.5);
+            cursor: pointer;
+            z-index: 99;
+        }
+        
+        /* Bottom Sheet */
+        .bottom-sheet {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: white;
+            border-radius: 20px 20px 0 0;
+            padding: 20px;
+            transform: translateY(100%);
+            transition: transform 0.3s;
+            z-index: 200;
+        }
+        
+        .bottom-sheet.show {
+            transform: translateY(0);
+        }
+        
+        .sheet-title {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        
+        .sheet-options {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 15px;
+        }
+        
+        .sheet-option {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+        }
+        
+        .sheet-icon {
+            width: 50px;
+            height: 50px;
+            background: #f5f5f5;
+            border-radius: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+        }
+        
+        .sheet-label {
+            font-size: 12px;
+            color: #666;
+        }
+        
+        /* Mobile Responsive */
+        @media (max-width: 480px) {
+            .app {
+                box-shadow: none;
+            }
+            
+            .tab-bar {
+                width: 100%;
+            }
+        }
+        
+        /* Desktop View */
+        @media (min-width: 768px) {
+            .app {
+                border-radius: 20px;
+                margin: 20px auto;
+                overflow: hidden;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="app">
+        <!-- Header -->
+        <div class="header">
+            <div class="logo">🌸 Flora</div>
+            <div class="header-icons">
+                <span class="header-icon">🔔</span>
+                <span class="header-icon">💬</span>
+            </div>
+        </div>
+        
+        <!-- Content -->
+        <div class="content" id="content">
+            <!-- Dynamic Content Loaded Here -->
+        </div>
+        
+        <!-- Floating Action Button -->
+        <div class="fab" onclick="showCreateSheet()">+</div>
+        
+        <!-- Bottom Sheet -->
+        <div class="bottom-sheet" id="bottomSheet">
+            <div class="sheet-title">發表新內容</div>
+            <div class="sheet-options">
+                <div class="sheet-option">
+                    <div class="sheet-icon">📷</div>
+                    <span class="sheet-label">照片</span>
+                </div>
+                <div class="sheet-option">
+                    <div class="sheet-icon">🎥</div>
+                    <span class="sheet-label">影片</span>
+                </div>
+                <div class="sheet-option">
+                    <div class="sheet-icon">📝</div>
+                    <span class="sheet-label">文字</span>
+                </div>
+                <div class="sheet-option">
+                    <div class="sheet-icon">📍</div>
+                    <span class="sheet-label">地點</span>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Tab Bar -->
+        <div class="tab-bar">
+            <div class="tab-item active" onclick="switchTab('home')">
+                <span class="tab-icon">🏠</span>
+                <span class="tab-name">首頁</span>
+            </div>
+            <div class="tab-item" onclick="switchTab('community')">
+                <span class="tab-icon">💬</span>
+                <span class="tab-name">討論</span>
+            </div>
+            <div class="tab-item" onclick="switchTab('messages')">
+                <span class="tab-icon">💌</span>
+                <span class="tab-name">訊息</span>
+            </div>
+            <div class="tab-item" onclick="switchTab('profile')">
+                <span class="tab-icon">👤</span>
+                <span class="tab-name">我的</span>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Sample Data
+        const posts = [
+            { id: 1, user: '小美', avatar: '👩', content: '今天的天氣太舒服了！走在路上陽光暖暖的，心情也跟著好起來 🌸', time: '2小時前', likes: 45, comments: 12 },
+            { id: 2, user: '閨蜜團', avatar: '👩‍🦰', content: '誰要一起約喝下午茶？最近發現一間超美的咖啡廳 ☕✨', image: '下午茶時光', time: '4小時前', likes: 89, comments: 34 },
+            { id: 3, user: 'Alice', avatar: '👩‍🦱', content: '新買的護唇膏超好用！冬天必備推薦給大家 💄', time: '6小時前', likes: 67, comments: 23 },
+        ];
+        
+        const messages = [
+            { id: 1, name: '小美 💕', text: '昨天那家餐廳好吃嗎？', time: '刚刚' },
+            { id: 2, name: '閨蜜群 (3)', text: '🌸今天拍的超美！', time: '10分鐘前' },
+            { id: 3, name: '媽媽', text: '週末要回家吃飯嗎？', time: '1小時前' },
+        ];
+        
+        const topics = ['熱門', '情感', '美妝', '美食', '旅行', '職場', '閒聊'];
+        
+        // Render Functions
+        function renderHome() {
+            return `
+                <div class="create-post">
+                    <div class="create-input">
+                        <div class="avatar">我</div>
+                        <input type="text" class="input-box" placeholder="分享生活中的美好..." onclick="showCreateSheet()">
+                        <button class="create-btn">發布</button>
+                    </div>
+                </div>
+                ${posts.map(post => `
+                    <div class="feed-item">
+                        <div class="user-info">
+                            <div class="avatar">${post.avatar}</div>
+                            <div>
+                                <div class="username">${post.user}</div>
+                                <div class="time">${post.time}</div>
+                            </div>
+                        </div>
+                        <div class="post-content">${post.content}</div>
+                        ${post.image ? `<div class="post-image">${post.image}</div>` : ''}
+                        <div class="post-actions">
+                            <span class="action-btn">❤️ ${post.likes}</span>
+                            <span class="action-btn">💬 ${post.comments}</span>
+                            <span class="action-btn">↗️ 分享</span>
+                        </div>
+                    </div>
+                `).join('')}
+            `;
+        }
+        
+        function renderCommunity() {
+            return `
+                <div class="category-tabs">
+                    ${topics.map((t, i) => `
+                        <div class="category-tab ${i === 0 ? 'active' : ''}">${t}</div>
+                    `).join('')}
+                </div>
+                <div class="feed-item">
+                    <div class="user-info">
+                        <div class="avatar">🔥</div>
+                        <div>
+                            <div class="username">分手後如何走出低潮？</div>
+                            <div class="time">情感區 · 234回覆</div>
+                        </div>
+                    </div>
+                    <div class="post-content">在一起三年，最近分手覺得世界都黑白...有沒有女孩能分享恢復心情的方法？</div>
+                    <div class="post-actions">
+                        <span class="action-btn">❤️ 89</span>
+                        <span class="action-btn">💬 234</span>
+                    </div>
+                </div>
+                <div class="feed-item">
+                    <div class="user-info">
+                        <div class="avatar">💄</div>
+                        <div>
+                            <div class="username">推薦好用保濕面膜！</div>
+                            <div class="time">美妝區 · 156回覆</div>
+                        </div>
+                    </div>
+                    <div class="post-content">最近發現一款超好用的面膜，保濕力很夠妝前敷一片妝容超服貼！</div>
+                    <div class="post-actions">
+                        <span class="action-btn">❤️ 67</span>
+                        <span class="action-btn">💬 156</span>
+                    </div>
+                </div>
+            `;
+        }
+        
+        function renderMessages() {
+            return `
+                <div style="padding: 15px;">
+                    <input type="text" class="input-box" placeholder="搜尋..." style="width: 100%; margin-bottom: 15px;">
+                </div>
+                <div class="message-list">
+                    ${messages.map(m => `
+                        <div class="message-item">
+                            <div class="avatar">${m.name[0]}</div>
+                            <div class="message-preview">
+                                <div class="message-name">${m.name}</div>
+                                <div class="message-text">${m.text}</div>
+                            </div>
+                            <div class="message-time">${m.time}</div>
+                        </div>
+                    `).join('')}
+                </div>
+            `;
+        }
+        
+        function renderProfile() {
+            return `
+                <div class="profile-header">
+                    <div class="profile-avatar">🌸</div>
+                    <div class="profile-name">小公主</div>
+                    <div class="profile-bio">💕 文字工作者 | 愛旅行 | 愛美食</div>
+                    <div class="profile-stats">
+                        <div class="stat-item">
+                            <div class="stat-num">92</div>
+                            <div class="stat-label">貼文</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-num">1.2K</div>
+                            <div class="stat-label">粉絲</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-num">328</div>
+                            <div class="stat-label">追蹤中</div>
+                        </div>
+                    </div>
+                </div>
+                <div style="padding: 20px;">
+                    <h3 style="margin-bottom: 15px; color: #4A4A4A;">我的貼文</h3>
+                    <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 5px;">
+                        <div style="aspect-ratio: 1; background: linear-gradient(135deg, #FFB6C1, #E6E6FA); border-radius: 8px;"></div>
+                        <div style="aspect-ratio: 1; background: linear-gradient(135deg, #98FB98, #FFB6C1); border-radius: 8px;"></div>
+                        <div style="aspect-ratio: 1; background: linear-gradient(135deg, #E6E6FA, #98FB98); border-radius: 8px;"></div>
+                    </div>
+                </div>
+            `;
+        }
+        
+        // Tab Switching
+        function switchTab(tab) {
+            document.querySelectorAll('.tab-item').forEach(t => t.classList.remove('active'));
+            event.target.closest('.tab-item').classList.add('active');
+            
+            const content = document.getElementById('content');
+            switch(tab) {
+                case 'home': content.innerHTML = renderHome(); break;
+                case 'community': content.innerHTML = renderCommunity(); break;
+                case 'messages': content.innerHTML = renderMessages(); break;
+                case 'profile': content.innerHTML = renderProfile(); break;
+            }
+        }
+        
+        // Show Create Sheet
+        function showCreateSheet() {
+            document.getElementById('bottomSheet').classList.toggle('show');
+        }
+        
+        // Initialize
+        document.getElementById('content').innerHTML = renderHome();
+    </script>
+</body>
+</html>

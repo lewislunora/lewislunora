@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>翔川 Lewis AI - 管理後台</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Noto Sans TC', Arial, sans-serif; background: #1a1a2e; color: white; min-height: 100vh; }
+        
+        /* Login */
+        .login-page { display: flex; justify-content: center; align-items: center; min-height: 100vh; }
+        .login-box { background: #2d2d44; padding: 40px; border-radius: 20px; width: 400px; text-align: center; }
+        .login-box h1 { color: #00ff88; margin-bottom: 30px; }
+        .login-box input { width: 100%; padding: 15px; margin: 10px 0; border: none; border-radius: 10px; background: #1a1a2e; color: white; }
+        .login-box button { width: 100%; padding: 15px; background: #00ff88; color: #1a1a2e; border: none; border-radius: 10px; font-weight: bold; cursor: pointer; }
+        
+        /* Dashboard */
+        .dashboard { display: none; }
+        .header { background: #2d2d44; padding: 20px; display: flex; justify-content: space-between; align-items: center; }
+        .logo { color: #00ff88; font-size: 24px; font-weight: bold; }
+        .user-info { display: flex; gap: 20px; align-items: center; }
+        .logout { color: #ff6b6b; cursor: pointer; }
+        
+        /* Sidebar + Content */
+        .main { display: flex; min-height: calc(100vh - 70px); }
+        .sidebar { width: 250px; background: #2d2d44; padding: 20px; }
+        .sidebar ul { list-style: none; }
+        .sidebar li { padding: 15px; cursor: pointer; border-radius: 10px; margin: 5px 0; }
+        .sidebar li:hover, .sidebar li.active { background: #00ff88; color: #1a1a2e; }
+        .content { flex: 1; padding: 30px; }
+        
+        /* Stats */
+        .stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; margin-bottom: 30px; }
+        .stat-card { background: #2d2d44; padding: 25px; border-radius: 15px; text-align: center; }
+        .stat-num { font-size: 36px; color: #00ff88; font-weight: bold; }
+        .stat-label { color: #aaa; margin-top: 5px; }
+        
+        /* Tables */
+        .table { width: 100%; border-collapse: collapse; }
+        .table th, .table td { padding: 15px; text-align: left; border-bottom: 1px solid #3d3d5c; }
+        .table th { background: #2d2d44; color: #00ff88; }
+        .status { padding: 5px 15px; border-radius: 20px; font-size: 12px; }
+        .status.active { background: #00ff88; color: #1a1a2e; }
+        .status.pending { background: #ffd700; color: #1a1a2e; }
+        
+        /* Forms */
+        .form-group { margin-bottom: 20px; }
+        .form-group label { display: block; margin-bottom: 8px; color: #aaa; }
+        .form-group input, .form-group select, .form-group textarea { width: 100%; padding: 12px; background: #2d2d44; border: 1px solid #3d3d5c; border-radius: 10px; color: white; }
+        .btn { padding: 12px 25px; border: none; border-radius: 10px; cursor: pointer; font-weight: bold; }
+        .btn-primary { background: #00ff88; color: #1a1a2e; }
+        .btn-danger { background: #ff6b6b; color: white; }
+        
+        /* Charts placeholder */
+        .chart { background: #2d2d44; padding: 30px; border-radius: 15px; height: 300px; display: flex; align-items: center; justify-content: center; color: #aaa; }
+    </style>
+</head>
+<body>
+    <!-- Login Page -->
+    <div class="login-page" id="loginPage">
+        <div class="login-box">
+            <h1>🚀 翔川 AI 後台</h1>
+            <input type="text" placeholder="帳號" id="username">
+            <input type="password" placeholder="密碼" id="password">
+            <button onclick="login()">登入</button>
+        </div>
+    </div>
+
+    <!-- Dashboard -->
+    <div class="dashboard" id="dashboard">
+        <div class="header">
+            <div class="logo">🚀 翔川 Lewis AI 管理後台</div>
+            <div class="user-info">
+                <span>歡迎，Lewis</span>
+                <span class="logout" onclick="logout()">登出</span>
+            </div>
+        </div>
+        
+        <div class="main">
+            <div class="sidebar">
+                <ul>
+                    <li class="active" onclick="showPage('dashboard')">📊 儀表板</li>
+                    <li onclick="showPage('users')">👥 用戶管理</li>
+                    <li onclick="showPage('services')">💼 服務訂單</li>
+                    <li onclick="showPage('fortune')">🪐 命理分析</li>
+                    <li onclick="showPage('content')">📝 內容管理</li>
+                    <li onclick="showPage('settings')">⚙️ 系統設定</li>
+                </ul>
+            </div>
+            
+            <div class="content" id="content">
+                <!-- Dashboard Page -->
+                <div id="page-dashboard">
+                    <h2>📊 儀表板</h2>
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <div class="stat-num">156</div>
+                            <div class="stat-label">總用戶數</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-num">$45,000</div>
+                            <div class="stat-label">本月收入</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-num">23</div>
+                            <div class="stat-label">待處理訂單</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-num">89%</div>
+                            <div class="stat-label">用戶滿意度</div>
+                        </div>
+                    </div>
+                    <div class="chart">📈 營收趨勢圖（近7日）</div>
+                </div>
+                
+                <!-- Users Page -->
+                <div id="page-users" style="display:none;">
+                    <h2>👥 用戶管理</h2>
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>姓名</th>
+                                <th>Email</th>
+                                <th>註冊方式</th>
+                                <th>狀態</th>
+                                <th>操作</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>001</td>
+                                <td>王小明</td>
+                                <td>wang@test.com</td>
+                                <td>Google</td>
+                                <td><span class="status active">啟用</span></td>
+                                <td><button class="btn btn-danger">停用</button></td>
+                            </tr>
+                            <tr>
+                                <td>002</td>
+                                <td>李小林</td>
+                                <td>li@test.com</td>
+                                <td>Telegram</td>
+                                <td><span class="status pending">待審</span></td>
+                                <td><button class="btn btn-primary">審核</button></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                
+                <!-- Services Page -->
+                <div id="page-services" style="display:none;">
+                    <h2>💼 服務訂單</h2>
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>訂單編號</th>
+                                <th>服務項目</th>
+                                <th>客戶</th>
+                                <th>金額</th>
+                                <th>狀態</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>ORD-001</td>
+                                <td>AI 命理分析</td>
+                                <td>張先生</td>
+                                <td>$3,000</td>
+                                <td><span class="status active">已完成</span></td>
+                            </tr>
+                            <tr>
+                                <td>ORD-002</td>
+                                <td>Telegram Bot 開發</td>
+                                <td>陳老闆</td>
+                                <td>$15,000</td>
+                                <td><span class="status pending">進行中</span></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                
+                <!-- Fortune Page -->
+                <div id="page-fortune" style="display:none;">
+                    <h2>🪐 命理分析記錄</h2>
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>用戶</th>
+                                <th>分析類型</th>
+                                <th>出生日期</th>
+                                <th>結果</th>
+                                <th>時間</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>User-001</td>
+                                <td>八字分析</td>
+                                <td>1990-05-15</td>
+                                <td>木火通明</td>
+                                <td>2026-04-05</td>
+                            </tr>
+                            <tr>
+                                <td>User-002</td>
+                                <td>姓名學</td>
+                                <td>1985-11-20</td>
+                                <td>五行平衡</td>
+                                <td>2026-04-04</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                
+                <!-- Content Page -->
+                <div id="page-content" style="display:none;">
+                    <h2>📝 內容管理</h2>
+                    <div class="form-group">
+                        <label>文章標題</label>
+                        <input type="text" placeholder="輸入標題">
+                    </div>
+                    <div class="form-group">
+                        <label>文章內容</label>
+                        <textarea rows="6" placeholder="輸入內容"></textarea>
+                    </div>
+                    <button class="btn btn-primary">發布文章</button>
+                </div>
+                
+                <!-- Settings Page -->
+                <div id="page-settings" style="display:none;">
+                    <h2>⚙️ 系統設定</h2>
+                    <div class="form-group">
+                        <label>網站名稱</label>
+                        <input type="text" value="翔川 Lewis AI">
+                    </div>
+                    <div class="form-group">
+                        <label>聯絡 Email</label>
+                        <input type="email" value="contact@neoxiang.ai">
+                    </div>
+                    <div class="form-group">
+                        <label>Telegram Bot</label>
+                        <input type="text" value="@NeoXiangAI">
+                    </div>
+                    <button class="btn btn-primary">儲存設定</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function login() {
+            document.getElementById('loginPage').style.display = 'none';
+            document.getElementById('dashboard').style.display = 'block';
+        }
+        
+        function logout() {
+            document.getElementById('loginPage').style.display = 'flex';
+            document.getElementById('dashboard').style.display = 'none';
+        }
+        
+        function showPage(page) {
+            document.querySelectorAll('#content > div').forEach(div => div.style.display = 'none');
+            document.getElementById('page-' + page).style.display = 'block';
+            document.querySelectorAll('.sidebar li').forEach(li => li.classList.remove('active'));
+            event.target.classList.add('active');
+        }
+    </script>
+</body>
+</html>

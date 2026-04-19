@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>翔川 AI 創業平台 | AI × DevOps × 命理 × 創作</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        :root {
+            --primary: #667eea;
+            --secondary: #764ba2;
+            --accent: #00ff88;
+            --dark: #0a0a0f;
+            --light: #f8f9fa;
+            --success: #27ae60;
+        }
+        body { font-family: 'Noto Sans TC', 'Microsoft JhengHei', Arial, sans-serif; background: var(--dark); color: white; line-height: 1.6; }
+        
+        /* Header */
+        .header { background: rgba(10,10,15,0.95); padding: 20px 40px; position: fixed; width: 100%; top: 0; z-index: 1000; border-bottom: 1px solid rgba(255,255,255,0.1); }
+        .header-content { max-width: 1400px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; }
+        .logo { font-size: 28px; font-weight: bold; background: linear-gradient(90deg, var(--primary), var(--accent)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .nav { display: flex; gap: 30px; }
+        .nav a { color: white; text-decoration: none; font-size: 16px; transition: color 0.3s; }
+        .nav a:hover { color: var(--accent); }
+        
+        /* Hero */
+        .hero { padding: 150px 40px 80px; text-align: center; background: linear-gradient(180deg, #0a0a0f 0%, #1a1a2e 100%); }
+        .hero h1 { font-size: 56px; margin-bottom: 20px; background: linear-gradient(90deg, #fff, var(--accent)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .hero p { font-size: 22px; color: #aaa; max-width: 700px; margin: 0 auto 40px; }
+        .hero-badges { display: flex; gap: 15px; justify-content: center; flex-wrap: wrap; margin-bottom: 40px; }
+        .badge { background: rgba(255,255,255,0.1); padding: 10px 25px; border-radius: 30px; font-size: 14px; border: 1px solid rgba(255,255,255,0.2); }
+        .badge.highlight { background: var(--accent); color: var(--dark); font-weight: bold; }
+        
+        /* Login Buttons */
+        .login-section { background: #1a1a2e; padding: 60px 40px; }
+        .login-grid { max-width: 900px; margin: 0 auto; display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px; }
+        .login-btn { padding: 20px; border-radius: 15px; text-decoration: none; text-align: center; font-weight: bold; transition: all 0.3s; display: flex; align-items: center; justify-content: center; gap: 10px; }
+        .login-btn:hover { transform: translateY(-5px); }
+        .google { background: white; color: #333; }
+        .apple { background: #000; color: #fff; border: 1px solid #333; }
+        .line { background: #00C300; color: white; }
+        .facebook { background: #1877F2; color: white; }
+        .telegram { background: #0088cc; color: white; }
+        .github { background: #333; color: white; }
+        .wechat { background: #07C160; color: white; }
+        .instagram { background: linear-gradient(45deg, #f09433, #dc2743); color: white; }
+        
+        /* Features */
+        .features { padding: 80px 40px; max-width: 1400px; margin: 0 auto; }
+        .section-title { font-size: 36px; text-align: center; margin-bottom: 50px; }
+        .section-title span { color: var(--accent); }
+        .feature-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 30px; }
+        .feature-card { background: rgba(255,255,255,0.05); padding: 35px; border-radius: 20px; border: 1px solid rgba(255,255,255,0.1); transition: all 0.3s; }
+        .feature-card:hover { transform: translateY(-10px); border-color: var(--accent); }
+        .feature-icon { font-size: 48px; margin-bottom: 20px; }
+        .feature-card h3 { color: var(--accent); font-size: 22px; margin-bottom: 15px; }
+        .feature-card p { color: #aaa; }
+        
+        /* Services */
+        .services { background: #1a1a2e; padding: 80px 40px; }
+        .services-grid { max-width: 1200px; margin: 0 auto; display: grid; grid-template-columns: repeat(2, 1fr); gap: 30px; }
+        .service-card { background: linear-gradient(135deg, rgba(102,126,234,0.1), rgba(118,75,162,0.1)); padding: 30px; border-radius: 20px; border-left: 4px solid var(--primary); }
+        .service-card h3 { font-size: 22px; margin-bottom: 15px; color: white; }
+        .service-card ul { list-style: none; }
+        .service-card li { padding: 8px 0; color: #ccc; }
+        .service-card li::before { content: '✓'; color: var(--accent); margin-right: 10px; }
+        
+        /* Tech Stack */
+        .tech-stack { padding: 80px 40px; text-align: center; }
+        .tech-grid { max-width: 1000px; margin: 0 auto; display: flex; flex-wrap: wrap; gap: 15px; justify-content: center; }
+        .tech-item { background: transparent; border: 1px solid var(--accent); color: var(--accent); padding: 12px 25px; border-radius: 8px; font-size: 14px; }
+        
+        /* CTA */
+        .cta { padding: 100px 40px; text-align: center; background: linear-gradient(180deg, #1a1a2e, #0a0a0f); }
+        .cta h2 { font-size: 42px; margin-bottom: 20px; }
+        .cta p { font-size: 20px; color: #aaa; margin-bottom: 40px; }
+        .cta-buttons { display: flex; gap: 20px; justify-content: center; }
+        .btn-primary { background: var(--accent); color: var(--dark); padding: 18px 40px; border-radius: 30px; text-decoration: none; font-weight: bold; font-size: 18px; }
+        .btn-secondary { background: transparent; border: 2px solid white; color: white; padding: 16px 38px; border-radius: 30px; text-decoration: none; font-weight: bold; font-size: 18px; }
+        
+        /* Footer */
+        .footer { padding: 40px; text-align: center; color: #666; border-top: 1px solid rgba(255,255,255,0.1); }
+        
+        @media (max-width: 768px) {
+            .login-grid { grid-template-columns: repeat(2, 1fr); }
+            .feature-grid { grid-template-columns: 1fr; }
+            .services-grid { grid-template-columns: 1fr; }
+            .hero h1 { font-size: 36px; }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <div class="header">
+        <div class="header-content">
+            <div class="logo">🚀 翔川 AI 創業平台</div>
+            <div class="nav">
+                <a href="#features">功能</a>
+                <a href="#services">服務</a>
+                <a href="#tech">技術</a>
+                <a href="#contact">聯絡</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Hero -->
+    <div class="hero">
+        <h1>AI × DevOps × 命理 × 創作</h1>
+        <p>結合 10+ 年資訊科技經驗，打造新一代 AI 創業平台。從命理分析到智能自動化，從內容創作到 DevOps 工具，一站式服務讓您的創業之路更順暢。</p>
+        <div class="hero-badges">
+            <span class="badge">🤖 AI 工具</span>
+            <span class="badge">🪐 命理系統</span>
+            <span class="badge">🎵 AI 音樂</span>
+            <span class="badge">☁️ DevOps/SRE</span>
+            <span class="badge highlight">🌐 多平台登入</span>
+            <span class="badge">🤝 代理系統</span>
+        </div>
+    </div>
+
+    <!-- Login -->
+    <div class="login-section">
+        <h2 class="section-title" style="margin-bottom: 30px;"><span>一鍵登入</span> - 支援多種平台</h2>
+        <div class="login-grid">
+            <a href="#" class="login-btn google">🔵 Google</a>
+            <a href="#" class="login-btn apple">🍎 Apple</a>
+            <a href="#" class="login-btn line">💚 LINE</a>
+            <a href="#" class="login-btn facebook">🔵 Facebook</a>
+            <a href="#" class="login-btn telegram">✈️ Telegram</a>
+            <a href="#" class="login-btn github">🐙 GitHub</a>
+            <a href="#" class="login-btn wechat">💚 WeChat</a>
+            <a href="#" class="login-btn instagram">📸 Instagram</a>
+        </div>
+        <p style="text-align: center; margin-top: 20px; color: #666;">* 更多平台持續新增中...</p>
+    </div>
+
+    <!-- Features -->
+    <div class="features" id="features">
+        <h2 class="section-title">核心 <span>功能</span></h2>
+        <div class="feature-grid">
+            <div class="feature-card">
+                <div class="feature-icon">🤖</div>
+                <h3>AI 工具開發</h3>
+                <p>Telegram Bot 開發、自動化流程、AI 助理建置。支援 OpenAI、Gemini、Claude 等多種 AI 模型整合。</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">🪐</div>
+                <h3>命理分析系統</h3>
+                <p>八字、五行、星座、姓名學。結合 AI 技術，提供自動化命理分析與建議報告。</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">🎵</div>
+                <h3>AI 創作平台</h3>
+                <p>AI 音樂生成、AI 影片剪輯、內容創作工具。支援多種風格與格式輸出。</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">☁️</div>
+                <h3>DevOps/SRE 工具</h3>
+                <p>監控系統 CI/CD 流程、K8s 管理、日誌分析、自動化運維。內建多種開源工具整合。</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">🤝</div>
+                <h3>代理推廣系統</h3>
+                <p>多級分銷、自動結算、佣金管理。支援無限層級代理，適合聯盟行銷與分销业务。</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">🌐</div>
+                <h3>多平台整合</h3>
+                <p>一鍵發布到 Threads、Instagram、X、Dcard、Facebook 社團。支援自動排程與數據分析。</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Services -->
+    <div class="services" id="services">
+        <h2 class="section-title">服務 <span>項目</span></h2>
+        <div class="services-grid">
+            <div class="service-card">
+                <h3>🤖 AI 工具開發服務</h3>
+                <ul>
+                    <li>Telegram Bot 定制開發</li>
+                    <li>LINE Bot 與官方帳號整合</li>
+                    <li>AI 對話機器人建置</li>
+                    <li>自動化流程設計</li>
+                    <li>API 串接與系統整合</li>
+                </ul>
+            </div>
+            <div class="service-card">
+                <h3>🪐 命理諮詢服務</h3>
+                <ul>
+                    <li>八字命盤分析</li>
+                    <li>五行平衡建議</li>
+                    <li>星座運勢解讀</li>
+                    <li>寶寶命名服務</li>
+                    <li>創業方向建議</li>
+                </ul>
+            </div>
+            <div class="service-card">
+                <h3>☁️ 雲端架構服務</h3>
+                <ul>
+                    <li>AWS/GCP 架構規劃</li>
+                    <li>Kubernetes 集群部署</li>
+                    <li>CI/CD 流程優化</li>
+                    <li>監控系統建置</li>
+                    <li>資訊安全評估</li>
+                </ul>
+            </div>
+            <div class="service-card">
+                <h3>🎵 AI 創作服務</h3>
+                <ul>
+                    <li>AI 音樂代製作</li>
+                    <li>影片剪輯與後製</li>
+                    <li>內容自動化生成</li>
+                    <li>社群貼文撰寫</li>
+                    <li>品牌視覺設計</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tech Stack -->
+    <div class="tech-stack" id="tech">
+        <h2 class="section-title">技術 <span>堆疊</span></h2>
+        <div class="tech-grid">
+            <span class="tech-item">Kubernetes</span>
+            <span class="tech-item">Docker</span>
+            <span class="tech-item">Jenkins</span>
+            <span class="tech-item">Ansible</span>
+            <span class="tech-item">Terraform</span>
+            <span class="tech-item">AWS</span>
+            <span class="tech-item">GCP</span>
+            <span class="tech-item">Python</span>
+            <span class="tech-item">Go</span>
+            <span class="tech-item">Node.js</span>
+            <span class="tech-item">PostgreSQL</span>
+            <span class="tech-item">Redis</span>
+            <span class="tech-item">MongoDB</span>
+            <span class="tech-item">Prometheus</span>
+            <span class="tech-item">Grafana</span>
+            <span class="tech-item">ELK Stack</span>
+            <span class="tech-item">Telegram API</span>
+            <span class="tech-item">OpenAI API</span>
+        </div>
+    </div>
+
+    <!-- CTA -->
+    <div class="cta" id="contact">
+        <h2>🚀 準備好開始了嗎？</h2>
+        <p>立即加入翔川 AI 創業平台，打造您的專屬 AI 事業</p>
+        <div class="cta-buttons">
+            <a href="#" class="btn-primary">開始免費試用</a>
+            <a href="#" class="btn-secondary">聯絡我們</a>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <div class="footer">
+        <p>© 2026 翔川 AI 創業平台 | 翔森科技 | NeoXiang AI</p>
+        <p>用 AI 打造讓靈感落地的工具</p>
+    </div>
+</body>
+</html>

@@ -1,0 +1,551 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>翔川 Lewis AI - AI DevOps 命理創作平台</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        :root {
+            --primary: #667eea;
+            --secondary: #764ba2;
+            --accent: #00ff88;
+            --success: #27ae60;
+            --dark: #0a0a0f;
+            --dark2: #1a1a2e;
+            --light: #f8f9fa;
+            --text: #333;
+            --text-light: #aaa;
+        }
+        
+        /* Reset & Base */
+        body { 
+            font-family: 'Noto Sans TC', 'Microsoft JhengHei', Arial, sans-serif; 
+            background: var(--light);
+            color: var(--text);
+            line-height: 1.6;
+        }
+        a { text-decoration: none; }
+        ul { list-style: none; }
+        
+        /* Header */
+        .header {
+            background: white;
+            padding: 15px 40px;
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 1000;
+            box-shadow: 0 2px 20px rgba(0,0,0,0.1);
+        }
+        .header-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .logo {
+            font-size: 24px;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .logo-icon {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, var(--primary), var(--accent));
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+        }
+        .logo-text span {
+            color: var(--primary);
+        }
+        .nav {
+            display: flex;
+            gap: 30px;
+        }
+        .nav a {
+            color: var(--text);
+            font-weight: 500;
+            transition: color 0.3s;
+        }
+        .nav a:hover { color: var(--primary); }
+        
+        /* Hero */
+        .hero {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            padding: 150px 40px 80px;
+            text-align: center;
+        }
+        .hero h1 {
+            font-size: 52px;
+            margin-bottom: 20px;
+        }
+        .hero h1 span {
+            color: var(--accent);
+        }
+        .hero p {
+            font-size: 20px;
+            max-width: 700px;
+            margin: 0 auto 30px;
+            opacity: 0.95;
+        }
+        .hero-badges {
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        .badge {
+            background: rgba(255,255,255,0.2);
+            padding: 8px 20px;
+            border-radius: 20px;
+            font-size: 14px;
+        }
+        
+        /* Section */
+        .section {
+            padding: 80px 40px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        .section-title {
+            font-size: 32px;
+            text-align: center;
+            margin-bottom: 40px;
+            color: var(--text);
+        }
+        .section-title span {
+            color: var(--primary);
+        }
+        
+        /* About */
+        .about-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+            align-items: center;
+        }
+        .about-text h3 {
+            font-size: 24px;
+            color: var(--primary);
+            margin-bottom: 15px;
+        }
+        .about-text p {
+            margin-bottom: 15px;
+            color: var(--text-light);
+        }
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 15px;
+        }
+        .stat {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            padding: 20px;
+            border-radius: 15px;
+            text-align: center;
+        }
+        .stat-num {
+            font-size: 28px;
+            font-weight: bold;
+        }
+        .stat-label {
+            font-size: 12px;
+            opacity: 0.9;
+        }
+        
+        /* Services */
+        .services-bg {
+            background: #f0f2f5;
+        }
+        .services-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 25px;
+        }
+        .service-card {
+            background: white;
+            padding: 30px;
+            border-radius: 20px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.05);
+            border-left: 4px solid var(--primary);
+            transition: all 0.3s;
+        }
+        .service-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+        .service-icon {
+            font-size: 36px;
+            margin-bottom: 15px;
+        }
+        .service-card h3 {
+            font-size: 20px;
+            margin-bottom: 10px;
+            color: var(--text);
+        }
+        .service-card ul li {
+            padding: 6px 0;
+            color: var(--text-light);
+            font-size: 14px;
+        }
+        .service-card ul li::before {
+            content: '✓';
+            color: var(--success);
+            margin-right: 8px;
+        }
+        
+        /* Tech Stack */
+        .tech-grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            justify-content: center;
+        }
+        .tech-item {
+            background: white;
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-size: 14px;
+            color: var(--text);
+            border: 1px solid #eee;
+        }
+        
+        /* Login */
+        .login-section {
+            background: var(--dark2);
+            padding: 60px 40px;
+        }
+        .login-grid {
+            max-width: 900px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 15px;
+        }
+        .login-btn {
+            padding: 18px;
+            border-radius: 12px;
+            text-decoration: none;
+            text-align: center;
+            font-weight: 600;
+            font-size: 14px;
+            transition: all 0.3s;
+        }
+        .login-btn:hover { transform: translateY(-3px); }
+        .google { background: white; color: #333; }
+        .apple { background: #000; color: #fff; }
+        .line { background: #00C300; color: white; }
+        .facebook { background: #1877F2; color: white; }
+        .telegram { background: #0088cc; color: white; }
+        .github { background: #333; color: white; }
+        .wechat { background: #07C160; color: white; }
+        .instagram { background: linear-gradient(45deg, #f09433, #dc2743); color: white; }
+        
+        /* Features */
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 25px;
+        }
+        .feature-card {
+            background: white;
+            padding: 30px;
+            border-radius: 20px;
+            text-align: center;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.05);
+            transition: all 0.3s;
+        }
+        .feature-card:hover {
+            transform: translateY(-10px);
+        }
+        .feature-icon {
+            font-size: 42px;
+            margin-bottom: 15px;
+        }
+        .feature-card h3 {
+            color: var(--primary);
+            margin-bottom: 10px;
+        }
+        .feature-card p {
+            color: var(--text-light);
+            font-size: 14px;
+        }
+        
+        /* CTA */
+        .cta-section {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            padding: 80px 40px;
+            text-align: center;
+        }
+        .cta-section h2 {
+            font-size: 36px;
+            margin-bottom: 15px;
+        }
+        .cta-section p {
+            font-size: 18px;
+            margin-bottom: 30px;
+            opacity: 0.95;
+        }
+        .cta-btn {
+            display: inline-block;
+            background: white;
+            color: var(--primary);
+            padding: 15px 40px;
+            border-radius: 30px;
+            font-weight: bold;
+            font-size: 16px;
+            transition: transform 0.3s;
+        }
+        .cta-btn:hover { transform: scale(1.05); }
+        
+        /* Footer */
+        .footer {
+            background: var(--dark);
+            color: #666;
+            padding: 30px;
+            text-align: center;
+        }
+        .footer a { color: #888; }
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            .about-grid, .services-grid, .features-grid {
+                grid-template-columns: 1fr;
+            }
+            .login-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            .stats {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            .hero h1 {
+                font-size: 32px;
+            }
+            .nav { display: none; }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <div class="header">
+        <div class="header-content">
+            <div class="logo">
+                <div class="logo-icon">🚀</div>
+                <div class="logo-text">
+                    翔川 <span>Lewis</span> AI
+                </div>
+            </div>
+            <div class="nav">
+                <a href="#about">關於</a>
+                <a href="#services">服務</a>
+                <a href="#features">功能</a>
+                <a href="#tech">技術</a>
+                <a href="#login">登入</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Hero -->
+    <div class="hero">
+        <h1>AI × DevOps × 命理 × 創作</h1>
+        <p>10+ 年資訊科技經驗，打造新一代 AI 創業平台。從命理分析到智能自動化，從內容創作到 DevOps 工具，一站式服務讓您的創業之路更順暢。</p>
+        <div class="hero-badges">
+            <span class="badge">🤖 AI 工具</span>
+            <span class="badge">🪐 命理系統</span>
+            <span class="badge">🎵 AI 音樂</span>
+            <span class="badge">☁️ DevOps/SRE</span>
+            <span class="badge">🌐 多平台</span>
+            <span class="badge">🤝 代理系統</span>
+        </div>
+    </div>
+
+    <!-- About -->
+    <div class="section" id="about">
+        <h2 class="section-title">關於 <span>翔川 Lewis</span></h2>
+        <div class="about-grid">
+            <div class="about-text">
+                <h3>從技術專家到 AI 創業者</h3>
+                <p>曾任上市公司 DevOps 主管，帶領 20+ 人團隊，擁有 10+ 年資訊科技經驗。</p>
+                <p>現在創立「翔森科技」，用 AI + 命理 + 系統思維，幫助創作者與創業者快速建立自己的數位產品。</p>
+                <p style="margin-top: 20px;">
+                    <strong>專長：</strong>Kubernetes、AWS/GCP、自動化系統、資料庫管理
+                </p>
+            </div>
+            <div class="stats">
+                <div class="stat">
+                    <div class="stat-num">10+</div>
+                    <div class="stat-label">年經驗</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-num">20+</div>
+                    <div class="stat-label">人團隊</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-num">100+</div>
+                    <div class="stat-label">專案</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-num">50+</div>
+                    <div class="stat-label">客戶</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Services -->
+    <div class="services-bg" id="services">
+        <div class="section">
+            <h2 class="section-title">服務 <span>項目</span></h2>
+            <div class="services-grid">
+                <div class="service-card">
+                    <div class="service-icon">🤖</div>
+                    <h3>AI 工具開發</h3>
+                    <ul>
+                        <li>Telegram Bot 開發</li>
+                        <li>LINE Bot 整合</li>
+                        <li>AI 對話機器人</li>
+                        <li>自動化流程設計</li>
+                        <li>API 串接整合</li>
+                    </ul>
+                </div>
+                <div class="service-card">
+                    <div class="service-icon">🪐</div>
+                    <h3>命理諮詢服務</h3>
+                    <ul>
+                        <li>八字命盤分析</li>
+                        <li>五行平衡建議</li>
+                        <li>星座運勢解讀</li>
+                        <li>寶寶命名服務</li>
+                        <li>創業方向建議</li>
+                    </ul>
+                </div>
+                <div class="service-card">
+                    <div class="service-icon">☁️</div>
+                    <h3>雲端架構服務</h3>
+                    <ul>
+                        <li>AWS/GCP 架構規劃</li>
+                        <li>Kubernetes 部署</li>
+                        <li>CI/CD 流程優化</li>
+                        <li>監控系統建置</li>
+                        <li>資訊安全評估</li>
+                    </ul>
+                </div>
+                <div class="service-card">
+                    <div class="service-icon">🎵</div>
+                    <h3>AI 創作服務</h3>
+                    <ul>
+                        <li>AI 音樂生成</li>
+                        <li>影片剪輯後製</li>
+                        <li>內容自動化</li>
+                        <li>社群貼文撰寫</li>
+                        <li>品牌視覺設計</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Features -->
+    <div class="section" id="features">
+        <h2 class="section-title">核心 <span>功能</span></h2>
+        <div class="features-grid">
+            <div class="feature-card">
+                <div class="feature-icon">🌐</div>
+                <h3>多平台登入</h3>
+                <p>Google、Apple、LINE、Facebook、Telegram、GitHub、WeChat、Instagram 一鍵登入</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">📱</div>
+                <h3>多平台發布</h3>
+                <p>一鍵發布到 Threads、Instagram、X、Dcard、Facebook 社團</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">🤝</div>
+                <h3>代理推廣系統</h3>
+                <p>多級分銷、自动结算、佣金管理，适合联盟营销</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">📊</div>
+                <h3>數據分析</h3>
+                <p>完整用戶行為分析、營收統計、成效追蹤</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">🔒</div>
+                <h3>權限管理</h3>
+                <p>完整的角色權限控制，確保數據安全</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">⚡</div>
+                <h3>自動化排程</h3>
+                <p>定時任務自動執行，省時省力</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tech Stack -->
+    <div class="section" id="tech" style="background: #f0f2f5;">
+        <h2 class="section-title">技術 <span>堆疊</span></h2>
+        <div class="tech-grid">
+            <span class="tech-item">Kubernetes</span>
+            <span class="tech-item">Docker</span>
+            <span class="tech-item">Jenkins</span>
+            <span class="tech-item">Ansible</span>
+            <span class="tech-item">Terraform</span>
+            <span class="tech-item">AWS</span>
+            <span class="tech-item">GCP</span>
+            <span class="tech-item">Python</span>
+            <span class="tech-item">Go</span>
+            <span class="tech-item">Node.js</span>
+            <span class="tech-item">PostgreSQL</span>
+            <span class="tech-item">Redis</span>
+            <span class="tech-item">MongoDB</span>
+            <span class="tech-item">Prometheus</span>
+            <span class="tech-item">Grafana</span>
+            <span class="tech-item">ELK Stack</span>
+            <span class="tech-item">Telegram API</span>
+            <span class="tech-item">OpenAI API</span>
+        </div>
+    </div>
+
+    <!-- Login -->
+    <div class="login-section" id="login">
+        <h2 class="section-title" style="color: white; margin-bottom: 30px;">
+            <span>一鍵登入</span>
+        </h2>
+        <div class="login-grid">
+            <a href="#" class="login-btn google">🔵 Google</a>
+            <a href="#" class="login-btn apple">🍎 Apple</a>
+            <a href="#" class="login-btn line">💚 LINE</a>
+            <a href="#" class="login-btn facebook">🔵 Facebook</a>
+            <a href="#" class="login-btn telegram">✈️ Telegram</a>
+            <a href="#" class="login-btn github">🐙 GitHub</a>
+            <a href="#" class="login-btn wechat">💚 WeChat</a>
+            <a href="#" class="login-btn instagram">📸 Instagram</a>
+        </div>
+        <p style="text-align: center; margin-top: 20px; color: #666;">* 更多平台持續新增中...</p>
+    </div>
+
+    <!-- CTA -->
+    <div class="cta-section">
+        <h2>🚀 準備好開始了嗎？</h2>
+        <p>立即加入翔川 AI 創業平台，打造您的專屬 AI 事業</p>
+        <a href="#login" class="cta-btn">開始免費試用</a>
+    </div>
+
+    <!-- Footer -->
+    <div class="footer">
+        <p>© 2026 翔川 Lewis | 翔森科技 | NeoXiang AI</p>
+        <p>用 AI 打造讓靈感落地的工具 | Telegram：@NeoXiangAI</p>
+    </div>
+</body>
+</html>

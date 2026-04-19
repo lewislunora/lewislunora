@@ -1,0 +1,42 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: gfg-web-v2
+  namespace: gfg-v2
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: gfg-web-v2
+  template:
+    metadata:
+      labels:
+        app: gfg-web-v2
+    spec:
+      containers:
+      - name: gfg-web
+        image: gfg-web-nginx:v2
+        imagePullPolicy: Never
+        ports:
+        - containerPort: 80
+        resources:
+          requests:
+            memory: "128Mi"
+            cpu: "100m"
+          limits:
+            memory: "256Mi"
+            cpu: "500m"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: gfg-web-v2
+  namespace: gfg-v2
+spec:
+  type: NodePort
+  selector:
+    app: gfg-web-v2
+  ports:
+  - port: 80
+    targetPort: 80
+    nodePort: 30081

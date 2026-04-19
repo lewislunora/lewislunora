@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <title>NeoXiang AI - 未來科技</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Courier New', monospace; background: #0a0a0f; color: #00ff88; min-height: 100vh; }
+        .hero { background: linear-gradient(180deg, #0a0a0f 0%, #1a1a2e 100%); padding: 80px 40px; text-align: center; border-bottom: 2px solid #00ff88; }
+        .hero h1 { font-size: 64px; background: linear-gradient(90deg, #00ff88, #00d4ff); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 20px; }
+        .hero p { font-size: 20px; color: #888; }
+        .tag { background: #ff0066; color: white; padding: 8px 20px; border-radius: 20px; font-size: 14px; display: inline-block; margin-bottom: 20px; }
+        .container { max-width: 900px; margin: 0 auto; padding: 40px 20px; }
+        .terminal { background: #1a1a2e; border-radius: 15px; padding: 30px; margin-bottom: 20px; border: 1px solid #333; }
+        .terminal-header { display: flex; gap: 10px; margin-bottom: 20px; }
+        .terminal-dot { width: 12px; height: 12px; border-radius: 50%; }
+        .dot-red { background: #ff5f56; }
+        .dot-yellow { background: #ffbd2e; }
+        .dot-green { background: #27c93f; }
+        .terminal-title { color: #666; font-size: 14px; }
+        .feature-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; margin: 30px 0; }
+        .feature { background: rgba(0, 255, 136, 0.05); border: 1px solid #00ff88; padding: 25px; border-radius: 10px; transition: all 0.3s; }
+        .feature:hover { background: rgba(0, 255, 136, 0.1); transform: scale(1.02); }
+        .feature-icon { font-size: 40px; margin-bottom: 15px; }
+        .feature h3 { color: #00ff88; margin-bottom: 10px; }
+        .feature p { color: #888; }
+        .code-block { background: #000; padding: 20px; border-radius: 10px; font-family: monospace; color: #00ff88; overflow-x: auto; margin: 20px 0; }
+        .cta-btn { display: inline-block; background: #00ff88; color: #0a0a0f; padding: 18px 50px; border-radius: 5px; text-decoration: none; font-size: 18px; font-weight: bold; margin: 20px 0; border: none; cursor: pointer; }
+        .cta-btn:hover { background: #00d4ff; }
+        .tech-stack { display: flex; flex-wrap: wrap; gap: 15px; justify-content: center; margin: 30px 0; }
+        .tech { background: transparent; border: 1px solid #00ff88; color: #00ff88; padding: 10px 20px; border-radius: 5px; font-size: 14px; }
+        .footer { text-align: center; padding: 40px; color: #444; border-top: 1px solid #333; margin-top: 40px; }
+    </style>
+</head>
+<body>
+    <div class="hero">
+        <span class="tag">🚀 FUTURE TECH</span>
+        <h1>&lt;NeoXiang /&gt;</h1>
+        <p>AI × 命理系統 × 智能自動化</p>
+    </div>
+    <div class="container">
+        <div class="terminal">
+            <div class="terminal-header">
+                <div class="terminal-dot dot-red"></div>
+                <div class="terminal-dot dot-yellow"></div>
+                <div class="terminal-dot dot-green"></div>
+                <span class="terminal-title">bash - neoxiang@ai-system:~$</span>
+            </div>
+            <div class="code-block">
+$ ./init_ai_system.sh<br>
+✓ Loading AI modules... [OK]<br>
+✓ Connecting to fortune API... [OK]<br>
+✓ Initializing DevOps tools... [OK]<br>
+✓ System ready. Welcome to NeoXiang AI!
+            </div>
+        </div>
+        
+        <h2 style="color: #00ff88; margin: 40px 0 20px;">⚡ 核心服務</h2>
+        <div class="feature-grid">
+            <div class="feature">
+                <div class="feature-icon">🤖</div>
+                <h3>Telegram Bot</h3>
+                <p>AI 助理 / 自動化流程 / 智能客服</p>
+            </div>
+            <div class="feature">
+                <div class="feature-icon">🪐</div>
+                <h3>命理分析系統</h3>
+                <p>八字 / 五行 / 星座 / AI 命名</p>
+            </div>
+            <div class="feature">
+                <div class="feature-icon">☁️</div>
+                <h3>雲端架構</h3>
+                <p>AWS / GCP / K8s / DevOps</p>
+            </div>
+            <div class="feature">
+                <div class="feature-icon">🎵</div>
+                <h3>AI 創作</h3>
+                <p>音樂生成 / 影片剪輯 / 內容創作</p>
+            </div>
+        </div>
+        
+        <h2 style="color: #00ff88; margin: 40px 0 20px;">🔧 技術棧</h2>
+        <div class="tech-stack">
+            <span class="tech">Kubernetes</span>
+            <span class="tech">Docker</span>
+            <span class="tech">Jenkins</span>
+            <span class="tech">Ansible</span>
+            <span class="tech">Terraform</span>
+            <span class="tech">AWS</span>
+            <span class="tech">GCP</span>
+            <span class="tech">Python</span>
+            <span class="tech">Go</span>
+            <span class="tech">PostgreSQL</span>
+            <span class="tech">Redis</span>
+            <span class="tech">MongoDB</span>
+        </div>
+        
+        <h2 style="color: #00ff88; margin: 40px 0 20px;">📊 系統狀態</h2>
+        <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px; text-align: center; margin: 30px 0;">
+            <div style="background: #1a1a2e; padding: 20px; border-radius: 10px; border: 1px solid #00ff88;">
+                <div style="font-size: 32px; color: #00ff88;">99.9%</div>
+                <div style="color: #666;">系統可用性</div>
+            </div>
+            <div style="background: #1a1a2e; padding: 20px; border-radius: 10px; border: 1px solid #00ff88;">
+                <div style="font-size: 32px; color: #00ff88;">24/7</div>
+                <div style="color: #666;">監控服務</div>
+            </div>
+            <div style="background: #1a1a2e; padding: 20px; border-radius: 10px; border: 1px solid #00ff88;">
+                <div style="font-size: 32px; color: #00ff88;">&lt;100ms</div>
+                <div style="color: #666;">響應時間</div>
+            </div>
+            <div style="background: #1a1a2e; padding: 20px; border-radius: 10px; border: 1px solid #00ff88;">
+                <div style="font-size: 32px; color: #00ff88;">∞</div>
+                <div style="color: #666;">擴展能力</div>
+            </div>
+        </div>
+        
+        <div style="text-align: center;">
+            <a href="https://t.me/NeoXiangAI" class="cta-btn">開始探索 →</a>
+            <p style="color: #666; margin-top: 15px;">Telegram：@NeoXiangAI | Email：contact@neoxiang.ai</p>
+        </div>
+    </div>
+    <div class="footer">
+        <p>© 2026 NeoXiang AI | 翔森科技 | Powered by AI</p>
+    </div>
+</body>
+</html>

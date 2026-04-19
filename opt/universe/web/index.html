@@ -1,0 +1,1074 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>✨ UniVerse - 你的全宇宙 🌟</title>
+    <meta name="theme-color" content="#FF6B9D">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <style>
+        :root {
+            --primary: #FF6B9D;
+            --secondary: #C792EA;
+            --accent: #7EE8FA;
+            --gradient: linear-gradient(135deg, #FF6B9D, #C792EA, #7EE8FA);
+            --bg: #0D0D1A;
+            --card: #1A1A2E;
+            --text: #FFFFFF;
+            --text-secondary: #A0A0B0;
+        }
+        
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Noto Sans TC", sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+        
+        /* Background Effects */
+        .bg-effect {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                radial-gradient(circle at 20% 20%, rgba(255,107,157,0.15) 0%, transparent 50%),
+                radial-gradient(circle at 80% 80%, rgba(199,146,234,0.15) 0%, transparent 50%),
+                radial-gradient(circle at 50% 50%, rgba(126,232,250,0.1) 0%, transparent 70%);
+            pointer-events: none;
+            z-index: -1;
+        }
+        
+        /* App Container */
+        .app {
+            max-width: 420px;
+            margin: 0 auto;
+            min-height: 100vh;
+            background: var(--bg);
+            position: relative;
+        }
+        
+        /* Header */
+        .header {
+            background: rgba(26,26,46,0.95);
+            backdrop-filter: blur(20px);
+            padding: 15px 20px;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            border-bottom: 1px solid rgba(255,107,157,0.2);
+        }
+        
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .logo {
+            font-size: 24px;
+            font-weight: 800;
+            background: var(--gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .header-actions {
+            display: flex;
+            gap: 15px;
+        }
+        
+        .header-icon {
+            font-size: 20px;
+            cursor: pointer;
+            padding: 8px;
+            border-radius: 12px;
+            background: rgba(255,107,157,0.1);
+            transition: all 0.3s;
+        }
+        
+        .header-icon:hover {
+            background: rgba(255,107,157,0.2);
+            transform: scale(1.1);
+        }
+        
+        /* Story Bar */
+        .story-bar {
+            display: flex;
+            gap: 12px;
+            padding: 15px;
+            overflow-x: auto;
+            scrollbar-width: none;
+        }
+        
+        .story-bar::-webkit-scrollbar { display: none; }
+        
+        .story-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 5px;
+            cursor: pointer;
+            flex-shrink: 0;
+        }
+        
+        .story-ring {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: var(--gradient);
+            padding: 3px;
+        }
+        
+        .story-avatar {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            background: var(--card);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+        }
+        
+        .story-name {
+            font-size: 11px;
+            color: var(--text-secondary);
+            max-width: 60px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+        
+        /* Quick Actions */
+        .quick-actions {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+            padding: 15px;
+        }
+        
+        .quick-action {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+            padding: 15px 10px;
+            background: var(--card);
+            border-radius: 16px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .quick-action:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 30px rgba(255,107,157,0.2);
+        }
+        
+        .quick-icon {
+            font-size: 24px;
+            width: 45px;
+            height: 45px;
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--gradient);
+        }
+        
+        .quick-label {
+            font-size: 11px;
+            color: var(--text-secondary);
+        }
+        
+        /* Tabs */
+        .tab-bar {
+            display: flex;
+            justify-content: space-around;
+            padding: 10px 0;
+            background: rgba(26,26,46,0.95);
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+            max-width: 420px;
+            border-top: 1px solid rgba(255,107,157,0.1);
+            z-index: 100;
+        }
+        
+        .tab-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+            padding: 8px 15px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .tab-item.active .tab-icon {
+            transform: scale(1.2);
+        }
+        
+        .tab-icon {
+            font-size: 22px;
+            transition: all 0.3s;
+        }
+        
+        .tab-name {
+            font-size: 10px;
+            color: var(--text-secondary);
+        }
+        
+        .tab-item.active .tab-name {
+            color: var(--primary);
+            font-weight: 600;
+        }
+        
+        /* Content Area */
+        .content {
+            padding-bottom: 80px;
+        }
+        
+        .section-title {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 20px 10px;
+        }
+        
+        .section-title h3 {
+            font-size: 16px;
+            font-weight: 600;
+        }
+        
+        .see-more {
+            font-size: 12px;
+            color: var(--primary);
+            cursor: pointer;
+        }
+        
+        /* Post Card */
+        .post-card {
+            background: var(--card);
+            margin: 10px 20px;
+            border-radius: 20px;
+            padding: 15px;
+            border: 1px solid rgba(255,107,157,0.1);
+            transition: all 0.3s;
+        }
+        
+        .post-card:hover {
+            border-color: rgba(255,107,157,0.3);
+            box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+        }
+        
+        .post-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 12px;
+        }
+        
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: var(--gradient);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+        }
+        
+        .user-info {
+            flex: 1;
+        }
+        
+        .user-name {
+            font-weight: 600;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        .verified {
+            color: var(--primary);
+            font-size: 12px;
+        }
+        
+        .post-time {
+            font-size: 11px;
+            color: var(--text-secondary);
+        }
+        
+        .post-content {
+            font-size: 14px;
+            line-height: 1.6;
+            margin-bottom: 12px;
+        }
+        
+        .post-media {
+            border-radius: 16px;
+            margin-bottom: 12px;
+            overflow: hidden;
+            height: 200px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 40px;
+        }
+        
+        .post-actions {
+            display: flex;
+            gap: 20px;
+        }
+        
+        .action-btn {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            color: var(--text-secondary);
+            transition: all 0.3s;
+        }
+        
+        .action-btn:hover {
+            color: var(--primary);
+            transform: scale(1.05);
+        }
+        
+        /* Game Section */
+        .game-section {
+            padding: 15px 20px;
+        }
+        
+        .game-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+        }
+        
+        .game-card {
+            background: var(--card);
+            border-radius: 16px;
+            padding: 15px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .game-card:hover {
+            transform: scale(1.05);
+            box-shadow: 0 15px 40px rgba(255,107,157,0.2);
+        }
+        
+        .game-icon {
+            font-size: 32px;
+            margin-bottom: 8px;
+        }
+        
+        .game-name {
+            font-size: 12px;
+            color: var(--text-secondary);
+        }
+        
+        /* Community Topics */
+        .topic-bar {
+            display: flex;
+            gap: 10px;
+            padding: 0 20px;
+            overflow-x: auto;
+        }
+        
+        .topic-chip {
+            padding: 8px 16px;
+            background: var(--card);
+            border-radius: 20px;
+            font-size: 13px;
+            white-space: nowrap;
+            cursor: pointer;
+            border: 1px solid transparent;
+            transition: all 0.3s;
+        }
+        
+        .topic-chip.active {
+            background: var(--gradient);
+            border-color: transparent;
+        }
+        
+        .topic-chip:hover {
+            border-color: var(--primary);
+        }
+        
+        /* Messages */
+        .message-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 20px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .message-item:hover {
+            background: rgba(255,107,157,0.1);
+        }
+        
+        .message-avatar {
+            position: relative;
+        }
+        
+        .online-dot {
+            position: absolute;
+            bottom: 0;
+            right: 0;
+            width: 12px;
+            height: 12px;
+            background: #4CAF50;
+            border-radius: 50%;
+            border: 2px solid var(--bg);
+        }
+        
+        .message-content {
+            flex: 1;
+        }
+        
+        .message-name {
+            font-weight: 600;
+            font-size: 14px;
+        }
+        
+        .message-text {
+            font-size: 13px;
+            color: var(--text-secondary);
+        }
+        
+        .message-time {
+            font-size: 11px;
+            color: var(--text-secondary);
+        }
+        
+        /* Floating Action */
+        .fab {
+            position: fixed;
+            bottom: 85px;
+            right: 20px;
+            width: 55px;
+            height: 55px;
+            background: var(--gradient);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            cursor: pointer;
+            box-shadow: 0 8px 30px rgba(255,107,157,0.4);
+            z-index: 99;
+            transition: all 0.3s;
+        }
+        
+        .fab:hover {
+            transform: scale(1.1) rotate(90deg);
+        }
+        
+        /* Profile */
+        .profile-header {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            padding: 40px 20px;
+            text-align: center;
+        }
+        
+        .profile-avatar {
+            width: 90px;
+            height: 90px;
+            border-radius: 50%;
+            background: white;
+            margin: 0 auto 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 40px;
+            border: 4px solid rgba(255,255,255,0.3);
+        }
+        
+        .profile-name {
+            font-size: 22px;
+            font-weight: 700;
+            margin-bottom: 5px;
+        }
+        
+        .profile-bio {
+            font-size: 14px;
+            opacity: 0.9;
+            margin-bottom: 15px;
+        }
+        
+        .profile-stats {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+        }
+        
+        .stat-box {
+            text-align: center;
+        }
+        
+        .stat-number {
+            font-size: 20px;
+            font-weight: 700;
+        }
+        
+        .stat-label {
+            font-size: 12px;
+            opacity: 0.8;
+        }
+        
+        /* Create Modal */
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.8);
+            display: none;
+            align-items: flex-end;
+            justify-content: center;
+            z-index: 200;
+        }
+        
+        .modal.show {
+            display: flex;
+        }
+        
+        .modal-content {
+            background: var(--card);
+            width: 100%;
+            max-width: 420px;
+            border-radius: 24px 24px 0 0;
+            padding: 25px;
+            animation: slideUp 0.3s ease;
+        }
+        
+        @keyframes slideUp {
+            from { transform: translateY(100%); }
+            to { transform: translateY(0); }
+        }
+        
+        .modal-title {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        
+        .modal-options {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 15px;
+        }
+        
+        .modal-option {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+        }
+        
+        .modal-icon {
+            width: 55px;
+            height: 55px;
+            border-radius: 16px;
+            background: rgba(255,107,157,0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 22px;
+        }
+        
+        .modal-label {
+            font-size: 12px;
+            color: var(--text-secondary);
+        }
+        
+        /* Search */
+        .search-bar {
+            padding: 15px 20px;
+        }
+        
+        .search-input {
+            width: 100%;
+            padding: 14px 20px;
+            background: var(--card);
+            border: none;
+            border-radius: 25px;
+            color: white;
+            font-size: 14px;
+            outline: none;
+        }
+        
+        .search-input::placeholder {
+            color: var(--text-secondary);
+        }
+        
+        /* Animations */
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+        
+        .loading {
+            animation: pulse 1.5s infinite;
+        }
+    </style>
+</head>
+<body>
+    <div class="bg-effect"></div>
+    
+    <div class="app">
+        <!-- Header -->
+        <div class="header">
+            <div class="header-content">
+                <div class="logo">✨ UniVerse</div>
+                <div class="header-actions">
+                    <span class="header-icon">🔔</span>
+                    <span class="header-icon">⚙️</span>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Content -->
+        <div class="content" id="content">
+            <!-- Dynamic Content -->
+        </div>
+        
+        <!-- FAB -->
+        <div class="fab" onclick="showModal()">+</div>
+        
+        <!-- Modal -->
+        <div class="modal" id="modal" onclick="hideModal()">
+            <div class="modal-content" onclick="event.stopPropagation()">
+                <div class="modal-title">建立新內容</div>
+                <div class="modal-options">
+                    <div class="modal-option">
+                        <div class="modal-icon">📷</div>
+                        <span class="modal-label">照片</span>
+                    </div>
+                    <div class="modal-option">
+                        <div class="modal-icon">🎬</div>
+                        <span class="modal-label">短影片</span>
+                    </div>
+                    <div class="modal-option">
+                        <div class="modal-icon">📝</div>
+                        <span class="modal-label">文字</span>
+                    </div>
+                    <div class="modal-option">
+                        <div class="modal-icon">📍</div>
+                        <span class="modal-label">地點</span>
+                    </div>
+                    <div class="modal-option">
+                        <div class="modal-icon">🎮</div>
+                        <span class="modal-label">遊戲</span>
+                    </div>
+                    <div class="modal-option">
+                        <div class="modal-icon">📊</div>
+                        <span class="modal-label">投票</span>
+                    </div>
+                    <div class="modal-option">
+                        <div class="modal-icon">🎁</div>
+                        <span class="modal-label">匿名</span>
+                    </div>
+                    <div class="modal-option">
+                        <div class="modal-icon">🎀</div>
+                        <span class="modal-label">限時</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Tab Bar -->
+        <div class="tab-bar">
+            <div class="tab-item active" onclick="switchTab('home')">
+                <span class="tab-icon">🏠</span>
+                <span class="tab-name">首頁</span>
+            </div>
+            <div class="tab-item" onclick="switchTab('discover')">
+                <span class="tab-icon">🔍</span>
+                <span class="tab-name">發現</span>
+            </div>
+            <div class="tab-item" onclick="switchTab('games')">
+                <span class="tab-icon">🎮</span>
+                <span class="tab-name">遊戲</span>
+            </div>
+            <div class="tab-item" onclick="switchTab('messages')">
+                <span class="tab-icon">💬</span>
+                <span class="tab-name">訊息</span>
+            </div>
+            <div class="tab-item" onclick="switchTab('profile')">
+                <span class="tab-icon">👤</span>
+                <span class="tab-name">我的</span>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Data
+        const stories = [
+            { name: '我', avatar: '👸', isMe: true },
+            { name: '小甜', avatar: '👩' },
+            { name: '閨蜜', avatar: '👩‍🦰' },
+            { name: '遊戲王', avatar: '🧑' },
+            { name: '網紅', avatar: '👩‍🦱' },
+            { name: '正妹', avatar: '👧' },
+            { name: '網美', avatar: '👩‍🌾' },
+        ];
+        
+        const posts = [
+            { id: 1, name: '林佳蓉', avatar: '👩', verified: true, time: '2小時前', content: '今天傳說對決打到鑽石了！🎮 有沒有人一起組隊？', media: '🎮', likes: 234, comments: 56, shares: 12 },
+            { id: 2, name: '呂芷涵', avatar: '👩‍🦰', time: '4小時前', content: '今天去吃了超級好吃的甜點店 ☕️✨ 草莓千層超夢幻！', media: '🍓', likes: 567, comments: 89, shares: 34 },
+            { id: 3, name: '謝宗元', avatar: '👩‍🦱', verified: true, time: '6小時前', content: '英雄聯盟新赛季开始了！准备好上分了嘛 🎯', media: '⚔️', likes: 345, comments: 123, shares: 45 },
+            { id: 4, name: '遊戲甜心', avatar: '👧', time: '8小時前', content: 'Roblox 新出的遊戲太好玩了吧！🎯', media: '🎮', likes: 456, comments: 78, shares: 23 },
+        ];
+        
+        const games = [
+            { name: '傳說對決', icon: '⚔️' },
+            { name: '英雄聯盟', icon: '🎯' },
+            { name: 'Roblox', icon: '_block' },
+            { name: '原神', icon: '⛩️' },
+            { name: 'Minecraft', icon: '🧊' },
+            { name: '糖果傳奇', icon: '🍬' },
+        ];
+        
+        const topics = ['熱門', '情感', '美妝', '美食', '遊戲', '動漫', '旅行', '職場', '穿搭', '閒聊'];
+        
+        const messages = [
+            { name: '林佳蓉 💕', text: '今天要一起打傳說嗎？', time: '刚刚', online: true },
+            { name: '閨蜜群 (5)', text: '🌸明天聚餐時間地點！', time: '5分鐘', online: false },
+            { name: '呂芷涵', text: '那家甜點在哪裡？', time: '1小時', online: true },
+            { name: '遊戲小隊', text: '组队開黑中...', time: '2小時', online: true },
+            { name: '謝宗元', text: 'LOL新賽季一起上分', time: '昨天', online: false },
+        ];
+        
+        const users = [
+            { name: '小甜甜', bio: '遊戲玩家 | 傳說對決', posts: 234, followers: '1.2K', following: 456 },
+            { name: '遊戲達人', bio: '英雄聯盟玩家 | 實況主', posts: 567, followers: '3.4K', following: 234 },
+            { name: '萌妹子', bio: 'Roblox愛好者', posts: 890, followers: '5.6K', following: 789 },
+        ];
+        
+        // Render Functions
+        function renderHome() {
+            return `
+                <div class="search-bar">
+                    <input type="text" class="search-input" placeholder="🔍 搜尋好友、貼文、遊戲...">
+                </div>
+                
+                <div class="story-bar">
+                    ${stories.map(s => `
+                        <div class="story-item">
+                            <div class="story-ring">
+                                <div class="story-avatar">${s.avatar}</div>
+                            </div>
+                            <span class="story-name">${s.name}</span>
+                        </div>
+                    `).join('')}
+                </div>
+                
+                <div class="quick-actions">
+                    <div class="quick-action">
+                        <div class="quick-icon">🎮</div>
+                        <span class="quick-label">遊戲</span>
+                    </div>
+                    <div class="quick-action">
+                        <div class="quick-icon">🎁</div>
+                        <span class="quick-label">匿名</span>
+                    </div>
+                    <div class="quick-action">
+                        <div class="quick-icon">📊</div>
+                        <span class="quick-label">投票</span>
+                    </div>
+                    <div class="quick-action">
+                        <div class="quick-icon">🎀</div>
+                        <span class="quick-label">限時</span>
+                    </div>
+                    <div class="quick-action">
+                        <div class="quick-icon">📍</div>
+                        <span class="quick-label">打卡</span>
+                    </div>
+                    <div class="quick-action">
+                        <div class="quick-icon">🎬</div>
+                        <span class="quick-label">直播</span>
+                    </div>
+                    <div class="quick-action">
+                        <div class="quick-icon">💕</div>
+                        <span class="quick-label">配對</span>
+                    </div>
+                    <div class="quick-action">
+                        <div class="quick-icon">🎯</div>
+                        <span class="quick-label">抽獎</span>
+                    </div>
+                </div>
+                
+                <div class="topic-bar" style="margin-bottom: 15px;">
+                    ${topics.map((t, i) => `
+                        <div class="topic-chip ${i === 0 ? 'active' : ''}">${t}</div>
+                    `).join('')}
+                </div>
+                
+                ${posts.map(p => `
+                    <div class="post-card">
+                        <div class="post-header">
+                            <div class="user-avatar">${p.avatar}</div>
+                            <div class="user-info">
+                                <div class="user-name">
+                                    ${p.name}
+                                    ${p.verified ? '<span class="verified">✓</span>' : ''}
+                                </div>
+                                <div class="post-time">${p.time}</div>
+                            </div>
+                        </div>
+                        <div class="post-content">${p.content}</div>
+                        <div class="post-media" style="background: linear-gradient(135deg, rgba(255,107,157,0.3), rgba(199,146,234,0.3));">${p.media}</div>
+                        <div class="post-actions">
+                            <span class="action-btn">❤️ ${p.likes}</span>
+                            <span class="action-btn">💬 ${p.comments}</span>
+                            <span class="action-btn">🔄 ${p.shares}</span>
+                            <span class="action-btn">↗️</span>
+                        </div>
+                    </div>
+                `).join('')}
+            `;
+        }
+        
+        function renderDiscover() {
+            return `
+                <div class="search-bar">
+                    <input type="text" class="search-input" placeholder="🔍 探索新內容...">
+                </div>
+                
+                <div class="section-title">
+                    <h3>🔥 熱門話題</h3>
+                    <span class="see-more">查看全部</span>
+                </div>
+                
+                <div class="topic-bar" style="padding: 0 20px;">
+                    ${topics.map((t, i) => `
+                        <div class="topic-chip ${i === 0 ? 'active' : ''}">${t}</div>
+                    `).join('')}
+                </div>
+                
+                <div class="section-title" style="margin-top: 20px;">
+                    <h3>🌟 推薦用戶</h3>
+                    <span class="see-more">更多</span>
+                </div>
+                
+                ${users.map(u => `
+                    <div class="post-card">
+                        <div class="post-header">
+                            <div class="user-avatar">👩</div>
+                            <div class="user-info">
+                                <div class="user-name">${u.name}</div>
+                                <div class="post-time">${u.bio}</div>
+                            </div>
+                            <button style="background: var(--primary); color: white; border: none; padding: 8px 20px; border-radius: 20px; font-size: 13px;">追蹤</button>
+                        </div>
+                    </div>
+                `).join('')}
+                
+                <div class="section-title" style="margin-top: 15px;">
+                    <h3>📈 趨勢內容</h3>
+                </div>
+                
+                <div class="post-card">
+                    <div class="post-header">
+                        <div class="user-avatar">🔥</div>
+                        <div class="user-info">
+                            <div class="user-name">熱門討論</div>
+                            <div class="post-time">遊戲區 · 1.2K人參與</div>
+                        </div>
+                    </div>
+                    <div class="post-content">傳說對決新角色「暮光女俠」強度超標？大家一起來討論！⚔️</div>
+                    <div class="post-actions">
+                        <span class="action-btn">🔥 1.2K</span>
+                        <span class="action-btn">💬 567</span>
+                    </div>
+                </div>
+            `;
+        }
+        
+        function renderGames() {
+            return `
+                <div class="section-title">
+                    <h3>🎮 熱門遊戲</h3>
+                </div>
+                
+                <div class="game-grid" style="padding: 0 20px;">
+                    ${games.map(g => `
+                        <div class="game-card">
+                            <div class="game-icon">${g.icon}</div>
+                            <div class="game-name">${g.name}</div>
+                        </div>
+                    `).join('')}
+                </div>
+                
+                <div class="section-title" style="margin-top: 25px;">
+                    <h3>🎯 遊戲戰友</h3>
+                    <span class="see-more">找戰友</span>
+                </div>
+                
+                <div class="post-card">
+                    <div class="post-header">
+                        <div class="user-avatar">🎮</div>
+                        <div class="user-info">
+                            <div class="user-name">傳說對決组队中 ⚔️</div>
+                            <div class="post-time">3缺1 | 等級: 鑽石</div>
+                        </div>
+                        <button style="background: var(--gradient); color: white; border: none; padding: 8px 16px; border-radius: 20px; font-size: 12px;">加入</button>
+                    </div>
+                </div>
+                
+                <div class="post-card">
+                    <div class="post-header">
+                        <div class="user-avatar">⚔️</div>
+                        <div class="user-info">
+                            <div class="user-name">英雄聯盟五排 🎯</div>
+                            <div class="post-time">2缺3 | 大師以上</div>
+                        </div>
+                        <button style="background: var(--gradient); color: white; border: none; padding: 8px 16px; border-radius: 20px; font-size: 12px;">加入</button>
+                    </div>
+                </div>
+                
+                <div class="section-title" style="margin-top: 25px;">
+                    <h3>🏆 遊戲賽事</h3>
+                </div>
+                
+                <div class="post-card">
+                    <div class="post-header">
+                        <div class="user-avatar">🏆</div>
+                        <div class="user-info">
+                            <div class="user-name">UniVerse 傳說對決盃</div>
+                            <div class="post-time">報名中 · 獎金 $5000</div>
+                        </div>
+                    </div>
+                    <div class="post-content">首屆 UniVerse 遊戲大赛！冠軍獎金 $5000，趕快報名參加！🎮</div>
+                    <div class="post-actions">
+                        <span class="action-btn">🔥 3.4K</span>
+                        <span class="action-btn">📝 報名</span>
+                    </div>
+                </div>
+            `;
+        }
+        
+        function renderMessages() {
+            return `
+                <div class="search-bar">
+                    <input type="text" class="search-input" placeholder="🔍 搜尋訊息...">
+                </div>
+                
+                <div class="section-title">
+                    <h3>💬 訊息</h3>
+                </div>
+                
+                ${messages.map(m => `
+                    <div class="message-item">
+                        <div class="message-avatar">
+                            <div class="user-avatar">${m.name[0]}</div>
+                            ${m.online ? '<span class="online-dot"></span>' : ''}
+                        </div>
+                        <div class="message-content">
+                            <div class="message-name">${m.name}</div>
+                            <div class="message-text">${m.text}</div>
+                        </div>
+                        <div class="message-time">${m.time}</div>
+                    </div>
+                `).join('')}
+            `;
+        }
+        
+        function renderProfile() {
+            return `
+                <div class="profile-header">
+                    <div class="profile-avatar">👸</div>
+                    <div class="profile-name">小公主 🌸</div>
+                    <div class="profile-bio">✨ 傳說對決玩家 | 愛遊戲 | 愛美食 | INFP</div>
+                    <div class="profile-stats">
+                        <div class="stat-box">
+                            <div class="stat-number">92</div>
+                            <div class="stat-label">貼文</div>
+                        </div>
+                        <div class="stat-box">
+                            <div class="stat-number">1.2K</div>
+                            <div class="stat-label">粉絲</div>
+                        </div>
+                        <div class="stat-box">
+                            <div class="stat-number">328</div>
+                            <div class="stat-label">追蹤中</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div style="padding: 20px;">
+                    <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 5px;">
+                        <div style="aspect-ratio: 1; background: linear-gradient(135deg, var(--primary), var(--secondary)); border-radius: 8px;"></div>
+                        <div style="aspect-ratio: 1; background: linear-gradient(135deg, var(--secondary), var(--accent)); border-radius: 8px;"></div>
+                        <div style="aspect-ratio: 1; background: linear-gradient(135deg, var(--accent), var(--primary)); border-radius: 8px;"></div>
+                    </div>
+                </div>
+                
+                <div class="post-card" style="margin: 10px 20px;">
+                    <div class="post-header">
+                        <div class="user-avatar">👸</div>
+                        <div class="user-info">
+                            <div class="user-name">小公主 🌸</div>
+                        </div>
+                    </div>
+                    <div class="post-content">今天傳說對決上了鑽石！🎮✨ 有沒有人要一起組隊排位？</div>
+                    <div class="post-actions">
+                        <span class="action-btn">❤️ 89</span>
+                        <span class="action-btn">💬 23</span>
+                    </div>
+                </div>
+            `;
+        }
+        
+        // Tab Switching
+        let currentTab = 'home';
+        
+        function switchTab(tab) {
+            currentTab = tab;
+            document.querySelectorAll('.tab-item').forEach(t => t.classList.remove('active'));
+            event.target.closest('.tab-item').classList.add('active');
+            
+            const content = document.getElementById('content');
+            
+            switch(tab) {
+                case 'home': content.innerHTML = renderHome(); break;
+                case 'discover': content.innerHTML = renderDiscover(); break;
+                case 'games': content.innerHTML = renderGames(); break;
+                case 'messages': content.innerHTML = renderMessages(); break;
+                case 'profile': content.innerHTML = renderProfile(); break;
+            }
+            
+            window.scrollTo(0, 0);
+        }
+        
+        // Modal
+        function showModal() {
+            document.getElementById('modal').classList.add('show');
+        }
+        
+        function hideModal() {
+            document.getElementById('modal').classList.remove('show');
+        }
+        
+        // Initialize
+        document.getElementById('content').innerHTML = renderHome();
+    </script>
+</body>
+</html>
