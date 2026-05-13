@@ -742,20 +742,79 @@ dynamic camera angle, cinematic lighting
   }
 };
 
-const KB = [
-  { kw: ['客服', '方案', 'customer service', 'support'], reply: '我們提供三種方案：\n\n1️⃣ 入門版（免費）- 50次/天，10條知識庫\n2️⃣ 專業版（$29/月）- 無限對話，500條知識庫，LLM驅動\n3️⃣ 企業版（$199/月）- 私有部署，無限知識庫\n\n每種方案都包含 AI 智能客服、Telegram Bot 和多語言支援。請問你想了解哪個方案？' },
-  { kw: ['平台', 'platform', '渠道', '分發', 'channel'], reply: '目前支援以下平台：\n\n📱 Telegram Bot - 即時對話客服\n🌐 Web App - 內容展示與管理\n📲 Flutter 品牌 App - Android/iOS 行動裝置\n📧 Email - 自動電子報\n📝 部落格/社群媒體 - 文章同步發佈\n\n一次產出，多平台上架！' },
-  { kw: ['內容', '生成', 'content', '文章', '自動產出'], reply: 'AI 內容生成涵蓋 16 種主題，每主題產出 5 個平台（部落格/Threads/LinkedIn/電子報/Facebook）的中英文版本。\n\n只要設定好主題，AI 就會：\n1️⃣ 分析目標受眾\n2️⃣ 撰寫符合平台調性的內容\n3️⃣ 自動優化關鍵字\n4️⃣ 排程發佈\n\n目前已自動生成 133+ 篇高品質行銷內容！' },
-  { kw: ['knowledge', 'base', '知識庫', '自增長', 'learn'], reply: 'Our knowledge base grows automatically! When customers interact with the bot, they can rate responses with 👍 (useful) or 👎 (not useful).\n\nUseful responses are saved to the knowledge base for future reference. The more people use the bot, the smarter it becomes!\n\nThis creates a self-improving customer service system that gets better over time.' },
-  { kw: ['價格', 'price', 'pricing', '費用', '方案', '付費', 'plan'], reply: '價格方案：\n\n🎯 入門版 - 免費\n  • AI 智能客服（50次/天）\n  • 10 條知識庫\n  • Telegram Bot\n\n🚀 專業版 - $29/月（最受歡迎）\n  • 無限對話\n  • 500 條知識庫\n  • LLM 驅動（Groq）\n  • 內容自動生成\n\n🏢 企業版 - $199/月\n  • 私有部署\n  • 無限知識庫\n  • 客製化服務\n\n現在加入免費試用！' },
-  { kw: ['開始', 'start', '開始使用', '試用', 'trial', 'sign up', '註冊'], reply: '開始使用很簡單！\n\n1️⃣ 留下 Email（下方表單），我們會寄送完整介紹\n2️⃣ 加入 Telegram 頻道 https://t.me/+QgAyWlVyIxFjNmRl 即時體驗\n3️⃣ 填寫需求，我們 24 小時內為你開通\n\n專業版首月只要 $29，立即升級你的客服系統！' },
-  { kw: ['hello', 'hi', '你好', '嗨', '您好'], reply: '你好！我是翔川 Neo｜曜科技 AI 智能客服 🤖\n\n我可以幫助你了解：\n• AI 客服方案與價格\n• 平台支援與整合\n• 內容自動生成\n• 知識庫自增長\n• 如何開始使用\n\n請問有什麼可以為你服務的嗎？' },
-  { kw: ['telegram', 'bot', '機器人'], reply: '我們的 Telegram Bot 提供：\n\n🤖 24/7 AI 智能對話\n📚 知識庫自動檢索與學習\n🌐 多語言自動切換\n👍/👎 回饋機制\n💾 對話歷史記憶\n\n加入我們的 Telegram 頻道立即體驗：\nhttps://t.me/+QgAyWlVyIxFjNmRl' },
-  { kw: ['功能', 'feature', 'product', '產品'], reply: 'AI 行銷平台核心功能：\n\n🤖 AI 智能客服 - 24/7 自動回覆，多語言支援\n📝 自動內容生成 - 133+ 篇已產出，覆蓋 5 大平台\n📚 知識庫自增長 - 用戶回饋自動沉澱學習\n🌐 多平台分發 - Telegram/Web/App 全通路\n🎬 AI 短劇創作 - 劇本+分鏡+繪圖 Prompt\n📊 數據驅動優化 - AI 分析內容成效\n\n每項功能都為提升你的行銷效率而設計！' },
-  { kw: ['app', '品牌', 'brand', '展示'], reply: '品牌 App 功能：\n\n📱 首頁 - 品牌形象展示與數據統計\n📝 品牌文章 - 133 篇 AI 生成內容\n📖 攻略教學 - AI 工具指南\n🎬 AI 短劇 - 原創劇本展示\n🔍 全文搜尋 - 快速找到相關內容\n🌐 多語言切換 - 繁中/簡中/英文\n\n立即體驗：https://lewislunora.github.io/lewislunora/flutter-app.html' },
-  { kw: ['guide', '攻略', '教學', '教程', 'tutorial'], reply: '我們有完整的 AI 工具攻略教學！\n\n涵蓋 10 大免費 AI 工具：\n1. Groq - 超快速 LLM API\n2. Flutter - 跨平台開發\n3. MyEdit - AI 影片\n4. Runway - 專業影片製作\n5. GitHub Actions - 自動化部署\n6. Flask - Web 後台\n7. Telegram Bot API\n8. Docker + k3s\n9. GitHub Pages\n10. Markdown\n\n組合這些工具，打造你的 AI 行銷系統！' },
-  { kw: ['drama', '劇本', '短劇', 'movie', '影片'], reply: 'AI 短劇創作功能：\n\n🎬 自動生成原創劇本\n📝 完整分鏡描述\n🎨 英文繪圖 Prompt（可直接用於 MyEdit/Runway）\n🌐 支援多語言版本\n\n目前已完成 2 部劇本：\n1️⃣ 穿越成為古代網紅（6集）\n2️⃣ AI 分身佔領了世界（8集）\n\n適合短影音、行銷影片、品牌故事創作！' }
+const KB_KW = [
+  ['客服', '方案', 'customer service', 'support'],
+  ['平台', 'platform', '渠道', '分發', 'channel'],
+  ['內容', '生成', 'content', '文章', '自動產出'],
+  ['knowledge', 'base', '知識庫', '自增長', 'learn'],
+  ['價格', 'price', 'pricing', '費用', '方案', '付費', 'plan'],
+  ['開始', 'start', '開始使用', '試用', 'trial', 'sign up', '註冊'],
+  ['hello', 'hi', '你好', '嗨', '您好'],
+  ['telegram', 'bot', '機器人'],
+  ['功能', 'feature', 'product', '產品'],
+  ['app', '品牌', 'brand', '展示'],
+  ['guide', '攻略', '教學', '教程', 'tutorial'],
+  ['drama', '劇本', '短劇', 'movie', '影片']
 ];
+
+const KB_MSG = {
+  'zh-TW': [
+    '我們提供三種方案：\n\n1️⃣ 入門版（免費）- 50次/天，10條知識庫\n2️⃣ 專業版（$29/月）- 無限對話，500條知識庫，LLM驅動\n3️⃣ 企業版（$199/月）- 私有部署，無限知識庫\n\n每種方案都包含 AI 智能客服、Telegram Bot 和多語言支援。請問你想了解哪個方案？',
+    '目前支援以下平台：\n\n📱 Telegram Bot - 即時對話客服\n🌐 Web App - 內容展示與管理\n📲 Flutter 品牌 App - Android/iOS 行動裝置\n📧 Email - 自動電子報\n📝 部落格/社群媒體 - 文章同步發佈\n\n一次產出，多平台上架！',
+    'AI 內容生成涵蓋 16 種主題，每主題產出 5 個平台（部落格/Threads/LinkedIn/電子報/Facebook）的中英文版本。\n\n只要設定好主題，AI 就會：\n1️⃣ 分析目標受眾\n2️⃣ 撰寫符合平台調性的內容\n3️⃣ 自動優化關鍵字\n4️⃣ 排程發佈\n\n目前已自動生成 133+ 篇高品質行銷內容！',
+    '知識庫會自動增長！當客戶與 Bot 互動時，他們可以對回覆按 👍（有用）或 👎（無用）。\n\n有用的回覆會自動存入知識庫供未來參考。越多人使用，Bot 就越聰明！\n\n這是一個自我改善的客服系統。',
+    '價格方案：\n\n🎯 入門版 - 免費\n  • AI 智能客服（50次/天）\n  • 10 條知識庫\n  • Telegram Bot\n\n🚀 專業版 - $29/月（最受歡迎）\n  • 無限對話\n  • 500 條知識庫\n  • LLM 驅動（Groq）\n  • 內容自動生成\n\n🏢 企業版 - $199/月\n  • 私有部署\n  • 無限知識庫\n  • 客製化服務\n\n現在加入免費試用！',
+    '開始使用很簡單！\n\n1️⃣ 留下 Email（下方表單），我們會寄送完整介紹\n2️⃣ 加入 Telegram 頻道 https://t.me/+QgAyWlVyIxFjNmRl 即時體驗\n3️⃣ 填寫需求，我們 24 小時內為你開通\n\n專業版首月只要 $29，立即升級你的客服系統！',
+    '你好！我是翔川 Neo｜曜科技 AI 智能客服 🤖\n\n我可以幫助你了解：\n• AI 客服方案與價格\n• 平台支援與整合\n• 內容自動生成\n• 知識庫自增長\n• 如何開始使用\n\n請問有什麼可以為你服務的嗎？',
+    '我們的 Telegram Bot 提供：\n\n🤖 24/7 AI 智能對話\n📚 知識庫自動檢索與學習\n🌐 多語言自動切換\n👍/👎 回饋機制\n💾 對話歷史記憶\n\n加入我們的 Telegram 頻道立即體驗：\nhttps://t.me/+QgAyWlVyIxFjNmRl',
+    'AI 行銷平台核心功能：\n\n🤖 AI 智能客服 - 24/7 自動回覆，多語言支援\n📝 自動內容生成 - 133+ 篇已產出，覆蓋 5 大平台\n📚 知識庫自增長 - 用戶回饋自動沉澱學習\n🌐 多平台分發 - Telegram/Web/App 全通路\n🎬 AI 短劇創作 - 劇本+分鏡+繪圖 Prompt\n📊 數據驅動優化 - AI 分析內容成效\n\n每項功能都為提升你的行銷效率而設計！',
+    '品牌 App 功能：\n\n📱 首頁 - 品牌形象展示與數據統計\n📝 品牌文章 - 133 篇 AI 生成內容\n📖 攻略教學 - AI 工具指南\n🎬 AI 短劇 - 原創劇本展示\n🔍 全文搜尋 - 快速找到相關內容\n🌐 多語言切換 - 繁中/簡中/英文\n\n立即體驗：https://lewislunora.github.io/lewislunora/flutter-app.html',
+    '我們有完整的 AI 工具攻略教學！\n\n涵蓋 10 大免費 AI 工具：\n1. Groq - 超快速 LLM API\n2. Flutter - 跨平台開發\n3. MyEdit - AI 影片\n4. Runway - 專業影片製作\n5. GitHub Actions - 自動化部署\n6. Flask - Web 後台\n7. Telegram Bot API\n8. Docker + k3s\n9. GitHub Pages\n10. Markdown\n\n組合這些工具，打造你的 AI 行銷系統！',
+    'AI 短劇創作功能：\n\n🎬 自動生成原創劇本\n📝 完整分鏡描述\n🎨 英文繪圖 Prompt（可直接用於 MyEdit/Runway）\n🌐 支援多語言版本\n\n目前已完成 2 部劇本：\n1️⃣ 穿越成為古代網紅（6集）\n2️⃣ AI 分身佔領了世界（8集）\n\n適合短影音、行銷影片、品牌故事創作！'
+  ],
+  en: [
+    'We offer three plans:\n\n1️⃣ Starter (Free) - 50/day, 10 KB entries\n2️⃣ Pro ($29/mo) - Unlimited conversations, 500 KB entries, LLM powered\n3️⃣ Enterprise ($199/mo) - Private deployment, unlimited KB\n\nAll plans include AI customer service, Telegram Bot, and multi-language support. Which plan interests you?',
+    'Supported platforms:\n\n📱 Telegram Bot - instant chat support\n🌐 Web App - content showcase & management\n📲 Flutter Brand App - Android/iOS\n📧 Email - auto newsletters\n📝 Blog/Social Media - cross-platform sync\n\nCreate once, publish everywhere!',
+    'AI content generation covers 16 topics, each generating content for 5 platforms (Blog/Threads/LinkedIn/Newsletter/Facebook) in Chinese and English.\n\nJust set a topic and AI will:\n1️⃣ Analyze your target audience\n2️⃣ Write platform-optimized content\n3️⃣ Auto-optimize keywords\n4️⃣ Schedule publishing\n\n133+ high-quality marketing pieces already generated!',
+    'Our knowledge base grows automatically! When customers interact with the bot, they can rate responses with 👍 (useful) or 👎 (not useful).\n\nUseful responses are saved to the knowledge base for future reference. The more people use the bot, the smarter it becomes!\n\nThis creates a self-improving customer service system that gets better over time.',
+    'Pricing plans:\n\n🎯 Starter - Free\n  • AI Customer Service (50/day)\n  • 10 KB entries\n  • Telegram Bot\n\n🚀 Pro - $29/mo (Most Popular)\n  • Unlimited conversations\n  • 500 KB entries\n  • LLM powered (Groq)\n  • Auto content generation\n\n🏢 Enterprise - $199/mo\n  • Private deployment\n  • Unlimited KB\n  • Customization\n\nStart your free trial now!',
+    'Getting started is easy!\n\n1️⃣ Leave your email (form below) and we will send the full intro\n2️⃣ Join our Telegram channel https://t.me/+QgAyWlVyIxFjNmRl\n3️⃣ Tell us your needs and we will activate within 24 hours\n\nPro plan starts at just $29/mo! Upgrade your customer service today!',
+    'Hello! I am XiangChuan Neo｜YaoTech AI Customer Service 🤖\n\nI can help you with:\n• AI service plans & pricing\n• Platform support & integration\n• Content generation\n• Knowledge base\n• Getting started\n\nHow can I help you today?',
+    'Our Telegram Bot features:\n\n🤖 24/7 AI conversations\n📚 Auto knowledge base retrieval & learning\n🌐 Multi-language auto switching\n👍/👎 Feedback system\n💾 Conversation history\n\nJoin our Telegram channel to try it now:\nhttps://t.me/+QgAyWlVyIxFjNmRl',
+    'AI Marketing Platform Core Features:\n\n🤖 AI Customer Service - 24/7 auto reply, multi-language\n📝 Auto Content Generation - 133+ pieces, 5 platforms\n📚 Self-Growing Knowledge Base - learns from feedback\n🌐 Multi-Platform Distribution - Telegram/Web/App\n🎬 AI Drama Creation - scripts+storyboards+prompts\n📊 Data-Driven Optimization - AI analyzes performance\n\nEvery feature designed to boost your marketing efficiency!',
+    'Brand App Features:\n\n📱 Home - brand showcase & stats\n📝 Brand Articles - 133 AI-generated pieces\n📖 Guides - AI tool tutorials\n🎬 AI Dramas - original scripts\n🔍 Full-text search\n🌐 Multi-language - TW/CN/EN\n\nTry it now: https://lewislunora.github.io/lewislunora/flutter-app.html',
+    'We have comprehensive AI tool guides!\n\nCovering 10 free AI tools:\n1. Groq - ultra-fast LLM API\n2. Flutter - cross-platform development\n3. MyEdit - AI video\n4. Runway - professional video production\n5. GitHub Actions - CI/CD automation\n6. Flask - web backend\n7. Telegram Bot API\n8. Docker + k3s\n9. GitHub Pages - free static hosting\n10. Markdown - content format\n\nCombine these to build your AI marketing system!',
+    'AI Drama Creation:\n\n🎬 Auto-generate original scripts\n📝 Complete storyboard descriptions\n🎨 English drawing prompts (compatible with MyEdit/Runway)\n🌐 Multi-language support\n\nCurrently completed 2 scripts:\n1️⃣ Time Travel to Become Ancient Influencer (6 eps)\n2️⃣ AI Clone Takes Over the World (8 eps)\n\nPerfect for short videos, marketing content, brand storytelling!'
+  ],
+  'zh-CN': [
+    '我们提供三种方案：\n\n1️⃣ 入门版（免费）- 50次/天，10条知识库\n2️⃣ 专业版（$29/月）- 无限对话，500条知识库，LLM驱动\n3️⃣ 企业版（$199/月）- 私有部署，无限知识库\n\n每种方案都包含 AI 智能客服、Telegram Bot 和多语言支持。请问你想了解哪个方案？',
+    '目前支持以下平台：\n\n📱 Telegram Bot - 即时对话客服\n🌐 Web App - 内容展示与管理\n📲 Flutter 品牌 App - Android/iOS 移动设备\n📧 Email - 自动电子报\n📝 博客/社交媒体 - 文章同步发布\n\n一次产出，多平台上线！',
+    'AI 内容生成涵盖 16 种主题，每主题产出 5 个平台（博客/Threads/LinkedIn/电子报/Facebook）的中英文版本。\n\n只要设定好主题，AI 就会：\n1️⃣ 分析目标受众\n2️⃣ 撰写符合平台调性的内容\n3️⃣ 自动优化关键词\n4️⃣ 排程发布\n\n目前已自动生成 133+ 篇高品质营销内容！',
+    '知识库会自动增长！当客户与 Bot 互动时，他们可以对回复按 👍（有用）或 👎（无用）。\n\n有用的回复会自动存入知识库供未来参考。越多人使用，Bot 就越聪明！\n\n这是一个自我改善的客服系统。',
+    '价格方案：\n\n🎯 入门版 - 免费\n  • AI 智能客服（50次/天）\n  • 10 条知识库\n  • Telegram Bot\n\n🚀 专业版 - $29/月（最受欢迎）\n  • 无限对话\n  • 500 条知识库\n  • LLM 驱动（Groq）\n  • 内容自动生成\n\n🏢 企业版 - $199/月\n  • 私有部署\n  • 无限知识库\n  • 定制化服务\n\n现在加入免费试用！',
+    '开始使用很简单！\n\n1️⃣ 留下 Email（下方表单），我们会寄送完整介绍\n2️⃣ 加入 Telegram 频道 https://t.me/+QgAyWlVyIxFjNmRl 即时体验\n3️⃣ 填写需求，我们 24 小时内为你开通\n\n专业版首月只要 $29，立即升级你的客服系统！',
+    '你好！我是翔川 Neo｜曜科技 AI 智能客服 🤖\n\n我可以帮助你了解：\n• AI 客服方案与价格\n• 平台支持与整合\n• 内容自动生成\n• 知识库自增长\n• 如何开始使用\n\n请问有什么可以为你服务的吗？',
+    '我们的 Telegram Bot 提供：\n\n🤖 24/7 AI 智能对话\n📚 知识库自动检索与学习\n🌐 多语言自动切换\n👍/👎 反馈机制\n💾 对话历史记忆\n\n加入我们的 Telegram 频道立即体验：\nhttps://t.me/+QgAyWlVyIxFjNmRl',
+    'AI 营销平台核心功能：\n\n🤖 AI 智能客服 - 24/7 自动回复，多语言支持\n📝 自动内容生成 - 133+ 篇已产出，覆盖 5 大平台\n📚 知识库自增长 - 用户反馈自动沉淀学习\n🌐 多平台分发 - Telegram/Web/App 全渠道\n🎬 AI 短剧创作 - 剧本+分镜+绘图 Prompt\n📊 数据驱动优化 - AI 分析内容成效\n\n每项功能都为提升你的营销效率而设计！',
+    '品牌 App 功能：\n\n📱 首页 - 品牌形象展示与数据统计\n📝 品牌文章 - 133 篇 AI 生成内容\n📖 攻略教学 - AI 工具指南\n🎬 AI 短剧 - 原创剧本展示\n🔍 全文搜索 - 快速找到相关内容\n🌐 多语言切换 - 繁中/简中/英文\n\n立即体验：https://lewislunora.github.io/lewislunora/flutter-app.html',
+    '我们有完整的 AI 工具攻略教学！\n\n涵盖 10 大免费 AI 工具：\n1. Groq - 超快速 LLM API\n2. Flutter - 跨平台开发\n3. MyEdit - AI 视频\n4. Runway - 专业视频制作\n5. GitHub Actions - 自动化部署\n6. Flask - Web 后台\n7. Telegram Bot API\n8. Docker + k3s\n9. GitHub Pages - 免费静态托管\n10. Markdown - 内容格式\n\n组合这些工具，打造你的 AI 营销系统！',
+    'AI 短剧创作功能：\n\n🎬 自动生成原创剧本\n📝 完整分镜描述\n🎨 英文绘图 Prompt（可直接用于 MyEdit/Runway）\n🌐 支持多语言版本\n\n目前已完成 2 部剧本：\n1️⃣ 穿越成为古代网红（6集）\n2️⃣ AI 分身占领了世界（8集）\n\n适合短视频、营销视频、品牌故事创作！'
+  ],
+  ru: [
+    'Мы предлагаем три плана:\n\n1️⃣ Стартовый (бесплатно) - 50/день, 10 записей БЗ\n2️⃣ Про ($29/мес) - безлимит, 500 записей БЗ, LLM\n3️⃣ Корпоративный ($199/мес) - частное развертывание\n\nВсе планы включают AI-сервис, Telegram Bot и мультиязычность. Какой план вас интересует?',
+    'Поддерживаемые платформы:\n\n📱 Telegram Bot - чат поддержка\n🌐 Web App - контент и управление\n📲 Flutter приложение - Android/iOS\n📧 Email - рассылки\n📝 Блог/Соцсети - синхронизация\n\nСоздайте один раз — публикуйте везде!',
+    'AI-генерация контента: 16 тем, 5 платформ (блог/Threads/LinkedIn/email/Facebook) на китайском и английском.\n\nAI анализирует аудиторию, пишет контент, оптимизирует ключевые слова и публикует по графику.\n\nУже сгенерировано 133+ материала!',
+    'База знаний растёт автоматически! Клиенты оценивают ответы 👍/👎.\n\nЛучшие ответы сохраняются в базу знаний. Чем больше людей используют бота, тем он умнее!\n\nСамообучающаяся система поддержки.',
+    'Цены:\n\n🎯 Стартовый - Бесплатно\n  • AI сервис (50/день)\n  • 10 записей БЗ\n  • Telegram Bot\n\n🚀 Про - $29/мес\n  • Безлимит\n  • 500 записей БЗ\n  • LLM (Groq)\n  • Автоконтент\n\n🏢 Корпоративный - $199/мес\n  • Частное размещение\n  • Безлимитная БЗ\n  • Кастомизация\n\nПопробуйте бесплатно!',
+    'Начать просто!\n\n1️⃣ Оставьте email — мы пришлём описание\n2️⃣ Telegram канал https://t.me/+QgAyWlVyIxFjNmRl\n3️⃣ Расскажите о своих задачах — подключим за 24ч\n\nПро план всего $29/мес!',
+    'Здравствуйте! Я XiangChuan Neo｜YaoTech AI 🤖\n\nПомогу вам с:\n• Планами и ценами\n• Платформами\n• Генерацией контента\n• Базой знаний\n• Началом работы\n\nЧем могу помочь?',
+    'Telegram Bot возможности:\n\n🤖 24/7 AI диалоги\n📚 База знаний\n🌐 Мультиязычность\n👍/👎 Обратная связь\n💾 История\n\nПрисоединяйтесь: https://t.me/+QgAyWlVyIxFjNmRl',
+    'Основные функции:\n\n🤖 AI сервис - 24/7\n📝 Автоконтент - 133+ шт\n📚 База знаний\n🌐 Все платформы\n🎬 AI драмы\n📊 Аналитика\n\nВсё для вашего маркетинга!',
+    'Бренд-приложение:\n\n📱 Главная\n📝 Статьи - 133 шт\n📖 Гайды\n🎬 Драмы\n🔍 Поиск\n🌐 TW/CN/EN\n\nПопробовать: https://lewislunora.github.io/lewislunora/flutter-app.html',
+    'Гайды по AI инструментам:\n\n1. Groq - LLM API\n2. Flutter - разработка\n3. MyEdit - видео\n4. Runway - проф. видео\n5. GitHub Actions - CI/CD\n6. Flask - backend\n7. Telegram Bot API\n8. Docker + k3s\n9. GitHub Pages\n10. Markdown\n\nСоберите свою AI-систему!',
+    'AI создание драм:\n\n🎬 Сценарии\n📝 Раскадровки\n🎨 Промпты (MyEdit/Runway)\n🌐 Мультиязычность\n\nГотово 2 сценария:\n1️⃣ Путешествие в древность (6 серий)\n2️⃣ AI-клоны захватили мир (8 серий)\n\nИдеально для short video, маркетинга!'
+  ]
+};
 
 function showDemo(type, el) {
   document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
@@ -1139,15 +1198,17 @@ function addChatMsg(text, role) {
 
 function getBotReply(text) {
   const lower = text.toLowerCase();
+  const lang = currentLang && KB_MSG[currentLang] ? currentLang : 'zh-TW';
+  const msgs = KB_MSG[lang];
 
-  for (const item of KB) {
-    for (const kw of item.kw) {
-      if (lower.includes(kw)) return item.reply;
+  for (let i = 0; i < KB_KW.length; i++) {
+    for (const kw of KB_KW[i]) {
+      if (lower.includes(kw)) return msgs[i];
     }
   }
 
   if (lower.includes('how') || lower.includes('what') || lower.includes('can you')) {
-    return KB.find(i => i.kw.includes('hello')).reply;
+    return msgs[6];
   }
 
   const fallbacks = {
@@ -1181,8 +1242,7 @@ document.addEventListener('DOMContentLoaded', () => {
   pre.textContent = DEMOS['zh-TW'].article;
   pre.style.transition = 'opacity 0.3s';
 
-  const welcome = '你好！我是翔川 Neo｜曜科技 AI 智能客服 🤖\n\n我可以幫助你了解我們的 AI 行銷解決方案。試試點擊上方的建議問題，或直接輸入你的問題！';
-  addChatMsg(welcome, 'ai');
+  addChatMsg(KB_MSG['zh-TW'][6], 'ai');
 });
 </script>
 </body>
