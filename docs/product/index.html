@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>翔川 Neo｜曜科技 |Ai_bot - AI 智能客服與行銷自動化平台</title>
+<title data-i18n="page_title">翔川 Neo｜曜科技 |Ai_bot - AI 智能客服與行銷自動化平台</title>
 <style>
 * { margin:0; padding:0; box-sizing:border-box; }
 body {
@@ -287,9 +287,10 @@ footer {
     <a href="#pricing" data-i18n="nav_pricing">價格</a>
     <a href="#contact" data-i18n="nav_contact">聯絡</a>
     <select class="lang-select" onchange="switchLang(this.value)">
-      <option value="zh-TW">繁體中文</option>
-      <option value="zh-CN">簡體中文</option>
-      <option value="en">English</option>
+      <option value="zh-TW" data-i18n="lang_zt">繁體中文</option>
+      <option value="zh-CN" data-i18n="lang_cn">簡體中文</option>
+      <option value="en" data-i18n="lang_en">English</option>
+      <option value="ru" data-i18n="lang_ru">Русский</option>
     </select>
     <a href="https://lewislunora.github.io/lewislunora/" target="_blank" class="btn-nav" data-i18n="nav_content">內容展示</a>
   </div>
@@ -370,12 +371,12 @@ footer {
       <div class="chat-container">
         <div class="chat-messages" id="chatMessages"></div>
         <div class="chat-suggestions" id="chatSuggestions">
-          <button onclick="chatSend('我想了解你們的 AI 客服方案')">AI 客服方案</button>
-          <button onclick="chatSend('你們支援哪些平台？')">支援平台</button>
-          <button onclick="chatSend('行銷內容如何自動生成？')">內容生成</button>
-          <button onclick="chatSend('How does the knowledge base work?')">Knowledge Base</button>
-          <button onclick="chatSend('價格怎麼算？')">價格方案</button>
-          <button onclick="chatSend('如何開始使用？')">開始使用</button>
+          <button onclick="chatSend('我想了解你們的 AI 客服方案')" data-i18n="chat_suggest_1">AI 客服方案</button>
+          <button onclick="chatSend('你們支援哪些平台？')" data-i18n="chat_suggest_2">支援平台</button>
+          <button onclick="chatSend('行銷內容如何自動生成？')" data-i18n="chat_suggest_3">內容生成</button>
+          <button onclick="chatSend('How does the knowledge base work?')" data-i18n="chat_suggest_4">Knowledge Base</button>
+          <button onclick="chatSend('價格怎麼算？')" data-i18n="chat_suggest_5">價格方案</button>
+          <button onclick="chatSend('如何開始使用？')" data-i18n="chat_suggest_6">開始使用</button>
         </div>
         <div class="chat-input">
           <input type="text" id="chatInput" data-i18n-placeholder="demo_chat_placeholder" placeholder="輸入你的問題..." onkeydown="if(event.key==='Enter') chatSend()">
@@ -475,7 +476,8 @@ footer {
 
 <script>
 const DEMOS = {
-  article: `---
+  'zh-TW': {
+    article: `---
 標題：個人品牌故事與定位
 平台：部落格
 語言：繁體中文
@@ -493,7 +495,7 @@ const DEMOS = {
 從品牌定位、內容策略到社群經營，AI 都能提供具體建議。
 
 今天就開始打造你的個人品牌吧！`,
-  guide: `---
+    guide: `---
 標題：2026 AI 工具全攻略
 類型：創業者必備工具指南
 ---
@@ -512,7 +514,7 @@ const DEMOS = {
 10. Markdown - 內容格式標準
 
 組合以上工具，就能打造完整的 AI 行銷系統。`,
-  drama: `🎬 穿越成為古代網紅
+    drama: `🎬 穿越成為古代網紅
 
 類型：搞笑穿越
 集數：6 集
@@ -538,27 +540,213 @@ dynamic camera angle, cinematic lighting
 第 2 集：醒來在古代
 場景：古代皇宮寢宮
 ...`
-};
+  },
+  en: {
+    article: `---
+Title: Personal Brand Story & Positioning
+Platform: Blog
+Language: English
+---
 
-const KB = [
-  { kw: ['客服', '方案', 'customer service', 'support'], reply: '我們提供三種方案：\n\n1️⃣ 入門版（免費）- 50次/天，10條知識庫\n2️⃣ 專業版（$29/月）- 無限對話，500條知識庫，LLM驅動\n3️⃣ 企業版（$199/月）- 私有部署，無限知識庫\n\n每種方案都包含 AI 智能客服、Telegram Bot 和多語言支援。請問你想了解哪個方案？' },
-  { kw: ['平台', 'platform', '渠道', '分發', 'channel'], reply: '目前支援以下平台：\n\n📱 Telegram Bot - 即時對話客服\n🌐 Web App - 內容展示與管理\n📲 Flutter 品牌 App - Android/iOS 行動裝置\n📧 Email - 自動電子報\n📝 部落格/社群媒體 - 文章同步發佈\n\n一次產出，多平台上架！' },
-  { kw: ['內容', '生成', 'content', '文章', '自動產出'], reply: 'AI 內容生成涵蓋 16 種主題，每主題產出 5 個平台（部落格/Threads/LinkedIn/電子報/Facebook）的中英文版本。\n\n只要設定好主題，AI 就會：\n1️⃣ 分析目標受眾\n2️⃣ 撰寫符合平台調性的內容\n3️⃣ 自動優化關鍵字\n4️⃣ 排程發佈\n\n目前已自動生成 133+ 篇高品質行銷內容！' },
-  { kw: ['knowledge', 'base', '知識庫', '自增長', 'learn'], reply: 'Our knowledge base grows automatically! When customers interact with the bot, they can rate responses with 👍 (useful) or 👎 (not useful).\n\nUseful responses are saved to the knowledge base for future reference. The more people use the bot, the smarter it becomes!\n\nThis creates a self-improving customer service system that gets better over time.' },
-  { kw: ['價格', 'price', 'pricing', '費用', '方案', '付費', 'plan'], reply: '價格方案：\n\n🎯 入門版 - 免費\n  • AI 智能客服（50次/天）\n  • 10 條知識庫\n  • Telegram Bot\n\n🚀 專業版 - $29/月（最受歡迎）\n  • 無限對話\n  • 500 條知識庫\n  • LLM 驅動（Groq）\n  • 內容自動生成\n\n🏢 企業版 - $199/月\n  • 私有部署\n  • 無限知識庫\n  • 客製化服務\n\n現在加入免費試用！' },
-  { kw: ['開始', 'start', '開始使用', '試用', 'trial', 'sign up', '註冊'], reply: '開始使用很簡單！\n\n1️⃣ 留下 Email（下方表單），我們會寄送完整介紹\n2️⃣ 加入 Telegram 頻道 https://t.me/+QgAyWlVyIxFjNmRl 即時體驗\n3️⃣ 填寫需求，我們 24 小時內為你開通\n\n專業版首月只要 $29，立即升級你的客服系統！' },
-  { kw: ['hello', 'hi', '你好', '嗨', '您好'], reply: '你好！我是翔川 Neo｜曜科技 AI 智能客服 🤖\n\n我可以幫助你了解：\n• AI 客服方案與價格\n• 平台支援與整合\n• 內容自動生成\n• 知識庫自增長\n• 如何開始使用\n\n請問有什麼可以為你服務的嗎？' },
-  { kw: ['telegram', 'bot', '機器人'], reply: '我們的 Telegram Bot 提供：\n\n🤖 24/7 AI 智能對話\n📚 知識庫自動檢索與學習\n🌐 多語言自動切換\n👍/👎 回饋機制\n💾 對話歷史記憶\n\n加入我們的 Telegram 頻道立即體驗：\nhttps://t.me/+QgAyWlVyIxFjNmRl' },
-  { kw: ['功能', 'feature', 'product', '產品'], reply: 'AI 行銷平台核心功能：\n\n🤖 AI 智能客服 - 24/7 自動回覆，多語言支援\n📝 自動內容生成 - 133+ 篇已產出，覆蓋 5 大平台\n📚 知識庫自增長 - 用戶回饋自動沉澱學習\n🌐 多平台分發 - Telegram/Web/App 全通路\n🎬 AI 短劇創作 - 劇本+分鏡+繪圖 Prompt\n📊 數據驅動優化 - AI 分析內容成效\n\n每項功能都為提升你的行銷效率而設計！' },
-  { kw: ['app', '品牌', 'brand', '展示'], reply: '品牌 App 功能：\n\n📱 首頁 - 品牌形象展示與數據統計\n📝 品牌文章 - 133 篇 AI 生成內容\n📖 攻略教學 - AI 工具指南\n🎬 AI 短劇 - 原創劇本展示\n🔍 全文搜尋 - 快速找到相關內容\n🌐 多語言切換 - 繁中/簡中/英文\n\n立即體驗：https://lewislunora.github.io/lewislunora/' },
-  { kw: ['guide', '攻略', '教學', '教程', 'tutorial'], reply: '我們有完整的 AI 工具攻略教學！\n\n涵蓋 10 大免費 AI 工具：\n1. Groq - 超快速 LLM API\n2. Flutter - 跨平台開發\n3. MyEdit - AI 影片\n4. Runway - 專業影片製作\n5. GitHub Actions - 自動化部署\n6. Flask - Web 後台\n7. Telegram Bot API\n8. Docker + k3s\n9. GitHub Pages\n10. Markdown\n\n組合這些工具，打造你的 AI 行銷系統！' },
-  { kw: ['drama', '劇本', '短劇', 'movie', '影片'], reply: 'AI 短劇創作功能：\n\n🎬 自動生成原創劇本\n📝 完整分鏡描述\n🎨 英文繪圖 Prompt（可直接用於 MyEdit/Runway）\n🌐 支援多語言版本\n\n目前已完成 2 部劇本：\n1️⃣ 穿越成為古代網紅（6集）\n2️⃣ AI 分身佔領了世界（8集）\n\n適合短影音、行銷影片、品牌故事創作！' }
-];
+Have you ever dreamed of becoming an expert in your field?
+In the AI era, building a personal brand no longer requires massive time and resources.
+With AI tools, you can:
+• Auto-generate high-quality content
+• Maintain consistent posting frequency
+• Analyze which content resonates most
+
+In my journey building a personal brand from scratch,
+I found that AI is not just a tool,
+but a 24/7 content partner.
+From brand positioning to content strategy and community management,
+AI provides concrete suggestions.
+
+Start building your personal brand today!`,
+    guide: `---
+Title: 2026 AI Tools Ultimate Guide
+Type: Essential Tools for Entrepreneurs
+---
+
+Top 10 Free AI Tools:
+
+1. Groq - Ultra-fast LLM API for smart customer service
+2. Flutter - Cross-platform app development framework
+3. MyEdit - AI video generation, free daily credits
+4. Runway - Professional AI video production
+5. GitHub Actions - CI/CD automation
+6. Flask - Lightweight web backend
+7. Telegram Bot API - Instant messaging integration
+8. Docker + k3s - Containerized deployment
+9. GitHub Pages - Free static website hosting
+10. Markdown - Content format standard
+
+Combine these tools to build a complete AI marketing system.`,
+    drama: `🎬 Time Travel to Become Ancient Influencer
+
+Genre: Comedy Time Travel
+Episodes: 6
+
+Episode 1: The Beginning of the Journey
+Scene: Modern Shanghai Influencer Studio
+
+[Scene Description]
+A group of influencers are live streaming.
+The protagonist Lin Zhuang is singing, when suddenly a white light...
+
+[Dialogue]
+Lin Zhuang: This stream must be even more engaging!
+Teacher: You sang brilliantly! Mind your style!
+Lin Zhuang: I will conquer the world with my charm!
+
+[AI Image Prompt]
+Modern influencer studio in Shanghai,
+young female streamer singing,
+luxury background, neon lights,
+dynamic camera angle, cinematic lighting
+
+Episode 2: Awakening in Ancient Times
+Scene: Ancient Imperial Palace Bedchamber
+...`
+  },
+  'zh-CN': {
+    article: `---
+标题：个人品牌故事与定位
+平台：博客
+语言：简体中文
+---
+
+你是否曾经梦想过自己成为某个领域的专家？
+在 AI 时代，建立个人品牌不再需要大量时间和资源。
+通过 AI 工具，你可以：
+• 自动生成高品质内容
+• 维持稳定的发文频率
+• 分析哪些内容最能引起共鸣
+
+我从零开始建立个人品牌的过程中，发现 AI 不只是工具，
+更是一个能够 24/7 运作的内容伙伴。
+从品牌定位、内容策略到社群经营，AI 都能提供具体建议。
+
+今天就开始打造你的个人品牌吧！`,
+    guide: `---
+标题：2026 AI 工具全攻略
+类型：创业者必备工具指南
+---
+
+10 大免费 AI 工具推荐：
+
+1. Groq - 超快速 LLM API，适合串接智能客服
+2. Flutter - 跨平台 App 开发框架
+3. MyEdit - AI 视频生成，每日免费点数
+4. Runway - 专业级 AI 视频制作
+5. GitHub Actions - CI/CD 自动化部署
+6. Flask - 轻量 Web 后台
+7. Telegram Bot API - 即时通讯整合
+8. Docker + k3s - 容器化部署
+9. GitHub Pages - 免费静态网站托管
+10. Markdown - 内容格式标准
+
+组合以上工具，就能打造完整的 AI 营销系统。`,
+    drama: `🎬 穿越成为古代网红
+
+类型：搞笑穿越
+集数：6 集
+
+第 1 集：穿越的开始
+场景：现代上海网红工作室
+
+[画面描述]
+一群网红正在直播，背景是时尚精品。
+主角林妆正在唱歌，突然一道白光...
+
+[对白]
+林妆：这次直播一定要更吸引人！
+老师：你唱得太棒了！注意风格！
+林妆：我要用魅力征服全世界！
+
+[AI 绘图 Prompt]
+Modern influencer studio in Shanghai,
+young female streamer singing,
+luxury background, neon lights,
+dynamic camera angle, cinematic lighting
+
+第 2 集：醒来在古代
+场景：古代皇宫寝宫
+...`
+  },
+  ru: {
+    article: `---
+Название: История личного бренда и позиционирование
+Платформа: Блог
+Язык: Русский
+---
+
+Вы когда-нибудь мечтали стать экспертом в своей области?
+В эпоху ИИ построение личного бренда больше не требует огромных затрат времени и ресурсов.
+С помощью ИИ-инструментов вы можете:
+• Автоматически создавать качественный контент
+• Поддерживать регулярную частоту публикаций
+• Анализировать, какой контент находит наибольший отклик
+
+В моем путешествии по созданию личного бренда с нуля
+я обнаружил, что ИИ — это не просто инструмент,
+а круглосуточный партнер по контенту.
+От позиционирования бренда до контент-стратегии и управления сообществом —
+ИИ дает конкретные рекомендации.
+
+Начните строить свой личный бренд сегодня!`,
+    guide: `---
+Название: Полное руководство по ИИ-инструментам 2026
+Тип: Руководство для предпринимателей
+---
+
+Топ-10 бесплатных ИИ-инструментов:
+
+1. Groq - Сверхбыстрый LLM API для умного обслуживания клиентов
+2. Flutter - Фреймворк для кроссплатформенной разработки приложений
+3. MyEdit - Генерация видео с ИИ, ежедневные бесплатные кредиты
+4. Runway - Профессиональное производство видео с ИИ
+5. GitHub Actions - CI/CD автоматизация
+6. Flask - Легкий веб-бэкенд
+7. Telegram Bot API - Интеграция мгновенных сообщений
+8. Docker + k3s - Контейнерное развертывание
+9. GitHub Pages - Бесплатный хостинг статических сайтов
+10. Markdown - Стандарт формата контента
+
+Комбинируйте эти инструменты для создания полной системы ИИ-маркетинга.`,
+    drama: `🎬 Путешествие во времени: стать древним инфлюенсером
+
+Жанр: Комедийное путешествие во времени
+Серий: 6
+
+Серия 1: Начало путешествия
+Сцена: Современная студия инфлюенсера в Шанхае
+
+[Описание сцены]
+Группа инфлюенсеров ведет прямую трансляцию.
+Протагонист Линь Чжуан поет, как вдруг вспыхивает белый свет...
+
+[Диалог]
+Линь Чжуан: Этот стрим должен быть еще увлекательнее!
+Учитель: Ты спел brilliantly! Следи за стилем!
+Линь Чжуан: Я покорю мир своим обаянием!
+
+[AI Image Prompt]
+Modern influencer studio in Shanghai,
+young female streamer singing,
+luxury background, neon lights,
+dynamic camera angle, cinematic lighting
+
+Серия 2: Пробуждение в древности
+Сцена: Спальня в древнем императорском дворце
+...`
+  }
+};
 
 function showDemo(type, el) {
   document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
   el.classList.add('active');
-  const text = DEMOS[type] || '';
+  const lang = currentLang && DEMOS[currentLang] ? currentLang : 'zh-TW';
+  const text = (DEMOS[lang] && DEMOS[lang][type]) || (DEMOS['zh-TW'][type]) || '';
   const pre = document.getElementById('demo-text');
   pre.style.opacity = '0';
   setTimeout(() => {
@@ -575,15 +763,19 @@ function handleSubmit(e) {
   e.preventDefault();
   const email = e.target.querySelector('input').value;
   const toast = document.getElementById('toast');
-  toast.textContent = `📩 感謝 ${email}！我們會盡快與你聯絡`;
+  const tmpl = (LANG[currentLang] && LANG[currentLang].toast_thanks) || '📩 感謝 {email}！我們會盡快與你聯絡';
+  toast.textContent = tmpl.replace('{email}', email);
   toast.classList.add('show');
   setTimeout(() => toast.classList.remove('show'), 4000);
   e.target.reset();
 }
 
+let currentLang = 'zh-TW';
+
 const LANG = {
   en: {
     nav_logo: 'XiangChuan Neo｜YaoTech |Ai_bot',
+    page_title: 'XiangChuan Neo｜YaoTech |Ai_bot - AI Customer Service & Marketing Automation Platform',
     nav_features: 'Features',
     nav_demo: 'Demo',
     nav_pricing: 'Pricing',
@@ -661,10 +853,24 @@ const LANG = {
     footer_pricing: 'Pricing',
     footer_contact: 'Contact',
     footer_content: 'Content App',
-    footer_copy: '© 2026 XiangChuan Neo｜YaoTech |Ai_bot'
+    footer_copy: '© 2026 XiangChuan Neo｜YaoTech |Ai_bot',
+    chat_suggest_1: 'AI Customer Service',
+    chat_suggest_2: 'Platform Support',
+    chat_suggest_3: 'Content Generation',
+    chat_suggest_4: 'Knowledge Base',
+    chat_suggest_5: 'Pricing Plans',
+    chat_suggest_6: 'Get Started',
+    chat_ai_label: '🤖 XiangChuan Neo｜YaoTech AI Bot',
+    chat_welcome: 'Hello! I am XiangChuan Neo｜YaoTech AI Customer Service 🤖\n\nI can help you learn about our AI marketing solutions. Try clicking the suggested questions above, or type your question!',
+    toast_thanks: '📩 Thank you {email}! We will contact you shortly',
+    lang_zt: '繁體中文',
+    lang_cn: '簡體中文',
+    lang_en: 'English',
+    lang_ru: 'Русский'
   },
   'zh-CN': {
     nav_logo: '翔川 Neo｜曜科技 |Ai_bot',
+    page_title: '翔川 Neo｜曜科技 |Ai_bot - AI 智能客服与营销自动化平台',
     nav_features: '功能',
     nav_demo: '展示',
     nav_pricing: '价格',
@@ -742,7 +948,115 @@ const LANG = {
     footer_pricing: '价格',
     footer_contact: '联系',
     footer_content: '内容展示',
-    footer_copy: '© 2026 翔川 Neo｜曜科技 |Ai_bot'
+    footer_copy: '© 2026 翔川 Neo｜曜科技 |Ai_bot',
+    chat_suggest_1: 'AI 客服方案',
+    chat_suggest_2: '支持平台',
+    chat_suggest_3: '内容生成',
+    chat_suggest_4: 'Knowledge Base',
+    chat_suggest_5: '价格方案',
+    chat_suggest_6: '开始使用',
+    chat_ai_label: '🤖 翔川 Neo｜曜科技 AI 客服',
+    chat_welcome: '你好！我是翔川 Neo｜曜科技 AI 智能客服 🤖\n\n我可以帮助你了解我们的 AI 营销解决方案。试试点击上方的建议问题，或直接输入你的问题！',
+    toast_thanks: '📩 感谢 {email}！我们会尽快与你联系',
+    lang_zt: '繁體中文',
+    lang_cn: '簡體中文',
+    lang_en: 'English',
+    lang_ru: 'Русский'
+  },
+  ru: {
+    nav_logo: 'XiangChuan Neo｜YaoTech |Ai_bot',
+    page_title: 'XiangChuan Neo｜YaoTech |Ai_bot - AI Обслуживание и Автоматизация Маркетинга',
+    nav_features: 'Функции',
+    nav_demo: 'Демо',
+    nav_pricing: 'Цены',
+    nav_contact: 'Контакты',
+    nav_content: 'Контент',
+    hero_badge: '🚀 2026 Новая эра AI-маркетинга',
+    hero_title: '<span>AI Обслуживание</span> + Автоматизация<br>Запуск за неделю',
+    hero_desc: 'Интеграция умных диалогов LLM, автогенерация контента, самообучающаяся база знаний. От Telegram Bot до брендового приложения — комплексное AI-решение.',
+    hero_btn_demo: '📩 Получить демо',
+    hero_btn_watch: '▶ Как это работает',
+    stat_content: 'AI контент',
+    stat_platform: 'Платформы',
+    stat_lang: 'Языки',
+    stat_247: 'Авто 24/7',
+    features_title: 'Полная AI-платформа маркетинга',
+    features_sub: 'От создания контента до общения с клиентами — всё в автоматическом режиме',
+    feat_ai_title: 'AI Умное обслуживание',
+    feat_ai_desc: 'Интегрировано с Groq Llama 3 LLM, понимает вопросы и даёт точные ответы на китайском и английском.',
+    feat_content_title: 'Автогенерация контента',
+    feat_content_desc: 'Блоги, соцсети, рассылки —一键. 16 тем × 5 платформ × 3 языка, 24/7 автоматическая генерация.',
+    feat_kb_title: 'Растущая база знаний',
+    feat_kb_desc: 'Обратная связь пользователей автоматически пополняет базу знаний. 👍/👎 — лучшие ответы сохраняются.',
+    feat_multi_title: 'Мультиплатформенность',
+    feat_multi_desc: 'Telegram Bot + Web App + Flutter. Создаёте один раз — публикуете везде. CI/CD авторазвёртывание.',
+    feat_drama_title: 'AI Короткие драмы',
+    feat_drama_desc: 'AI пишет сценарии, раскадровки и промпты для MyEdit, Runway.',
+    feat_data_title: 'Оптимизация данными',
+    feat_data_desc: 'AI анализирует эффективность контента и автоматически корректирует стратегию.',
+    demo_title: 'Живое демо',
+    demo_sub: 'AI чат в реальном времени · Автоконтент',
+    demo_chat_title: '🤖 AI Умный чат — демо',
+    demo_chat_hint: 'Нажмите на вопрос или введите свой',
+    demo_chat_placeholder: 'Ваш вопрос...',
+    demo_chat_send: 'Отправить',
+    demo_tab_article: 'Статьи',
+    demo_tab_guide: 'Гайды',
+    demo_tab_drama: 'AI Драма',
+    demo_app_title: '📱 Бренд-приложение → Контент',
+    demo_app_btn: '📱 Открыть приложение →',
+    pricing_title: 'Простые и прозрачные цены',
+    pricing_sub: 'Найдите подходящий план',
+    price_starter_name: 'Стартовый',
+    price_starter_desc: 'Для личного теста',
+    price_starter_feat1: 'AI чат (50/день)',
+    price_starter_feat2: '10 записей базы знаний',
+    price_starter_feat3: 'Базовые шаблоны',
+    price_starter_feat4: 'Telegram Bot (@ailunora_bot)',
+    price_starter_btn: 'Бесплатно',
+    price_pro_name: 'Про',
+    price_pro_badge: 'Популярное',
+    price_pro_desc: 'Для малого бизнеса',
+    price_pro_feat1: 'Безлимитные диалоги',
+    price_pro_feat2: '500 записей базы знаний',
+    price_pro_feat3: 'LLM (Groq)',
+    price_pro_feat4: 'Рост базы знаний',
+    price_pro_feat5: 'Веб-панель',
+    price_pro_feat6: 'Автоконтент',
+    price_pro_feat7: 'Мультиязычность',
+    price_pro_btn: 'Начать',
+    price_enterprise_name: 'Корпоративный',
+    price_enterprise_desc: 'Для крупных организаций',
+    price_enterprise_feat1: 'Частное развёртывание (k3s)',
+    price_enterprise_feat2: 'Безлимитная база знаний',
+    price_enterprise_feat3: 'Тонкая настройка модели',
+    price_enterprise_feat4: 'SLA 99.9%',
+    price_enterprise_feat5: 'Личный менеджер',
+    price_enterprise_feat6: 'Полный API',
+    price_enterprise_feat7: 'Кастомное приложение',
+    price_enterprise_btn: 'Связаться',
+    cta_title: 'Готовы запустить AI-маркетинг?',
+    cta_desc: 'Оставьте email — мы пришлём описание и ссылку на триал. Или в Telegram https://t.me/+QgAyWlVyIxFjNmRl / @ailunora_bot',
+    cta_placeholder: 'Ваш Email',
+    cta_btn: '📩 Получить демо',
+    footer_features: 'Функции',
+    footer_pricing: 'Цены',
+    footer_contact: 'Контакты',
+    footer_content: 'Контент',
+    footer_copy: '© 2026 XiangChuan Neo｜YaoTech |Ai_bot',
+    chat_suggest_1: 'AI Сервис',
+    chat_suggest_2: 'Платформы',
+    chat_suggest_3: 'Контент',
+    chat_suggest_4: 'База знаний',
+    chat_suggest_5: 'Цены',
+    chat_suggest_6: 'Начать',
+    chat_ai_label: '🤖 XiangChuan Neo｜YaoTech AI Бот',
+    chat_welcome: 'Здравствуйте! Я AI-помощник XiangChuan Neo 🤖\n\nЗадайте вопрос или нажмите на подсказки выше!',
+    toast_thanks: '📩 Спасибо {email}! Мы свяжемся с вами',
+    lang_zt: '繁體中文',
+    lang_cn: '簡體中文',
+    lang_en: 'English',
+    lang_ru: 'Русский'
   }
 };
 
@@ -750,6 +1064,8 @@ function switchLang(val) {
   if (val === 'zh-TW') { location.reload(); return; }
   const t = LANG[val];
   if (!t) return;
+  currentLang = val;
+  document.documentElement.lang = val;
   document.querySelectorAll('[data-i18n]').forEach(el => {
     const key = el.dataset.i18n;
     if (t[key]) {
@@ -764,6 +1080,12 @@ function switchLang(val) {
     const key = el.dataset.i18nPlaceholder;
     if (t[key]) el.placeholder = t[key];
   });
+  const activeTab = document.querySelector('.tab.active');
+  if (activeTab) {
+    const types = {0:'article',1:'guide',2:'drama'};
+    const idx = Array.from(activeTab.parentNode.children).indexOf(activeTab);
+    showDemo(types[idx]||'article', activeTab);
+  }
 }
 
 let chatHistory = [];
@@ -791,7 +1113,8 @@ function addChatMsg(text, role) {
   const now = new Date();
   const time = now.getHours().toString().padStart(2,'0') + ':' + now.getMinutes().toString().padStart(2,'0');
   if (role === 'ai') {
-    div.innerHTML = `<div class="msg-label">🤖 翔川 Neo｜曜科技 AI 客服</div>${text.replace(/\n/g, '<br>')}<div class="msg-time">${time}</div>`;
+    const label = (LANG[currentLang] && LANG[currentLang].chat_ai_label) || '🤖 翔川 Neo｜曜科技 AI 客服';
+    div.innerHTML = `<div class="msg-label">${label}</div>${text.replace(/\n/g, '<br>')}<div class="msg-time">${time}</div>`;
   } else {
     div.innerHTML = `${text.replace(/\n/g, '<br>')}<div class="msg-time">${time}</div>`;
   }
@@ -812,20 +1135,39 @@ function getBotReply(text) {
     return KB.find(i => i.kw.includes('hello')).reply;
   }
 
-  const fallbacks = [
-    '感謝您的提問！這個問題很好。建議您查看我們的 Telegram 頻道 https://t.me/+QgAyWlVyIxFjNmRl 獲取更多資訊，或留下 Email 我們會詳細回覆您！',
-    '您的問題我已經記錄下來了！我們有專業團隊可以為您解答。請加入 Telegram 頻道 https://t.me/+QgAyWlVyIxFjNmRl 與我們即時交流。',
-    '這是一個好問題！我們的功能涵蓋 AI 客服、內容生成、知識庫管理等。請問您想了解哪個面向的詳細資訊呢？'
-  ];
-  return fallbacks[Math.floor(Math.random() * fallbacks.length)];
+  const fallbacks = {
+    'zh-TW': [
+      '感謝您的提問！這個問題很好。建議您查看我們的 Telegram 頻道 https://t.me/+QgAyWlVyIxFjNmRl 獲取更多資訊，或留下 Email 我們會詳細回覆您！',
+      '您的問題我已經記錄下來了！我們有專業團隊可以為您解答。請加入 Telegram 頻道 https://t.me/+QgAyWlVyIxFjNmRl 與我們即時交流。',
+      '這是一個好問題！我們的功能涵蓋 AI 客服、內容生成、知識庫管理等。請問您想了解哪個面向的詳細資訊呢？'
+    ],
+    en: [
+      'Great question! Check out our Telegram channel https://t.me/+QgAyWlVyIxFjNmRl for more info, or leave your email and we will reply in detail!',
+      'Your question has been noted! Our team is ready to help. Join our Telegram https://t.me/+QgAyWlVyIxFjNmRl for instant chat.',
+      'Good question! We cover AI customer service, content generation, knowledge base management. Which area interests you?'
+    ],
+    'zh-CN': [
+      '感谢您的提问！这个问题很好。建议您查看我们的 Telegram 频道 https://t.me/+QgAyWlVyIxFjNmRl 获取更多信息，或留下 Email 我们会详细回复您！',
+      '您的问题我已经记录下来了！我们有专业团队可以为您解答。请加入 Telegram 频道 https://t.me/+QgAyWlVyIxFjNmRl 与我们即时交流。',
+      '这是一个好问题！我们的功能涵盖 AI 客服、内容生成、知识库管理等。请问您想了解哪个方面的详细信息呢？'
+    ],
+    ru: [
+      'Отличный вопрос! Заходите в наш Telegram https://t.me/+QgAyWlVyIxFjNmRl или оставьте email — мы ответим подробно!',
+      'Ваш вопрос записан! Наша команда готова помочь. Присоединяйтесь к Telegram https://t.me/+QgAyWlVyIxFjNmRl.',
+      'Хороший вопрос! Мы охватываем AI-сервис, генерацию контента, базу знаний. Какая тема вас интересует?'
+    ]
+  };
+  const fb = fallbacks[currentLang] || fallbacks['zh-TW'];
+  return fb[Math.floor(Math.random() * fb.length)];
 }
 
 document.addEventListener('DOMContentLoaded', () => {
   const pre = document.getElementById('demo-text');
-  pre.textContent = DEMOS.article;
+  pre.textContent = DEMOS['zh-TW'].article;
   pre.style.transition = 'opacity 0.3s';
 
-  addChatMsg('你好！我是翔川 Neo｜曜科技 AI 智能客服 🤖\n\n我可以幫助你了解我們的 AI 行銷解決方案。試試點擊上方的建議問題，或直接輸入你的問題！', 'ai');
+  const welcome = '你好！我是翔川 Neo｜曜科技 AI 智能客服 🤖\n\n我可以幫助你了解我們的 AI 行銷解決方案。試試點擊上方的建議問題，或直接輸入你的問題！';
+  addChatMsg(welcome, 'ai');
 });
 </script>
 </body>
