@@ -1,75 +1,21 @@
-name: Deploy Telegram Bot to k3s
+name: Build & Deploy
 
 on:
   push:
-    branches: [ main, master ]
-  workflow_dispatch:  # 允许手动触发
+    branches: [ main ]
+  workflow_dispatch:
 
 jobs:
-  build-and-deploy:
+  validate-flutter:
     runs-on: ubuntu-latest
-    
+    defaults:
+      run:
+        working-directory: xiangchuan/brand_app
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v3
-      
-    - name: Set up Python
-      uses: actions/setup-python@v4
-      with:
-        python-version: '3.12'
-        
-    - name: Install dependencies
-      run: |
-        pip install -r requirements.txt
-        pip install pytest flake8
-        
-    - name: Lint with flake8
-      run: |
-        flake8 telegram-bot.py --max-line-length=120
-        
-    - name: Run tests
-      run: |
-        # 在这里添加测试
-        echo "Running tests..."
-        
-    - name: Set up Docker Buildx
-      uses: docker/setup-buildx-action@v2
-      
-    - name: Build Docker image
-      run: |
-        docker build -t telegram-bot:${{ github.sha }} .
-        docker tag telegram-bot:${{ github.sha }} telegram-bot:latest
-        
-    - name: Save Docker image
-      run: |
-        docker save telegram-bot:latest > telegram-bot.tar
-        
-    - name: Deploy to k3s
-      env:
-        KUBE_CONFIG: ${{ secrets.KUBE_CONFIG }}
-        TELEGRAM_TOKEN: ${{ secrets.TELEGRAM_TOKEN }}
-      run: |
-        # 设置 kubectl
-        echo "$KUBE_CONFIG" > kubeconfig
-        export KUBECONFIG=kubeconfig
-        
-        # 导入镜像到 k3d（如果在用 k3d）
-        if command -v k3d &> /dev/null; then
-          k3d image import telegram-bot:latest -c mycluster
-        fi
-        
-        # 更新 secret
-        kubectl create secret generic telegram-secret \
-          --from-literal=token="$TELEGRAM_TOKEN" \
-          --dry-run=client -o yaml | kubectl apply -f -
-        
-        # 部署
-        kubectl apply -f k8s-deployment.yaml
-        
-        # 等待部署完成
-        kubectl rollout status deployment/telegram-bot --timeout=120s
-        
-    - name: Verify deployment
-      run: |
-        kubectl get pods -l app=telegram-bot
-        kubectl get svc telegram-bot-svc
+      - uses: actions/checkout@v4
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+      - run: flutter pub get
+      - run: flutter build web --base-href=/lewislunora/
+      - run: flutter build apk --debug
