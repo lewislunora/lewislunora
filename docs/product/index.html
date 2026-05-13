@@ -212,12 +212,14 @@ nav {
   box-shadow: 0 0 40px rgba(0,212,255,0.1);
   background: rgba(0,212,255,0.03);
 }
-.price-card.featured::before {
-  content: '最受欢迎'; position: absolute; top: -12px; left: 50%;
+.price-card.featured { position: relative; }
+.price-badge {
+  position: absolute; top: -12px; left: 50%;
   transform: translateX(-50%);
   background: linear-gradient(135deg, #00d4ff, #7b68ee);
   padding: 0.3rem 1.2rem; border-radius: 20px;
   font-size: 0.8rem; font-weight: 600;
+  white-space: nowrap;
 }
 .price-name { font-size: 1.2rem; font-weight: 600; margin-bottom: 0.5rem; }
 .price-amount { font-size: 3rem; font-weight: 700; }
@@ -278,93 +280,93 @@ footer {
 <body>
 
 <nav>
-  <div class="nav-logo">翔川 Neo｜曜科技 |Ai_bot</div>
+  <div class="nav-logo" data-i18n="nav_logo">翔川 Neo｜曜科技 |Ai_bot</div>
   <div class="nav-links">
-    <a href="#features">功能</a>
-    <a href="#demo">展示</a>
-    <a href="#pricing">價格</a>
-    <a href="#contact">聯絡</a>
+    <a href="#features" data-i18n="nav_features">功能</a>
+    <a href="#demo" data-i18n="nav_demo">展示</a>
+    <a href="#pricing" data-i18n="nav_pricing">價格</a>
+    <a href="#contact" data-i18n="nav_contact">聯絡</a>
     <select class="lang-select" onchange="switchLang(this.value)">
       <option value="zh-TW">繁體中文</option>
       <option value="zh-CN">簡體中文</option>
       <option value="en">English</option>
     </select>
-    <a href="https://lewislunora.github.io/lewislunora/" target="_blank" class="btn-nav">內容展示</a>
+    <a href="https://lewislunora.github.io/lewislunora/" target="_blank" class="btn-nav" data-i18n="nav_content">內容展示</a>
   </div>
 </nav>
 
 <section class="hero">
-  <div class="hero-badge">🚀 2026 AI 智慧行銷新時代</div>
-  <h1><span>AI 智能客服</span> + 行銷自動化<br>一週內上線</h1>
-  <p>串接 LLM 智能對話、自動產出行銷內容、知識庫自增長。從 Telegram Bot 到品牌 App，一站式 AI 行銷解決方案。</p>
+  <div class="hero-badge" data-i18n="hero_badge">🚀 2026 AI 智慧行銷新時代</div>
+  <h1 data-i18n="hero_title" data-i18n-html="true"><span>AI 智能客服</span> + 行銷自動化<br>一週內上線</h1>
+  <p data-i18n="hero_desc">串接 LLM 智能對話、自動產出行銷內容、知識庫自增長。從 Telegram Bot 到品牌 App，一站式 AI 行銷解決方案。</p>
   <div class="hero-actions">
-    <a href="#contact" class="btn-primary">📩 取得演示</a>
-    <a href="#demo" class="btn-outline">▶ 看看怎麼運作</a>
+    <a href="#contact" class="btn-primary" data-i18n="hero_btn_demo">📩 取得演示</a>
+    <a href="#demo" class="btn-outline" data-i18n="hero_btn_watch">▶ 看看怎麼運作</a>
   </div>
   <div class="stats">
     <div class="stat-item">
       <div class="stat-number">133+</div>
-      <div class="stat-label">AI 生成內容</div>
+      <div class="stat-label" data-i18n="stat_content">AI 生成內容</div>
     </div>
     <div class="stat-item">
       <div class="stat-number">5</div>
-      <div class="stat-label">支援平台</div>
+      <div class="stat-label" data-i18n="stat_platform">支援平台</div>
     </div>
     <div class="stat-item">
       <div class="stat-number">3</div>
-      <div class="stat-label">語言版本</div>
+      <div class="stat-label" data-i18n="stat_lang">語言版本</div>
     </div>
     <div class="stat-item">
       <div class="stat-number">24/7</div>
-      <div class="stat-label">自動運行</div>
+      <div class="stat-label" data-i18n="stat_247">自動運行</div>
     </div>
   </div>
 </section>
 
 <section class="section" id="features">
-  <h2 class="section-title">一站式 AI 行銷平台</h2>
-  <p class="section-sub">從內容生成到客戶互動，全部自動化</p>
+  <h2 class="section-title" data-i18n="features_title">一站式 AI 行銷平台</h2>
+  <p class="section-sub" data-i18n="features_sub">從內容生成到客戶互動，全部自動化</p>
   <div class="features-grid">
     <div class="feature-card">
       <div class="feature-icon">🤖</div>
-      <h3>AI 智能客服</h3>
-      <p>串接 Groq Llama 3 LLM，理解客戶問題並給出精準回覆。支援繁體中文、簡體中文、英文自動切換，知識庫越用越聰明。</p>
+      <h3 data-i18n="feat_ai_title">AI 智能客服</h3>
+      <p data-i18n="feat_ai_desc">串接 Groq Llama 3 LLM，理解客戶問題並給出精準回覆。支援繁體中文、簡體中文、英文自動切換，知識庫越用越聰明。</p>
     </div>
     <div class="feature-card">
       <div class="feature-icon">📝</div>
-      <h3>自動內容生成</h3>
-      <p>一鍵產出部落格文章、社群貼文、行銷文案、電子報。16 種主題 × 5 個平台 × 3 種語言，全年無休自動產出。</p>
+      <h3 data-i18n="feat_content_title">自動內容生成</h3>
+      <p data-i18n="feat_content_desc">一鍵產出部落格文章、社群貼文、行銷文案、電子報。16 種主題 × 5 個平台 × 3 種語言，全年無休自動產出。</p>
     </div>
     <div class="feature-card">
       <div class="feature-icon">📚</div>
-      <h3>知識庫自增長</h3>
-      <p>用戶反饋自動沉澱到知識庫，Bot 越用越聰明。支援 👍/👎 回饋機制，好的回答自動保存</p>
+      <h3 data-i18n="feat_kb_title">知識庫自增長</h3>
+      <p data-i18n="feat_kb_desc">用戶反饋自動沉澱到知識庫，Bot 越用越聰明。支援 👍/👎 回饋機制，好的回答自動保存</p>
     </div>
     <div class="feature-card">
       <div class="feature-icon">🌐</div>
-      <h3>多平台分發</h3>
-      <p>Telegram Bot + Web App + Flutter 行動 App，一次產出多平台上架。支援 CI/CD 自動部署。</p>
+      <h3 data-i18n="feat_multi_title">多平台分發</h3>
+      <p data-i18n="feat_multi_desc">Telegram Bot + Web App + Flutter 行動 App，一次產出多平台上架。支援 CI/CD 自動部署。</p>
     </div>
     <div class="feature-card">
       <div class="feature-icon">🎬</div>
-      <h3>AI 短劇創作</h3>
-      <p>AI 自動生成劇本、分鏡描述、英文繪圖 Prompt。可直接搭配 MyEdit、Runway 生成影片素材。</p>
+      <h3 data-i18n="feat_drama_title">AI 短劇創作</h3>
+      <p data-i18n="feat_drama_desc">AI 自動生成劇本、分鏡描述、英文繪圖 Prompt。可直接搭配 MyEdit、Runway 生成影片素材。</p>
     </div>
     <div class="feature-card">
       <div class="feature-icon">📊</div>
-      <h3>數據驅動優化</h3>
-      <p>追蹤每篇內容的互動數據，AI 分析哪種內容成效好，自動調整生成策略。</p>
+      <h3 data-i18n="feat_data_title">數據驅動優化</h3>
+      <p data-i18n="feat_data_desc">追蹤每篇內容的互動數據，AI 分析哪種內容成效好，自動調整生成策略。</p>
     </div>
   </div>
 </section>
 
 <section class="section" id="demo">
-  <h2 class="section-title">實際展示</h2>
-  <p class="section-sub">AI 智能客服即時對話 · 自動內容生成</p>
+  <h2 class="section-title" data-i18n="demo_title">實際展示</h2>
+  <p class="section-sub" data-i18n="demo_sub">AI 智能客服即時對話 · 自動內容生成</p>
   <div class="demo-section">
     <div class="demo-header">
-      <h3>🤖 AI 智能客服即時展示</h3>
-      <p style="color:rgba(255,255,255,0.4);font-size:0.85rem;margin-top:0.5rem;">點擊下方建議問題，或自行輸入，體驗 AI 客服回覆</p>
+      <h3 data-i18n="demo_chat_title">🤖 AI 智能客服即時展示</h3>
+      <p style="color:rgba(255,255,255,0.4);font-size:0.85rem;margin-top:0.5rem;" data-i18n="demo_chat_hint">點擊下方建議問題，或自行輸入，體驗 AI 客服回覆</p>
       <div class="chat-container">
         <div class="chat-messages" id="chatMessages"></div>
         <div class="chat-suggestions" id="chatSuggestions">
@@ -376,96 +378,97 @@ footer {
           <button onclick="chatSend('如何開始使用？')">開始使用</button>
         </div>
         <div class="chat-input">
-          <input type="text" id="chatInput" placeholder="輸入你的問題..." onkeydown="if(event.key==='Enter') chatSend()">
-          <button onclick="chatSend()">發送</button>
+          <input type="text" id="chatInput" data-i18n-placeholder="demo_chat_placeholder" placeholder="輸入你的問題..." onkeydown="if(event.key==='Enter') chatSend()">
+          <button onclick="chatSend()" data-i18n="demo_chat_send">發送</button>
         </div>
       </div>
     </div>
     <div style="padding: 0 2rem 2rem;">
-      <h3 style="margin-bottom:1rem;">📱 品牌 App → 內容展示</h3>
+      <h3 style="margin-bottom:1rem;" data-i18n="demo_app_title">📱 品牌 App → 內容展示</h3>
       <div class="tabs" style="display:flex;gap:0.5rem;margin-bottom:1rem;">
-        <div class="tab active" onclick="showDemo('article', this)">品牌文章</div>
-        <div class="tab" onclick="showDemo('guide', this)">攻略教學</div>
-        <div class="tab" onclick="showDemo('drama', this)">AI 短劇</div>
+        <div class="tab active" data-i18n="demo_tab_article" onclick="showDemo('article', this)">品牌文章</div>
+        <div class="tab" data-i18n="demo_tab_guide" onclick="showDemo('guide', this)">攻略教學</div>
+        <div class="tab" data-i18n="demo_tab_drama" onclick="showDemo('drama', this)">AI 短劇</div>
       </div>
       <div class="demo-content" style="padding:0;">
         <pre id="demo-text">載入中...</pre>
       </div>
       <div style="text-align:center;margin-top:1.5rem;">
-        <a href="https://lewislunora.github.io/lewislunora/" target="_blank" class="btn-outline">📱 開啟完整品牌 App →</a>
+        <a href="https://lewislunora.github.io/lewislunora/" target="_blank" class="btn-outline" data-i18n="demo_app_btn">📱 開啟完整品牌 App →</a>
       </div>
     </div>
   </div>
 </section>
 
 <section class="section" id="pricing">
-  <h2 class="section-title">簡單透明的價格</h2>
-  <p class="section-sub">從個人到企業，找到適合你的方案</p>
+  <h2 class="section-title" data-i18n="pricing_title">簡單透明的價格</h2>
+  <p class="section-sub" data-i18n="pricing_sub">從個人到企業，找到適合你的方案</p>
   <div class="pricing-grid">
     <div class="price-card">
-      <div class="price-name">入門版</div>
+      <div class="price-name" data-i18n="price_starter_name">入門版</div>
       <div class="price-amount">免費</div>
-      <div class="price-desc">適合個人測試體驗</div>
+      <div class="price-desc" data-i18n="price_starter_desc">適合個人測試體驗</div>
       <ul class="price-features">
-        <li>AI 智能客服（50次/天）</li>
-        <li>10 條知識庫</li>
-        <li>基礎回覆模板</li>
-        <li>Telegram Bot（@ailunora_bot）</li>
+        <li data-i18n="price_starter_feat1">AI 智能客服（50次/天）</li>
+        <li data-i18n="price_starter_feat2">10 條知識庫</li>
+        <li data-i18n="price_starter_feat3">基礎回覆模板</li>
+        <li data-i18n="price_starter_feat4">Telegram Bot（@ailunora_bot）</li>
       </ul>
-      <button class="btn btn-outline" onclick="scrollToContact()">免費試用</button>
+      <button class="btn btn-outline" onclick="scrollToContact()" data-i18n="price_starter_btn">免費試用</button>
     </div>
     <div class="price-card featured">
-      <div class="price-name">專業版</div>
-      <div class="price-amount">$29 <small>/月</small></div>
-      <div class="price-desc">適合中小企業正式營運</div>
+      <div class="price-badge" data-i18n="price_pro_badge">最受歡迎</div>
+      <div class="price-name" data-i18n="price_pro_name">專業版</div>
+      <div class="price-amount" i18n-ignore>$29 <small>/月</small></div>
+      <div class="price-desc" data-i18n="price_pro_desc">適合中小企業正式營運</div>
       <ul class="price-features">
-        <li>無限對話次數</li>
-        <li>500 條知識庫</li>
-        <li>LLM 驅動（Groq）</li>
-        <li>知識庫自增長</li>
-        <li>Web 管理後台</li>
-        <li>內容自動生成</li>
-        <li>多語言支援</li>
+        <li data-i18n="price_pro_feat1">無限對話次數</li>
+        <li data-i18n="price_pro_feat2">500 條知識庫</li>
+        <li data-i18n="price_pro_feat3">LLM 驅動（Groq）</li>
+        <li data-i18n="price_pro_feat4">知識庫自增長</li>
+        <li data-i18n="price_pro_feat5">Web 管理後台</li>
+        <li data-i18n="price_pro_feat6">內容自動生成</li>
+        <li data-i18n="price_pro_feat7">多語言支援</li>
       </ul>
-      <button class="btn btn-primary" onclick="scrollToContact()">立即開通</button>
+      <button class="btn btn-primary" onclick="scrollToContact()" data-i18n="price_pro_btn">立即開通</button>
     </div>
     <div class="price-card">
-      <div class="price-name">企業版</div>
-      <div class="price-amount">$199 <small>/月</small></div>
-      <div class="price-desc">適合大型組織客製需求</div>
+      <div class="price-name" data-i18n="price_enterprise_name">企業版</div>
+      <div class="price-amount" i18n-ignore>$199 <small>/月</small></div>
+      <div class="price-desc" data-i18n="price_enterprise_desc">適合大型組織客製需求</div>
       <ul class="price-features">
-        <li>私有部署（k3s）</li>
-        <li>無限知識庫</li>
-        <li>客製模型微調</li>
-        <li>SLA 99.9%</li>
-        <li>專屬客戶成功</li>
-        <li>API 完整串接</li>
-        <li>品牌 App 客製</li>
+        <li data-i18n="price_enterprise_feat1">私有部署（k3s）</li>
+        <li data-i18n="price_enterprise_feat2">無限知識庫</li>
+        <li data-i18n="price_enterprise_feat3">客製模型微調</li>
+        <li data-i18n="price_enterprise_feat4">SLA 99.9%</li>
+        <li data-i18n="price_enterprise_feat5">專屬客戶成功</li>
+        <li data-i18n="price_enterprise_feat6">API 完整串接</li>
+        <li data-i18n="price_enterprise_feat7">品牌 App 客製</li>
       </ul>
-      <button class="btn btn-outline" onclick="scrollToContact()">聯絡我們</button>
+      <button class="btn btn-outline" onclick="scrollToContact()" data-i18n="price_enterprise_btn">聯絡我們</button>
     </div>
   </div>
 </section>
 
 <section class="section" id="contact">
   <div class="cta-section">
-    <h2>準備好啟動你的 AI 行銷了嗎？</h2>
-    <p>留下 Email，我們會寄送完整產品介紹與免費試用連結。或直接搜尋 Telegram 頻道 https://t.me/+QgAyWlVyIxFjNmRl 或 @ailunora_bot 立即體驗。</p>
+    <h2 data-i18n="cta_title">準備好啟動你的 AI 行銷了嗎？</h2>
+    <p data-i18n="cta_desc">留下 Email，我們會寄送完整產品介紹與免費試用連結。或直接搜尋 Telegram 頻道 https://t.me/+QgAyWlVyIxFjNmRl 或 @ailunora_bot 立即體驗。</p>
     <form class="contact-form" onsubmit="handleSubmit(event)">
-      <input type="email" placeholder="你的 Email 地址" required>
-      <button type="submit" class="btn-primary">📩 取得演示</button>
+      <input type="email" data-i18n-placeholder="cta_placeholder" placeholder="你的 Email 地址" required>
+      <button type="submit" class="btn-primary" data-i18n="cta_btn">📩 取得演示</button>
     </form>
   </div>
 </section>
 
 <footer>
   <div class="footer-links">
-    <a href="#features">功能</a>
-    <a href="#pricing">價格</a>
-    <a href="#contact">聯絡</a>
-    <a href="https://lewislunora.github.io/lewislunora/" target="_blank">內容展示</a>
+    <a href="#features" data-i18n="footer_features">功能</a>
+    <a href="#pricing" data-i18n="footer_pricing">價格</a>
+    <a href="#contact" data-i18n="footer_contact">聯絡</a>
+    <a href="https://lewislunora.github.io/lewislunora/" target="_blank" data-i18n="footer_content">內容展示</a>
   </div>
-  <div class="footer-copy">© 2026 翔川 Neo｜曜科技 |Ai_bot</div>
+  <div class="footer-copy" data-i18n="footer_copy">© 2026 翔川 Neo｜曜科技 |Ai_bot</div>
 </footer>
 
 <div class="toast" id="toast"></div>
@@ -578,30 +581,189 @@ function handleSubmit(e) {
   e.target.reset();
 }
 
-function switchLang(val) {
-  if (val === 'en') {
-    document.querySelector('.hero h1').innerHTML = '<span>AI Customer Service</span> + Marketing Automation<br>Launch in One Week';
-    document.querySelector('.hero p').textContent = 'Integrate LLM smart conversations, auto-generate marketing content, knowledge base self-growth. From Telegram Bot to Brand App, one-stop AI marketing solution.';
-    document.querySelector('#features .section-title').textContent = 'All-in-One AI Marketing Platform';
-    document.querySelector('#features .section-sub').textContent = 'From content generation to customer interaction, fully automated';
-    document.querySelector('#pricing .section-title').textContent = 'Simple & Transparent Pricing';
-    document.querySelector('#contact h2').textContent = 'Ready to launch your AI marketing?';
-    document.querySelector('#contact p').textContent = 'Leave your email and we will send you the full product intro and free trial link.';
-    document.querySelector('.contact-form button').textContent = '📩 Get Demo';
-    document.querySelector('.hero-badge').textContent = '🚀 2026 AI Marketing New Era';
-  } else if (val === 'zh-CN') {
-    document.querySelector('.hero h1').innerHTML = '<span>AI 智能客服</span> + 营销自动化<br>一周内上线';
-    document.querySelector('.hero p').textContent = '串接 LLM 智能对话、自动产出营销内容、知识库自增长。从 Telegram Bot 到品牌 App，一站式 AI 营销解决方案。';
-    document.querySelector('#features .section-title').textContent = '一站式 AI 营销平台';
-    document.querySelector('#features .section-sub').textContent = '从内容生成到客户互动，全部自动化';
-    document.querySelector('#pricing .section-title').textContent = '简单透明的价格';
-    document.querySelector('#contact h2').textContent = '准备好启动你的 AI 营销了吗？';
-    document.querySelector('#contact p').textContent = '留下 Email，我们会寄送完整产品介绍与免费试用链接。';
-    document.querySelector('.contact-form button').textContent = '📩 取得演示';
-    document.querySelector('.hero-badge').textContent = '🚀 2026 AI 智慧营销新时代';
-  } else {
-    location.reload();
+const LANG = {
+  en: {
+    nav_logo: 'XiangChuan Neo｜YaoTech |Ai_bot',
+    nav_features: 'Features',
+    nav_demo: 'Demo',
+    nav_pricing: 'Pricing',
+    nav_contact: 'Contact',
+    nav_content: 'Content App',
+    hero_badge: '🚀 2026 AI Marketing New Era',
+    hero_title: '<span>AI Customer Service</span> + Marketing Automation<br>Launch in One Week',
+    hero_desc: 'Integrate LLM smart conversations, auto-generate marketing content, knowledge base self-growth. From Telegram Bot to Brand App, one-stop AI marketing solution.',
+    hero_btn_demo: '📩 Get Demo',
+    hero_btn_watch: '▶ See How It Works',
+    stat_content: 'AI Contents',
+    stat_platform: 'Platforms',
+    stat_lang: 'Languages',
+    stat_247: 'Auto Operation',
+    features_title: 'All-in-One AI Marketing Platform',
+    features_sub: 'From content generation to customer interaction, fully automated',
+    feat_ai_title: 'AI Smart Customer Service',
+    feat_ai_desc: 'Integrated with Groq Llama 3 LLM, understands customer questions and gives precise answers. Supports automatic switching between Traditional Chinese, Simplified Chinese, and English.',
+    feat_content_title: 'Auto Content Generation',
+    feat_content_desc: 'One-click generation of blog posts, social media posts, marketing copy, newsletters. 16 topics × 5 platforms × 3 languages, automatic generation around the clock.',
+    feat_kb_title: 'Self-Growing Knowledge Base',
+    feat_kb_desc: 'User feedback automatically feeds into the knowledge base. The Bot gets smarter with use. Supports 👍/👎 feedback, good answers are auto-saved.',
+    feat_multi_title: 'Multi-Platform Distribution',
+    feat_multi_desc: 'Telegram Bot + Web App + Flutter Mobile App. Create once, publish everywhere. Supports CI/CD auto-deployment.',
+    feat_drama_title: 'AI Short Drama Creation',
+    feat_drama_desc: 'AI automatically generates scripts, storyboard descriptions, and English drawing prompts. Works with MyEdit, Runway for video generation.',
+    feat_data_title: 'Data-Driven Optimization',
+    feat_data_desc: 'Track interaction data for each content piece. AI analyzes which content performs best and adjusts generation strategy automatically.',
+    demo_title: 'Live Demo',
+    demo_sub: 'AI Smart Customer Service Live Chat · Auto Content Generation',
+    demo_chat_title: '🤖 AI Smart Customer Service Live Demo',
+    demo_chat_hint: 'Click suggested questions below, or type your own, to experience AI customer service replies',
+    demo_chat_placeholder: 'Type your question...',
+    demo_chat_send: 'Send',
+    demo_tab_article: 'Brand Articles',
+    demo_tab_guide: 'Guides',
+    demo_tab_drama: 'AI Drama',
+    demo_app_title: '📱 Brand App → Content Showcase',
+    demo_app_btn: '📱 Open Full Brand App →',
+    pricing_title: 'Simple & Transparent Pricing',
+    pricing_sub: 'From individuals to enterprises, find the plan that suits you',
+    price_starter_name: 'Starter',
+    price_starter_desc: 'For personal trial',
+    price_starter_feat1: 'AI Customer Service (50/day)',
+    price_starter_feat2: '10 Knowledge Base Entries',
+    price_starter_feat3: 'Basic Reply Templates',
+    price_starter_feat4: 'Telegram Bot (@ailunora_bot)',
+    price_starter_btn: 'Free Trial',
+    price_pro_name: 'Pro',
+    price_pro_badge: 'Most Popular',
+    price_pro_desc: 'For SMBs in production',
+    price_pro_feat1: 'Unlimited Conversations',
+    price_pro_feat2: '500 Knowledge Base Entries',
+    price_pro_feat3: 'LLM Powered (Groq)',
+    price_pro_feat4: 'Knowledge Base Self-Growth',
+    price_pro_feat5: 'Web Admin Dashboard',
+    price_pro_feat6: 'Auto Content Generation',
+    price_pro_feat7: 'Multi-Language Support',
+    price_pro_btn: 'Get Started',
+    price_enterprise_name: 'Enterprise',
+    price_enterprise_desc: 'For large organizations with custom needs',
+    price_enterprise_feat1: 'Private Deployment (k3s)',
+    price_enterprise_feat2: 'Unlimited Knowledge Base',
+    price_enterprise_feat3: 'Custom Model Fine-Tuning',
+    price_enterprise_feat4: 'SLA 99.9%',
+    price_enterprise_feat5: 'Dedicated Customer Success',
+    price_enterprise_feat6: 'Full API Integration',
+    price_enterprise_feat7: 'Custom Brand App',
+    price_enterprise_btn: 'Contact Us',
+    cta_title: 'Ready to Launch Your AI Marketing?',
+    cta_desc: 'Leave your email and we will send you the full product intro and free trial link. Or join our Telegram channel https://t.me/+QgAyWlVyIxFjNmRl or @ailunora_bot to experience it now.',
+    cta_placeholder: 'Your Email Address',
+    cta_btn: '📩 Get Demo',
+    footer_features: 'Features',
+    footer_pricing: 'Pricing',
+    footer_contact: 'Contact',
+    footer_content: 'Content App',
+    footer_copy: '© 2026 XiangChuan Neo｜YaoTech |Ai_bot'
+  },
+  'zh-CN': {
+    nav_logo: '翔川 Neo｜曜科技 |Ai_bot',
+    nav_features: '功能',
+    nav_demo: '展示',
+    nav_pricing: '价格',
+    nav_contact: '联系',
+    nav_content: '内容展示',
+    hero_badge: '🚀 2026 AI 智慧营销新时代',
+    hero_title: '<span>AI 智能客服</span> + 营销自动化<br>一周内上线',
+    hero_desc: '串接 LLM 智能对话、自动产出营销内容、知识库自增长。从 Telegram Bot 到品牌 App，一站式 AI 营销解决方案。',
+    hero_btn_demo: '📩 获取演示',
+    hero_btn_watch: '▶ 看看如何运作',
+    stat_content: 'AI 生成内容',
+    stat_platform: '支持平台',
+    stat_lang: '语言版本',
+    stat_247: '自动运行',
+    features_title: '一站式 AI 营销平台',
+    features_sub: '从内容生成到客户互动，全部自动化',
+    feat_ai_title: 'AI 智能客服',
+    feat_ai_desc: '串接 Groq Llama 3 LLM，理解客户问题并给出精准回复。支持繁体中文、简体中文、英文自动切换，知识库越用越聪明。',
+    feat_content_title: '自动内容生成',
+    feat_content_desc: '一键产出博客文章、社群贴文、营销文案、电子报。16 种主题 × 5 个平台 × 3 种语言，全年无休自动产出。',
+    feat_kb_title: '知识库自增长',
+    feat_kb_desc: '用户反馈自动沉淀到知识库，Bot 越用越聪明。支持 👍/👎 反馈机制，好的回答自动保存。',
+    feat_multi_title: '多平台分发',
+    feat_multi_desc: 'Telegram Bot + Web App + Flutter 移动 App，一次产出多平台上线。支持 CI/CD 自动部署。',
+    feat_drama_title: 'AI 短剧创作',
+    feat_drama_desc: 'AI 自动生成剧本、分镜描述、英文绘图 Prompt。可直接搭配 MyEdit、Runway 生成视频素材。',
+    feat_data_title: '数据驱动优化',
+    feat_data_desc: '追踪每篇内容的互动数据，AI 分析哪种内容成效好，自动调整生成策略。',
+    demo_title: '实际展示',
+    demo_sub: 'AI 智能客服即时对话 · 自动内容生成',
+    demo_chat_title: '🤖 AI 智能客服即时展示',
+    demo_chat_hint: '点击下方建议问题，或自行输入，体验 AI 客服回复',
+    demo_chat_placeholder: '输入你的问题...',
+    demo_chat_send: '发送',
+    demo_tab_article: '品牌文章',
+    demo_tab_guide: '攻略教学',
+    demo_tab_drama: 'AI 短剧',
+    demo_app_title: '📱 品牌 App → 内容展示',
+    demo_app_btn: '📱 开启完整品牌 App →',
+    pricing_title: '简单透明的价格',
+    pricing_sub: '从个人到企业，找到适合你的方案',
+    price_starter_name: '入门版',
+    price_starter_desc: '适合个人测试体验',
+    price_starter_feat1: 'AI 智能客服（50次/天）',
+    price_starter_feat2: '10 条知识库',
+    price_starter_feat3: '基础回复模板',
+    price_starter_feat4: 'Telegram Bot（@ailunora_bot）',
+    price_starter_btn: '免费试用',
+    price_pro_name: '专业版',
+    price_pro_badge: '最受欢迎',
+    price_pro_desc: '适合中小企业正式运营',
+    price_pro_feat1: '无限对话次数',
+    price_pro_feat2: '500 条知识库',
+    price_pro_feat3: 'LLM 驱动（Groq）',
+    price_pro_feat4: '知识库自增长',
+    price_pro_feat5: 'Web 管理后台',
+    price_pro_feat6: '内容自动生成',
+    price_pro_feat7: '多语言支持',
+    price_pro_btn: '立即开通',
+    price_enterprise_name: '企业版',
+    price_enterprise_desc: '适合大型组织定制需求',
+    price_enterprise_feat1: '私有部署（k3s）',
+    price_enterprise_feat2: '无限知识库',
+    price_enterprise_feat3: '定制模型微调',
+    price_enterprise_feat4: 'SLA 99.9%',
+    price_enterprise_feat5: '专属客户成功',
+    price_enterprise_feat6: 'API 完整串接',
+    price_enterprise_feat7: '品牌 App 定制',
+    price_enterprise_btn: '联系我们',
+    cta_title: '准备好启动你的 AI 营销了吗？',
+    cta_desc: '留下 Email，我们会寄送完整产品介绍与免费试用链接。或直接搜索 Telegram 频道 https://t.me/+QgAyWlVyIxFjNmRl 或 @ailunora_bot 立即体验。',
+    cta_placeholder: '你的 Email 地址',
+    cta_btn: '📩 获取演示',
+    footer_features: '功能',
+    footer_pricing: '价格',
+    footer_contact: '联系',
+    footer_content: '内容展示',
+    footer_copy: '© 2026 翔川 Neo｜曜科技 |Ai_bot'
   }
+};
+
+function switchLang(val) {
+  if (val === 'zh-TW') { location.reload(); return; }
+  const t = LANG[val];
+  if (!t) return;
+  document.querySelectorAll('[data-i18n]').forEach(el => {
+    const key = el.dataset.i18n;
+    if (t[key]) {
+      if (el.dataset.i18nHtml) {
+        el.innerHTML = t[key];
+      } else {
+        el.textContent = t[key];
+      }
+    }
+  });
+  document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
+    const key = el.dataset.i18nPlaceholder;
+    if (t[key]) el.placeholder = t[key];
+  });
 }
 
 let chatHistory = [];
