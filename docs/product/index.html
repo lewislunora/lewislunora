@@ -166,6 +166,7 @@ nav {
 .chat-msg.ai .msg-label {
   font-size: 0.75rem; color: rgba(255,255,255,0.4); margin-bottom: 0.3rem;
 }
+.chat-msg .msg-text { line-height: 1.5; }
 .chat-msg .msg-time {
   font-size: 0.7rem; color: rgba(255,255,255,0.3); margin-top: 0.3rem; text-align: right;
 }
@@ -369,7 +370,13 @@ footer {
       <h3 data-i18n="demo_chat_title">🤖 AI 智能客服即時展示</h3>
       <p style="color:rgba(255,255,255,0.4);font-size:0.85rem;margin-top:0.5rem;" data-i18n="demo_chat_hint">點擊下方建議問題，或自行輸入，體驗 AI 客服回覆</p>
       <div class="chat-container">
-        <div class="chat-messages" id="chatMessages"></div>
+        <div class="chat-messages" id="chatMessages">
+          <div class="chat-msg ai" id="welcome-msg">
+            <div class="msg-label" data-i18n="chat_ai_label">🤖 翔川 Neo｜曜科技 AI 客服</div>
+            <div class="msg-text" data-i18n="chat_welcome_html" data-i18n-html="true">你好！我是翔川 Neo｜曜科技 AI 智能客服 🤖<br><br>我可以幫助你了解我們的 AI 行銷解決方案。試試點擊上方的建議問題，或直接輸入你的問題！</div>
+            <div class="msg-time" id="welcome-time"></div>
+          </div>
+        </div>
         <div class="chat-suggestions" id="chatSuggestions">
           <button onclick="chatSend('我想了解你們的 AI 客服方案')" data-i18n="chat_suggest_1">AI 客服方案</button>
           <button onclick="chatSend('你們支援哪些平台？')" data-i18n="chat_suggest_2">支援平台</button>
@@ -936,6 +943,7 @@ const LANG = {
     chat_suggest_6: 'Get Started',
     chat_ai_label: '🤖 XiangChuan Neo｜YaoTech AI Bot',
     chat_welcome: 'Hello! I am XiangChuan Neo｜YaoTech AI Customer Service 🤖\n\nI can help you learn about our AI marketing solutions. Try clicking the suggested questions above, or type your question!',
+    chat_welcome_html: 'Hello! I am XiangChuan Neo｜YaoTech AI Customer Service 🤖<br><br>I can help you learn about our AI marketing solutions. Try clicking the suggested questions above, or type your question!',
     toast_thanks: '📩 Thank you {email}! We will contact you shortly',
     lang_zt: '繁體中文',
     lang_cn: '簡體中文',
@@ -1031,6 +1039,7 @@ const LANG = {
     chat_suggest_6: '开始使用',
     chat_ai_label: '🤖 翔川 Neo｜曜科技 AI 客服',
     chat_welcome: '你好！我是翔川 Neo｜曜科技 AI 智能客服 🤖\n\n我可以帮助你了解我们的 AI 营销解决方案。试试点击上方的建议问题，或直接输入你的问题！',
+    chat_welcome_html: '你好！我是翔川 Neo｜曜科技 AI 智能客服 🤖<br><br>我可以帮助你了解我们的 AI 营销解决方案。试试点击上方的建议问题，或直接输入你的问题！',
     toast_thanks: '📩 感谢 {email}！我们会尽快与你联系',
     lang_zt: '繁體中文',
     lang_cn: '簡體中文',
@@ -1126,6 +1135,7 @@ const LANG = {
     chat_suggest_6: 'Начать',
     chat_ai_label: '🤖 XiangChuan Neo｜YaoTech AI Бот',
     chat_welcome: 'Здравствуйте! Я AI-помощник XiangChuan Neo 🤖\n\nЗадайте вопрос или нажмите на подсказки выше!',
+    chat_welcome_html: 'Здравствуйте! Я AI-помощник XiangChuan Neo 🤖<br><br>Задайте вопрос или нажмите на подсказки выше!',
     toast_thanks: '📩 Спасибо {email}! Мы свяжемся с вами',
     lang_zt: '繁體中文',
     lang_cn: '簡體中文',
@@ -1242,7 +1252,9 @@ document.addEventListener('DOMContentLoaded', () => {
   pre.textContent = DEMOS['zh-TW'].article;
   pre.style.transition = 'opacity 0.3s';
 
-  addChatMsg(KB_MSG['zh-TW'][6], 'ai');
+  const now = new Date();
+  document.getElementById('welcome-time').textContent =
+    now.getHours().toString().padStart(2,'0') + ':' + now.getMinutes().toString().padStart(2,'0');
 });
 </script>
 </body>
