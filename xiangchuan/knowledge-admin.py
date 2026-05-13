@@ -28,7 +28,7 @@ HTML_TEMPLATE = '''
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>知識庫管理後台 - aingel_bot</title>
+    <title>知識庫管理後台 - 翔川 Neo｜曜科技 |Ai_bot</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { font-family: system-ui, sans-serif; background: #f5f5f5; padding: 20px; }

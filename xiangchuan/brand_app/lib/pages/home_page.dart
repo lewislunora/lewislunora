@@ -28,7 +28,7 @@ class HomePage extends StatelessWidget {
         colors: [Color(0xFF00D4FF), Color(0xFF7B68EE)],
       ).createShader(bounds),
       child: const Text(
-        'aingel_bot',
+        '翔川 Neo｜曜科技 |Ai_bot',
         style: TextStyle(
           fontSize: 40,
           fontWeight: FontWeight.w700,

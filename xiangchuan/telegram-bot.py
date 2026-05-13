@@ -35,7 +35,7 @@ knowledge_base = []
 pending_feedback = {}
 
 # 系統提示
-SYSTEM_PROMPT = """你是 aingel_bot，一個人性化的AI客服與行銷助手。
+SYSTEM_PROMPT = """你是 翔川 Neo｜曜科技 |Ai_bot，一個人性化的AI客服與行銷助手。
 
 業務規則：
 - 提現審核：1-3個工作日，耐心等待
@@ -210,11 +210,11 @@ def get_local_response(message, language='zh-TW'):
     
     if any(word in text for word in ['你好', 'hi', 'hello', '嗨']):
         if language == 'en':
-            return 'Hello! I\'m aingel_bot 🤖 How can I help you today?'
+            return 'Hello! I\'m 翔川 Neo｜曜科技 |Ai_bot 🤖 How can I help you today?'
         elif language == 'zh-CN':
-            return '你好！我是 aingel_bot 🤖 有什么可以帮你的吗？'
+            return '你好！我是 翔川 Neo｜曜科技 |Ai_bot 🤖 有什么可以帮你的吗？'
         else:
-            return '你好！我是 aingel_bot 🤖 有什麼可以幫你的嗎？'
+            return '你好！我是 翔川 Neo｜曜科技 |Ai_bot 🤖 有什麼可以幫你的嗎？'
     
     if any(word in text for word in ['天气', 'weather']):
         return '天氣查詢我暫時不支持哦～有其他需要幫忙的嗎？'
@@ -370,7 +370,7 @@ def webhook():
             text = '你好'
         
         # 移除 @ 提及
-        text_clean = text.replace('@ailunora_bot', '').replace('@aingel_bot', '').strip()
+        text_clean = text.replace('@ailunora_bot', '').replace('@翔川 Neo｜曜科技 |Ai_bot', '').strip()
         
         print(f'收到消息 [chat_id={chat_id}]: {text}', flush=True)
         

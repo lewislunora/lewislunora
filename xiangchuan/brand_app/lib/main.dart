@@ -27,7 +27,7 @@ class BrandApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'aingel_bot',
+      title: '翔川 Neo｜曜科技 |Ai_bot',
       debugShowCheckedModeBanner: false,
       theme: _darkTheme(),
       home: const MainScreen(),
@@ -70,7 +70,7 @@ class _MainScreenState extends State<MainScreen> {
     const ContentListPage(type: 'drama', title: 'AI 短劇'),
   ];
 
-  final _titles = ['aingel_bot', '品牌行銷', '攻略教學', 'AI 短劇'];
+  final _titles = ['翔川 Neo｜曜科技 |Ai_bot', '品牌行銷', '攻略教學', 'AI 短劇'];
 
   @override
   Widget build(BuildContext context) {
