@@ -1,0 +1,776 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ai-character-web
+  labels:
+    app: ai-character-web
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: ai-character-web
+  template:
+    metadata:
+      labels:
+        app: ai-character-web
+    spec:
+      containers:
+      - name: nginx
+        image: nginx:alpine
+        ports:
+        - containerPort: 80
+        volumeMounts:
+        - name: html
+          mountPath: /usr/share/nginx/html/index.html
+          subPath: index.html
+      volumes:
+      - name: html
+        configMap:
+          name: ai-character-html
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: ai-character-html
+data:
+  index.html: |
+    <!DOCTYPE html>
+    <html lang="zh-TW">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>AI 虛擬助手 - 2026</title>
+        <style>
+            * { margin: 0; padding: 0; box-sizing: border-box; }
+            
+            body {
+                font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
+                background: linear-gradient(135deg, #0a0e27 0%, #1a1f3a 50%, #0a0e27 100%);
+                min-height: 100vh;
+                display: flex;
+                flex-direction: column;
+                color: #fff;
+                overflow: hidden;
+            }
+    
+            .header {
+                padding: 1rem 2rem;
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                background: rgba(255,255,255,0.05);
+                backdrop-filter: blur(10px);
+                border-bottom: 1px solid rgba(255,255,255,0.1);
+                position: relative;
+                z-index: 10;
+            }
+    
+            .video-frame {
+                position: fixed;
+                top: 80px;
+                right: 20px;
+                width: 280px;
+                height: 360px;
+                border-radius: 20px;
+                overflow: hidden;
+                border: 2px solid rgba(255,255,255,0.3);
+                box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+                z-index: 1000;
+                background: linear-gradient(135deg, #1a1f3a 0%, #0a0e27 100%);
+            }
+    
+            .video-header {
+                position: absolute;
+                top: 0;
+                left: 0;
+                right: 0;
+                padding: 0.5rem 1rem;
+                background: rgba(0,0,0,0.5);
+                backdrop-filter: blur(10px);
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                font-size: 0.8rem;
+                z-index: 10;
+            }
+    
+            .video-status {
+                display: flex;
+                align-items: center;
+                gap: 0.3rem;
+                color: #00ff88;
+            }
+    
+            .video-dot {
+                width: 6px;
+                height: 6px;
+                background: #00ff88;
+                border-radius: 50%;
+                animation: pulse 2s infinite;
+            }
+    
+            .video-container {
+                width: 100%;
+                height: 100%;
+                position: relative;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            }
+    
+            .beauty-photo {
+                width: 100%;
+                height: 100%;
+                object-fit: cover;
+                object-position: center 20%;
+            }
+    
+            .face-overlay {
+                position: absolute;
+                top: 15%;
+                left: 50%;
+                transform: translateX(-50%);
+                width: 120px;
+                height: 140px;
+            }
+    
+            .face-eyes {
+                position: absolute;
+                top: 35%;
+                left: 50%;
+                transform: translateX(-50%);
+                display: flex;
+                gap: 30px;
+                z-index: 10;
+            }
+    
+            .face-eye-lid {
+                position: absolute;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background: rgba(255, 220, 200, 0.8);
+                border-radius: 50%;
+                transform: scaleY(0);
+                transform-origin: top;
+                animation: eye-blink 4s infinite;
+                z-index: 20;
+            }
+    
+            @keyframes eye-blink {
+                0%, 45%, 55%, 100% { transform: scaleY(0); }
+                50% { transform: scaleY(1); }
+            }
+    
+            .face-mouth-area {
+                position: absolute;
+                bottom: 25%;
+                left: 50%;
+                transform: translateX(-50%);
+                z-index: 10;
+            }
+    
+            .face-mouth {
+                width: 25px;
+                height: 12px;
+                border-bottom: 3px solid rgba(200, 100, 100, 0.8);
+                border-radius: 0 0 50% 50%;
+                transition: all 0.3s;
+            }
+    
+            .speaking .face-mouth {
+                animation: face-speak 0.4s infinite;
+            }
+    
+            @keyframes face-speak {
+                0%, 100% { 
+                    width: 25px; 
+                    height: 12px; 
+                    border-bottom-width: 3px;
+                }
+                50% { 
+                    width: 30px; 
+                    height: 18px; 
+                    border-bottom-width: 4px;
+                }
+            }
+    
+            .speaking .beauty-photo {
+                animation: photo-speak 0.4s infinite;
+            }
+    
+            @keyframes photo-speak {
+                0%, 100% { transform: scale(1); }
+                50% { transform: scale(1.02); }
+            }
+    
+            .beauty-face {
+                position: absolute;
+                top: 20%;
+                left: 50%;
+                transform: translateX(-50%);
+                width: 140px;
+                height: 180px;
+            }
+    
+            .beauty-hair {
+                position: absolute;
+                top: -20px;
+                left: -15px;
+                right: -15px;
+                height: 120px;
+                background: linear-gradient(135deg, #2c1810 0%, #4a2820 50%, #2c1810 100%);
+                border-radius: 70px 70px 0 0;
+                box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+            }
+    
+            .beauty-hair::before {
+                content: '';
+                position: absolute;
+                bottom: -30px;
+                left: -10px;
+                width: 40px;
+                height: 60px;
+                background: inherit;
+                border-radius: 0 0 20px 20px;
+            }
+    
+            .beauty-hair::after {
+                content: '';
+                position: absolute;
+                bottom: -30px;
+                right: -10px;
+                width: 40px;
+                height: 60px;
+                background: inherit;
+                border-radius: 0 0 20px 20px;
+            }
+    
+            .beauty-skin {
+                position: absolute;
+                top: 30px;
+                left: 5px;
+                right: 5px;
+                bottom: 20px;
+                background: linear-gradient(135deg, #ffd4c4 0%, #ffb8a8 100%);
+                border-radius: 60px 60px 50px 50px;
+            }
+    
+            .beauty-eyes-container {
+                position: absolute;
+                top: 60px;
+                left: 50%;
+                transform: translateX(-50%);
+                display: flex;
+                gap: 25px;
+            }
+    
+            .beauty-eye {
+                width: 24px;
+                height: 16px;
+                background: white;
+                border-radius: 50%;
+                position: relative;
+                overflow: hidden;
+                box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            }
+    
+            .beauty-eye::after {
+                content: '';
+                position: absolute;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%);
+                width: 12px;
+                height: 12px;
+                background: #4a90e2;
+                border-radius: 50%;
+            }
+    
+            .beauty-eye::before {
+                content: '';
+                position: absolute;
+                top: 3px;
+                left: 6px;
+                width: 4px;
+                height: 4px;
+                background: white;
+                border-radius: 50%;
+                z-index: 2;
+            }
+    
+            .beauty-eyebrows {
+                position: absolute;
+                top: 50px;
+                left: 50%;
+                transform: translateX(-50%);
+                display: flex;
+                gap: 35px;
+            }
+    
+            .beauty-eyebrow {
+                width: 20px;
+                height: 3px;
+                background: #2c1810;
+                border-radius: 10px;
+            }
+    
+            .beauty-nose {
+                position: absolute;
+                top: 80px;
+                left: 50%;
+                transform: translateX(-50%);
+                width: 8px;
+                height: 12px;
+                border-left: 2px solid #e8a89a;
+                border-right: 2px solid #e8a89a;
+                border-bottom: 2px solid #e8a89a;
+                border-radius: 0 0 50% 50%;
+            }
+    
+            .beauty-mouth {
+                position: absolute;
+                bottom: 40px;
+                left: 50%;
+                transform: translateX(-50%);
+                width: 30px;
+                height: 15px;
+                border-bottom: 3px solid #d4736a;
+                border-radius: 0 0 50% 50%;
+                transition: all 0.3s;
+            }
+    
+            .speaking .beauty-mouth {
+                animation: beauty-speak 0.5s infinite;
+            }
+    
+            @keyframes beauty-speak {
+                0%, 100% { width: 30px; height: 15px; }
+                50% { width: 35px; height: 20px; }
+            }
+    
+            .beauty-blush {
+                position: absolute;
+                top: 85px;
+                width: 25px;
+                height: 15px;
+                background: rgba(255, 150, 150, 0.3);
+                border-radius: 50%;
+                filter: blur(5px);
+            }
+    
+            .beauty-blush.left {
+                left: 15px;
+            }
+    
+            .beauty-blush.right {
+                right: 15px;
+            }
+    
+            .beauty-neck {
+                position: absolute;
+                bottom: 0;
+                left: 50%;
+                transform: translateX(-50%);
+                width: 40px;
+                height: 30px;
+                background: linear-gradient(135deg, #ffd4c4 0%, #ffb8a8 100%);
+                border-radius: 0 0 10px 10px;
+            }
+    
+            .video-overlay {
+                position: absolute;
+                inset: 0;
+                background: linear-gradient(180deg, transparent 0%, rgba(0,0,0,0.1) 100%);
+                pointer-events: none;
+            }
+    
+            .video-glow {
+                position: absolute;
+                bottom: 0;
+                left: 50%;
+                transform: translateX(-50%);
+                width: 200px;
+                height: 200px;
+                background: radial-gradient(circle, rgba(255, 182, 193, 0.3) 0%, transparent 70%);
+                filter: blur(30px);
+                animation: video-glow 3s ease-in-out infinite;
+            }
+    
+            @keyframes video-glow {
+                0%, 100% { opacity: 0.5; transform: translateX(-50%) scale(1); }
+                50% { opacity: 0.8; transform: translateX(-50%) scale(1.1); }
+            }
+    
+            .logo {
+                font-size: 1.2rem;
+                font-weight: 600;
+                background: linear-gradient(135deg, #00d4ff, #7b68ee);
+                -webkit-background-clip: text;
+                -webkit-text-fill-color: transparent;
+            }
+    
+            .status {
+                display: flex;
+                align-items: center;
+                gap: 0.5rem;
+                font-size: 0.9rem;
+                color: #00ff88;
+            }
+    
+            .status-dot {
+                width: 8px;
+                height: 8px;
+                background: #00ff88;
+                border-radius: 50%;
+                animation: pulse 2s infinite;
+            }
+    
+            @keyframes pulse {
+                0%, 100% { opacity: 1; }
+                50% { opacity: 0.5; }
+            }
+    
+            .main-container {
+                flex: 1;
+                display: grid;
+                grid-template-columns: 1fr 400px;
+                gap: 2rem;
+                padding: 2rem;
+                padding-right: 320px;
+                overflow: hidden;
+            }
+            
+            @keyframes blink {
+                0%, 45%, 55%, 100% { transform: scaleY(1); }
+                50% { transform: scaleY(0.1); }
+            }
+    
+            .chat-section {
+                display: flex;
+                flex-direction: column;
+                background: rgba(255,255,255,0.05);
+                backdrop-filter: blur(10px);
+                border-radius: 20px;
+                border: 1px solid rgba(255,255,255,0.1);
+                overflow: hidden;
+            }
+    
+            .chat-header {
+                padding: 1rem 1.5rem;
+                background: rgba(255,255,255,0.05);
+                border-bottom: 1px solid rgba(255,255,255,0.1);
+                font-weight: 600;
+            }
+    
+            .chat-messages {
+                flex: 1;
+                overflow-y: auto;
+                padding: 1.5rem;
+                display: flex;
+                flex-direction: column;
+                gap: 1rem;
+            }
+    
+            .chat-messages::-webkit-scrollbar {
+                width: 6px;
+            }
+    
+            .chat-messages::-webkit-scrollbar-thumb {
+                background: rgba(255,255,255,0.2);
+                border-radius: 3px;
+            }
+    
+            .message {
+                max-width: 80%;
+                padding: 0.75rem 1rem;
+                border-radius: 15px;
+                animation: fadeIn 0.3s ease;
+            }
+    
+            @keyframes fadeIn {
+                from { opacity: 0; transform: translateY(10px); }
+                to { opacity: 1; transform: translateY(0); }
+            }
+    
+            .message.ai {
+                align-self: flex-start;
+                background: rgba(102, 126, 234, 0.3);
+                border: 1px solid rgba(102, 126, 234, 0.5);
+                border-bottom-left-radius: 5px;
+            }
+    
+            .message.user {
+                align-self: flex-end;
+                background: rgba(0, 212, 255, 0.3);
+                border: 1px solid rgba(0, 212, 255, 0.5);
+                border-bottom-right-radius: 5px;
+            }
+    
+            .message-time {
+                font-size: 0.7rem;
+                opacity: 0.5;
+                margin-top: 0.25rem;
+            }
+    
+            .typing-indicator {
+                display: none;
+                align-self: flex-start;
+                padding: 0.75rem 1rem;
+                background: rgba(102, 126, 234, 0.3);
+                border-radius: 15px;
+                border-bottom-left-radius: 5px;
+            }
+    
+            .typing-indicator.active {
+                display: block;
+            }
+    
+            .typing-dot {
+                display: inline-block;
+                width: 8px;
+                height: 8px;
+                background: rgba(255,255,255,0.5);
+                border-radius: 50%;
+                margin: 0 2px;
+                animation: typing 1.4s infinite;
+            }
+    
+            .typing-dot:nth-child(2) { animation-delay: 0.2s; }
+            .typing-dot:nth-child(3) { animation-delay: 0.4s; }
+    
+            @keyframes typing {
+                0%, 60%, 100% { transform: translateY(0); }
+                30% { transform: translateY(-10px); }
+            }
+    
+            .input-area {
+                padding: 1rem 1.5rem;
+                background: rgba(255,255,255,0.05);
+                border-top: 1px solid rgba(255,255,255,0.1);
+                display: flex;
+                gap: 0.5rem;
+            }
+    
+            .input-area input {
+                flex: 1;
+                padding: 0.75rem 1rem;
+                background: rgba(255,255,255,0.1);
+                border: 1px solid rgba(255,255,255,0.2);
+                border-radius: 10px;
+                color: white;
+                font-size: 1rem;
+                outline: none;
+            }
+    
+            .input-area input:focus {
+                border-color: #00d4ff;
+            }
+    
+            .input-area button {
+                padding: 0.75rem 1.5rem;
+                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                border: none;
+                border-radius: 10px;
+                color: white;
+                font-weight: 600;
+                cursor: pointer;
+                transition: transform 0.2s;
+            }
+    
+            .input-area button:hover {
+                transform: scale(1.05);
+            }
+    
+            .input-area button:active {
+                transform: scale(0.95);
+            }
+    
+            .quick-actions {
+                display: flex;
+                gap: 0.5rem;
+                padding: 0.5rem 1.5rem;
+                flex-wrap: wrap;
+            }
+    
+            .quick-btn {
+                padding: 0.5rem 1rem;
+                background: rgba(255,255,255,0.1);
+                border: 1px solid rgba(255,255,255,0.2);
+                border-radius: 20px;
+                color: white;
+                font-size: 0.85rem;
+                cursor: pointer;
+                transition: all 0.3s;
+            }
+    
+            .quick-btn:hover {
+                background: rgba(102, 126, 234, 0.3);
+                border-color: rgba(102, 126, 234, 0.5);
+            }
+    
+            @media (max-width: 768px) {
+                .main-container {
+                    grid-template-columns: 1fr;
+                    grid-template-rows: 300px 1fr;
+                }
+                
+                .character-container {
+                    width: 200px;
+                    height: 250px;
+                }
+            }
+        </style>
+    </head>
+    <body>
+        <header class="header">
+            <div class="logo">🚀 AI 虛擬推廣行銷助手</div>
+            <div class="status">
+                <div class="status-dot"></div>
+                <span>行銷專家線上</span>
+            </div>
+        </header>
+    
+        <div class="video-frame">
+            <div class="video-header">
+                <span>🚀 AI 行銷專家</span>
+                <div class="video-status">
+                    <div class="video-dot"></div>
+                    <span>推廣中</span>
+                </div>
+            </div>
+            <div class="video-container" id="beautyAvatar">
+                <div class="video-glow"></div>
+                <img src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=400&h=600&fit=crop&crop=face" 
+                     alt="AI Assistant" 
+                     class="beauty-photo"
+                     onerror="this.src='data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 400 600%22><rect fill=%22%23f4c2a1%22 width=%22400%22 height=%22600%22/><circle cx=%22200%22 cy=%22250%22 r=%2280%22 fill=%22%23e8a89a%22/><circle cx=%22170%22 cy=%22230%22 r=%228%22 fill=%22%234a90e2%22/><circle cx=%22230%22 cy=%22230%22 r=%228%22 fill=%22%234a90e2%22/><path d=%22M 180 280 Q 200 295 220 280%22 stroke=%22%23d4736a%22 stroke-width=%223%22 fill=%22none%22/></svg>'">
+                <div class="face-overlay">
+                    <div class="face-eyes">
+                        <div style="position:relative;width:24px;height:16px;background:rgba(255,255,255,0.3);border-radius:50%;">
+                            <div class="face-eye-lid"></div>
+                        </div>
+                        <div style="position:relative;width:24px;height:16px;background:rgba(255,255,255,0.3);border-radius:50%;">
+                            <div class="face-eye-lid"></div>
+                        </div>
+                    </div>
+                    <div class="face-mouth-area">
+                        <div class="face-mouth" id="beautyMouth"></div>
+                    </div>
+                </div>
+                <div class="video-overlay"></div>
+            </div>
+        </div>
+    
+        <div class="main-container">
+            <div class="chat-section">
+                <div class="chat-header">💬 推廣行銷對話</div>
+                <div class="chat-messages" id="chatMessages">
+                    <div class="message ai">
+                        <div>您好！我是您的 AI 虛擬推廣行銷助手 🚀</div>
+                        <div class="message-time">現在</div>
+                    </div>
+                    <div class="message ai">
+                        <div>我可以協助您：</div>
+                        <div class="message-time">現在</div>
+                    </div>
+                    <div class="message ai">
+                        <div>📈 制定行銷策略<br>✍️ 撰寫推廣文案<br>🎯 分析目標客群<br>📊 優化轉換率<br>🚀 社群媒體推廣</div>
+                        <div class="message-time">現在</div>
+                    </div>
+                </div>
+    
+                <div class="quick-actions">
+                    <button class="quick-btn" onclick="quickMessage('分析我的產品')">📊 產品分析</button>
+                    <button class="quick-btn" onclick="quickMessage('寫一篇推廣文案')">✍️ 推廣文案</button>
+                    <button class="quick-btn" onclick="quickMessage('制定行銷策略')">🎯 行銷策略</button>
+                    <button class="quick-btn" onclick="quickMessage('社群媒體規劃')">📱 社群規劃</button>
+                </div>
+    
+                <div class="typing-indicator" id="typingIndicator">
+                    <span class="typing-dot"></span>
+                    <span class="typing-dot"></span>
+                    <span class="typing-dot"></span>
+                </div>
+    
+                <div class="input-area">
+                    <input type="text" id="userInput" placeholder="輸入訊息..." onkeydown="if(event.key==='Enter') sendMessage()">
+                    <button onclick="sendMessage()">發送</button>
+                </div>
+            </div>
+        </div>
+    
+        <script>
+            const aiResponses = {
+                '你好': '您好！我是您的 AI 虛擬推廣行銷助手 🚀 很高興為您服務！有什麼行銷需求嗎？',
+                '請介紹你自己': '我是 2026 最新版的 AI 虛擬推廣行銷助手！\n\n🎯 專精數位行銷策略\n💬 支援自然語言互動\n🚀 即時生成推廣文案\n📊 分析市場與競品\n✨ 優化轉換率\n\n隨時告訴我您的推廣需求！',
+                '分析我的產品': '太好了！請告訴我：\n\n📦 產品名稱：？\n🎯 目標客群：？\n💰 價格區間：？\n✨ 產品特色：？\n\n我會為您生成完整的產品分析與行銷建議！',
+                '寫一篇推廣文案': '沒問題！請告訴我：\n\n1️⃣ 產品/服務類型\n2️⃣ 目標受眾\n3️⃣ 想強調的賣點\n4️⃣ 文案風格（溫馨/專業/活潑）\n\n我會為您量身打造吸引人的推廣文案！',
+                '制定行銷策略': '為您制定行銷策略！請提供：\n\n🎯 行銷目標（品牌曝光/銷售/引流）\n💰 預算範圍\n⏰ 推廣時程\n📱 推廣渠道偏好\n\n我會為您規劃完整的行銷藍圖！',
+                '社群媒體規劃': '社群媒體推廣方案：\n\n📱 Facebook：長文+精美圖片\n📸 Instagram：限時動態+Reels短片\n🐦 Twitter：熱門話題+互動\n📺 YouTube：教學/開箱影片\n💼 LinkedIn：專業內容分享\n\n需要我針對特定平台深入規劃嗎？'
+            };
+    
+            const generalResponses = [
+                '這是很好的行銷問題！讓我為您分析...\n\n🎯 建議先鎖定目標客群\n💡 找出產品獨特賣點\n📊 設定可量化的KPI\n🚀 選擇合適的推廣渠道',
+                '我理解您的行銷需求！建議：\n\n1. 進行市場調查與競品分析\n2. 制定分階段推廣計畫\n3. 持續追蹤數據並優化\n4. 建立品牌忠誠度計畫',
+                '根據您的描述，我的建議：\n\n✅ 採用內容行銷提升SEO\n✅ 運用社群媒體增加觸及\n✅ 投放精準廣告提升轉換\n✅ 建立EDM名單做再行銷',
+                '這個行銷策略很有潛力！我可以：\n\n📝 撰寫吸睛的廣告文案\n💻 設計社群媒體內容日曆\n🐛 分析轉換漏斗找出優化點\n📊 製作數據報表追蹤成效',
+                '感謝您的諮詢！我會盡力協助您達成行銷目標 🎯\n\n💡 記得持續測試與優化，數據會告訴您答案！'
+            ];
+    
+            function sendMessage() {
+                const input = document.getElementById('userInput');
+                const msg = input.value.trim();
+                if (!msg) return;
+    
+                addMessage(msg, 'user');
+                input.value = '';
+    
+                // 角色开始说话动画
+                document.getElementById('beautyAvatar').classList.add('speaking');
+                document.getElementById('typingIndicator').classList.add('active');
+    
+                setTimeout(() => {
+                    document.getElementById('typingIndicator').classList.remove('active');
+                    
+                    let reply = aiResponses[msg] || generalResponses[Math.floor(Math.random() * generalResponses.length)];
+                    addMessage(reply, 'ai');
+                    
+                    // 停止说话动画
+                    setTimeout(() => {
+                        document.getElementById('beautyAvatar').classList.remove('speaking');
+                    }, 500);
+                }, 1000 + Math.random() * 1500);
+            }
+    
+            function quickMessage(msg) {
+                document.getElementById('userInput').value = msg;
+                sendMessage();
+            }
+    
+            function addMessage(text, type) {
+                const msgDiv = document.createElement('div');
+                msgDiv.className = `message ${type}`;
+                
+                const time = new Date().toLocaleTimeString('zh-TW', { hour: '2-digit', minute: '2-digit' });
+                msgDiv.innerHTML = `<div>${text.replace(/\n/g, '<br>')}</div><div class="message-time">${time}</div>`;
+                
+                document.getElementById('chatMessages').appendChild(msgDiv);
+                document.getElementById('chatMessages').scrollTop = document.getElementById('chatMessages').scrollHeight;
+            }
+        </script>
+    </body>
+    </html>
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: ai-character-svc
+spec:
+  selector:
+    app: ai-character-web
+  ports:
+  - port: 80
+    targetPort: 80
+  type: ClusterIP

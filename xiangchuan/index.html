@@ -2,99 +2,446 @@
 <html lang="zh-TW">
 <head>
     <meta charset="UTF-8">
-    <title>翔川 Lewis｜靈感源頭</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>文創人才履歷展示平台</title>
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: Arial, sans-serif; line-height: 1.6; background: #fff; color: #333; }
-        .container { max-width: 800px; margin: 0 auto; padding: 40px 20px; }
-        .header { text-align: center; margin-bottom: 40px; }
-        h1 { color: #27ae60; font-size: 48px; margin-bottom: 10px; }
-        .tagline { color: #7f8c8d; font-size: 24px; margin-bottom: 20px; }
-        .highlight { color: #e74c3c; font-weight: bold; }
-        .section { margin: 40px 0; padding-left: 20px; border-left: 4px solid #27ae60; }
-        .section h2 { color: #2c3e50; margin-bottom: 20px; font-size: 24px; }
-        .card { background: #f9f9f9; padding: 25px; margin: 15px 0; border-radius: 12px; border: 1px solid #eee; transition: all 0.3s; }
-        .card:hover { border-color: #27ae60; box-shadow: 0 5px 20px rgba(39,174,96,0.1); }
-        .card-icon { font-size: 32px; margin-bottom: 10px; }
-        .card-title { font-size: 20px; font-weight: bold; color: #2c3e50; margin-bottom: 10px; }
-        .about { background: linear-gradient(135deg, #f8f9fa, #e8f5e9); padding: 30px; border-radius: 15px; }
-        .contact { background: #2c3e50; color: white; padding: 30px; border-radius: 15px; margin-top: 40px; }
-        .contact h2 { color: white; margin-bottom: 20px; }
-        .contact-item { margin: 15px 0; font-size: 18px; }
-        .slogan { text-align: center; padding: 30px; background: linear-gradient(135deg, #27ae60, #2ecc71); color: white; border-radius: 15px; margin-top: 40px; font-size: 20px; font-weight: bold; }
-        .footer { text-align: center; margin-top: 40px; color: #95a5a6; padding: 20px; border-top: 1px solid #eee; }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background: #f5f5f5;
+            min-height: 100vh;
+        }
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .logo {
+            font-size: 1.5rem;
+            font-weight: bold;
+        }
+        .nav {
+            display: flex;
+            gap: 1rem;
+        }
+        .nav button {
+            background: rgba(255,255,255,0.2);
+            border: none;
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+        .nav button:hover, .nav button.active {
+            background: rgba(255,255,255,0.3);
+        }
+        .container {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 0 1rem;
+        }
+        .page {
+            display: none;
+        }
+        .page.active {
+            display: block;
+        }
+        .card {
+            background: white;
+            border-radius: 12px;
+            padding: 2rem;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            margin-bottom: 1.5rem;
+        }
+        .card h2 {
+            margin-bottom: 1.5rem;
+            color: #333;
+        }
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: #555;
+            font-weight: 500;
+        }
+        .form-group input, .form-group textarea, .form-group select {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 1rem;
+        }
+        .form-group textarea {
+            min-height: 100px;
+            resize: vertical;
+        }
+        .btn {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 0.75rem 2rem;
+            border-radius: 8px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+        .btn:hover {
+            background: #5568d3;
+        }
+        .btn-secondary {
+            background: #e0e0e0;
+            color: #333;
+        }
+        .btn-secondary:hover {
+            background: #d0d0d0;
+        }
+        .resume-preview {
+            background: white;
+            border-radius: 12px;
+            padding: 3rem;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+        }
+        .resume-header {
+            text-align: center;
+            padding-bottom: 2rem;
+            border-bottom: 2px solid #f0f0f0;
+            margin-bottom: 2rem;
+        }
+        .resume-avatar {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            margin: 0 auto 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 3rem;
+        }
+        .resume-name {
+            font-size: 2rem;
+            color: #333;
+            margin-bottom: 0.5rem;
+        }
+        .resume-title {
+            color: #666;
+            font-size: 1.2rem;
+        }
+        .resume-section {
+            margin-bottom: 2rem;
+        }
+        .resume-section h3 {
+            color: #667eea;
+            margin-bottom: 1rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 2px solid #667eea;
+        }
+        .resume-item {
+            margin-bottom: 1rem;
+        }
+        .resume-item h4 {
+            color: #333;
+            margin-bottom: 0.25rem;
+        }
+        .resume-item p {
+            color: #666;
+            font-size: 0.9rem;
+        }
+        .tutorial-step {
+            display: flex;
+            gap: 1rem;
+            padding: 1.5rem;
+            background: #f9f9f9;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+        }
+        .step-number {
+            width: 40px;
+            height: 40px;
+            background: #667eea;
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            flex-shrink: 0;
+        }
+        .step-content h4 {
+            margin-bottom: 0.5rem;
+            color: #333;
+        }
+        .step-content p {
+            color: #666;
+        }
+        .tabs {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 1.5rem;
+        }
+        .tab {
+            padding: 0.75rem 1.5rem;
+            background: #e0e0e0;
+            border: none;
+            border-radius: 8px 8px 0 0;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+        .tab.active {
+            background: #667eea;
+            color: white;
+        }
+        .grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+        }
+        @media (max-width: 768px) {
+            .grid-2 {
+                grid-template-columns: 1fr;
+            }
+        }
     </style>
 </head>
 <body>
+    <header class="header">
+        <div class="logo">🎨 文創履歷</div>
+        <nav class="nav">
+            <button onclick="showPage('tutorial')" data-page="tutorial">使用教學</button>
+            <button onclick="showPage('edit')" data-page="edit">編輯資料</button>
+            <button onclick="showPage('preview')" data-page="preview">預覽頁面</button>
+        </nav>
+    </header>
+
     <div class="container">
-        <div class="header">
-            <h1>🌊 翔川 Lewis</h1>
-            <p class="tagline">靈感源頭，智慧啟動，創新飛翔</p>
-            <p style="color: #666;">AI × 命理 × 創作 × 未來</p>
-        </div>
-        
-        <div class="about">
-            <h2>🌟 關於我們</h2>
-            <p>10 年以上資訊科技經驗，曾任上市公司 DevOps 主管，帶領 20+ 人團隊。</p>
-            <p style="margin-top: 15px;">現在創立「<span class="highlight">翔森科技</span>」，用 <span class="highlight">AI + 命理 + 系統思維</span> 幫助創作者與創業者快速建立自己的數位產品。</p>
-        </div>
-        
-        <div class="section">
-            <h2>🎯 服務項目</h2>
+        <!-- 教學頁面 -->
+        <div id="tutorial" class="page">
             <div class="card">
-                <div class="card-icon">🤖</div>
-                <div class="card-title">AI 工具開發</div>
-                <p>Telegram Bot 開發、自動化流程、AI 助理建置</p>
-            </div>
-            <div class="card">
-                <div class="card-icon">🪐</div>
-                <div class="card-title">命理諮詢</div>
-                <p>八字 / 五行 / 星座 / 命名 / 運勢分析</p>
-            </div>
-            <div class="card">
-                <div class="card-icon">🎵</div>
-                <div class="card-title">AI 內容創作</div>
-                <p>AI 音樂製作、影片剪輯、創意內容生成</p>
-            </div>
-            <div class="card">
-                <div class="card-icon">💼</div>
-                <div class="card-title">技術顧問</div>
-                <p>系統架構 / DevOps / K8s / 雲端整合</p>
-            </div>
-        </div>
-        
-        <div class="section">
-            <h2>🏆 核心優勢</h2>
-            <div class="card">
-                <div class="card-title">🚀 技術實力</div>
-                <p>Kubernetes、AWS/GCP、自動化系統、資料庫管理專家</p>
-            </div>
-            <div class="card">
-                <div class="card-title">🧠 創新思維</div>
-                <p>結合命理智慧與 AI 科技，創造獨特差異化</p>
-            </div>
-            <div class="card">
-                <div class="card-title">🤝 誠信服務</div>
-                <p>從需求分析到落地執行，提供完整解決方案</p>
+                <h2>📚 使用教學</h2>
+                <div class="tutorial-step">
+                    <div class="step-number">1</div>
+                    <div class="step-content">
+                        <h4>編輯基本資料</h4>
+                        <p>點擊「編輯資料」頁面，填寫您的姓名、職業、作品集連結等資訊。</p>
+                    </div>
+                </div>
+                <div class="tutorial-step">
+                    <div class="step-number">2</div>
+                    <div class="step-content">
+                        <h4>上傳作品圖片</h4>
+                        <p>在編輯頁面中，您可以上傳代表作品或許可以證明您能力的圖片。</p>
+                    </div>
+                </div>
+                <div class="tutorial-step">
+                    <div class="step-number">3</div>
+                    <div class="step-content">
+                        <h4>預覽個人頁面</h4>
+                        <p>完成編輯後，點擊「預覽頁面」查看您的履歷展示效果。</p>
+                    </div>
+                </div>
+                <div class="tutorial-step">
+                    <div class="step-number">4</div>
+                    <div class="step-content">
+                        <h4>分享給他人</h4>
+                        <p>滿意後，您可以複製連結分享給雇主或客戶。</p>
+                    </div>
+                </div>
             </div>
         </div>
-        
-        <div class="contact">
-            <h2>📮 聯絡我們</h2>
-            <div class="contact-item">📱 Telegram：@NeoXiangAI</div>
-            <div class="contact-item">📧 Email：contact@neoxiang.ai</div>
-            <div class="contact-item">🏢 翔森科技</div>
+
+        <!-- 編輯頁面 -->
+        <div id="edit" class="page">
+            <div class="card">
+                <h2>✏️ 編輯基本資料</h2>
+                <form id="resumeForm">
+                    <div class="grid-2">
+                        <div class="form-group">
+                            <label>姓名</label>
+                            <input type="text" id="name" placeholder="輸入您的姓名" value="王小明">
+                        </div>
+                        <div class="form-group">
+                            <label>職業頭銜</label>
+                            <input type="text" id="title" placeholder="例如：平面設計師" value="UI/UX 設計師">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Email</label>
+                        <input type="email" id="email" placeholder="your@email.com" value="designer@example.com">
+                    </div>
+                    <div class="form-group">
+                        <label>電話</label>
+                        <input type="tel" id="phone" placeholder="09xx-xxx-xxx" value="0912-345-678">
+                    </div>
+                    <div class="form-group">
+                        <label>個人簡介</label>
+                        <textarea id="bio" placeholder="簡單介紹您的專業背景與經歷">專注於 UI/UX 設計，擁有 5 年以上設計經驗，曾參與多個文創專案。</textarea>
+                    </div>
+                    <div class="form-group">
+                        <label>專長技能</label>
+                        <input type="text" id="skills" placeholder="用逗號分隔" value="UI設計, UX研究, Figma, Adobe XD, HTML/CSS">
+                    </div>
+                    <div class="form-group">
+                        <label>作品集連結</label>
+                        <input type="url" id="portfolio" placeholder="https://..." value="https://portfolio.example.com">
+                    </div>
+                    <div class="form-group">
+                        <label>經歷</label>
+                        <textarea id="experience" placeholder="每行一筆經歷">2020-現在：資深設計師 @ ABC 文創公司
+2018-2020：設計師 @ XYZ 設計工作室</textarea>
+                    </div>
+                    <div class="form-group">
+                        <label>學歷</label>
+                        <textarea id="education" placeholder="每行一筆學歷">國立臺灣藝術大學 視覺傳達設計系 碩士
+國立臺灣藝術大學 視覺傳達設計系 學士</textarea>
+                    </div>
+                    <button type="submit" class="btn">儲存資料</button>
+                    <button type="button" class="btn btn-secondary" onclick="showPage('preview')">預覽效果</button>
+                </form>
+            </div>
         </div>
-        
-        <div class="slogan">
-            連接靈感與未來 🌟
-        </div>
-        
-        <div class="footer">
-            <p>© 2026 翔川 Lewis | 翔森科技 | NeoXiang AI</p>
-            <p>用 AI 打造讓靈感落地的工具</p>
+
+        <!-- 預覽頁面 -->
+        <div id="preview" class="page">
+            <div class="card">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+                    <h2>👁️ 預覽您的履歷</h2>
+                    <button class="btn" onclick="copyLink()">複製連結</button>
+                </div>
+            </div>
+            <div class="resume-preview">
+                <div class="resume-header">
+                    <div class="resume-avatar" id="previewAvatar">王</div>
+                    <h1 class="resume-name" id="previewName">王小明</h1>
+                    <p class="resume-title" id="previewTitle">UI/UX 設計師</p>
+                    <p style="color: #888; margin-top: 0.5rem;" id="previewContact">designer@example.com | 0912-345-678</p>
+                </div>
+
+                <div class="resume-section">
+                    <h3>關於我</h3>
+                    <p id="previewBio">專注於 UI/UX 設計，擁有 5 年以上設計經驗，曾參與多個文創專案。</p>
+                </div>
+
+                <div class="resume-section">
+                    <h3>專長技能</h3>
+                    <div id="previewSkills" style="display: flex; flex-wrap: wrap; gap: 0.5rem;">
+                        <span style="background: #f0f0f0; padding: 0.5rem 1rem; border-radius: 20px; font-size: 0.9rem;">UI設計</span>
+                        <span style="background: #f0f0f0; padding: 0.5rem 1rem; border-radius: 20px; font-size: 0.9rem;">UX研究</span>
+                        <span style="background: #f0f0f0; padding: 0.5rem 1rem; border-radius: 20px; font-size: 0.9rem;">Figma</span>
+                    </div>
+                </div>
+
+                <div class="resume-section">
+                    <h3>經歷</h3>
+                    <div id="previewExperience">
+                        <div class="resume-item">
+                            <h4>2020-現在：資深設計師 @ ABC 文創公司</h4>
+                        </div>
+                        <div class="resume-item">
+                            <h4>2018-2020：設計師 @ XYZ 設計工作室</h4>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="resume-section">
+                    <h3>學歷</h3>
+                    <div id="previewEducation">
+                        <div class="resume-item">
+                            <h4>國立臺灣藝術大學 視覺傳達設計系 碩士</h4>
+                        </div>
+                        <div class="resume-item">
+                            <h4>國立臺灣藝術大學 視覺傳達設計系 學士</h4>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="resume-section">
+                    <h3>作品集</h3>
+                    <p><a href="#" id="previewPortfolio" style="color: #667eea;">https://portfolio.example.com</a></p>
+                </div>
+            </div>
         </div>
     </div>
+
+    <script>
+        let resumeData = {
+            name: '王小明',
+            title: 'UI/UX 設計師',
+            email: 'designer@example.com',
+            phone: '0912-345-678',
+            bio: '專注於 UI/UX 設計，擁有 5 年以上設計經驗，曾參與多個文創專案。',
+            skills: 'UI設計, UX研究, Figma, Adobe XD, HTML/CSS',
+            experience: '2020-現在：資深設計師 @ ABC 文創公司\n2018-2020：設計師 @ XYZ 設計工作室',
+            education: '國立臺灣藝術大學 視覺傳達設計系 碩士\n國立臺灣藝術大學 視覺傳達設計系 學士',
+            portfolio: 'https://portfolio.example.com'
+        };
+
+        function showPage(pageId) {
+            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+            document.querySelectorAll('.nav button').forEach(b => b.classList.remove('active'));
+            document.getElementById(pageId).classList.add('active');
+            document.querySelector(`[data-page="${pageId}"]`).classList.add('active');
+            if (pageId === 'preview') {
+                updatePreview();
+            }
+        }
+
+        function updatePreview() {
+            document.getElementById('previewAvatar').textContent = resumeData.name.charAt(0);
+            document.getElementById('previewName').textContent = resumeData.name;
+            document.getElementById('previewTitle').textContent = resumeData.title;
+            document.getElementById('previewContact').textContent = `${resumeData.email} | ${resumeData.phone}`;
+            document.getElementById('previewBio').textContent = resumeData.bio;
+            document.getElementById('previewPortfolio').textContent = resumeData.portfolio;
+            document.getElementById('previewPortfolio').href = resumeData.portfolio;
+
+            const skillsHtml = resumeData.skills.split(',').map(s => 
+                `<span style="background: #f0f0f0; padding: 0.5rem 1rem; border-radius: 20px; font-size: 0.9rem;">${s.trim()}</span>`
+            ).join('');
+            document.getElementById('previewSkills').innerHTML = skillsHtml;
+
+            const expHtml = resumeData.experience.split('\n').filter(e => e.trim()).map(e => 
+                `<div class="resume-item"><h4>${e}</h4></div>`
+            ).join('');
+            document.getElementById('previewExperience').innerHTML = expHtml;
+
+            const eduHtml = resumeData.education.split('\n').filter(e => e.trim()).map(e => 
+                `<div class="resume-item"><h4>${e}</h4></div>`
+            ).join('');
+            document.getElementById('previewEducation').innerHTML = eduHtml;
+        }
+
+        document.getElementById('resumeForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            resumeData = {
+                name: document.getElementById('name').value,
+                title: document.getElementById('title').value,
+                email: document.getElementById('email').value,
+                phone: document.getElementById('phone').value,
+                bio: document.getElementById('bio').value,
+                skills: document.getElementById('skills').value,
+                experience: document.getElementById('experience').value,
+                education: document.getElementById('education').value,
+                portfolio: document.getElementById('portfolio').value
+            };
+            alert('資料已儲存！');
+        });
+
+        function copyLink() {
+            alert('連結已複製到剪貼簿！');
+        }
+
+        showPage('tutorial');
+    </script>
 </body>
 </html>

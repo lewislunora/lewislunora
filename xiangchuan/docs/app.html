@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>aingel_bot 內容中心</title>
+<style>
+* { margin:0; padding:0; box-sizing:border-box; }
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
+  background: #0a0e27; color: #fff; min-height: 100vh;
+}
+header {
+  background: linear-gradient(135deg, #0a0e27, #1a1f3a);
+  padding: 1rem 2rem; position: sticky; top: 0; z-index: 100;
+  border-bottom: 1px solid rgba(255,255,255,0.05);
+  display: flex; justify-content: space-between; align-items: center;
+}
+header h1 {
+  font-size: 1.2rem;
+  background: linear-gradient(135deg, #00d4ff, #7b68ee);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+}
+.tabs {
+  display: flex; gap: 0.5rem;
+}
+.tab {
+  padding: 0.5rem 1rem; border-radius: 8px; cursor: pointer;
+  font-size: 0.9rem; color: rgba(255,255,255,0.5); transition: all 0.3s;
+  border: 1px solid transparent;
+}
+.tab:hover { color: #fff; background: rgba(255,255,255,0.05); }
+.tab.active { color: #fff; background: rgba(0,212,255,0.1); border-color: rgba(0,212,255,0.3); }
+.search-bar {
+  padding: 1rem 2rem; display: flex; gap: 0.5rem;
+}
+.search-bar input {
+  flex: 1; padding: 0.8rem 1rem; border-radius: 10px;
+  border: 1px solid rgba(255,255,255,0.1); background: rgba(255,255,255,0.05);
+  color: #fff; font-size: 1rem; outline: none;
+}
+.search-bar input:focus { border-color: #00d4ff; }
+.search-bar input::placeholder { color: rgba(255,255,255,0.3); }
+.lang-filters { padding: 0 2rem 0.5rem; display: flex; gap: 0.5rem; }
+.lang-btn {
+  padding: 0.3rem 0.8rem; border-radius: 6px; cursor: pointer;
+  font-size: 0.8rem; border: 1px solid rgba(255,255,255,0.1);
+  background: transparent; color: rgba(255,255,255,0.5);
+}
+.lang-btn.active { background: rgba(123,104,238,0.3); border-color: #7b68ee; color: #fff; }
+.content-list { padding: 0.5rem 2rem 2rem; }
+.card {
+  background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.06);
+  border-radius: 12px; padding: 1.2rem; margin-bottom: 0.8rem; cursor: pointer;
+  transition: all 0.3s;
+}
+.card:hover { background: rgba(255,255,255,0.06); transform: translateX(3px); }
+.card-title { font-size: 1rem; font-weight: 600; margin-bottom: 0.3rem; }
+.card-meta { font-size: 0.8rem; color: rgba(255,255,255,0.4); }
+.card-tags { display: flex; gap: 0.4rem; margin-bottom: 0.5rem; flex-wrap: wrap; }
+.tag {
+  padding: 0.15rem 0.5rem; border-radius: 4px; font-size: 0.75rem;
+}
+.tag-type { background: rgba(123,104,238,0.2); color: #7b68ee; }
+.tag-lang { background: rgba(0,212,255,0.2); color: #00d4ff; }
+.tag-platform { background: rgba(255,165,0,0.2); color: orange; }
+.tag-genre { background: rgba(255,105,180,0.2); color: hotpink; }
+
+/* Detail */
+.detail-overlay {
+  position: fixed; top:0; left:0; right:0; bottom:0;
+  background: rgba(0,0,0,0.8); z-index: 200;
+  display: none; overflow-y: auto;
+}
+.detail-overlay.open { display: block; }
+.detail-content {
+  max-width: 700px; margin: 2rem auto; background: #1a1f3a;
+  border-radius: 16px; padding: 2rem; position: relative;
+}
+.detail-close {
+  position: absolute; top: 1rem; right: 1rem;
+  background: none; border: none; color: rgba(255,255,255,0.5);
+  font-size: 1.5rem; cursor: pointer;
+}
+.detail-tags { margin-bottom: 1rem; }
+.detail-title { font-size: 1.5rem; font-weight: 700; margin-bottom: 0.5rem; }
+.detail-date { color: rgba(255,255,255,0.3); font-size: 0.85rem; margin-bottom: 1.5rem; }
+.detail-body {
+  font-size: 1rem; line-height: 1.9; color: rgba(255,255,255,0.85);
+  white-space: pre-wrap;
+}
+.count {
+  text-align: center; color: rgba(255,255,255,0.3); font-size: 0.85rem;
+  padding: 0.5rem 0;
+}
+@media (max-width: 600px) {
+  header { flex-direction: column; gap: 0.5rem; }
+  .detail-content { margin: 0; border-radius: 0; min-height: 100vh; }
+}
+</style>
+</head>
+<body>
+
+<header>
+  <h1>✨ aingel_bot 內容中心</h1>
+  <div class="tabs">
+    <div class="tab active" onclick="switchTab('article',this)">📝 品牌行銷</div>
+    <div class="tab" onclick="switchTab('guide',this)">📖 攻略教學</div>
+    <div class="tab" onclick="switchTab('drama',this)">🎬 AI 短劇</div>
+  </div>
+</header>
+
+<div class="search-bar">
+  <input id="searchInput" placeholder="搜尋內容..." oninput="filterContent()">
+</div>
+<div class="lang-filters" id="langFilters"></div>
+<div class="count" id="count"></div>
+<div class="content-list" id="contentList"></div>
+
+<div class="detail-overlay" id="detailOverlay" onclick="closeDetail(event)">
+  <div class="detail-content" id="detailContent"></div>
+</div>
+
+<script>
+let allData = [];
+let currentType = 'article';
+let currentLang = 'all';
+
+async function loadData() {
+  try {
+    const resp = await fetch('assets/assets/content.json');
+    allData = await resp.json();
+    renderLangFilters();
+    renderContent();
+  } catch(e) {
+    document.getElementById('contentList').innerHTML =
+      '<div style="text-align:center;padding:3rem;color:rgba(255,255,255,0.3)">⚠️ 資料載入失敗</div>';
+  }
+}
+
+function switchTab(type, el) {
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  el.classList.add('active');
+  currentType = type;
+  document.getElementById('searchInput').value = '';
+  currentLang = 'all';
+  renderLangFilters();
+  renderContent();
+}
+
+function renderLangFilters() {
+  const langs = {};
+  allData.filter(d => d.type === currentType).forEach(d => {
+    langs[d.language] = (langs[d.language] || 0) + 1;
+  });
+  const names = { 'zh-tw': '繁中', 'en': 'English', 'zh-cn': '简中' };
+  let html = `<button class="lang-btn ${currentLang==='all'?'active':''}" onclick="setLang('all')">全部</button>`;
+  for (const [code, count] of Object.entries(langs)) {
+    html += `<button class="lang-btn ${currentLang===code?'active':''}" onclick="setLang('${code}')">${names[code]||code} (${count})</button>`;
+  }
+  document.getElementById('langFilters').innerHTML = html;
+}
+
+function setLang(lang) {
+  currentLang = lang;
+  document.querySelectorAll('.lang-btn').forEach(b => {
+    b.classList.toggle('active', b.textContent.includes(lang==='all'?'全部':lang));
+  });
+  renderContent();
+}
+
+function filterContent() {
+  renderContent();
+}
+
+function renderContent() {
+  const q = document.getElementById('searchInput').value.toLowerCase();
+  let items = allData.filter(d => d.type === currentType);
+  if (currentLang !== 'all') items = items.filter(d => d.language === currentLang);
+  if (q) items = items.filter(d => d.title.toLowerCase().includes(q) || d.body.toLowerCase().includes(q));
+
+  document.getElementById('count').textContent = `共 ${items.length} 篇`;
+  document.getElementById('contentList').innerHTML = items.map(item => {
+    const meta = item.platform ? `· ${platformName(item.platform)}` : (item.genre ? `· ${item.genre} · ${item.style}` : '');
+    return `<div class="card" onclick="openDetail('${item.id}')">
+      <div class="card-tags">
+        <span class="tag tag-type">${typeName(item.type)}</span>
+        <span class="tag tag-lang">${langName(item.language)}</span>
+        ${item.platform ? `<span class="tag tag-platform">${platformName(item.platform)}</span>` : ''}
+        ${item.genre ? `<span class="tag tag-genre">${item.genre}</span>` : ''}
+      </div>
+      <div class="card-title">${item.title}</div>
+      <div class="card-meta">${meta}</div>
+    </div>`;
+  }).join('');
+}
+
+function openDetail(id) {
+  const item = allData.find(d => d.id === id);
+  if (!item) return;
+  const meta = item.platform ? `· ${platformName(item.platform)}` : (item.genre ? `· ${item.genre} · ${item.style}` : '');
+  document.getElementById('detailContent').innerHTML = `
+    <button class="detail-close" onclick="closeDetail()">✕</button>
+    <div class="detail-tags">
+      <span class="tag tag-type">${typeName(item.type)}</span>
+      <span class="tag tag-lang">${langName(item.language)}</span>
+      ${item.platform ? `<span class="tag tag-platform">${platformName(item.platform)}</span>` : ''}
+      ${item.genre ? `<span class="tag tag-genre">${item.genre}</span>` : ''}
+    </div>
+    <div class="detail-title">${item.title}</div>
+    <div class="detail-date">AI 自動生成 · ${meta}</div>
+    <div class="detail-body">${escapeHtml(item.body)}</div>
+  `;
+  document.getElementById('detailOverlay').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeDetail(e) {
+  if (e && e.target !== document.getElementById('detailOverlay')) return;
+  document.getElementById('detailOverlay').classList.remove('open');
+  document.body.style.overflow = '';
+}
+
+function platformName(p) {
+  return {blog:'部落格',facebook:'Facebook',threads:'Threads',linkedin:'LinkedIn',email:'電子報'}[p]||p;
+}
+function typeName(t) {
+  return {article:'品牌行銷',guide:'攻略教學',drama:'AI短劇'}[t]||t;
+}
+function langName(l) {
+  return {'zh-tw':'繁中','en':'English','zh-cn':'简中'}[l]||l;
+}
+function escapeHtml(t) {
+  const d = document.createElement('div');
+  d.textContent = t;
+  return d.innerHTML;
+}
+
+loadData();
+</script>
+</body>
+</html>

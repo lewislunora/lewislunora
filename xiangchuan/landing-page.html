@@ -1,0 +1,400 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI 智能助手 - aingel_bot | 招商合作</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
+            background: linear-gradient(135deg, #0a0e27 0%, #1a1f3a 50%, #0a0e27 100%);
+            color: #fff;
+            min-height: 100vh;
+        }
+        .hero {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 2rem;
+            position: relative;
+            overflow: hidden;
+        }
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: radial-gradient(circle at 30% 50%, rgba(0,212,255,0.1) 0%, transparent 50%),
+                        radial-gradient(circle at 70% 50%, rgba(123,104,238,0.1) 0%, transparent 50%);
+            pointer-events: none;
+        }
+        .logo {
+            font-size: 3rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #00d4ff, #7b68ee);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 1rem;
+        }
+        .tagline {
+            font-size: 1.2rem;
+            color: rgba(255,255,255,0.8);
+            margin-bottom: 3rem;
+        }
+        .features {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            max-width: 1000px;
+            width: 100%;
+            margin-bottom: 3rem;
+        }
+        .feature-card {
+            background: rgba(255,255,255,0.05);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 16px;
+            padding: 2rem;
+            text-align: left;
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+        .feature-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        }
+        .feature-icon {
+            font-size: 2rem;
+            margin-bottom: 1rem;
+        }
+        .feature-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+        .feature-desc {
+            color: rgba(255,255,255,0.7);
+            line-height: 1.6;
+        }
+        .pricing {
+            display: flex;
+            gap: 2rem;
+            flex-wrap: wrap;
+            justify-content: center;
+            margin-bottom: 3rem;
+        }
+        .price-card {
+            background: rgba(255,255,255,0.05);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 16px;
+            padding: 2rem;
+            width: 280px;
+            text-align: center;
+        }
+        .price-card.featured {
+            border-color: #00d4ff;
+            box-shadow: 0 0 30px rgba(0,212,255,0.2);
+            transform: scale(1.05);
+        }
+        .price-name {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+        }
+        .price-amount {
+            font-size: 3rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+        .price-period {
+            color: rgba(255,255,255,0.7);
+            margin-bottom: 2rem;
+        }
+        .price-features {
+            list-style: none;
+            margin-bottom: 2rem;
+            text-align: left;
+        }
+        .price-features li {
+            padding: 0.5rem 0;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+        .btn {
+            display: inline-block;
+            padding: 1rem 2rem;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s;
+            cursor: pointer;
+            border: none;
+            font-size: 1rem;
+        }
+        .btn-primary {
+            background: linear-gradient(135deg, #00d4ff, #7b68ee);
+            color: white;
+        }
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,212,255,0.3);
+        }
+        .btn-outline {
+            background: transparent;
+            border: 1px solid rgba(255,255,255,0.2);
+            color: white;
+        }
+        .btn-outline:hover {
+            background: rgba(255,255,255,0.1);
+        }
+        .cta {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+        .cta h2 {
+            font-size: 2rem;
+            margin-bottom: 1rem;
+        }
+        .cta p {
+            color: rgba(255,255,255,0.7);
+            margin-bottom: 2rem;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        .lang-switcher {
+            position: fixed;
+            top: 1rem;
+            right: 1rem;
+            z-index: 100;
+        }
+        .lang-btn {
+            background: rgba(255,255,255,0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.2);
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.9rem;
+        }
+        .footer {
+            text-align: center;
+            padding: 2rem;
+            border-top: 1px solid rgba(255,255,255,0.1);
+            color: rgba(255,255,255,0.5);
+            font-size: 0.9rem;
+        }
+        @media (max-width: 768px) {
+            .logo { font-size: 2rem; }
+            .features { grid-template-columns: 1fr; }
+            .pricing { flex-direction: column; align-items: center; }
+            .price-card.featured { transform: none; }
+        }
+    </style>
+</head>
+<body>
+    <div class="lang-switcher">
+        <button class="lang-btn" onclick="switchLang()">繁體中文 ▼</button>
+    </div>
+
+    <section class="hero">
+        <div class="logo">AI 智能助手</div>
+        <div class="tagline">您的 AI 智能客服与营销助手 🤖</div>
+
+        <div class="features">
+            <div class="feature-card">
+                <div class="feature-icon">💬</div>
+                <div class="feature-title">智能对话</div>
+                <div class="feature-desc">支持繁中/简中/英文，自动识别语言，上下文记忆，自然口语化回复</div>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">📚</div>
+                <div class="feature-title">知识库自增长</div>
+                <div class="feature-desc">用户反馈自动沉淀知识，越用越聪明，支持10/500/无限条知识库</div>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">📊</div>
+                <div class="feature-title">LLM 驱动</div>
+                <div class="feature-desc">接入 Groq Llama 3，响应快速，支持文案生成、产品分析、营销策略</div>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">🌐</div>
+                <div class="feature-title">多场景部署</div>
+                <div class="feature-desc">Telegram Bot / Web 后台 / API 接口，支持 k3s 集群部署</div>
+            </div>
+        </div>
+
+        <div class="cta">
+            <h2>简单透明的价格</h2>
+            <p>选择适合您的方案，快速上线 AI 智能助手</p>
+        </div>
+
+        <div class="pricing">
+            <div class="price-card">
+                <div class="price-name">基础版</div>
+                <div class="price-amount">免费</div>
+                <div class="price-period">永久免费</div>
+                <ul class="price-features">
+                    <li>✅ 50 次对话/天</li>
+                    <li>✅ 10 条知识库</li>
+                    <li>✅ 基础回复模板</li>
+                    <li>✅ Telegram Bot</li>
+                </ul>
+                <button class="btn btn-outline">立即试用</button>
+            </div>
+            <div class="price-card featured">
+                <div class="price-name">专业版</div>
+                <div class="price-amount">$29</div>
+                <div class="price-period">/月</div>
+                <ul class="price-features">
+                    <li>✅ 无限次对话</li>
+                    <li>✅ 500 条知识库</li>
+                    <li>✅ LLM 驱动（Groq）</li>
+                    <li>✅ 知识库自增长</li>
+                    <li>✅ Web 管理后台</li>
+                    <li>✅ 多 Bot 支持</li>
+                </ul>
+                <button class="btn btn-primary">立即开通</button>
+            </div>
+            <div class="price-card">
+                <div class="price-name">企业版</div>
+                <div class="price-amount">$199</div>
+                <div class="price-period">/月</div>
+                <ul class="price-features">
+                    <li>✅ 定制模型微调</li>
+                    <li>✅ 无限知识库</li>
+                    <li>✅ 私有部署（k3s）</li>
+                    <li>✅ SLA 99.9%</li>
+                    <li>✅ 专属客服</li>
+                    <li>✅ API 接口</li>
+                </ul>
+                <button class="btn btn-outline">联系我们</button>
+            </div>
+        </div>
+
+        <div class="cta">
+            <h2>立即体验</h2>
+            <p>搜索 Telegram @coming_soon 开始试用，或联系我们获取演示</p>
+            <button class="btn btn-primary" style="margin-right: 1rem;">试用 Telegram Bot</button>
+            <button class="btn btn-outline">预约演示</button>
+        </div>
+    </section>
+
+    <footer class="footer">
+        © 2026 AI 智能助手 | 联系：ericly76@gmail.com | Telegram: @coming_soon
+    </footer>
+
+    <script>
+        let currentLang = 'zh-TW';
+        const translations = {
+            'zh-TW': {
+                logo: 'AI 智能助手',
+                tagline: '您的 AI 智能客服与营销助手 🤖',
+                features: [
+                    { icon: '💬', title: '智能对话', desc: '支持繁中/简中/英文，自动识别语言，上下文记忆，自然口语化回复' },
+                    { icon: '📚', title: '知识库自增长', desc: '用户反馈自动沉淀知识，越用越聪明，支持10/500/无限条知识库' },
+                    { icon: '📊', title: 'LLM 驱动', desc: '接入 Groq Llama 3，响应快速，支持文案生成、产品分析、营销策略' },
+                    { icon: '🌐', title: '多场景部署', desc: 'Telegram Bot / Web 后台 / API 接口，支持 k3s 集群部署' }
+                ],
+                pricing: {
+                    title: '简单透明的价格',
+                    subtitle: '选择适合您的方案，快速上线 AI 智能助手',
+                    plans: [
+                        { name: '基础版', price: '免费', period: '永久免费', features: ['50 次对话/天', '10 条知识库', '基础回复模板', 'Telegram Bot'] },
+                        { name: '专业版', price: '$29', period: '/月', features: ['无限次对话', '500 条知识库', 'LLM 驱动（Groq）', '知识库自增长', 'Web 管理后台', '多 Bot 支持'], featured: true },
+                        { name: '企业版', price: '$199', period: '/月', features: ['定制模型微调', '无限知识库', '私有部署（k3s）', 'SLA 99.9%', '专属客服', 'API 接口'] }
+                    ]
+                },
+                cta: {
+                    title: '立即体验',
+                    subtitle: '搜索 Telegram @coming_soon 开始试用，或联系我们获取演示'
+                }
+            },
+            'zh-CN': {
+                logo: 'AI 智能助手',
+                tagline: '您的 AI 智能客服与营销助手 🤖',
+                features: [
+                    { icon: '💬', title: '智能对话', desc: '支持繁中/简中/英文，自动识别语言，上下文记忆，自然口语化回复' },
+                    { icon: '📚', title: '知识库自增长', desc: '用户反馈自动沉淀知识，越用越聪明，支持10/500/无限条知识库' },
+                    { icon: '📊', title: 'LLM 驱动', desc: '接入 Groq Llama 3，响应快速，支持文案生成、产品分析、营销策略' },
+                    { icon: '🌐', title: '多场景部署', desc: 'Telegram Bot / Web 后台 / API 接口，支持 k3s 集群部署' }
+                ],
+                pricing: {
+                    title: '简单透明的价格',
+                    subtitle: '选择适合您的方案，快速上线 AI 智能助手',
+                    plans: [
+                        { name: '基础版', price: '免费', period: '永久免费', features: ['50 次对话/天', '10 条知识库', '基础回复模板', 'Telegram Bot'] },
+                        { name: '专业版', price: '$29', period: '/月', features: ['无限次对话', '500 条知识库', 'LLM 驱动（Groq）', '知识库自增长', 'Web 管理后台', '多 Bot 支持'], featured: true },
+                        { name: '企业版', price: '$199', period: '/月', features: ['定制模型微调', '无限知识库', '私有部署（k3s）', 'SLA 99.9%', '专属客服', 'API 接口'] }
+                    ]
+                },
+                cta: {
+                    title: '立即体验',
+                    subtitle: '搜索 Telegram @coming_soon 开始试用，或联系我们获取演示'
+                }
+            },
+            'en': {
+                logo: 'AI Smart Assistant',
+                tagline: 'Your AI Customer Service & Marketing Assistant 🤖',
+                features: [
+                    { icon: '💬', title: 'Smart Conversation', desc: 'Supports Traditional/Simplified Chinese & English, auto language detection, context memory, natural口语化 replies' },
+                    { icon: '📚', title: 'Knowledge Base Growth', desc: 'User feedback auto-saves to knowledge base, gets smarter over time, supports 10/500/unlimited entries' },
+                    { icon: '📊', title: 'LLM Powered', desc: 'Powered by Groq Llama 3, fast response, supports copywriting, product analysis, marketing strategy' },
+                    { icon: '🌐', title: 'Multi-Scenario Deployment', desc: 'Telegram Bot / Web Admin / API, supports k3s cluster deployment' }
+                ],
+                pricing: {
+                    title: 'Simple & Transparent Pricing',
+                    subtitle: 'Choose the plan that fits you, launch your AI assistant fast',
+                    plans: [
+                        { name: 'Basic', price: 'Free', period: 'Forever', features: ['50 conversations/day', '10 knowledge entries', 'Basic reply templates', 'Telegram Bot'] },
+                        { name: 'Pro', price: '$29', period: '/mo', features: ['Unlimited conversations', '500 knowledge entries', 'LLM powered (Groq)', 'Knowledge growth', 'Web admin panel', 'Multi-Bot support'], featured: true },
+                        { name: 'Enterprise', price: '$199', period: '/mo', features: ['Custom model tuning', 'Unlimited knowledge', 'Private deployment (k3s)', 'SLA 99.9%', 'Dedicated support', 'API access'] }
+                    ]
+                },
+                cta: {
+                    title: 'Try Now',
+                    subtitle: 'Search Telegram @coming_soon to try, or contact us for a demo'
+                }
+            }
+        };
+
+        function switchLang() {
+            if (currentLang === 'zh-TW') currentLang = 'zh-CN';
+            else if (currentLang === 'zh-CN') currentLang = 'en';
+            else currentLang = 'zh-TW';
+            
+            const t = translations[currentLang];
+            document.querySelector('.logo').textContent = t.logo;
+            document.querySelector('.tagline').textContent = t.tagline;
+            
+            const featureCards = document.querySelectorAll('.feature-card');
+            t.features.forEach((f, i) => {
+                featureCards[i].querySelector('.feature-icon').textContent = f.icon;
+                featureCards[i].querySelector('.feature-title').textContent = f.title;
+                featureCards[i].querySelector('.feature-desc').textContent = f.desc;
+            });
+            
+            document.querySelector('.cta h2').textContent = t.pricing.title;
+            document.querySelector('.cta p').textContent = t.pricing.subtitle;
+            
+            const priceCards = document.querySelectorAll('.price-card');
+            t.pricing.plans.forEach((plan, i) => {
+                priceCards[i].querySelector('.price-name').textContent = plan.name;
+                priceCards[i].querySelector('.price-amount').textContent = plan.price;
+                priceCards[i].querySelector('.price-period').textContent = plan.period;
+                const ul = priceCards[i].querySelector('.price-features');
+                ul.innerHTML = plan.features.map(f => `<li>✅ ${f}</li>`).join('');
+            });
+            
+            document.querySelectorAll('.cta')[1].querySelector('h2').textContent = t.cta.title;
+            document.querySelectorAll('.cta')[1].querySelector('p').textContent = t.cta.subtitle;
+            
+            const btn = document.querySelector('.lang-switcher .lang-btn');
+            btn.textContent = currentLang === 'zh-TW' ? '繁體中文 ▼' : currentLang === 'zh-CN' ? '簡體中文 ▼' : 'English ▼';
+        }
+    </script>
+</body>
+</html>

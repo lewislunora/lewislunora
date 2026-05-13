@@ -1,0 +1,23 @@
+version: '3.8'
+
+services:
+  nginx:
+    image: nginx:alpine
+    container_name: ai-nginx
+    ports:
+      - "8080:80"
+    volumes:
+      - ./html:/usr/share/nginx/html:ro
+      - ./nginx/conf.d:/etc/nginx/conf.d:ro
+    restart: unless-stopped
+
+  mock-api:
+    image: node:alpine
+    container_name: ai-mock-api
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./mock-api:/app
+    working_dir: /app
+    command: sh -c "echo 'console.log(\"AI Mock API running on port 3000\"); const http=require(\"http\"); http.createServer((req,res)=>{res.writeHead(200,{\"Content-Type\":\"application/json\"});res.end(JSON.stringify({reply:\"这是AI模拟回复\"}))}).listen(3000)' > server.js && node server.js"
+    restart: unless-stopped

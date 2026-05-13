@@ -1,0 +1,24 @@
+[START] 開始產生 6 篇攻略文
+============================================================
+[1/6] 2026 AI 工具全攻略：創業者必備的 10 個免費 AI 工具...
+  [ERROR] 429: {"error":{"message":"Rate limit reached for model `llama-3.3-70b-versatile` in organization `org_01kr0knk3weg38kx46ghwjwyk7` service tier `on_demand` on tokens per day (TPD): Limit 100000, Used 97644,
+[2/6] AI 自動化行銷完整教學：從零開始建立你的自動化系統...
+  [ERROR] 429: {"error":{"message":"Rate limit reached for model `llama-3.3-70b-versatile` in organization `org_01kr0knk3weg38kx46ghwjwyk7` service tier `on_demand` on tokens per day (TPD): Limit 100000, Used 97609,
+[3/6] 2026 個人品牌經營趨勢：AI 時代的個人IP打造攻略...
+  [ERROR] 429: {"error":{"message":"Rate limit reached for model `llama-3.3-70b-versatile` in organization `org_01kr0knk3weg38kx46ghwjwyk7` service tier `on_demand` on tokens per day (TPD): Limit 100000, Used 97574,
+[4/6] Telegram Bot 從零到一：用 AI 打造你的 24 小時客服機器人...
+  [ERROR] 429: {"error":{"message":"Rate limit reached for model `llama-3.3-70b-versatile` in organization `org_01kr0knk3weg38kx46ghwjwyk7` service tier `on_demand` on tokens per day (TPD): Limit 100000, Used 97539,
+[5/6] 2026 最強 AI 影片生成工具評比：MyEdit vs Runway vs ...
+  [ERROR] 429: {"error":{"message":"Rate limit reached for model `llama-3.3-70b-versatile` in organization `org_01kr0knk3weg38kx46ghwjwyk7` service tier `on_demand` on tokens per day (TPD): Limit 100000, Used 97504,
+[6/6] AI 創業入門：沒有技術背景也能啟動的 5 個 AI 生意點子...
+  [ERROR] 429: {"error":{"message":"Rate limit reached for model `llama-3.3-70b-versatile` in organization `org_01kr0knk3weg38kx46ghwjwyk7` service tier `on_demand` on tokens per day (TPD): Limit 100000, Used 97469,
+
+============================================================
+[DONE] 3m1s，共 6 篇
+[WARN] 6 錯誤:
+  [1] 2026 AI 工具全攻略：創業者必備的 10 個免費 AI 工具: [ERROR] 429: {"error":{"message":"Rate limit reached for model `llama-3.3-70b-versatile` in organization `org_01kr0knk3weg38kx46ghwjwyk7` service tier `on_demand` on tokens per day (TPD): Limit 100000, Used 97644,
+  [2] AI 自動化行銷完整教學：從零開始建立你的自動化系統: [ERROR] 429: {"error":{"message":"Rate limit reached for model `llama-3.3-70b-versatile` in organization `org_01kr0knk3weg38kx46ghwjwyk7` service tier `on_demand` on tokens per day (TPD): Limit 100000, Used 97609,
+  [3] 2026 個人品牌經營趨勢：AI 時代的個人IP打造攻略: [ERROR] 429: {"error":{"message":"Rate limit reached for model `llama-3.3-70b-versatile` in organization `org_01kr0knk3weg38kx46ghwjwyk7` service tier `on_demand` on tokens per day (TPD): Limit 100000, Used 97574,
+  [4] Telegram Bot 從零到一：用 AI 打造你的 24 小時客服機器人: [ERROR] 429: {"error":{"message":"Rate limit reached for model `llama-3.3-70b-versatile` in organization `org_01kr0knk3weg38kx46ghwjwyk7` service tier `on_demand` on tokens per day (TPD): Limit 100000, Used 97539,
+  [5] 2026 最強 AI 影片生成工具評比：MyEdit vs Runway vs 即夢 AI: [ERROR] 429: {"error":{"message":"Rate limit reached for model `llama-3.3-70b-versatile` in organization `org_01kr0knk3weg38kx46ghwjwyk7` service tier `on_demand` on tokens per day (TPD): Limit 100000, Used 97504,
+  [6] AI 創業入門：沒有技術背景也能啟動的 5 個 AI 生意點子: [ERROR] 429: {"error":{"message":"Rate limit reached for model `llama-3.3-70b-versatile` in organization `org_01kr0knk3weg38kx46ghwjwyk7` service tier `on_demand` on tokens per day (TPD): Limit 100000, Used 97469,

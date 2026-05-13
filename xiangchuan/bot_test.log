@@ -1,0 +1,12 @@
+============================================================
+AI 虛擬推廣行銷助手 - Telegram Bot (升級版)
+============================================================
+功能：LLM驅動、上下文記憶、工具調用、多語言
+使用輪詢模式啟動 Bot...
+TELEGRAM_API: https://api.telegram.org/bot8653211794:AAG08xDDj0UDkX18TE60BQSVs-bwwVh8AH8
+Bot 已啟動！請在 Telegram 中搜索 @ailunora_bot 開始對話
+按 Ctrl+C 停止
+============================================================
+API 返回錯誤: {'ok': False, 'error_code': 409, 'description': 'Conflict: terminated by other getUpdates request; make sure that only one bot instance is running'}
+API 返回錯誤: {'ok': False, 'error_code': 409, 'description': 'Conflict: terminated by other getUpdates request; make sure that only one bot instance is running'}
+API 返回錯誤: {'ok': False, 'error_code': 409, 'description': 'Conflict: terminated by other getUpdates request; make sure that only one bot instance is running'}

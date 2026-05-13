@@ -1,0 +1,99 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: my-commerce
+  labels:
+    app: my-commerce
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: my-commerce
+  template:
+    metadata:
+      labels:
+        app: my-commerce
+    spec:
+      containers:
+      - name: my-commerce
+        image: my-commerce:latest
+        imagePullPolicy: Never
+        ports:
+        - containerPort: 3000
+        resources:
+          requests:
+            memory: "256Mi"
+            cpu: "200m"
+          limits:
+            memory: "512Mi"
+            cpu: "500m"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: my-commerce-svc
+spec:
+  selector:
+    app: my-commerce
+  ports:
+  - port: 3000
+    targetPort: 3000
+  type: ClusterIP
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: telegram-secret
+type: Opaque
+stringData:
+  token: "8653211794:AAG08xDDj0UDkX18TE60BQSVs-bwwVh8AH8"
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: telegram-bot-new
+  labels:
+    app: telegram-bot-new
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: telegram-bot-new
+  template:
+    metadata:
+      labels:
+        app: telegram-bot-new
+    spec:
+      containers:
+      - name: telegram-bot
+        image: telegram-bot:latest
+        imagePullPolicy: Never
+        ports:
+        - containerPort: 5000
+        env:
+        - name: TELEGRAM_TOKEN
+          valueFrom:
+            secretKeyRef:
+              name: telegram-secret
+              key: token
+        - name: PYTHONUNBUFFERED
+          value: "1"
+        resources:
+          requests:
+            memory: "128Mi"
+            cpu: "100m"
+          limits:
+            memory: "256Mi"
+            cpu: "200m"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: telegram-bot-new-svc
+spec:
+  selector:
+    app: telegram-bot-new
+  ports:
+  - port: 5000
+    targetPort: 5000
+  type: ClusterIP

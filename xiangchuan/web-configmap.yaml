@@ -1,0 +1,272 @@
+apiVersion: v1
+data:
+  index.html: "<!DOCTYPE html>\n<html lang=\"zh-TW\">\n<head>\n    <meta charset=\"UTF-8\">\n
+    \   <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n
+    \   <title>AI 虛擬助手 - 2026</title>\n    <style>\n        * { margin: 0; padding:
+    0; box-sizing: border-box; }\n        \n        body {\n            font-family:
+    -apple-system, BlinkMacSystemFont, \"Segoe UI\", system-ui, sans-serif;\n            background:
+    linear-gradient(135deg, #0a0e27 0%, #1a1f3a 50%, #0a0e27 100%);\n            min-height:
+    100vh;\n            display: flex;\n            flex-direction: column;\n            color:
+    #fff;\n            overflow: hidden;\n        }\n\n        .header {\n            padding:
+    1rem 2rem;\n            display: flex;\n            justify-content: space-between;\n
+    \           align-items: center;\n            background: rgba(255,255,255,0.05);\n
+    \           backdrop-filter: blur(10px);\n            border-bottom: 1px solid
+    rgba(255,255,255,0.1);\n            position: relative;\n            z-index:
+    10;\n        }\n\n        .video-frame {\n            position: fixed;\n            top:
+    80px;\n            right: 20px;\n            width: 280px;\n            height:
+    360px;\n            border-radius: 20px;\n            overflow: hidden;\n            border:
+    2px solid rgba(255,255,255,0.3);\n            box-shadow: 0 10px 40px rgba(0,0,0,0.5);\n
+    \           z-index: 1000;\n            background: linear-gradient(135deg, #1a1f3a
+    0%, #0a0e27 100%);\n        }\n\n        .video-header {\n            position:
+    absolute;\n            top: 0;\n            left: 0;\n            right: 0;\n
+    \           padding: 0.5rem 1rem;\n            background: rgba(0,0,0,0.5);\n
+    \           backdrop-filter: blur(10px);\n            display: flex;\n            justify-content:
+    space-between;\n            align-items: center;\n            font-size: 0.8rem;\n
+    \           z-index: 10;\n        }\n\n        .video-status {\n            display:
+    flex;\n            align-items: center;\n            gap: 0.3rem;\n            color:
+    #00ff88;\n        }\n\n        .video-dot {\n            width: 6px;\n            height:
+    6px;\n            background: #00ff88;\n            border-radius: 50%;\n            animation:
+    pulse 2s infinite;\n        }\n\n        .video-container {\n            width:
+    100%;\n            height: 100%;\n            position: relative;\n            display:
+    flex;\n            align-items: center;\n            justify-content: center;\n
+    \       }\n\n        .beauty-photo {\n            width: 100%;\n            height:
+    100%;\n            object-fit: cover;\n            object-position: center 20%;\n
+    \       }\n\n        .face-overlay {\n            position: absolute;\n            top:
+    15%;\n            left: 50%;\n            transform: translateX(-50%);\n            width:
+    120px;\n            height: 140px;\n        }\n\n        .face-eyes {\n            position:
+    absolute;\n            top: 35%;\n            left: 50%;\n            transform:
+    translateX(-50%);\n            display: flex;\n            gap: 30px;\n            z-index:
+    10;\n        }\n\n        .face-eye-lid {\n            position: absolute;\n            top:
+    0;\n            left: 0;\n            width: 100%;\n            height: 100%;\n
+    \           background: rgba(255, 220, 200, 0.8);\n            border-radius:
+    50%;\n            transform: scaleY(0);\n            transform-origin: top;\n
+    \           animation: eye-blink 4s infinite;\n            z-index: 20;\n        }\n\n
+    \       @keyframes eye-blink {\n            0%, 45%, 55%, 100% { transform: scaleY(0);
+    }\n            50% { transform: scaleY(1); }\n        }\n\n        .face-mouth-area
+    {\n            position: absolute;\n            bottom: 25%;\n            left:
+    50%;\n            transform: translateX(-50%);\n            z-index: 10;\n        }\n\n
+    \       .face-mouth {\n            width: 25px;\n            height: 12px;\n            border-bottom:
+    3px solid rgba(200, 100, 100, 0.8);\n            border-radius: 0 0 50% 50%;\n
+    \           transition: all 0.3s;\n        }\n\n        .speaking .face-mouth
+    {\n            animation: face-speak 0.4s infinite;\n        }\n\n        @keyframes
+    face-speak {\n            0%, 100% { \n                width: 25px; \n                height:
+    12px; \n                border-bottom-width: 3px;\n            }\n            50%
+    { \n                width: 30px; \n                height: 18px; \n                border-bottom-width:
+    4px;\n            }\n        }\n\n        .speaking .beauty-photo {\n            animation:
+    photo-speak 0.4s infinite;\n        }\n\n        @keyframes photo-speak {\n            0%,
+    100% { transform: scale(1); }\n            50% { transform: scale(1.02); }\n        }\n\n
+    \       .beauty-face {\n            position: absolute;\n            top: 20%;\n
+    \           left: 50%;\n            transform: translateX(-50%);\n            width:
+    140px;\n            height: 180px;\n        }\n\n        .beauty-hair {\n            position:
+    absolute;\n            top: -20px;\n            left: -15px;\n            right:
+    -15px;\n            height: 120px;\n            background: linear-gradient(135deg,
+    #2c1810 0%, #4a2820 50%, #2c1810 100%);\n            border-radius: 70px 70px
+    0 0;\n            box-shadow: 0 5px 15px rgba(0,0,0,0.3);\n        }\n\n        .beauty-hair::before
+    {\n            content: '';\n            position: absolute;\n            bottom:
+    -30px;\n            left: -10px;\n            width: 40px;\n            height:
+    60px;\n            background: inherit;\n            border-radius: 0 0 20px 20px;\n
+    \       }\n\n        .beauty-hair::after {\n            content: '';\n            position:
+    absolute;\n            bottom: -30px;\n            right: -10px;\n            width:
+    40px;\n            height: 60px;\n            background: inherit;\n            border-radius:
+    0 0 20px 20px;\n        }\n\n        .beauty-skin {\n            position: absolute;\n
+    \           top: 30px;\n            left: 5px;\n            right: 5px;\n            bottom:
+    20px;\n            background: linear-gradient(135deg, #ffd4c4 0%, #ffb8a8 100%);\n
+    \           border-radius: 60px 60px 50px 50px;\n        }\n\n        .beauty-eyes-container
+    {\n            position: absolute;\n            top: 60px;\n            left:
+    50%;\n            transform: translateX(-50%);\n            display: flex;\n            gap:
+    25px;\n        }\n\n        .beauty-eye {\n            width: 24px;\n            height:
+    16px;\n            background: white;\n            border-radius: 50%;\n            position:
+    relative;\n            overflow: hidden;\n            box-shadow: 0 2px 4px rgba(0,0,0,0.1);\n
+    \       }\n\n        .beauty-eye::after {\n            content: '';\n            position:
+    absolute;\n            top: 50%;\n            left: 50%;\n            transform:
+    translate(-50%, -50%);\n            width: 12px;\n            height: 12px;\n
+    \           background: #4a90e2;\n            border-radius: 50%;\n        }\n\n
+    \       .beauty-eye::before {\n            content: '';\n            position:
+    absolute;\n            top: 3px;\n            left: 6px;\n            width: 4px;\n
+    \           height: 4px;\n            background: white;\n            border-radius:
+    50%;\n            z-index: 2;\n        }\n\n        .beauty-eyebrows {\n            position:
+    absolute;\n            top: 50px;\n            left: 50%;\n            transform:
+    translateX(-50%);\n            display: flex;\n            gap: 35px;\n        }\n\n
+    \       .beauty-eyebrow {\n            width: 20px;\n            height: 3px;\n
+    \           background: #2c1810;\n            border-radius: 10px;\n        }\n\n
+    \       .beauty-nose {\n            position: absolute;\n            top: 80px;\n
+    \           left: 50%;\n            transform: translateX(-50%);\n            width:
+    8px;\n            height: 12px;\n            border-left: 2px solid #e8a89a;\n
+    \           border-right: 2px solid #e8a89a;\n            border-bottom: 2px solid
+    #e8a89a;\n            border-radius: 0 0 50% 50%;\n        }\n\n        .beauty-mouth
+    {\n            position: absolute;\n            bottom: 40px;\n            left:
+    50%;\n            transform: translateX(-50%);\n            width: 30px;\n            height:
+    15px;\n            border-bottom: 3px solid #d4736a;\n            border-radius:
+    0 0 50% 50%;\n            transition: all 0.3s;\n        }\n\n        .speaking
+    .beauty-mouth {\n            animation: beauty-speak 0.5s infinite;\n        }\n\n
+    \       @keyframes beauty-speak {\n            0%, 100% { width: 30px; height:
+    15px; }\n            50% { width: 35px; height: 20px; }\n        }\n\n        .beauty-blush
+    {\n            position: absolute;\n            top: 85px;\n            width:
+    25px;\n            height: 15px;\n            background: rgba(255, 150, 150,
+    0.3);\n            border-radius: 50%;\n            filter: blur(5px);\n        }\n\n
+    \       .beauty-blush.left {\n            left: 15px;\n        }\n\n        .beauty-blush.right
+    {\n            right: 15px;\n        }\n\n        .beauty-neck {\n            position:
+    absolute;\n            bottom: 0;\n            left: 50%;\n            transform:
+    translateX(-50%);\n            width: 40px;\n            height: 30px;\n            background:
+    linear-gradient(135deg, #ffd4c4 0%, #ffb8a8 100%);\n            border-radius:
+    0 0 10px 10px;\n        }\n\n        .video-overlay {\n            position: absolute;\n
+    \           inset: 0;\n            background: linear-gradient(180deg, transparent
+    0%, rgba(0,0,0,0.1) 100%);\n            pointer-events: none;\n        }\n\n        .video-glow
+    {\n            position: absolute;\n            bottom: 0;\n            left:
+    50%;\n            transform: translateX(-50%);\n            width: 200px;\n            height:
+    200px;\n            background: radial-gradient(circle, rgba(255, 182, 193, 0.3)
+    0%, transparent 70%);\n            filter: blur(30px);\n            animation:
+    video-glow 3s ease-in-out infinite;\n        }\n\n        @keyframes video-glow
+    {\n            0%, 100% { opacity: 0.5; transform: translateX(-50%) scale(1);
+    }\n            50% { opacity: 0.8; transform: translateX(-50%) scale(1.1); }\n
+    \       }\n\n        .logo {\n            font-size: 1.2rem;\n            font-weight:
+    600;\n            background: linear-gradient(135deg, #00d4ff, #7b68ee);\n            -webkit-background-clip:
+    text;\n            -webkit-text-fill-color: transparent;\n        }\n\n        .status
+    {\n            display: flex;\n            align-items: center;\n            gap:
+    0.5rem;\n            font-size: 0.9rem;\n            color: #00ff88;\n        }\n\n
+    \       .status-dot {\n            width: 8px;\n            height: 8px;\n            background:
+    #00ff88;\n            border-radius: 50%;\n            animation: pulse 2s infinite;\n
+    \       }\n\n        @keyframes pulse {\n            0%, 100% { opacity: 1; }\n
+    \           50% { opacity: 0.5; }\n        }\n\n        .main-container {\n            flex:
+    1;\n            display: grid;\n            grid-template-columns: 1fr 400px;\n
+    \           gap: 2rem;\n            padding: 2rem;\n            padding-right:
+    320px;\n            overflow: hidden;\n        }\n        \n        @keyframes
+    blink {\n            0%, 45%, 55%, 100% { transform: scaleY(1); }\n            50%
+    { transform: scaleY(0.1); }\n        }\n\n        .chat-section {\n            display:
+    flex;\n            flex-direction: column;\n            background: rgba(255,255,255,0.05);\n
+    \           backdrop-filter: blur(10px);\n            border-radius: 20px;\n            border:
+    1px solid rgba(255,255,255,0.1);\n            overflow: hidden;\n        }\n\n
+    \       .chat-header {\n            padding: 1rem 1.5rem;\n            background:
+    rgba(255,255,255,0.05);\n            border-bottom: 1px solid rgba(255,255,255,0.1);\n
+    \           font-weight: 600;\n        }\n\n        .chat-messages {\n            flex:
+    1;\n            overflow-y: auto;\n            padding: 1.5rem;\n            display:
+    flex;\n            flex-direction: column;\n            gap: 1rem;\n        }\n\n
+    \       .chat-messages::-webkit-scrollbar {\n            width: 6px;\n        }\n\n
+    \       .chat-messages::-webkit-scrollbar-thumb {\n            background: rgba(255,255,255,0.2);\n
+    \           border-radius: 3px;\n        }\n\n        .message {\n            max-width:
+    80%;\n            padding: 0.75rem 1rem;\n            border-radius: 15px;\n            animation:
+    fadeIn 0.3s ease;\n        }\n\n        @keyframes fadeIn {\n            from
+    { opacity: 0; transform: translateY(10px); }\n            to { opacity: 1; transform:
+    translateY(0); }\n        }\n\n        .message.ai {\n            align-self:
+    flex-start;\n            background: rgba(102, 126, 234, 0.3);\n            border:
+    1px solid rgba(102, 126, 234, 0.5);\n            border-bottom-left-radius: 5px;\n
+    \       }\n\n        .message.user {\n            align-self: flex-end;\n            background:
+    rgba(0, 212, 255, 0.3);\n            border: 1px solid rgba(0, 212, 255, 0.5);\n
+    \           border-bottom-right-radius: 5px;\n        }\n\n        .message-time
+    {\n            font-size: 0.7rem;\n            opacity: 0.5;\n            margin-top:
+    0.25rem;\n        }\n\n        .typing-indicator {\n            display: none;\n
+    \           align-self: flex-start;\n            padding: 0.75rem 1rem;\n            background:
+    rgba(102, 126, 234, 0.3);\n            border-radius: 15px;\n            border-bottom-left-radius:
+    5px;\n        }\n\n        .typing-indicator.active {\n            display: block;\n
+    \       }\n\n        .typing-dot {\n            display: inline-block;\n            width:
+    8px;\n            height: 8px;\n            background: rgba(255,255,255,0.5);\n
+    \           border-radius: 50%;\n            margin: 0 2px;\n            animation:
+    typing 1.4s infinite;\n        }\n\n        .typing-dot:nth-child(2) { animation-delay:
+    0.2s; }\n        .typing-dot:nth-child(3) { animation-delay: 0.4s; }\n\n        @keyframes
+    typing {\n            0%, 60%, 100% { transform: translateY(0); }\n            30%
+    { transform: translateY(-10px); }\n        }\n\n        .input-area {\n            padding:
+    1rem 1.5rem;\n            background: rgba(255,255,255,0.05);\n            border-top:
+    1px solid rgba(255,255,255,0.1);\n            display: flex;\n            gap:
+    0.5rem;\n        }\n\n        .input-area input {\n            flex: 1;\n            padding:
+    0.75rem 1rem;\n            background: rgba(255,255,255,0.1);\n            border:
+    1px solid rgba(255,255,255,0.2);\n            border-radius: 10px;\n            color:
+    white;\n            font-size: 1rem;\n            outline: none;\n        }\n\n
+    \       .input-area input:focus {\n            border-color: #00d4ff;\n        }\n\n
+    \       .input-area button {\n            padding: 0.75rem 1.5rem;\n            background:
+    linear-gradient(135deg, #667eea 0%, #764ba2 100%);\n            border: none;\n
+    \           border-radius: 10px;\n            color: white;\n            font-weight:
+    600;\n            cursor: pointer;\n            transition: transform 0.2s;\n
+    \       }\n\n        .input-area button:hover {\n            transform: scale(1.05);\n
+    \       }\n\n        .input-area button:active {\n            transform: scale(0.95);\n
+    \       }\n\n        .quick-actions {\n            display: flex;\n            gap:
+    0.5rem;\n            padding: 0.5rem 1.5rem;\n            flex-wrap: wrap;\n        }\n\n
+    \       .quick-btn {\n            padding: 0.5rem 1rem;\n            background:
+    rgba(255,255,255,0.1);\n            border: 1px solid rgba(255,255,255,0.2);\n
+    \           border-radius: 20px;\n            color: white;\n            font-size:
+    0.85rem;\n            cursor: pointer;\n            transition: all 0.3s;\n        }\n\n
+    \       .quick-btn:hover {\n            background: rgba(102, 126, 234, 0.3);\n
+    \           border-color: rgba(102, 126, 234, 0.5);\n        }\n\n        @media
+    (max-width: 768px) {\n            .main-container {\n                grid-template-columns:
+    1fr;\n                grid-template-rows: 300px 1fr;\n            }\n            \n
+    \           .character-container {\n                width: 200px;\n                height:
+    250px;\n            }\n        }\n    </style>\n</head>\n<body>\n    <header class=\"header\">\n
+    \       <div class=\"logo\">\U0001F680 AI 虛擬推廣行銷助手</div>\n        <div class=\"status\">\n
+    \           <div class=\"status-dot\"></div>\n            <span>行銷專家線上</span>\n
+    \       </div>\n    </header>\n\n    <div class=\"video-frame\">\n        <div
+    class=\"video-header\">\n            <span>\U0001F680 AI 行銷專家</span>\n            <div
+    class=\"video-status\">\n                <div class=\"video-dot\"></div>\n                <span>推廣中</span>\n
+    \           </div>\n        </div>\n        <div class=\"video-container\" id=\"beautyAvatar\">\n
+    \           <div class=\"video-glow\"></div>\n            <img src=\"https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=400&h=600&fit=crop&crop=face\"
+    \n                 alt=\"AI Assistant\" \n                 class=\"beauty-photo\"\n
+    \                onerror=\"this.src='data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22
+    viewBox=%220 0 400 600%22><rect fill=%22%23f4c2a1%22 width=%22400%22 height=%22600%22/><circle
+    cx=%22200%22 cy=%22250%22 r=%2280%22 fill=%22%23e8a89a%22/><circle cx=%22170%22
+    cy=%22230%22 r=%228%22 fill=%22%234a90e2%22/><circle cx=%22230%22 cy=%22230%22
+    r=%228%22 fill=%22%234a90e2%22/><path d=%22M 180 280 Q 200 295 220 280%22 stroke=%22%23d4736a%22
+    stroke-width=%223%22 fill=%22none%22/></svg>'\">\n            <div class=\"face-overlay\">\n
+    \               <div class=\"face-eyes\">\n                    <div style=\"position:relative;width:24px;height:16px;background:rgba(255,255,255,0.3);border-radius:50%;\">\n
+    \                       <div class=\"face-eye-lid\"></div>\n                    </div>\n
+    \                   <div style=\"position:relative;width:24px;height:16px;background:rgba(255,255,255,0.3);border-radius:50%;\">\n
+    \                       <div class=\"face-eye-lid\"></div>\n                    </div>\n
+    \               </div>\n                <div class=\"face-mouth-area\">\n                    <div
+    class=\"face-mouth\" id=\"beautyMouth\"></div>\n                </div>\n            </div>\n
+    \           <div class=\"video-overlay\"></div>\n        </div>\n    </div>\n\n
+    \   <div class=\"main-container\">\n        <div class=\"chat-section\">\n            <div
+    class=\"chat-header\">\U0001F4AC 推廣行銷對話</div>\n            <div class=\"chat-messages\"
+    id=\"chatMessages\">\n                <div class=\"message ai\">\n                    <div>您好！我是您的
+    AI 虛擬推廣行銷助手 \U0001F680</div>\n                    <div class=\"message-time\">現在</div>\n
+    \               </div>\n                <div class=\"message ai\">\n                    <div>我可以協助您：</div>\n
+    \                   <div class=\"message-time\">現在</div>\n                </div>\n
+    \               <div class=\"message ai\">\n                    <div>\U0001F4C8
+    制定行銷策略<br>✍️ 撰寫推廣文案<br>\U0001F3AF 分析目標客群<br>\U0001F4CA 優化轉換率<br>\U0001F680 社群媒體推廣</div>\n
+    \                   <div class=\"message-time\">現在</div>\n                </div>\n
+    \           </div>\n\n            <div class=\"quick-actions\">\n                <button
+    class=\"quick-btn\" onclick=\"quickMessage('分析我的產品')\">\U0001F4CA 產品分析</button>\n
+    \               <button class=\"quick-btn\" onclick=\"quickMessage('寫一篇推廣文案')\">✍️
+    推廣文案</button>\n                <button class=\"quick-btn\" onclick=\"quickMessage('制定行銷策略')\">\U0001F3AF
+    行銷策略</button>\n                <button class=\"quick-btn\" onclick=\"quickMessage('社群媒體規劃')\">\U0001F4F1
+    社群規劃</button>\n            </div>\n\n            <div class=\"typing-indicator\"
+    id=\"typingIndicator\">\n                <span class=\"typing-dot\"></span>\n
+    \               <span class=\"typing-dot\"></span>\n                <span class=\"typing-dot\"></span>\n
+    \           </div>\n\n            <div class=\"input-area\">\n                <input
+    type=\"text\" id=\"userInput\" placeholder=\"輸入訊息...\" onkeydown=\"if(event.key==='Enter')
+    sendMessage()\">\n                <button onclick=\"sendMessage()\">發送</button>\n
+    \           </div>\n        </div>\n    </div>\n\n    <script>\n        const
+    aiResponses = {\n            '你好': '您好！我是您的 AI 虛擬推廣行銷助手 \U0001F680 很高興為您服務！有什麼行銷需求嗎？',\n
+    \           '請介紹你自己': '我是 2026 最新版的 AI 虛擬推廣行銷助手！\\n\\n\U0001F3AF 專精數位行銷策略\\n\U0001F4AC
+    支援自然語言互動\\n\U0001F680 即時生成推廣文案\\n\U0001F4CA 分析市場與競品\\n✨ 優化轉換率\\n\\n隨時告訴我您的推廣需求！',\n
+    \           '分析我的產品': '太好了！請告訴我：\\n\\n\U0001F4E6 產品名稱：？\\n\U0001F3AF 目標客群：？\\n\U0001F4B0
+    價格區間：？\\n✨ 產品特色：？\\n\\n我會為您生成完整的產品分析與行銷建議！',\n            '寫一篇推廣文案': '沒問題！請告訴我：\\n\\n1️⃣
+    產品/服務類型\\n2️⃣ 目標受眾\\n3️⃣ 想強調的賣點\\n4️⃣ 文案風格（溫馨/專業/活潑）\\n\\n我會為您量身打造吸引人的推廣文案！',\n
+    \           '制定行銷策略': '為您制定行銷策略！請提供：\\n\\n\U0001F3AF 行銷目標（品牌曝光/銷售/引流）\\n\U0001F4B0
+    預算範圍\\n⏰ 推廣時程\\n\U0001F4F1 推廣渠道偏好\\n\\n我會為您規劃完整的行銷藍圖！',\n            '社群媒體規劃':
+    '社群媒體推廣方案：\\n\\n\U0001F4F1 Facebook：長文+精美圖片\\n\U0001F4F8 Instagram：限時動態+Reels短片\\n\U0001F426
+    Twitter：熱門話題+互動\\n\U0001F4FA YouTube：教學/開箱影片\\n\U0001F4BC LinkedIn：專業內容分享\\n\\n需要我針對特定平台深入規劃嗎？'\n
+    \       };\n\n        const generalResponses = [\n            '這是很好的行銷問題！讓我為您分析...\\n\\n\U0001F3AF
+    建議先鎖定目標客群\\n\U0001F4A1 找出產品獨特賣點\\n\U0001F4CA 設定可量化的KPI\\n\U0001F680 選擇合適的推廣渠道',\n
+    \           '我理解您的行銷需求！建議：\\n\\n1. 進行市場調查與競品分析\\n2. 制定分階段推廣計畫\\n3. 持續追蹤數據並優化\\n4.
+    建立品牌忠誠度計畫',\n            '根據您的描述，我的建議：\\n\\n✅ 採用內容行銷提升SEO\\n✅ 運用社群媒體增加觸及\\n✅ 投放精準廣告提升轉換\\n✅
+    建立EDM名單做再行銷',\n            '這個行銷策略很有潛力！我可以：\\n\\n\U0001F4DD 撰寫吸睛的廣告文案\\n\U0001F4BB
+    設計社群媒體內容日曆\\n\U0001F41B 分析轉換漏斗找出優化點\\n\U0001F4CA 製作數據報表追蹤成效',\n            '感謝您的諮詢！我會盡力協助您達成行銷目標
+    \U0001F3AF\\n\\n\U0001F4A1 記得持續測試與優化，數據會告訴您答案！'\n        ];\n\n        function
+    sendMessage() {\n            const input = document.getElementById('userInput');\n
+    \           const msg = input.value.trim();\n            if (!msg) return;\n\n
+    \           addMessage(msg, 'user');\n            input.value = '';\n\n            //
+    角色开始说话动画\n            document.getElementById('beautyAvatar').classList.add('speaking');\n
+    \           document.getElementById('typingIndicator').classList.add('active');\n\n
+    \           setTimeout(() => {\n                document.getElementById('typingIndicator').classList.remove('active');\n
+    \               \n                let reply = aiResponses[msg] || generalResponses[Math.floor(Math.random()
+    * generalResponses.length)];\n                addMessage(reply, 'ai');\n                \n
+    \               // 停止说话动画\n                setTimeout(() => {\n                    document.getElementById('beautyAvatar').classList.remove('speaking');\n
+    \               }, 500);\n            }, 1000 + Math.random() * 1500);\n        }\n\n
+    \       function quickMessage(msg) {\n            document.getElementById('userInput').value
+    = msg;\n            sendMessage();\n        }\n\n        function addMessage(text,
+    type) {\n            const msgDiv = document.createElement('div');\n            msgDiv.className
+    = `message ${type}`;\n            \n            const time = new Date().toLocaleTimeString('zh-TW',
+    { hour: '2-digit', minute: '2-digit' });\n            msgDiv.innerHTML = `<div>${text.replace(/\\n/g,
+    '<br>')}</div><div class=\"message-time\">${time}</div>`;\n            \n            document.getElementById('chatMessages').appendChild(msgDiv);\n
+    \           document.getElementById('chatMessages').scrollTop = document.getElementById('chatMessages').scrollHeight;\n
+    \       }\n    </script>\n</body>\n</html>\n"
+kind: ConfigMap
+metadata:
+  name: ai-character-html

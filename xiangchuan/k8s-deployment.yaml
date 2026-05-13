@@ -1,0 +1,59 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: telegram-bot
+  labels:
+    app: telegram-bot
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: telegram-bot
+  template:
+    metadata:
+      labels:
+        app: telegram-bot
+    spec:
+      containers:
+      - name: telegram-bot
+        image: telegram-bot:latest
+        imagePullPolicy: Never  # 使用本地镜像
+        ports:
+        - containerPort: 5000
+        env:
+        - name: TELEGRAM_TOKEN
+          valueFrom:
+            secretKeyRef:
+              name: telegram-secret
+              key: token
+        - name: PUBLIC_URL
+          value: "https://your-public-url.com"  # 替换为你的公网地址
+        - name: PYTHONUNBUFFERED
+          value: "1"
+        resources:
+          requests:
+            memory: "128Mi"
+            cpu: "100m"
+          limits:
+            memory: "256Mi"
+            cpu: "200m"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: telegram-bot-svc
+spec:
+  selector:
+    app: telegram-bot
+  ports:
+  - port: 5000
+    targetPort: 5000
+  type: ClusterIP
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: telegram-secret
+type: Opaque
+stringData:
+  token: "YOUR_TELEGRAM_BOT_TOKEN_HERE"  # 替换为你的 Bot Token

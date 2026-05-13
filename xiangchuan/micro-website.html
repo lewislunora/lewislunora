@@ -1,0 +1,1000 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>微型商業平台 - 整合解決方案</title>
+    <style>
+        /* 语言切换样式 */
+        .lang-switcher {
+            position: relative;
+        }
+
+        .lang-btn {
+            padding: 0.5rem 1rem;
+            background: rgba(255,255,255,0.1);
+            border: 1px solid rgba(255,255,255,0.2);
+            border-radius: 8px;
+            color: white;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: all 0.3s;
+        }
+
+        .lang-btn:hover {
+            background: rgba(255,255,255,0.2);
+        }
+
+        .lang-dropdown {
+            display: none;
+            position: absolute;
+            top: 100%;
+            right: 0;
+            margin-top: 0.5rem;
+            background: rgba(26, 31, 58, 0.95);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.2);
+            border-radius: 8px;
+            overflow: hidden;
+            z-index: 1000;
+        }
+
+        .lang-dropdown.open {
+            display: block;
+        }
+
+        .lang-option {
+            padding: 0.75rem 1.5rem;
+            cursor: pointer;
+            transition: background 0.3s;
+            white-space: nowrap;
+        }
+
+        .lang-option:hover {
+            background: rgba(255,255,255,0.1);
+        }
+
+        .lang-option.active {
+            background: rgba(102, 126, 234, 0.3);
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
+            background: #f5f7fa;
+            color: #333;
+            line-height: 1.6;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 1rem 2rem;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .nav {
+            display: flex;
+            gap: 2rem;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .nav-item {
+            padding: 0.5rem 1rem;
+            cursor: pointer;
+            border-radius: 20px;
+            transition: all 0.3s;
+            font-weight: 500;
+        }
+
+        .nav-item:hover, .nav-item.active {
+            background: rgba(255,255,255,0.2);
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 0 1rem;
+        }
+
+        .page {
+            display: none;
+            animation: fadeIn 0.5s ease;
+        }
+
+        .page.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .card {
+            background: white;
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+
+        .card h2 {
+            margin-bottom: 1rem;
+            color: #667eea;
+            border-bottom: 2px solid #f0f0f0;
+            padding-bottom: 0.5rem;
+        }
+
+        /* 电商模块 */
+        .products-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-top: 1.5rem;
+        }
+
+        .product-card {
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            transition: transform 0.3s;
+        }
+
+        .product-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .product-img {
+            height: 180px;
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 3rem;
+        }
+
+        .product-info {
+            padding: 1rem;
+        }
+
+        .product-title {
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .product-price {
+            color: #e74c3c;
+            font-size: 1.2rem;
+            font-weight: bold;
+            margin-bottom: 1rem;
+        }
+
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .btn-primary {
+            background: #667eea;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #5568d3;
+        }
+
+        .btn-success {
+            background: #2ecc71;
+            color: white;
+        }
+
+        .btn-success:hover {
+            background: #27ae60;
+        }
+
+        /* 购物车 */
+        .cart-sidebar {
+            position: fixed;
+            top: 0;
+            right: -400px;
+            width: 400px;
+            height: 100vh;
+            background: white;
+            box-shadow: -2px 0 10px rgba(0,0,0,0.1);
+            transition: right 0.3s;
+            z-index: 1000;
+            padding: 1.5rem;
+            overflow-y: auto;
+        }
+
+        .cart-sidebar.open {
+            right: 0;
+        }
+
+        .cart-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid #eee;
+        }
+
+        .cart-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 0;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .cart-total {
+            margin-top: 1.5rem;
+            padding-top: 1rem;
+            border-top: 2px solid #eee;
+            font-weight: bold;
+            font-size: 1.2rem;
+        }
+
+        /* 营销模块 */
+        .marketing-hero {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 3rem 2rem;
+            border-radius: 12px;
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .marketing-features {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin: 2rem 0;
+        }
+
+        .feature-card {
+            text-align: center;
+            padding: 2rem;
+        }
+
+        .feature-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+
+        /* 内容管理 */
+        .article-list {
+            margin-top: 1.5rem;
+        }
+
+        .article-item {
+            padding: 1.5rem;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .article-item:last-child {
+            border-bottom: none;
+        }
+
+        .article-title {
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: #667eea;
+        }
+
+        .article-meta {
+            color: #888;
+            font-size: 0.9rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+        }
+
+        .form-group input, .form-group textarea {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 1rem;
+        }
+
+        .form-group textarea {
+            min-height: 150px;
+            resize: vertical;
+        }
+
+        /* 客服模块 */
+        .faq-list {
+            margin-top: 1.5rem;
+        }
+
+        .faq-item {
+            margin-bottom: 1rem;
+            border: 1px solid #eee;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .faq-question {
+            padding: 1rem 1.5rem;
+            background: #f9f9f9;
+            cursor: pointer;
+            font-weight: 500;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .faq-answer {
+            padding: 1rem 1.5rem;
+            display: none;
+        }
+
+        .faq-answer.open {
+            display: block;
+        }
+
+        .contact-form {
+            margin-top: 2rem;
+        }
+
+        /* 响应式 */
+        @media (max-width: 768px) {
+            .nav {
+                gap: 0.5rem;
+            }
+            
+            .nav-item {
+                padding: 0.5rem;
+                font-size: 0.9rem;
+            }
+            
+            .products-grid, .marketing-features {
+                grid-template-columns: 1fr;
+            }
+            
+            .cart-sidebar {
+                width: 100%;
+                right: -100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="nav">
+            <div class="nav-item active" onclick="showPage('ecommerce')" data-i18n="nav_shop">🛒 电商微商城</div>
+            <div class="nav-item" onclick="showPage('marketing')" data-i18n="nav_marketing">📢 营销推广</div>
+            <div class="nav-item" onclick="showPage('cms')" data-i18n="nav_cms">📝 内容管理</div>
+            <div class="nav-item" onclick="showPage('support')" data-i18n="nav_support">🎧 客户支持</div>
+            
+            <div class="lang-switcher">
+                <button class="lang-btn" onclick="toggleLangDropdown()">
+                    <span id="currentLang">繁體中文</span> ▼
+                </button>
+                <div class="lang-dropdown" id="langDropdown">
+                    <div class="lang-option active" onclick="switchLang('zh-tw')" data-lang="zh-tw">繁體中文</div>
+                    <div class="lang-option" onclick="switchLang('zh-cn')" data-lang="zh-cn">简体中文</div>
+                    <div class="lang-option" onclick="switchLang('en')" data-lang="en">English</div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <div class="container">
+        <!-- 电商微商城 -->
+        <div id="ecommerce" class="page active">
+            <div class="card">
+                <h2>🛒 电商微商城</h2>
+                <p>精选优质商品，快速下单，便捷购物体验。</p>
+                
+                <div class="products-grid" id="productsGrid">
+                    <!-- 商品由JS动态生成 -->
+                </div>
+            </div>
+
+            <div class="card">
+                <h2>🛒 购物车</h2>
+                <button class="btn btn-primary" onclick="toggleCart()">查看购物车 (<span id="cartCount">0</span>)</button>
+            </div>
+        </div>
+
+        <!-- 营销推广单页 -->
+        <div id="marketing" class="page">
+            <div class="marketing-hero">
+                <h1>🚀 智能营销解决方案</h1>
+                <p>一站式营销推广，提升品牌曝光与转化率</p>
+                <button class="btn btn-success" style="margin-top: 1rem;">免费试用</button>
+            </div>
+
+            <div class="card">
+                <h2>📢 核心功能</h2>
+                <div class="marketing-features">
+                    <div class="feature-card card">
+                        <div class="feature-icon">📊</div>
+                        <h3>数据分析</h3>
+                        <p>实时监控营销数据，优化推广策略</p>
+                    </div>
+                    <div class="feature-card card">
+                        <div class="feature-icon">✍️</div>
+                        <h3>文案生成</h3>
+                        <p>AI自动生成吸引人的推广文案</p>
+                    </div>
+                    <div class="feature-card card">
+                        <div class="feature-icon">📱</div>
+                        <h3>社群推广</h3>
+                        <p>多平台同步推广，覆盖更多用户</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <h2>📈 成功案例</h2>
+                <p>某文创品牌使用我们的营销方案，3个月内品牌曝光提升200%，转化率提升150%。</p>
+            </div>
+        </div>
+
+        <!-- 内容管理系统 -->
+        <div id="cms" class="page">
+            <div class="card">
+                <h2>📝 内容管理系统</h2>
+                <p>轻松管理网站内容，发布最新资讯。</p>
+                
+                <div class="form-group">
+                    <label>文章标题</label>
+                    <input type="text" id="articleTitle" placeholder="输入文章标题">
+                </div>
+                <div class="form-group">
+                    <label>文章内容</label>
+                    <textarea id="articleContent" placeholder="输入文章内容"></textarea>
+                </div>
+                <button class="btn btn-primary" onclick="addArticle()">发布文章</button>
+            </div>
+
+            <div class="card">
+                <h2>📚 文章列表</h2>
+                <div class="article-list" id="articleList">
+                    <!-- 文章由JS动态生成 -->
+                </div>
+            </div>
+        </div>
+
+        <!-- 客户支持系统 -->
+        <div id="support" class="page">
+            <div class="card">
+                <h2>🎧 客户支持</h2>
+                <p>我们随时为您提供帮助与支持。</p>
+                
+                <h3 style="margin-top: 1.5rem;">❓ 常见问题</h3>
+                <div class="faq-list" id="faqList">
+                    <!-- FAQ由JS动态生成 -->
+                </div>
+            </div>
+
+            <div class="card">
+                <h2>📞 联系我们</h2>
+                <div class="contact-form">
+                    <div class="form-group">
+                        <label>姓名</label>
+                        <input type="text" id="contactName" placeholder="您的姓名">
+                    </div>
+                    <div class="form-group">
+                        <label>邮箱</label>
+                        <input type="email" id="contactEmail" placeholder="your@email.com">
+                    </div>
+                    <div class="form-group">
+                        <label>留言内容</label>
+                        <textarea id="contactMessage" placeholder="请输入您的问题或建议"></textarea>
+                    </div>
+                    <button class="btn btn-primary" onclick="submitContact()">提交留言</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 购物车侧边栏 -->
+    <div class="cart-sidebar" id="cartSidebar">
+        <div class="cart-header">
+            <h3>🛒 购物车</h3>
+            <button class="btn" onclick="toggleCart()">✕</button>
+        </div>
+        <div id="cartItems">
+            <!-- 购物车商品由JS动态生成 -->
+        </div>
+        <div class="cart-total">
+            总计: $<span id="cartTotal">0</span>
+        </div>
+        <button class="btn btn-success" style="width: 100%; margin-top: 1rem;">去结算</button>
+    </div>
+
+    <script>
+        // 页面切换
+        function showPage(pageId) {
+            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+            document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+            document.getElementById(pageId).classList.add('active');
+            event.target.classList.add('active');
+        }
+
+        // 电商模块：商品数据
+        const products = [
+            { id: 1, name: '智能手表', price: 199, icon: '⌚' },
+            { id: 2, name: '无线耳机', price: 149, icon: '🎧' },
+            { id: 3, name: '便携充电宝', price: 59, icon: '🔋' },
+            { id: 4, name: '智能音箱', price: 129, icon: '🔊' }
+        ];
+
+        // 购物车数据
+        let cart = JSON.parse(localStorage.getItem('cart')) || [];
+
+        // 初始化商品列表
+        function initProducts() {
+            const grid = document.getElementById('productsGrid');
+            grid.innerHTML = products.map(p => `
+                <div class="product-card">
+                    <div class="product-img">${p.icon}</div>
+                    <div class="product-info">
+                        <div class="product-title">${p.name}</div>
+                        <div class="product-price">$${p.price}</div>
+                        <button class="btn btn-primary" onclick="addToCart(${p.id})">加入购物车</button>
+                    </div>
+                </div>
+            `).join('');
+            updateCartUI();
+        }
+
+        // 添加到购物车
+        function addToCart(productId) {
+            const product = products.find(p => p.id === productId);
+            const existing = cart.find(item => item.id === productId);
+            
+            if (existing) {
+                existing.quantity += 1;
+            } else {
+                cart.push({ ...product, quantity: 1 });
+            }
+            
+            localStorage.setItem('cart', JSON.stringify(cart));
+            updateCartUI();
+            
+            const texts = i18n[currentLang];
+            const msg = currentLang === 'en' ? `Added ${product.nameEn} to cart!` :
+                        currentLang === 'zh-cn' ? `已添加 ${product.nameZhCn} 到购物车` :
+                        `已添加 ${product.name} 到購物車`;
+            alert(msg);
+        }
+
+        // 更新购物车UI
+        function updateCartUI() {
+            const texts = i18n[currentLang];
+            
+            document.getElementById('cartCount').textContent = cart.reduce((sum, item) => sum + item.quantity, 0);
+            
+            const cartItems = document.getElementById('cartItems');
+            const emptyText = texts['cart_empty'] || '購物車是空的';
+            
+            if (cart.length === 0) {
+                cartItems.innerHTML = `<p style="text-align: center; color: #888;">${emptyText}</p>`;
+            } else {
+                cartItems.innerHTML = cart.map(item => {
+                    const name = currentLang === 'en' ? item.nameEn :
+                                 currentLang === 'zh-cn' ? item.nameZhCn : item.name;
+                    return `
+                        <div class="cart-item">
+                            <div>
+                                <div style="font-weight: 600;">${name}</div>
+                                <div style="color: #e74c3c;">$${item.price} × ${item.quantity}</div>
+                            </div>
+                            <button class="btn" onclick="removeFromCart(${item.id})">✕</button>
+                        </div>
+                    `;
+                }).join('');
+            }
+            
+            document.getElementById('cartTotal').textContent = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
+        }
+
+        // 从购物车移除
+        function removeFromCart(productId) {
+            cart = cart.filter(item => item.id !== productId);
+            localStorage.setItem('cart', JSON.stringify(cart));
+            updateCartUI();
+        }
+
+        // 切换购物车显示
+        function toggleCart() {
+            document.getElementById('cartSidebar').classList.toggle('open');
+        }
+
+        // 内容管理：文章数据
+        let articles = JSON.parse(localStorage.getItem('articles')) || [
+            { title: '欢迎来到我们的网站', content: '这是第一篇文章，介绍我们的产品和服务。', date: '2026-05-04' },
+            { title: '最新营销技巧', content: '了解最新的数字营销趋势和技巧，提升您的推广效果。', date: '2026-05-03' }
+        ];
+
+        // 初始化文章列表
+        function initArticles() {
+            const list = document.getElementById('articleList');
+            list.innerHTML = articles.map(a => `
+                <div class="article-item">
+                    <div class="article-title">${a.title}</div>
+                    <div class="article-meta">发布日期: ${a.date}</div>
+                    <div>${a.content}</div>
+                </div>
+            `).join('');
+        }
+
+        // 添加文章
+        function addArticle() {
+            const title = document.getElementById('articleTitle').value.trim();
+            const content = document.getElementById('articleContent').value.trim();
+            
+            if (!title || !content) {
+                alert('请填写标题和内容');
+                return;
+            }
+            
+            const newArticle = {
+                title,
+                content,
+                date: new Date().toISOString().split('T')[0]
+            };
+            
+            articles.unshift(newArticle);
+            localStorage.setItem('articles', JSON.stringify(articles));
+            initArticles();
+            
+            document.getElementById('articleTitle').value = '';
+            document.getElementById('articleContent').value = '';
+            alert('文章发布成功！');
+        }
+
+        // FAQ数据
+        const faqs = [
+            { question: '如何下单购买商品？', answer: '浏览商品列表，点击"加入购物车"，然后在购物车中点击"去结算"即可完成下单。' },
+            { question: '支持哪些支付方式？', answer: '目前支持信用卡、支付宝、微信支付等主流支付方式。' },
+            { question: '如何查看订单状态？', answer: '登录后在"我的订单"页面可以查看所有订单的状态和物流信息。' },
+            { question: '营销服务如何收费？', answer: '我们提供多种套餐，您可以根据需求选择适合的方案，详情请联系客服。' }
+        ];
+
+        // 初始化FAQ
+        function initFAQs() {
+            const list = document.getElementById('faqList');
+            list.innerHTML = faqs.map((faq, index) => `
+                <div class="faq-item">
+                    <div class="faq-question" onclick="toggleFAQ(${index})">
+                        ${faq.question}
+                        <span>▼</span>
+                    </div>
+                    <div class="faq-answer" id="faqAnswer${index}">
+                        ${faq.answer}
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // 切换FAQ显示
+        function toggleFAQ(index) {
+            const answer = document.getElementById(`faqAnswer${index}`);
+            answer.classList.toggle('open');
+        }
+
+        // 提交联系表单
+        function submitContact() {
+            const name = document.getElementById('contactName').value.trim();
+            const email = document.getElementById('contactEmail').value.trim();
+            const message = document.getElementById('contactMessage').value.trim();
+            
+            if (!name || !email || !message) {
+                alert('请填写所有字段');
+                return;
+            }
+            
+            alert('感谢您的留言！我们会尽快与您联系。');
+            document.getElementById('contactName').value = '';
+            document.getElementById('contactEmail').value = '';
+            document.getElementById('contactMessage').value = '';
+        }
+
+        // 多语言文本
+        const i18n = {
+            'en': {
+                'nav_shop': '🛒 E-Shop',
+                'nav_marketing': '📢 Marketing',
+                'nav_cms': '📝 Content',
+                'nav_support': '🎧 Support',
+                'shop_title': '🛒 E-Commerce Shop',
+                'shop_desc': 'Quality products, easy shopping experience.',
+                'cart_title': '🛒 Shopping Cart',
+                'btn_cart': 'View Cart (',
+                'marketing_title': '📢 Smart Marketing Solution',
+                'marketing_desc': 'One-stop marketing promotion, boost brand exposure and conversion.',
+                'marketing_features': '📈 Core Features',
+                'feature_analytics': 'Data Analytics',
+                'feature_analytics_desc': 'Real-time marketing data monitoring, optimize promotion strategy.',
+                'feature_copywriting': 'Copywriting',
+                'feature_copywriting_desc': 'AI auto-generates attractive promotional copy.',
+                'feature_social': 'Social Media',
+                'feature_social_desc': 'Multi-platform promotion, reach more users.',
+                'cms_title': '📝 Content Management',
+                'cms_desc': 'Easily manage website content, publish latest news.',
+                'cms_article_title': 'Article Title',
+                'cms_title_placeholder': 'Enter article title',
+                'cms_article_content': 'Article Content',
+                'cms_content_placeholder': 'Enter article content',
+                'btn_publish': 'Publish Article',
+                'cms_articles': '📚 Article List',
+                'support_title': '🎧 Customer Support',
+                'support_desc': 'We are always here to help you.',
+                'support_faq': '❓ Frequently Asked Questions',
+                'support_contact': '📞 Contact Us',
+                'contact_name': 'Name',
+                'name_placeholder': 'Your name',
+                'contact_email': 'Email',
+                'email_placeholder': 'your@email.com',
+                'contact_message': 'Message',
+                'message_placeholder': 'Enter your question or suggestion',
+                'btn_submit': 'Submit Message',
+                'product_names': ['Smart Watch', 'Wireless Earbuds', 'Power Bank', 'Smart Speaker'],
+                'add_cart': 'Add to Cart',
+                'btn_add_cart': 'Add to Cart',
+                'cart_empty': 'Cart is empty',
+                'cart_total': 'Total: $',
+                'checkout': 'Checkout',
+                'faq_question1': 'How to order products?',
+                'faq_answer1': 'Browse product list, click "Add to Cart", then click "Checkout" in cart to complete order.',
+                'faq_question2': 'What payment methods are supported?',
+                'faq_answer2': 'Currently supports credit cards, Alipay, WeChat Pay and other mainstream payment methods.',
+                'faq_question3': 'How to check order status?',
+                'faq_answer3': 'After login, you can check all order status and logistics info in "My Orders" page.',
+                'faq_question4': 'How is marketing service charged?',
+                'faq_answer4': 'We offer various packages, you can choose the suitable one based on your needs, contact customer service for details.'
+            },
+            'zh-cn': {
+                'nav_shop': '🛒 电商商城',
+                'nav_marketing': '📢 营销推广',
+                'nav_cms': '📝 内容管理',
+                'nav_support': '🎧 客户支持',
+                'shop_title': '🛒 电商微商城',
+                'shop_desc': '精选优质商品，快速下单，便捷购物体验。',
+                'cart_title': '🛒 购物车',
+                'btn_cart': '查看购物车 (',
+                'marketing_title': '📢 智能营销解决方案',
+                'marketing_desc': '一站式营销推广，提升品牌曝光与转化率',
+                'marketing_features': '📈 核心功能',
+                'feature_analytics': '数据分析',
+                'feature_analytics_desc': '实时监控营销数据，优化推广策略',
+                'feature_copywriting': '文案生成',
+                'feature_copywriting_desc': 'AI自动生成吸引人的推广文案',
+                'feature_social': '社群推广',
+                'feature_social_desc': '多平台同步推广，覆盖更多用户',
+                'cms_title': '📝 内容管理系统',
+                'cms_desc': '轻松管理网站内容，发布最新资讯。',
+                'cms_article_title': '文章标题',
+                'cms_title_placeholder': '输入文章标题',
+                'cms_article_content': '文章内容',
+                'cms_content_placeholder': '输入文章内容',
+                'btn_publish': '发布文章',
+                'cms_articles': '📚 文章列表',
+                'support_title': '🎧 客户支持',
+                'support_desc': '我们随时为您提供帮助与支持。',
+                'support_faq': '❓ 常见问题',
+                'support_contact': '📞 联系我们',
+                'contact_name': '姓名',
+                'name_placeholder': '您的姓名',
+                'contact_email': '邮箱',
+                'email_placeholder': 'your@email.com',
+                'contact_message': '留言内容',
+                'message_placeholder': '请输入您的问题或建议',
+                'btn_submit': '提交留言',
+                'product_names': ['智能手表', '无线耳机', '便携充电宝', '智能音箱'],
+                'add_cart': '已添加 到购物车',
+                'btn_add_cart': '加入购物车',
+                'cart_empty': '购物车是空的',
+                'cart_total': '总计: $',
+                'checkout': '去结算',
+                'faq_question1': '如何下单购买商品？',
+                'faq_answer1': '浏览商品列表，点击"加入购物车"，然后在购物车中点击"去结算"即可完成下单。',
+                'faq_question2': '支持哪些支付方式？',
+                'faq_answer2': '目前支持信用卡、支付宝、微信支付等主流支付方式。',
+                'faq_question3': '如何查看订单状态？',
+                'faq_answer3': '登录后在"我的订单"页面可以查看所有订单的状态和物流信息。',
+                'faq_question4': '营销服务如何收费？',
+                'faq_answer4': '我们提供多种套餐，您可以根据需求选择适合的方案，详情请联系客服。'
+            },
+            'zh-tw': {
+                'nav_shop': '🛒 電商微商城',
+                'nav_marketing': '📢 營銷推廣',
+                'nav_cms': '📝 內容管理',
+                'nav_support': '🎧 客戶支持',
+                'shop_title': '🛒 電商微商城',
+                'shop_desc': '精選優質商品，快速下單，便捷購物體驗。',
+                'cart_title': '🛒 購物車',
+                'btn_cart': '查看購物車 (',
+                'marketing_title': '📢 智能營銷解決方案',
+                'marketing_desc': '一站式營銷推廣，提升品牌曝光與轉換率',
+                'marketing_features': '📈 核心功能',
+                'feature_analytics': '數據分析',
+                'feature_analytics_desc': '實時監控營銷數據，優化推廣策略',
+                'feature_copywriting': '文案生成',
+                'feature_copywriting_desc': 'AI自動生成吸引人的推廣文案',
+                'feature_social': '社群推廣',
+                'feature_social_desc': '多平台同步推廣，覆蓋更多用戶',
+                'cms_title': '📝 內容管理系統',
+                'cms_desc': '輕鬆管理網站內容，發布最新資訊。',
+                'cms_article_title': '文章標題',
+                'cms_title_placeholder': '輸入文章標題',
+                'cms_article_content': '文章內容',
+                'cms_content_placeholder': '輸入文章內容',
+                'btn_publish': '發布文章',
+                'cms_articles': '📚 文章列表',
+                'support_title': '🎧 客戶支持',
+                'support_desc': '我們隨時為您提供幫助與支持。',
+                'support_faq': '❓ 常見問題',
+                'support_contact': '📞 聯繫我們',
+                'contact_name': '姓名',
+                'name_placeholder': '您的姓名',
+                'contact_email': '信箱',
+                'email_placeholder': 'your@email.com',
+                'contact_message': '留言內容',
+                'message_placeholder': '請輸入您的問題或建議',
+                'btn_submit': '提交留言',
+                'product_names': ['智能手錶', '無線耳機', '便攜充電寶', '智能音響'],
+                'add_cart': '已添加 到購物車',
+                'btn_add_cart': '加入購物車',
+                'cart_empty': '購物車是空的',
+                'cart_total': '總計: $',
+                'checkout': '去結算',
+                'faq_question1': '如何下單購買商品？',
+                'faq_answer1': '瀏覽商品列表，點擊"加入購物車"，然後在購物車中點擊"去結算"即可完成下單。',
+                'faq_question2': '支援哪些支付方式？',
+                'faq_answer2': '目前支援信用卡、支付寶、微信支付等主流支付方式。',
+                'faq_question3': '如何查看訂單狀態？',
+                'faq_answer3': '登入後在"我的訂單"頁面可以查看所有訂單的狀態和物流資訊。',
+                'faq_question4': '營銷服務如何收費？',
+                'faq_answer4': '我們提供多種套餐，您可以根據需求選擇適合的方案，詳情請聯繫客服。'
+            }
+        };
+
+        // 检测浏览器语言
+        function detectLanguage() {
+            const lang = navigator.language || navigator.userLanguage || 'zh-tw';
+            if (lang.startsWith('zh-CN') || lang.startsWith('zh-cn')) {
+                return 'zh-cn';
+            } else if (lang.startsWith('zh-TW') || lang.startsWith('zh-tw')) {
+                return 'zh-tw';
+            } else {
+                return 'en';
+            }
+        }
+
+        // 当前语言
+        let currentLang = detectLanguage();
+
+        // 切换语言
+        function switchLang(lang) {
+            currentLang = lang;
+            localStorage.setItem('preferredLang', lang);
+            updateLanguage();
+            toggleLangDropdown();
+        }
+
+        // 更新页面文本
+        function updateLanguage() {
+            const texts = i18n[currentLang];
+            
+            // 更新所有带 data-i18n 属性的元素
+            document.querySelectorAll('[data-i18n]').forEach(el => {
+                const key = el.getAttribute('data-i18n');
+                if (texts[key]) {
+                    el.textContent = texts[key];
+                }
+            });
+
+            // 更新 placeholder
+            document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
+                const key = el.getAttribute('data-i18n-placeholder');
+                if (texts[key]) {
+                    el.placeholder = texts[key];
+                }
+            });
+
+            // 更新语言按钮显示
+            const langNames = {
+                'zh-tw': '繁體中文',
+                'zh-cn': '简体中文',
+                'en': 'English'
+            };
+            document.getElementById('currentLang').textContent = langNames[currentLang];
+
+            // 更新语言选项高亮
+            document.querySelectorAll('.lang-option').forEach(opt => {
+                opt.classList.remove('active');
+                if (opt.getAttribute('data-lang') === currentLang) {
+                    opt.classList.add('active');
+                }
+            });
+
+            // 更新商品名称
+            updateProductNames();
+            
+            // 更新 FAQ
+            updateFAQs();
+        }
+
+        // 更新商品名称
+        function updateProductNames() {
+            const names = i18n[currentLang]['product_names'];
+            if (!names) return;
+            
+            const cards = document.querySelectorAll('.product-card .product-title');
+            cards.forEach((el, idx) => {
+                if (names[idx]) {
+                    el.textContent = names[idx];
+                }
+            });
+        }
+
+        // 更新 FAQ
+        function updateFAQs() {
+            const texts = i18n[currentLang];
+            document.querySelectorAll('.faq-item').forEach((item, idx) => {
+                const questionEl = item.querySelector('.faq-question span:first-child');
+                const answerEl = item.querySelector('.faq-answer');
+                if (questionEl && texts[`faq_question${idx + 1}`]) {
+                    questionEl.textContent = texts[`faq_question${idx + 1}`];
+                }
+                if (answerEl && texts[`faq_answer${idx + 1}`]) {
+                    answerEl.textContent = texts[`faq_answer${idx + 1}`];
+                }
+            });
+        }
+
+        // 语言下拉菜单
+        function toggleLangDropdown() {
+            document.getElementById('langDropdown').classList.toggle('open');
+        }
+
+        // 点击其他地方关闭下拉
+        document.addEventListener('click', (e) => {
+            if (!e.target.closest('.lang-switcher')) {
+                document.getElementById('langDropdown').classList.remove('open');
+            }
+        });
+
+        // 初始化
+        document.addEventListener('DOMContentLoaded', () => {
+            // 检查是否有保存的语言偏好
+            const savedLang = localStorage.getItem('preferredLang');
+            if (savedLang) {
+                currentLang = savedLang;
+            }
+            
+            updateLanguage();
+            initProducts();
+            initArticles();
+            initFAQs();
+        });
+    </script>
+</body>
+</html>

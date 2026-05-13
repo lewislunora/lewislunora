@@ -1,0 +1,21 @@
+[START] 開始產生 5 部 AI 短劇劇本
+============================================================
+[1/5] 雪山救狐狸 (仙俠奇幻)
+  [ERROR] 429: {"error":{"message":"Rate limit reached for model `llama-3.3-70b-versatile` in organization `org_01kr0knk3weg38kx46ghwjwyk7` service tier `on_demand` on tokens per day (TPD): Limit 100000, Used 97295,
+[2/5] AI 總裁愛上我 (戀愛甜寵)
+  [ERROR] 429: {"error":{"message":"Rate limit reached for model `llama-3.3-70b-versatile` in organization `org_01kr0knk3weg38kx46ghwjwyk7` service tier `on_demand` on tokens per day (TPD): Limit 100000, Used 97260,
+[3/5] 末日程式碼 (末日科幻)
+  [ERROR] 429: {"error":{"message":"Rate limit reached for model `llama-3.3-70b-versatile` in organization `org_01kr0knk3weg38kx46ghwjwyk7` service tier `on_demand` on tokens per day (TPD): Limit 100000, Used 97225,
+[4/5] 穿越成為古代網紅 (搞笑穿越)
+  [ERROR] 429: {"error":{"message":"Rate limit reached for model `llama-3.3-70b-versatile` in organization `org_01kr0knk3weg38kx46ghwjwyk7` service tier `on_demand` on tokens per day (TPD): Limit 100000, Used 97190,
+[5/5] 我的 AI 分身佔領了世界 (懸疑科幻)
+  [ERROR] 429: {"error":{"message":"Rate limit reached for model `llama-3.3-70b-versatile` in organization `org_01kr0knk3weg38kx46ghwjwyk7` service tier `on_demand` on tokens per day (TPD): Limit 100000, Used 97155,
+
+============================================================
+[DONE] 2m31s，共 5 部劇本
+[WARN] 5 錯誤:
+  [1] 雪山救狐狸: [ERROR] 429: {"error":{"message":"Rate limit reached for model `llama-3.3-70b-versatile` in organization `org_01kr0knk3weg38kx46ghwjwyk7` service tier `on_demand` on tokens per day (TPD): Limit 100000, Used 97295,
+  [2] AI 總裁愛上我: [ERROR] 429: {"error":{"message":"Rate limit reached for model `llama-3.3-70b-versatile` in organization `org_01kr0knk3weg38kx46ghwjwyk7` service tier `on_demand` on tokens per day (TPD): Limit 100000, Used 97260,
+  [3] 末日程式碼: [ERROR] 429: {"error":{"message":"Rate limit reached for model `llama-3.3-70b-versatile` in organization `org_01kr0knk3weg38kx46ghwjwyk7` service tier `on_demand` on tokens per day (TPD): Limit 100000, Used 97225,
+  [4] 穿越成為古代網紅: [ERROR] 429: {"error":{"message":"Rate limit reached for model `llama-3.3-70b-versatile` in organization `org_01kr0knk3weg38kx46ghwjwyk7` service tier `on_demand` on tokens per day (TPD): Limit 100000, Used 97190,
+  [5] 我的 AI 分身佔領了世界: [ERROR] 429: {"error":{"message":"Rate limit reached for model `llama-3.3-70b-versatile` in organization `org_01kr0knk3weg38kx46ghwjwyk7` service tier `on_demand` on tokens per day (TPD): Limit 100000, Used 97155,

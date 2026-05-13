@@ -1,0 +1,49 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ai-character-web
+  labels:
+    app: ai-character-web
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: ai-character-web
+  template:
+    metadata:
+      labels:
+        app: ai-character-web
+    spec:
+      containers:
+      - name: nginx
+        image: nginx:alpine
+        ports:
+        - containerPort: 80
+        volumeMounts:
+        - name: html
+          mountPath: /usr/share/nginx/html/index.html
+          subPath: index.html
+      volumes:
+      - name: html
+        configMap:
+          name: ai-character-html
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: ai-character-html
+data:
+  index.html: |
+    # 这里放 ai-character.html 的内容（下一步生成）
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: ai-character-svc
+spec:
+  selector:
+    app: ai-character-web
+  ports:
+  - port: 80
+    targetPort: 80
+  type: ClusterIP
