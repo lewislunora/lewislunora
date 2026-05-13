@@ -742,6 +742,21 @@ dynamic camera angle, cinematic lighting
   }
 };
 
+const KB = [
+  { kw: ['客服', '方案', 'customer service', 'support'], reply: '我們提供三種方案：\n\n1️⃣ 入門版（免費）- 50次/天，10條知識庫\n2️⃣ 專業版（$29/月）- 無限對話，500條知識庫，LLM驅動\n3️⃣ 企業版（$199/月）- 私有部署，無限知識庫\n\n每種方案都包含 AI 智能客服、Telegram Bot 和多語言支援。請問你想了解哪個方案？' },
+  { kw: ['平台', 'platform', '渠道', '分發', 'channel'], reply: '目前支援以下平台：\n\n📱 Telegram Bot - 即時對話客服\n🌐 Web App - 內容展示與管理\n📲 Flutter 品牌 App - Android/iOS 行動裝置\n📧 Email - 自動電子報\n📝 部落格/社群媒體 - 文章同步發佈\n\n一次產出，多平台上架！' },
+  { kw: ['內容', '生成', 'content', '文章', '自動產出'], reply: 'AI 內容生成涵蓋 16 種主題，每主題產出 5 個平台（部落格/Threads/LinkedIn/電子報/Facebook）的中英文版本。\n\n只要設定好主題，AI 就會：\n1️⃣ 分析目標受眾\n2️⃣ 撰寫符合平台調性的內容\n3️⃣ 自動優化關鍵字\n4️⃣ 排程發佈\n\n目前已自動生成 133+ 篇高品質行銷內容！' },
+  { kw: ['knowledge', 'base', '知識庫', '自增長', 'learn'], reply: 'Our knowledge base grows automatically! When customers interact with the bot, they can rate responses with 👍 (useful) or 👎 (not useful).\n\nUseful responses are saved to the knowledge base for future reference. The more people use the bot, the smarter it becomes!\n\nThis creates a self-improving customer service system that gets better over time.' },
+  { kw: ['價格', 'price', 'pricing', '費用', '方案', '付費', 'plan'], reply: '價格方案：\n\n🎯 入門版 - 免費\n  • AI 智能客服（50次/天）\n  • 10 條知識庫\n  • Telegram Bot\n\n🚀 專業版 - $29/月（最受歡迎）\n  • 無限對話\n  • 500 條知識庫\n  • LLM 驅動（Groq）\n  • 內容自動生成\n\n🏢 企業版 - $199/月\n  • 私有部署\n  • 無限知識庫\n  • 客製化服務\n\n現在加入免費試用！' },
+  { kw: ['開始', 'start', '開始使用', '試用', 'trial', 'sign up', '註冊'], reply: '開始使用很簡單！\n\n1️⃣ 留下 Email（下方表單），我們會寄送完整介紹\n2️⃣ 加入 Telegram 頻道 https://t.me/+QgAyWlVyIxFjNmRl 即時體驗\n3️⃣ 填寫需求，我們 24 小時內為你開通\n\n專業版首月只要 $29，立即升級你的客服系統！' },
+  { kw: ['hello', 'hi', '你好', '嗨', '您好'], reply: '你好！我是翔川 Neo｜曜科技 AI 智能客服 🤖\n\n我可以幫助你了解：\n• AI 客服方案與價格\n• 平台支援與整合\n• 內容自動生成\n• 知識庫自增長\n• 如何開始使用\n\n請問有什麼可以為你服務的嗎？' },
+  { kw: ['telegram', 'bot', '機器人'], reply: '我們的 Telegram Bot 提供：\n\n🤖 24/7 AI 智能對話\n📚 知識庫自動檢索與學習\n🌐 多語言自動切換\n👍/👎 回饋機制\n💾 對話歷史記憶\n\n加入我們的 Telegram 頻道立即體驗：\nhttps://t.me/+QgAyWlVyIxFjNmRl' },
+  { kw: ['功能', 'feature', 'product', '產品'], reply: 'AI 行銷平台核心功能：\n\n🤖 AI 智能客服 - 24/7 自動回覆，多語言支援\n📝 自動內容生成 - 133+ 篇已產出，覆蓋 5 大平台\n📚 知識庫自增長 - 用戶回饋自動沉澱學習\n🌐 多平台分發 - Telegram/Web/App 全通路\n🎬 AI 短劇創作 - 劇本+分鏡+繪圖 Prompt\n📊 數據驅動優化 - AI 分析內容成效\n\n每項功能都為提升你的行銷效率而設計！' },
+  { kw: ['app', '品牌', 'brand', '展示'], reply: '品牌 App 功能：\n\n📱 首頁 - 品牌形象展示與數據統計\n📝 品牌文章 - 133 篇 AI 生成內容\n📖 攻略教學 - AI 工具指南\n🎬 AI 短劇 - 原創劇本展示\n🔍 全文搜尋 - 快速找到相關內容\n🌐 多語言切換 - 繁中/簡中/英文\n\n立即體驗：https://lewislunora.github.io/lewislunora/' },
+  { kw: ['guide', '攻略', '教學', '教程', 'tutorial'], reply: '我們有完整的 AI 工具攻略教學！\n\n涵蓋 10 大免費 AI 工具：\n1. Groq - 超快速 LLM API\n2. Flutter - 跨平台開發\n3. MyEdit - AI 影片\n4. Runway - 專業影片製作\n5. GitHub Actions - 自動化部署\n6. Flask - Web 後台\n7. Telegram Bot API\n8. Docker + k3s\n9. GitHub Pages\n10. Markdown\n\n組合這些工具，打造你的 AI 行銷系統！' },
+  { kw: ['drama', '劇本', '短劇', 'movie', '影片'], reply: 'AI 短劇創作功能：\n\n🎬 自動生成原創劇本\n📝 完整分鏡描述\n🎨 英文繪圖 Prompt（可直接用於 MyEdit/Runway）\n🌐 支援多語言版本\n\n目前已完成 2 部劇本：\n1️⃣ 穿越成為古代網紅（6集）\n2️⃣ AI 分身佔領了世界（8集）\n\n適合短影音、行銷影片、品牌故事創作！' }
+];
+
 function showDemo(type, el) {
   document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
   el.classList.add('active');
