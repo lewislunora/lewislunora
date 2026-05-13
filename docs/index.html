@@ -33,12 +33,12 @@ body {
   max-width: 500px; line-height: 1.6;
 }
 .cards {
-  display: flex; gap: 1.5rem; flex-wrap: wrap; justify-content: center;
-  max-width: 700px;
+  display: flex; gap: 1.2rem; flex-wrap: wrap; justify-content: center;
+  max-width: 750px;
 }
 .card {
   background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08);
-  border-radius: 20px; padding: 2.5rem 2rem; width: 300px;
+  border-radius: 20px; padding: 1.8rem 1.5rem; width: 350px;
   text-decoration: none; color: #fff; transition: all 0.3s;
   position: relative; overflow: hidden;
 }
@@ -92,6 +92,18 @@ body {
     <p data-i18n="card_app_desc">133 篇 AI 生成內容<br>品牌文章 · 攻略教學 · AI 短劇</p>
     <div class="arrow" data-i18n="card_app_btn">開啟 App →</div>
   </a>
+  <a href="ai-character.html" class="card">
+    <div class="card-icon">🤖</div>
+    <h3 data-i18n="card_char_title">AI 虛擬助手</h3>
+    <p data-i18n="card_char_desc">互動式 AI 虛擬角色<br>即時對話 · 情感回應</p>
+    <div class="arrow" data-i18n="card_char_btn">開始體驗 →</div>
+  </a>
+  <a href="ai-fate.html" class="card">
+    <div class="card-icon">🔮</div>
+    <h3 data-i18n="card_fate_title">AI 命理分析</h3>
+    <p data-i18n="card_fate_desc">AI 智慧八字分析<br>命名建議 · 運勢預測</p>
+    <div class="arrow" data-i18n="card_fate_btn">開始分析 →</div>
+  </a>
 </div>
 
 <div class="footer-text" data-i18n="footer_copy">© 2026 翔川 Neo｜曜科技 |Ai_bot</div>
@@ -109,6 +121,12 @@ const LANG = {
     card_app_title: 'Brand Content App',
     card_app_desc: '133 AI-generated contents<br>Articles · Guides · AI Dramas',
     card_app_btn: 'Open App →',
+    card_char_title: 'AI Virtual Character',
+    card_char_desc: 'Interactive AI virtual character<br>Live chat · Emotional response',
+    card_char_btn: 'Try Now →',
+    card_fate_title: 'AI Fortune Analysis',
+    card_fate_desc: 'AI Chinese astrology analysis<br>Name suggestions · Fortune prediction',
+    card_fate_btn: 'Analyze →',
     footer_copy: '© 2026 XiangChuan Neo｜YaoTech |Ai_bot',
     lang_zt: '繁體中文',
     lang_cn: '簡體中文',
@@ -124,6 +142,12 @@ const LANG = {
     card_app_title: '品牌内容 App',
     card_app_desc: '133 篇 AI 生成内容<br>品牌文章 · 攻略教学 · AI 短剧',
     card_app_btn: '开启 App →',
+    card_char_title: 'AI 虚拟助手',
+    card_char_desc: '互动式 AI 虚拟角色<br>即时对话 · 情感回应',
+    card_char_btn: '开始体验 →',
+    card_fate_title: 'AI 命理分析',
+    card_fate_desc: 'AI 智慧八字分析<br>命名建议 · 运势预测',
+    card_fate_btn: '开始分析 →',
     footer_copy: '© 2026 翔川 Neo｜曜科技 |Ai_bot',
     lang_zt: '繁體中文',
     lang_cn: '簡體中文',
@@ -140,7 +164,7 @@ function switchLang(val) {
   document.querySelectorAll('[data-i18n]').forEach(el => {
     const key = el.dataset.i18n;
     if (t[key]) {
-      if (key === 'tagline') {
+      if (key === 'tagline' || key.endsWith('_desc')) {
         el.innerHTML = t[key];
       } else {
         el.textContent = t[key];
