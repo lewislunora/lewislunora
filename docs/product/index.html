@@ -13,7 +13,6 @@ body {
   overflow-x: hidden;
 }
 
-/* Nav */
 nav {
   position: fixed; top:0; left:0; right:0; z-index:100;
   padding: 1rem 2rem;
@@ -43,7 +42,6 @@ nav {
   font-size: 0.85rem; cursor: pointer;
 }
 
-/* Hero */
 .hero {
   min-height: 100vh; display: flex; flex-direction: column;
   justify-content: center; align-items: center; text-align: center;
@@ -89,7 +87,6 @@ nav {
 }
 .btn-outline:hover { background: rgba(255,255,255,0.05); }
 
-/* Stats */
 .stats {
   display: flex; gap: 3rem; justify-content: center;
   padding: 3rem; flex-wrap: wrap;
@@ -98,12 +95,10 @@ nav {
 .stat-number { font-size: 2.5rem; font-weight: 700; background: linear-gradient(135deg, #00d4ff, #7b68ee); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
 .stat-label { font-size: 0.9rem; color: rgba(255,255,255,0.5); margin-top: 0.3rem; }
 
-/* Section */
 .section { padding: 6rem 2rem; }
 .section-title { font-size: 2rem; font-weight: 700; text-align: center; margin-bottom: 1rem; }
 .section-sub { text-align: center; color: rgba(255,255,255,0.5); margin-bottom: 4rem; font-size: 1.1rem; }
 
-/* Features Grid */
 .features-grid {
   display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
   gap: 1.5rem; max-width: 1100px; margin: 0 auto;
@@ -117,7 +112,6 @@ nav {
 .feature-card h3 { font-size: 1.2rem; margin-bottom: 0.5rem; }
 .feature-card p { color: rgba(255,255,255,0.5); line-height: 1.6; font-size: 0.95rem; }
 
-/* Demo preview */
 .demo-section {
   background: linear-gradient(135deg, rgba(0,212,255,0.05), rgba(123,104,238,0.05));
   border: 1px solid rgba(255,255,255,0.06);
@@ -138,16 +132,72 @@ nav {
 .demo-header .tab.active {
   background: rgba(255,255,255,0.08); color: #fff; border-color: rgba(255,255,255,0.1);
 }
-.demo-content {
-  padding: 0 2rem 2rem;
-}
+.demo-content { padding: 0 2rem 2rem; }
 .demo-content pre {
   background: rgba(0,0,0,0.3); padding: 1.5rem; border-radius: 12px;
   font-size: 0.9rem; line-height: 1.7; color: rgba(255,255,255,0.8);
   overflow-x: auto; white-space: pre-wrap;
 }
 
-/* Pricing */
+.chat-container {
+  background: rgba(0,0,0,0.25); border-radius: 12px;
+  height: 400px; display: flex; flex-direction: column;
+}
+.chat-messages {
+  flex: 1; overflow-y: auto; padding: 1.5rem;
+  display: flex; flex-direction: column; gap: 0.8rem;
+}
+.chat-msg {
+  max-width: 80%; padding: 0.8rem 1rem; border-radius: 12px;
+  line-height: 1.5; font-size: 0.9rem;
+  animation: fadeIn 0.3s ease;
+}
+@keyframes fadeIn { from { opacity:0; transform:translateY(8px); } to { opacity:1; transform:translateY(0); } }
+.chat-msg.ai {
+  align-self: flex-start;
+  background: rgba(123,104,238,0.15); border: 1px solid rgba(123,104,238,0.2);
+  color: rgba(255,255,255,0.9);
+}
+.chat-msg.user {
+  align-self: flex-end;
+  background: linear-gradient(135deg, #00d4ff, #7b68ee);
+  color: #fff;
+}
+.chat-msg.ai .msg-label {
+  font-size: 0.75rem; color: rgba(255,255,255,0.4); margin-bottom: 0.3rem;
+}
+.chat-msg .msg-time {
+  font-size: 0.7rem; color: rgba(255,255,255,0.3); margin-top: 0.3rem; text-align: right;
+}
+.chat-suggestions {
+  display: flex; gap: 0.5rem; padding: 0.5rem 1.5rem;
+  flex-wrap: wrap;
+}
+.chat-suggestions button {
+  padding: 0.4rem 1rem; border-radius: 20px;
+  background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1);
+  color: rgba(255,255,255,0.6); font-size: 0.8rem; cursor: pointer;
+  transition: all 0.2s; white-space: nowrap;
+}
+.chat-suggestions button:hover { background: rgba(0,212,255,0.15); border-color: #00d4ff; color: #fff; }
+.chat-input {
+  display: flex; gap: 0.5rem; padding: 1rem 1.5rem;
+  border-top: 1px solid rgba(255,255,255,0.05);
+}
+.chat-input input {
+  flex: 1; padding: 0.7rem 1rem; border-radius: 10px;
+  background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1);
+  color: #fff; font-size: 0.9rem; outline: none;
+}
+.chat-input input:focus { border-color: #00d4ff; }
+.chat-input input::placeholder { color: rgba(255,255,255,0.2); }
+.chat-input button {
+  padding: 0.7rem 1.2rem; border-radius: 10px;
+  background: linear-gradient(135deg, #00d4ff, #7b68ee);
+  color: #fff; border: none; cursor: pointer;
+  font-size: 0.9rem; white-space: nowrap;
+}
+
 .pricing-grid {
   display: flex; gap: 1.5rem; justify-content: center;
   flex-wrap: wrap; max-width: 1100px; margin: 0 auto;
@@ -181,7 +231,6 @@ nav {
 .price-features li::before { content: '✓ '; color: #00d4ff; font-weight: 700; }
 .price-card .btn { width: 100%; text-align: center; justify-content: center; }
 
-/* Contact / CTA */
 .cta-section {
   text-align: center; max-width: 600px; margin: 0 auto;
 }
@@ -196,7 +245,6 @@ nav {
 .contact-form input:focus { border-color: #00d4ff; }
 .contact-form input::placeholder { color: rgba(255,255,255,0.3); }
 
-/* Footer */
 footer {
   border-top: 1px solid rgba(255,255,255,0.05);
   padding: 3rem 2rem;
@@ -208,7 +256,6 @@ footer {
 .footer-links a:hover { color: rgba(255,255,255,0.7); }
 .footer-copy { color: rgba(255,255,255,0.3); font-size: 0.85rem; }
 
-/* Toast */
 .toast {
   position: fixed; bottom: 2rem; left: 50%; transform: translateX(-50%);
   background: rgba(0,212,255,0.9); color: #fff; padding: 1rem 2rem;
@@ -224,7 +271,7 @@ footer {
   .stat-number { font-size: 1.8rem; }
   .pricing-grid { flex-direction: column; align-items: center; }
   .price-card { width: 100%; max-width: 350px; }
-  .demo-content pre { font-size: 0.8rem; }
+  .chat-container { height: 350px; }
 }
 </style>
 </head>
@@ -274,7 +321,6 @@ footer {
   </div>
 </section>
 
-<!-- Features -->
 <section class="section" id="features">
   <h2 class="section-title">一站式 AI 行銷平台</h2>
   <p class="section-sub">從內容生成到客戶互動，全部自動化</p>
@@ -282,17 +328,17 @@ footer {
     <div class="feature-card">
       <div class="feature-icon">🤖</div>
       <h3>AI 智能客服</h3>
-      <p>串接 Groq Llama 3 LLM，理解客戶問題並給出精準回覆。支援繁體中文、簡體中文、英文自動切換。</p>
+      <p>串接 Groq Llama 3 LLM，理解客戶問題並給出精準回覆。支援繁體中文、簡體中文、英文自動切換，知識庫越用越聰明。</p>
     </div>
     <div class="feature-card">
       <div class="feature-icon">📝</div>
       <h3>自動內容生成</h3>
-      <p>一鍵產出部落格文章、社群貼文、行銷文案、電子報。16 種主題 × 5 個平台 × 3 種語言。</p>
+      <p>一鍵產出部落格文章、社群貼文、行銷文案、電子報。16 種主題 × 5 個平台 × 3 種語言，全年無休自動產出。</p>
     </div>
     <div class="feature-card">
       <div class="feature-icon">📚</div>
       <h3>知識庫自增長</h3>
-      <p>用戶反饋自動沉澱到知識庫，Bot 越用越聰明。支援 👍/👎 回饋機制，好的回答自動保存。</p>
+      <p>用戶反饋自動沉澱到知識庫，Bot 越用越聰明。支援 👍/👎 回饋機制，好的回答自動保存</p>
     </div>
     <div class="feature-card">
       <div class="feature-icon">🌐</div>
@@ -312,32 +358,49 @@ footer {
   </div>
 </section>
 
-<!-- Demo -->
 <section class="section" id="demo">
   <h2 class="section-title">實際展示</h2>
-  <p class="section-sub">AI 自動生成的內容範例</p>
+  <p class="section-sub">AI 智能客服即時對話 · 自動內容生成</p>
   <div class="demo-section">
     <div class="demo-header">
-      <h3>📱 品牌 App → 內容展示</h3>
-      <div class="tabs">
+      <h3>🤖 AI 智能客服即時展示</h3>
+      <p style="color:rgba(255,255,255,0.4);font-size:0.85rem;margin-top:0.5rem;">點擊下方建議問題，或自行輸入，體驗 AI 客服回覆</p>
+      <div class="chat-container">
+        <div class="chat-messages" id="chatMessages"></div>
+        <div class="chat-suggestions" id="chatSuggestions">
+          <button onclick="chatSend('我想了解你們的 AI 客服方案')">AI 客服方案</button>
+          <button onclick="chatSend('你們支援哪些平台？')">支援平台</button>
+          <button onclick="chatSend('行銷內容如何自動生成？')">內容生成</button>
+          <button onclick="chatSend('How does the knowledge base work?')">Knowledge Base</button>
+          <button onclick="chatSend('價格怎麼算？')">價格方案</button>
+          <button onclick="chatSend('如何開始使用？')">開始使用</button>
+        </div>
+        <div class="chat-input">
+          <input type="text" id="chatInput" placeholder="輸入你的問題..." onkeydown="if(event.key==='Enter') chatSend()">
+          <button onclick="chatSend()">發送</button>
+        </div>
+      </div>
+    </div>
+    <div style="padding: 0 2rem 2rem;">
+      <h3 style="margin-bottom:1rem;">📱 品牌 App → 內容展示</h3>
+      <div class="tabs" style="display:flex;gap:0.5rem;margin-bottom:1rem;">
         <div class="tab active" onclick="showDemo('article', this)">品牌文章</div>
         <div class="tab" onclick="showDemo('guide', this)">攻略教學</div>
         <div class="tab" onclick="showDemo('drama', this)">AI 短劇</div>
       </div>
-    </div>
-    <div class="demo-content">
-      <pre id="demo-text">載入中...</pre>
-    </div>
-    <div style="padding: 0 2rem 2rem; text-align: center;">
-      <a href="https://lewislunora.github.io/lewislunora/" target="_blank" class="btn-outline">📱 開啟完整品牌 App →</a>
+      <div class="demo-content" style="padding:0;">
+        <pre id="demo-text">載入中...</pre>
+      </div>
+      <div style="text-align:center;margin-top:1.5rem;">
+        <a href="https://lewislunora.github.io/lewislunora/" target="_blank" class="btn-outline">📱 開啟完整品牌 App →</a>
+      </div>
     </div>
   </div>
 </section>
 
-<!-- Pricing -->
 <section class="section" id="pricing">
   <h2 class="section-title">簡單透明的價格</h2>
-  <p class="section-sub">從小團隊到大企業，找到適合你的方案</p>
+  <p class="section-sub">從個人到企業，找到適合你的方案</p>
   <div class="pricing-grid">
     <div class="price-card">
       <div class="price-name">入門版</div>
@@ -384,7 +447,6 @@ footer {
   </div>
 </section>
 
-<!-- Contact -->
 <section class="section" id="contact">
   <div class="cta-section">
     <h2>準備好啟動你的 AI 行銷了嗎？</h2>
@@ -403,7 +465,7 @@ footer {
     <a href="#contact">聯絡</a>
     <a href="https://lewislunora.github.io/lewislunora/" target="_blank">內容展示</a>
   </div>
-  <div class="footer-copy">© 2026 翔川 Neo｜曜科技 |Ai_bot. All rights reserved.</div>
+  <div class="footer-copy">© 2026 翔川 Neo｜曜科技 |Ai_bot</div>
 </footer>
 
 <div class="toast" id="toast"></div>
@@ -475,6 +537,21 @@ dynamic camera angle, cinematic lighting
 ...`
 };
 
+const KB = [
+  { kw: ['客服', '方案', 'customer service', 'support'], reply: '我們提供三種方案：\n\n1️⃣ 入門版（免費）- 50次/天，10條知識庫\n2️⃣ 專業版（$29/月）- 無限對話，500條知識庫，LLM驅動\n3️⃣ 企業版（$199/月）- 私有部署，無限知識庫\n\n每種方案都包含 AI 智能客服、Telegram Bot 和多語言支援。請問你想了解哪個方案？' },
+  { kw: ['平台', 'platform', '渠道', '分發', 'channel'], reply: '目前支援以下平台：\n\n📱 Telegram Bot - 即時對話客服\n🌐 Web App - 內容展示與管理\n📲 Flutter 品牌 App - Android/iOS 行動裝置\n📧 Email - 自動電子報\n📝 部落格/社群媒體 - 文章同步發佈\n\n一次產出，多平台上架！' },
+  { kw: ['內容', '生成', 'content', '文章', '自動產出'], reply: 'AI 內容生成涵蓋 16 種主題，每主題產出 5 個平台（部落格/Threads/LinkedIn/電子報/Facebook）的中英文版本。\n\n只要設定好主題，AI 就會：\n1️⃣ 分析目標受眾\n2️⃣ 撰寫符合平台調性的內容\n3️⃣ 自動優化關鍵字\n4️⃣ 排程發佈\n\n目前已自動生成 133+ 篇高品質行銷內容！' },
+  { kw: ['knowledge', 'base', '知識庫', '自增長', 'learn'], reply: 'Our knowledge base grows automatically! When customers interact with the bot, they can rate responses with 👍 (useful) or 👎 (not useful).\n\nUseful responses are saved to the knowledge base for future reference. The more people use the bot, the smarter it becomes!\n\nThis creates a self-improving customer service system that gets better over time.' },
+  { kw: ['價格', 'price', 'pricing', '費用', '方案', '付費', 'plan'], reply: '價格方案：\n\n🎯 入門版 - 免費\n  • AI 智能客服（50次/天）\n  • 10 條知識庫\n  • Telegram Bot\n\n🚀 專業版 - $29/月（最受歡迎）\n  • 無限對話\n  • 500 條知識庫\n  • LLM 驅動（Groq）\n  • 內容自動生成\n\n🏢 企業版 - $199/月\n  • 私有部署\n  • 無限知識庫\n  • 客製化服務\n\n現在加入免費試用！' },
+  { kw: ['開始', 'start', '開始使用', '試用', 'trial', 'sign up', '註冊'], reply: '開始使用很簡單！\n\n1️⃣ 留下 Email（下方表單），我們會寄送完整介紹\n2️⃣ 加入 Telegram 頻道 https://t.me/+QgAyWlVyIxFjNmRl 即時體驗\n3️⃣ 填寫需求，我們 24 小時內為你開通\n\n專業版首月只要 $29，立即升級你的客服系統！' },
+  { kw: ['hello', 'hi', '你好', '嗨', '您好'], reply: '你好！我是翔川 Neo｜曜科技 AI 智能客服 🤖\n\n我可以幫助你了解：\n• AI 客服方案與價格\n• 平台支援與整合\n• 內容自動生成\n• 知識庫自增長\n• 如何開始使用\n\n請問有什麼可以為你服務的嗎？' },
+  { kw: ['telegram', 'bot', '機器人'], reply: '我們的 Telegram Bot 提供：\n\n🤖 24/7 AI 智能對話\n📚 知識庫自動檢索與學習\n🌐 多語言自動切換\n👍/👎 回饋機制\n💾 對話歷史記憶\n\n加入我們的 Telegram 頻道立即體驗：\nhttps://t.me/+QgAyWlVyIxFjNmRl' },
+  { kw: ['功能', 'feature', 'product', '產品'], reply: 'AI 行銷平台核心功能：\n\n🤖 AI 智能客服 - 24/7 自動回覆，多語言支援\n📝 自動內容生成 - 133+ 篇已產出，覆蓋 5 大平台\n📚 知識庫自增長 - 用戶回饋自動沉澱學習\n🌐 多平台分發 - Telegram/Web/App 全通路\n🎬 AI 短劇創作 - 劇本+分鏡+繪圖 Prompt\n📊 數據驅動優化 - AI 分析內容成效\n\n每項功能都為提升你的行銷效率而設計！' },
+  { kw: ['app', '品牌', 'brand', '展示'], reply: '品牌 App 功能：\n\n📱 首頁 - 品牌形象展示與數據統計\n📝 品牌文章 - 133 篇 AI 生成內容\n📖 攻略教學 - AI 工具指南\n🎬 AI 短劇 - 原創劇本展示\n🔍 全文搜尋 - 快速找到相關內容\n🌐 多語言切換 - 繁中/簡中/英文\n\n立即體驗：https://lewislunora.github.io/lewislunora/' },
+  { kw: ['guide', '攻略', '教學', '教程', 'tutorial'], reply: '我們有完整的 AI 工具攻略教學！\n\n涵蓋 10 大免費 AI 工具：\n1. Groq - 超快速 LLM API\n2. Flutter - 跨平台開發\n3. MyEdit - AI 影片\n4. Runway - 專業影片製作\n5. GitHub Actions - 自動化部署\n6. Flask - Web 後台\n7. Telegram Bot API\n8. Docker + k3s\n9. GitHub Pages\n10. Markdown\n\n組合這些工具，打造你的 AI 行銷系統！' },
+  { kw: ['drama', '劇本', '短劇', 'movie', '影片'], reply: 'AI 短劇創作功能：\n\n🎬 自動生成原創劇本\n📝 完整分鏡描述\n🎨 英文繪圖 Prompt（可直接用於 MyEdit/Runway）\n🌐 支援多語言版本\n\n目前已完成 2 部劇本：\n1️⃣ 穿越成為古代網紅（6集）\n2️⃣ AI 分身佔領了世界（8集）\n\n適合短影音、行銷影片、品牌故事創作！' }
+];
+
 function showDemo(type, el) {
   document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
   el.classList.add('active');
@@ -486,13 +563,6 @@ function showDemo(type, el) {
     pre.style.opacity = '1';
   }, 200);
 }
-
-// Initial load
-document.addEventListener('DOMContentLoaded', () => {
-  const pre = document.getElementById('demo-text');
-  pre.textContent = DEMOS.article;
-  pre.style.transition = 'opacity 0.3s';
-});
 
 function scrollToContact() {
   document.getElementById('contact').scrollIntoView({ behavior: 'smooth' });
@@ -506,11 +576,6 @@ function handleSubmit(e) {
   toast.classList.add('show');
   setTimeout(() => toast.classList.remove('show'), 4000);
   e.target.reset();
-
-  // Track conversion (Google Analytics ready)
-  if (typeof gtag !== 'undefined') {
-    gtag('event', 'conversion', { send_to: 'AW-xxxxx' });
-  }
 }
 
 function switchLang(val) {
@@ -538,6 +603,68 @@ function switchLang(val) {
     location.reload();
   }
 }
+
+let chatHistory = [];
+
+function chatSend(msg) {
+  const input = document.getElementById('chatInput');
+  const text = msg || input.value.trim();
+  if (!text) return;
+  input.value = '';
+
+  addChatMsg(text, 'user');
+  chatHistory.push({ role: 'user', text });
+
+  setTimeout(() => {
+    const reply = getBotReply(text);
+    addChatMsg(reply, 'ai');
+    chatHistory.push({ role: 'ai', text: reply });
+  }, 600 + Math.random() * 400);
+}
+
+function addChatMsg(text, role) {
+  const container = document.getElementById('chatMessages');
+  const div = document.createElement('div');
+  div.className = `chat-msg ${role}`;
+  const now = new Date();
+  const time = now.getHours().toString().padStart(2,'0') + ':' + now.getMinutes().toString().padStart(2,'0');
+  if (role === 'ai') {
+    div.innerHTML = `<div class="msg-label">🤖 翔川 Neo｜曜科技 AI 客服</div>${text.replace(/\n/g, '<br>')}<div class="msg-time">${time}</div>`;
+  } else {
+    div.innerHTML = `${text.replace(/\n/g, '<br>')}<div class="msg-time">${time}</div>`;
+  }
+  container.appendChild(div);
+  container.scrollTop = container.scrollHeight;
+}
+
+function getBotReply(text) {
+  const lower = text.toLowerCase();
+
+  for (const item of KB) {
+    for (const kw of item.kw) {
+      if (lower.includes(kw)) return item.reply;
+    }
+  }
+
+  if (lower.includes('how') || lower.includes('what') || lower.includes('can you')) {
+    return KB.find(i => i.kw.includes('hello')).reply;
+  }
+
+  const fallbacks = [
+    '感謝您的提問！這個問題很好。建議您查看我們的 Telegram 頻道 https://t.me/+QgAyWlVyIxFjNmRl 獲取更多資訊，或留下 Email 我們會詳細回覆您！',
+    '您的問題我已經記錄下來了！我們有專業團隊可以為您解答。請加入 Telegram 頻道 https://t.me/+QgAyWlVyIxFjNmRl 與我們即時交流。',
+    '這是一個好問題！我們的功能涵蓋 AI 客服、內容生成、知識庫管理等。請問您想了解哪個面向的詳細資訊呢？'
+  ];
+  return fallbacks[Math.floor(Math.random() * fallbacks.length)];
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  const pre = document.getElementById('demo-text');
+  pre.textContent = DEMOS.article;
+  pre.style.transition = 'opacity 0.3s';
+
+  addChatMsg('你好！我是翔川 Neo｜曜科技 AI 智能客服 🤖\n\n我可以幫助你了解我們的 AI 行銷解決方案。試試點擊上方的建議問題，或直接輸入你的問題！', 'ai');
+});
 </script>
 </body>
 </html>
