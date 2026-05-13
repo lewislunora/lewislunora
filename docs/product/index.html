@@ -1,0 +1,543 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>aingel_bot - AI 智能客服與行銷自動化平台</title>
+<style>
+* { margin:0; padding:0; box-sizing:border-box; }
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
+  background: #0a0e27;
+  color: #fff;
+  overflow-x: hidden;
+}
+
+/* Nav */
+nav {
+  position: fixed; top:0; left:0; right:0; z-index:100;
+  padding: 1rem 2rem;
+  background: rgba(10,14,39,0.9);
+  backdrop-filter: blur(20px);
+  border-bottom: 1px solid rgba(255,255,255,0.05);
+  display: flex; justify-content: space-between; align-items: center;
+}
+.nav-logo {
+  font-size: 1.2rem; font-weight: 700;
+  background: linear-gradient(135deg, #00d4ff, #7b68ee);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+}
+.nav-links { display: flex; gap: 2rem; align-items: center; }
+.nav-links a { color: rgba(255,255,255,0.7); text-decoration: none; font-size: 0.9rem; transition: color 0.3s; }
+.nav-links a:hover { color: #fff; }
+.nav-links .btn-nav {
+  padding: 0.5rem 1.2rem; border-radius: 8px;
+  background: linear-gradient(135deg, #00d4ff, #7b68ee);
+  color: #fff; font-weight: 600; font-size: 0.9rem;
+  cursor: pointer; border: none; text-decoration: none;
+}
+.lang-select {
+  background: rgba(255,255,255,0.1);
+  border: 1px solid rgba(255,255,255,0.2);
+  color: #fff; padding: 0.4rem 0.8rem; border-radius: 6px;
+  font-size: 0.85rem; cursor: pointer;
+}
+
+/* Hero */
+.hero {
+  min-height: 100vh; display: flex; flex-direction: column;
+  justify-content: center; align-items: center; text-align: center;
+  padding: 6rem 2rem 4rem;
+  position: relative;
+}
+.hero::before {
+  content: ''; position: absolute; top:0; left:0; right:0; bottom:0;
+  background: radial-gradient(circle at 20% 30%, rgba(0,212,255,0.08) 0%, transparent 50%),
+              radial-gradient(circle at 80% 70%, rgba(123,104,238,0.08) 0%, transparent 50%);
+  pointer-events: none;
+}
+.hero-badge {
+  display: inline-block;
+  background: rgba(0,212,255,0.15); border: 1px solid rgba(0,212,255,0.3);
+  color: #00d4ff; padding: 0.4rem 1.2rem; border-radius: 20px;
+  font-size: 0.85rem; margin-bottom: 2rem;
+}
+.hero h1 {
+  font-size: 3.5rem; font-weight: 800; line-height: 1.2;
+  margin-bottom: 1.5rem; max-width: 800px;
+}
+.hero h1 span { background: linear-gradient(135deg, #00d4ff, #7b68ee); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+.hero p {
+  font-size: 1.2rem; color: rgba(255,255,255,0.6);
+  max-width: 600px; margin-bottom: 2.5rem; line-height: 1.6;
+}
+.hero-actions { display: flex; gap: 1rem; flex-wrap: wrap; justify-content: center; }
+.btn-primary {
+  padding: 1rem 2.5rem; border-radius: 12px;
+  background: linear-gradient(135deg, #00d4ff, #7b68ee);
+  color: #fff; font-weight: 600; font-size: 1rem;
+  cursor: pointer; border: none; text-decoration: none;
+  transition: all 0.3s; display: inline-flex; align-items: center; gap: 0.5rem;
+}
+.btn-primary:hover { transform: translateY(-2px); box-shadow: 0 10px 30px rgba(0,212,255,0.3); }
+.btn-outline {
+  padding: 1rem 2.5rem; border-radius: 12px;
+  background: transparent; border: 1px solid rgba(255,255,255,0.2);
+  color: #fff; font-weight: 600; font-size: 1rem;
+  cursor: pointer; text-decoration: none; transition: all 0.3s;
+  display: inline-flex; align-items: center; gap: 0.5rem;
+}
+.btn-outline:hover { background: rgba(255,255,255,0.05); }
+
+/* Stats */
+.stats {
+  display: flex; gap: 3rem; justify-content: center;
+  padding: 3rem; flex-wrap: wrap;
+}
+.stat-item { text-align: center; }
+.stat-number { font-size: 2.5rem; font-weight: 700; background: linear-gradient(135deg, #00d4ff, #7b68ee); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+.stat-label { font-size: 0.9rem; color: rgba(255,255,255,0.5); margin-top: 0.3rem; }
+
+/* Section */
+.section { padding: 6rem 2rem; }
+.section-title { font-size: 2rem; font-weight: 700; text-align: center; margin-bottom: 1rem; }
+.section-sub { text-align: center; color: rgba(255,255,255,0.5); margin-bottom: 4rem; font-size: 1.1rem; }
+
+/* Features Grid */
+.features-grid {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1.5rem; max-width: 1100px; margin: 0 auto;
+}
+.feature-card {
+  background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.06);
+  border-radius: 16px; padding: 2rem; transition: all 0.3s;
+}
+.feature-card:hover { background: rgba(255,255,255,0.06); transform: translateY(-3px); }
+.feature-icon { font-size: 2rem; margin-bottom: 1rem; }
+.feature-card h3 { font-size: 1.2rem; margin-bottom: 0.5rem; }
+.feature-card p { color: rgba(255,255,255,0.5); line-height: 1.6; font-size: 0.95rem; }
+
+/* Demo preview */
+.demo-section {
+  background: linear-gradient(135deg, rgba(0,212,255,0.05), rgba(123,104,238,0.05));
+  border: 1px solid rgba(255,255,255,0.06);
+  border-radius: 20px; max-width: 1100px; margin: 0 auto;
+  overflow: hidden;
+}
+.demo-header { padding: 2rem 2rem 0; }
+.demo-header .tabs {
+  display: flex; gap: 0.5rem; margin-top: 1.5rem; overflow-x: auto;
+}
+.demo-header .tab {
+  padding: 0.6rem 1.2rem; border-radius: 8px 8px 0 0;
+  background: rgba(255,255,255,0.03); cursor: pointer;
+  font-size: 0.9rem; color: rgba(255,255,255,0.5); white-space: nowrap;
+  border: 1px solid transparent; border-bottom: none;
+  transition: all 0.3s;
+}
+.demo-header .tab.active {
+  background: rgba(255,255,255,0.08); color: #fff; border-color: rgba(255,255,255,0.1);
+}
+.demo-content {
+  padding: 0 2rem 2rem;
+}
+.demo-content pre {
+  background: rgba(0,0,0,0.3); padding: 1.5rem; border-radius: 12px;
+  font-size: 0.9rem; line-height: 1.7; color: rgba(255,255,255,0.8);
+  overflow-x: auto; white-space: pre-wrap;
+}
+
+/* Pricing */
+.pricing-grid {
+  display: flex; gap: 1.5rem; justify-content: center;
+  flex-wrap: wrap; max-width: 1100px; margin: 0 auto;
+}
+.price-card {
+  background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.06);
+  border-radius: 16px; padding: 2rem; width: 300px;
+  position: relative; transition: all 0.3s;
+}
+.price-card.featured {
+  border-color: #00d4ff;
+  box-shadow: 0 0 40px rgba(0,212,255,0.1);
+  background: rgba(0,212,255,0.03);
+}
+.price-card.featured::before {
+  content: '最受欢迎'; position: absolute; top: -12px; left: 50%;
+  transform: translateX(-50%);
+  background: linear-gradient(135deg, #00d4ff, #7b68ee);
+  padding: 0.3rem 1.2rem; border-radius: 20px;
+  font-size: 0.8rem; font-weight: 600;
+}
+.price-name { font-size: 1.2rem; font-weight: 600; margin-bottom: 0.5rem; }
+.price-amount { font-size: 3rem; font-weight: 700; }
+.price-amount small { font-size: 1rem; font-weight: 400; color: rgba(255,255,255,0.4); }
+.price-desc { color: rgba(255,255,255,0.4); font-size: 0.9rem; margin: 1rem 0; }
+.price-features { list-style: none; margin: 1.5rem 0; }
+.price-features li {
+  padding: 0.6rem 0; border-bottom: 1px solid rgba(255,255,255,0.04);
+  font-size: 0.9rem; color: rgba(255,255,255,0.7);
+}
+.price-features li::before { content: '✓ '; color: #00d4ff; font-weight: 700; }
+.price-card .btn { width: 100%; text-align: center; justify-content: center; }
+
+/* Contact / CTA */
+.cta-section {
+  text-align: center; max-width: 600px; margin: 0 auto;
+}
+.cta-section h2 { font-size: 2.5rem; margin-bottom: 1rem; }
+.cta-section p { color: rgba(255,255,255,0.5); margin-bottom: 2rem; line-height: 1.6; }
+.contact-form { display: flex; gap: 1rem; flex-wrap: wrap; justify-content: center; }
+.contact-form input {
+  flex: 1; min-width: 250px; padding: 1rem 1.2rem; border-radius: 12px;
+  background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1);
+  color: #fff; font-size: 1rem; outline: none;
+}
+.contact-form input:focus { border-color: #00d4ff; }
+.contact-form input::placeholder { color: rgba(255,255,255,0.3); }
+
+/* Footer */
+footer {
+  border-top: 1px solid rgba(255,255,255,0.05);
+  padding: 3rem 2rem;
+  display: flex; justify-content: space-between; align-items: center;
+  flex-wrap: wrap; gap: 1rem;
+}
+.footer-links { display: flex; gap: 2rem; }
+.footer-links a { color: rgba(255,255,255,0.4); text-decoration: none; font-size: 0.85rem; }
+.footer-links a:hover { color: rgba(255,255,255,0.7); }
+.footer-copy { color: rgba(255,255,255,0.3); font-size: 0.85rem; }
+
+/* Toast */
+.toast {
+  position: fixed; bottom: 2rem; left: 50%; transform: translateX(-50%);
+  background: rgba(0,212,255,0.9); color: #fff; padding: 1rem 2rem;
+  border-radius: 12px; font-size: 0.9rem;
+  opacity: 0; transition: opacity 0.5s; pointer-events: none;
+}
+.toast.show { opacity: 1; }
+
+@media (max-width: 768px) {
+  .nav-links a:not(.btn-nav) { display: none; }
+  .hero h1 { font-size: 2rem; }
+  .stats { gap: 1.5rem; }
+  .stat-number { font-size: 1.8rem; }
+  .pricing-grid { flex-direction: column; align-items: center; }
+  .price-card { width: 100%; max-width: 350px; }
+  .demo-content pre { font-size: 0.8rem; }
+}
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-logo">aingel_bot</div>
+  <div class="nav-links">
+    <a href="#features">功能</a>
+    <a href="#demo">展示</a>
+    <a href="#pricing">價格</a>
+    <a href="#contact">聯絡</a>
+    <select class="lang-select" onchange="switchLang(this.value)">
+      <option value="zh-TW">繁體中文</option>
+      <option value="zh-CN">簡體中文</option>
+      <option value="en">English</option>
+    </select>
+    <a href="https://lewislunora.github.io/lewislunora/" target="_blank" class="btn-nav">內容展示</a>
+  </div>
+</nav>
+
+<section class="hero">
+  <div class="hero-badge">🚀 2026 AI 智慧行銷新時代</div>
+  <h1><span>AI 智能客服</span> + 行銷自動化<br>一週內上線</h1>
+  <p>串接 LLM 智能對話、自動產出行銷內容、知識庫自增長。從 Telegram Bot 到品牌 App，一站式 AI 行銷解決方案。</p>
+  <div class="hero-actions">
+    <a href="#contact" class="btn-primary">📩 取得演示</a>
+    <a href="#demo" class="btn-outline">▶ 看看怎麼運作</a>
+  </div>
+  <div class="stats">
+    <div class="stat-item">
+      <div class="stat-number">133+</div>
+      <div class="stat-label">AI 生成內容</div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-number">5</div>
+      <div class="stat-label">支援平台</div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-number">3</div>
+      <div class="stat-label">語言版本</div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-number">24/7</div>
+      <div class="stat-label">自動運行</div>
+    </div>
+  </div>
+</section>
+
+<!-- Features -->
+<section class="section" id="features">
+  <h2 class="section-title">一站式 AI 行銷平台</h2>
+  <p class="section-sub">從內容生成到客戶互動，全部自動化</p>
+  <div class="features-grid">
+    <div class="feature-card">
+      <div class="feature-icon">🤖</div>
+      <h3>AI 智能客服</h3>
+      <p>串接 Groq Llama 3 LLM，理解客戶問題並給出精準回覆。支援繁體中文、簡體中文、英文自動切換。</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">📝</div>
+      <h3>自動內容生成</h3>
+      <p>一鍵產出部落格文章、社群貼文、行銷文案、電子報。16 種主題 × 5 個平台 × 3 種語言。</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">📚</div>
+      <h3>知識庫自增長</h3>
+      <p>用戶反饋自動沉澱到知識庫，Bot 越用越聰明。支援 👍/👎 回饋機制，好的回答自動保存。</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">🌐</div>
+      <h3>多平台分發</h3>
+      <p>Telegram Bot + Web App + Flutter 行動 App，一次產出多平台上架。支援 CI/CD 自動部署。</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">🎬</div>
+      <h3>AI 短劇創作</h3>
+      <p>AI 自動生成劇本、分鏡描述、英文繪圖 Prompt。可直接搭配 MyEdit、Runway 生成影片素材。</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">📊</div>
+      <h3>數據驅動優化</h3>
+      <p>追蹤每篇內容的互動數據，AI 分析哪種內容成效好，自動調整生成策略。</p>
+    </div>
+  </div>
+</section>
+
+<!-- Demo -->
+<section class="section" id="demo">
+  <h2 class="section-title">實際展示</h2>
+  <p class="section-sub">AI 自動生成的內容範例</p>
+  <div class="demo-section">
+    <div class="demo-header">
+      <h3>📱 品牌 App → 內容展示</h3>
+      <div class="tabs">
+        <div class="tab active" onclick="showDemo('article', this)">品牌文章</div>
+        <div class="tab" onclick="showDemo('guide', this)">攻略教學</div>
+        <div class="tab" onclick="showDemo('drama', this)">AI 短劇</div>
+      </div>
+    </div>
+    <div class="demo-content">
+      <pre id="demo-text">載入中...</pre>
+    </div>
+    <div style="padding: 0 2rem 2rem; text-align: center;">
+      <a href="https://lewislunora.github.io/lewislunora/" target="_blank" class="btn-outline">📱 開啟完整品牌 App →</a>
+    </div>
+  </div>
+</section>
+
+<!-- Pricing -->
+<section class="section" id="pricing">
+  <h2 class="section-title">簡單透明的價格</h2>
+  <p class="section-sub">從小團隊到大企業，找到適合你的方案</p>
+  <div class="pricing-grid">
+    <div class="price-card">
+      <div class="price-name">入門版</div>
+      <div class="price-amount">免費</div>
+      <div class="price-desc">適合個人測試體驗</div>
+      <ul class="price-features">
+        <li>AI 智能客服（50次/天）</li>
+        <li>10 條知識庫</li>
+        <li>基礎回覆模板</li>
+        <li>Telegram Bot</li>
+      </ul>
+      <button class="btn btn-outline" onclick="scrollToContact()">免費試用</button>
+    </div>
+    <div class="price-card featured">
+      <div class="price-name">專業版</div>
+      <div class="price-amount">$29 <small>/月</small></div>
+      <div class="price-desc">適合中小企業正式營運</div>
+      <ul class="price-features">
+        <li>無限對話次數</li>
+        <li>500 條知識庫</li>
+        <li>LLM 驅動（Groq）</li>
+        <li>知識庫自增長</li>
+        <li>Web 管理後台</li>
+        <li>內容自動生成</li>
+        <li>多語言支援</li>
+      </ul>
+      <button class="btn btn-primary" onclick="scrollToContact()">立即開通</button>
+    </div>
+    <div class="price-card">
+      <div class="price-name">企業版</div>
+      <div class="price-amount">$199 <small>/月</small></div>
+      <div class="price-desc">適合大型組織客製需求</div>
+      <ul class="price-features">
+        <li>私有部署（k3s）</li>
+        <li>無限知識庫</li>
+        <li>客製模型微調</li>
+        <li>SLA 99.9%</li>
+        <li>專屬客戶成功</li>
+        <li>API 完整串接</li>
+        <li>品牌 App 客製</li>
+      </ul>
+      <button class="btn btn-outline" onclick="scrollToContact()">聯絡我們</button>
+    </div>
+  </div>
+</section>
+
+<!-- Contact -->
+<section class="section" id="contact">
+  <div class="cta-section">
+    <h2>準備好啟動你的 AI 行銷了嗎？</h2>
+    <p>留下 Email，我們會寄送完整產品介紹與免費試用連結。或直接搜尋 Telegram @your_bot_username 立即體驗。</p>
+    <form class="contact-form" onsubmit="handleSubmit(event)">
+      <input type="email" placeholder="你的 Email 地址" required>
+      <button type="submit" class="btn-primary">📩 取得演示</button>
+    </form>
+  </div>
+</section>
+
+<footer>
+  <div class="footer-links">
+    <a href="#features">功能</a>
+    <a href="#pricing">價格</a>
+    <a href="#contact">聯絡</a>
+    <a href="https://lewislunora.github.io/lewislunora/" target="_blank">內容展示</a>
+  </div>
+  <div class="footer-copy">© 2026 aingel_bot. All rights reserved.</div>
+</footer>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const DEMOS = {
+  article: `---
+標題：個人品牌故事與定位
+平台：部落格
+語言：繁體中文
+---
+
+你是否曾經夢想過自己成為某個領域的專家？
+在 AI 時代，建立個人品牌不再需要大量時間和資源。
+透過 AI 工具，你可以：
+• 自動生成高品質內容
+• 維持穩定的發文頻率
+• 分析哪些內容最能引起共鳴
+
+我從零開始建立個人品牌的過程中，發現 AI 不只是工具，
+更是一個能夠 24/7 運作的內容夥伴。
+從品牌定位、內容策略到社群經營，AI 都能提供具體建議。
+
+今天就開始打造你的個人品牌吧！`,
+  guide: `---
+標題：2026 AI 工具全攻略
+類型：創業者必備工具指南
+---
+
+10 大免費 AI 工具推薦：
+
+1. Groq - 超快速 LLM API，適合串接智能客服
+2. Flutter - 跨平台 App 開發框架
+3. MyEdit - AI 影片生成，每日免費點數
+4. Runway - 專業級 AI 影片製作
+5. GitHub Actions - CI/CD 自動化部署
+6. Flask - 輕量 Web 後台
+7. Telegram Bot API - 即時通訊整合
+8. Docker + k3s - 容器化部署
+9. GitHub Pages - 免費靜態網站託管
+10. Markdown - 內容格式標準
+
+組合以上工具，就能打造完整的 AI 行銷系統。`,
+  drama: `🎬 穿越成為古代網紅
+
+類型：搞笑穿越
+集數：6 集
+
+第 1 集：穿越的開始
+場景：現代上海網紅工作室
+
+[畫面描述]
+一群網紅正在直播，背景是時尚精品。
+主角林妝正在唱歌，突然一道白光...
+
+[對白]
+林妝：這次直播一定要更吸引人！
+老師：妳唱得太棒了！注意風格！
+林妝：我要用魅力征服全世界！
+
+[AI 繪圖 Prompt]
+Modern influencer studio in Shanghai,
+young female streamer singing,
+luxury background, neon lights,
+dynamic camera angle, cinematic lighting
+
+第 2 集：醒來在古代
+場景：古代皇宮寢宮
+...`
+};
+
+function showDemo(type, el) {
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  el.classList.add('active');
+  const text = DEMOS[type] || '';
+  const pre = document.getElementById('demo-text');
+  pre.style.opacity = '0';
+  setTimeout(() => {
+    pre.textContent = text;
+    pre.style.opacity = '1';
+  }, 200);
+}
+
+// Initial load
+document.addEventListener('DOMContentLoaded', () => {
+  const pre = document.getElementById('demo-text');
+  pre.textContent = DEMOS.article;
+  pre.style.transition = 'opacity 0.3s';
+});
+
+function scrollToContact() {
+  document.getElementById('contact').scrollIntoView({ behavior: 'smooth' });
+}
+
+function handleSubmit(e) {
+  e.preventDefault();
+  const email = e.target.querySelector('input').value;
+  const toast = document.getElementById('toast');
+  toast.textContent = `📩 感謝 ${email}！我們會盡快與你聯絡`;
+  toast.classList.add('show');
+  setTimeout(() => toast.classList.remove('show'), 4000);
+  e.target.reset();
+
+  // Track conversion (Google Analytics ready)
+  if (typeof gtag !== 'undefined') {
+    gtag('event', 'conversion', { send_to: 'AW-xxxxx' });
+  }
+}
+
+function switchLang(val) {
+  if (val === 'en') {
+    document.querySelector('.hero h1').innerHTML = '<span>AI Customer Service</span> + Marketing Automation<br>Launch in One Week';
+    document.querySelector('.hero p').textContent = 'Integrate LLM smart conversations, auto-generate marketing content, knowledge base self-growth. From Telegram Bot to Brand App, one-stop AI marketing solution.';
+    document.querySelector('#features .section-title').textContent = 'All-in-One AI Marketing Platform';
+    document.querySelector('#features .section-sub').textContent = 'From content generation to customer interaction, fully automated';
+    document.querySelector('#pricing .section-title').textContent = 'Simple & Transparent Pricing';
+    document.querySelector('#contact h2').textContent = 'Ready to launch your AI marketing?';
+    document.querySelector('#contact p').textContent = 'Leave your email and we will send you the full product intro and free trial link.';
+    document.querySelector('.contact-form button').textContent = '📩 Get Demo';
+    document.querySelector('.hero-badge').textContent = '🚀 2026 AI Marketing New Era';
+  } else if (val === 'zh-CN') {
+    document.querySelector('.hero h1').innerHTML = '<span>AI 智能客服</span> + 营销自动化<br>一周内上线';
+    document.querySelector('.hero p').textContent = '串接 LLM 智能对话、自动产出营销内容、知识库自增长。从 Telegram Bot 到品牌 App，一站式 AI 营销解决方案。';
+    document.querySelector('#features .section-title').textContent = '一站式 AI 营销平台';
+    document.querySelector('#features .section-sub').textContent = '从内容生成到客户互动，全部自动化';
+    document.querySelector('#pricing .section-title').textContent = '简单透明的价格';
+    document.querySelector('#contact h2').textContent = '准备好启动你的 AI 营销了吗？';
+    document.querySelector('#contact p').textContent = '留下 Email，我们会寄送完整产品介绍与免费试用链接。';
+    document.querySelector('.contact-form button').textContent = '📩 取得演示';
+    document.querySelector('.hero-badge').textContent = '🚀 2026 AI 智慧营销新时代';
+  } else {
+    location.reload();
+  }
+}
+</script>
+</body>
+</html>
