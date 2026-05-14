@@ -225,6 +225,7 @@ nav {
 .price-name { font-size: 1.2rem; font-weight: 600; margin-bottom: 0.5rem; }
 .price-amount { font-size: 3rem; font-weight: 700; }
 .price-amount small { font-size: 1rem; font-weight: 400; color: rgba(255,255,255,0.4); }
+.price-usd { font-size: 0.8rem; color: rgba(255,255,255,0.3); font-weight: 400; margin-top: 0.2rem; }
 .price-desc { color: rgba(255,255,255,0.4); font-size: 0.9rem; margin: 1rem 0; }
 .price-features { list-style: none; margin: 1.5rem 0; }
 .price-features li {
@@ -298,12 +299,12 @@ footer {
 </nav>
 
 <section class="hero">
-  <div class="hero-badge" data-i18n="hero_badge">🚀 2026 AI 智慧行銷新時代</div>
-  <h1 data-i18n="hero_title" data-i18n-html="true"><span>AI 智能客服</span> + 行銷自動化<br>一週內上線</h1>
-  <p data-i18n="hero_desc">串接 LLM 智能對話、自動產出行銷內容、知識庫自增長。從 Telegram Bot 到品牌 App，一站式 AI 行銷解決方案。</p>
+  <div class="hero-badge" data-i18n="hero_badge">🏆 台灣團隊 · 在地支援 · 全球部署</div>
+  <h1 data-i18n="hero_title" data-i18n-html="true"><span>AI 客服</span> 讓小預算也能有大格局<br>從 NT$890/月 開始</h1>
+  <p data-i18n="hero_desc">專為台灣中小企業設計的 AI 行銷解決方案。24 小時 AI 智能客服、自動內容生成、多平台分發 — 全部在一套系統內完成。不用百萬預算，就能擁有企業級 AI 行銷系統。</p>
   <div class="hero-actions">
-    <a href="#contact" class="btn-primary" data-i18n="hero_btn_demo">📩 取得演示</a>
-    <a href="#demo" class="btn-outline" data-i18n="hero_btn_watch">▶ 看看怎麼運作</a>
+    <a href="#contact" class="btn-primary" data-i18n="hero_btn_demo">📩 免費諮詢</a>
+    <a href="#demo" class="btn-outline" data-i18n="hero_btn_watch">▶ 觀看展示</a>
   </div>
   <div class="stats">
     <div class="stat-item">
@@ -414,7 +415,7 @@ footer {
   <div class="pricing-grid">
     <div class="price-card">
       <div class="price-name" data-i18n="price_starter_name">入門版</div>
-      <div class="price-amount">免費</div>
+      <div class="price-amount" i18n-ignore>免費 <small>Free</small></div>
       <div class="price-desc" data-i18n="price_starter_desc">適合個人測試體驗</div>
       <ul class="price-features">
         <li data-i18n="price_starter_feat1">AI 智能客服（50次/天）</li>
@@ -427,7 +428,8 @@ footer {
     <div class="price-card featured">
       <div class="price-badge" data-i18n="price_pro_badge">最受歡迎</div>
       <div class="price-name" data-i18n="price_pro_name">專業版</div>
-      <div class="price-amount" i18n-ignore>$29 <small>/月</small></div>
+      <div class="price-amount" i18n-ignore>NT$890 <small>/月</small></div>
+      <div class="price-usd" i18n-ignore>≈ $29 USD</div>
       <div class="price-desc" data-i18n="price_pro_desc">適合中小企業正式營運</div>
       <ul class="price-features">
         <li data-i18n="price_pro_feat1">無限對話次數</li>
@@ -442,7 +444,8 @@ footer {
     </div>
     <div class="price-card">
       <div class="price-name" data-i18n="price_enterprise_name">企業版</div>
-      <div class="price-amount" i18n-ignore>$199 <small>/月</small></div>
+      <div class="price-amount" i18n-ignore>NT$5,990 <small>/月</small></div>
+      <div class="price-usd" i18n-ignore>≈ $199 USD</div>
       <div class="price-desc" data-i18n="price_enterprise_desc">適合大型組織客製需求</div>
       <ul class="price-features">
         <li data-i18n="price_enterprise_feat1">私有部署（k3s）</li>
@@ -862,11 +865,11 @@ const LANG = {
     nav_pricing: 'Pricing',
     nav_contact: 'Contact',
     nav_content: 'Content App',
-    hero_badge: '🚀 2026 AI Marketing New Era',
-    hero_title: '<span>AI Customer Service</span> + Marketing Automation<br>Launch in One Week',
-    hero_desc: 'Integrate LLM smart conversations, auto-generate marketing content, knowledge base self-growth. From Telegram Bot to Brand App, one-stop AI marketing solution.',
-    hero_btn_demo: '📩 Get Demo',
-    hero_btn_watch: '▶ See How It Works',
+    hero_badge: '🏆 Taiwan Team · Local Support · Global Deploy',
+    hero_title: '<span>AI Customer Service</span> Enterprise Power,<br>Starting at $29/mo',
+    hero_desc: 'An AI marketing solution designed for SMBs. 24/7 AI customer service, auto content generation, multi-platform distribution — all in one system. Enterprise-grade AI without the enterprise price tag.',
+    hero_btn_demo: '📩 Free Consultation',
+    hero_btn_watch: '▶ Watch Demo',
     stat_content: 'AI Contents',
     stat_platform: 'Platforms',
     stat_lang: 'Languages',
@@ -958,11 +961,11 @@ const LANG = {
     nav_pricing: '价格',
     nav_contact: '联系',
     nav_content: '内容展示',
-    hero_badge: '🚀 2026 AI 智慧营销新时代',
-    hero_title: '<span>AI 智能客服</span> + 营销自动化<br>一周内上线',
-    hero_desc: '串接 LLM 智能对话、自动产出营销内容、知识库自增长。从 Telegram Bot 到品牌 App，一站式 AI 营销解决方案。',
-    hero_btn_demo: '📩 获取演示',
-    hero_btn_watch: '▶ 看看如何运作',
+    hero_badge: '🏆 台湾团队 · 在地支援 · 全球部署',
+    hero_title: '<span>AI 客服</span> 小预算也能有大格局<br>从 NT$890/月 开始',
+    hero_desc: '专为台湾中小企业设计的 AI 营销解决方案。24 小时 AI 智能客服、自动内容生成、多平台分发 — 全部在一套系统内完成。不用百万预算，就能拥有企业级 AI 营销系统。',
+    hero_btn_demo: '📩 免费咨询',
+    hero_btn_watch: '▶ 观看展示',
     stat_content: 'AI 生成内容',
     stat_platform: '支持平台',
     stat_lang: '语言版本',
@@ -1054,11 +1057,11 @@ const LANG = {
     nav_pricing: 'Цены',
     nav_contact: 'Контакты',
     nav_content: 'Контент',
-    hero_badge: '🚀 2026 Новая эра AI-маркетинга',
-    hero_title: '<span>AI Обслуживание</span> + Автоматизация<br>Запуск за неделю',
-    hero_desc: 'Интеграция умных диалогов LLM, автогенерация контента, самообучающаяся база знаний. От Telegram Bot до брендового приложения — комплексное AI-решение.',
-    hero_btn_demo: '📩 Получить демо',
-    hero_btn_watch: '▶ Как это работает',
+    hero_badge: '🏆 Тайваньская команда · Локальная поддержка · Глобальное развёртывание',
+    hero_title: '<span>AI Сервис</span> Возможности уровня Enterprise,<br>от NT$5,990/мес',
+    hero_desc: 'AI-решение для маркетинга, созданное для малого и среднего бизнеса. 24/7 AI-поддержка, автогенерация контента, публикация на多个 платформах — всё в одной системе.',
+    hero_btn_demo: '📩 Бесплатная консультация',
+    hero_btn_watch: '▶ Смотреть демо',
     stat_content: 'AI контент',
     stat_platform: 'Платформы',
     stat_lang: 'Языки',
