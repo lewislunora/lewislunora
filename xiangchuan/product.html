@@ -225,6 +225,7 @@ nav {
 .price-name { font-size: 1.2rem; font-weight: 600; margin-bottom: 0.5rem; }
 .price-amount { font-size: 3rem; font-weight: 700; }
 .price-amount small { font-size: 1rem; font-weight: 400; color: rgba(255,255,255,0.4); }
+.price-usd { font-size: 0.8rem; color: rgba(255,255,255,0.3); font-weight: 400; margin-top: 0.2rem; }
 .price-desc { color: rgba(255,255,255,0.4); font-size: 0.9rem; margin: 1rem 0; }
 .price-features { list-style: none; margin: 1.5rem 0; }
 .price-features li {
@@ -235,18 +236,39 @@ nav {
 .price-card .btn { width: 100%; text-align: center; justify-content: center; }
 
 .cta-section {
-  text-align: center; max-width: 600px; margin: 0 auto;
+  text-align: center; max-width: 640px; margin: 0 auto;
 }
 .cta-section h2 { font-size: 2.5rem; margin-bottom: 1rem; }
 .cta-section p { color: rgba(255,255,255,0.5); margin-bottom: 2rem; line-height: 1.6; }
-.contact-form { display: flex; gap: 1rem; flex-wrap: wrap; justify-content: center; }
-.contact-form input {
-  flex: 1; min-width: 250px; padding: 1rem 1.2rem; border-radius: 12px;
-  background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1);
-  color: #fff; font-size: 1rem; outline: none;
+.contact-form { max-width: 480px; margin: 0 auto; text-align: left; }
+.form-row { display: flex; gap: 0.8rem; margin-bottom: 0.8rem; }
+.form-row > * { flex: 1; }
+.contact-form label {
+  display: block; font-size: 0.85rem; font-weight: 600;
+  color: rgba(255,255,255,0.6); margin-bottom: 0.3rem;
 }
-.contact-form input:focus { border-color: #00d4ff; }
-.contact-form input::placeholder { color: rgba(255,255,255,0.3); }
+.contact-form input,
+.contact-form select,
+.contact-form textarea {
+  width: 100%; padding: 0.85rem 1rem; border-radius: 10px;
+  background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1);
+  color: #fff; font-size: 0.9rem; outline: none; transition: border 0.3s;
+  font-family: inherit;
+}
+.contact-form select option { background: #1a1f3a; color: #fff; }
+.contact-form input:focus,
+.contact-form select:focus,
+.contact-form textarea:focus { border-color: #00d4ff; }
+.contact-form input::placeholder,
+.contact-form textarea::placeholder { color: rgba(255,255,255,0.25); }
+.contact-form textarea { resize: vertical; min-height: 80px; }
+.contact-form .btn-primary {
+  width: 100%; padding: 1rem; border: none; cursor: pointer;
+  font-size: 1rem; font-weight: 600; border-radius: 12px;
+  background: linear-gradient(135deg, #00d4ff, #7b68ee); color: #fff;
+  transition: all 0.3s; margin-top: 0.5rem;
+}
+.contact-form .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(0,212,255,0.3); }
 
 footer {
   border-top: 1px solid rgba(255,255,255,0.05);
@@ -298,12 +320,12 @@ footer {
 </nav>
 
 <section class="hero">
-  <div class="hero-badge" data-i18n="hero_badge">🚀 2026 AI 智慧行銷新時代</div>
-  <h1 data-i18n="hero_title" data-i18n-html="true"><span>AI 智能客服</span> + 行銷自動化<br>一週內上線</h1>
-  <p data-i18n="hero_desc">串接 LLM 智能對話、自動產出行銷內容、知識庫自增長。從 Telegram Bot 到品牌 App，一站式 AI 行銷解決方案。</p>
+  <div class="hero-badge" data-i18n="hero_badge">🏆 台灣團隊 · 在地支援 · 全球部署</div>
+  <h1 data-i18n="hero_title" data-i18n-html="true"><span>AI 客服</span> 讓小預算也能有大格局<br>從 NT$890/月 開始</h1>
+  <p data-i18n="hero_desc">專為台灣中小企業設計的 AI 行銷解決方案。24 小時 AI 智能客服、自動內容生成、多平台分發 — 全部在一套系統內完成。不用百萬預算，就能擁有企業級 AI 行銷系統。</p>
   <div class="hero-actions">
-    <a href="#contact" class="btn-primary" data-i18n="hero_btn_demo">📩 取得演示</a>
-    <a href="#demo" class="btn-outline" data-i18n="hero_btn_watch">▶ 看看怎麼運作</a>
+    <a href="#contact" class="btn-primary" data-i18n="hero_btn_demo">📩 免費諮詢</a>
+    <a href="#demo" class="btn-outline" data-i18n="hero_btn_watch">▶ 觀看展示</a>
   </div>
   <div class="stats">
     <div class="stat-item">
@@ -315,7 +337,7 @@ footer {
       <div class="stat-label" data-i18n="stat_platform">支援平台</div>
     </div>
     <div class="stat-item">
-      <div class="stat-number">3</div>
+      <div class="stat-number">4</div>
       <div class="stat-label" data-i18n="stat_lang">語言版本</div>
     </div>
     <div class="stat-item">
@@ -414,7 +436,7 @@ footer {
   <div class="pricing-grid">
     <div class="price-card">
       <div class="price-name" data-i18n="price_starter_name">入門版</div>
-      <div class="price-amount">免費</div>
+      <div class="price-amount" i18n-ignore>免費 <small>Free</small></div>
       <div class="price-desc" data-i18n="price_starter_desc">適合個人測試體驗</div>
       <ul class="price-features">
         <li data-i18n="price_starter_feat1">AI 智能客服（50次/天）</li>
@@ -427,7 +449,8 @@ footer {
     <div class="price-card featured">
       <div class="price-badge" data-i18n="price_pro_badge">最受歡迎</div>
       <div class="price-name" data-i18n="price_pro_name">專業版</div>
-      <div class="price-amount" i18n-ignore>$29 <small>/月</small></div>
+      <div class="price-amount" i18n-ignore>NT$890 <small>/月</small></div>
+      <div class="price-usd" i18n-ignore>≈ $29 USD</div>
       <div class="price-desc" data-i18n="price_pro_desc">適合中小企業正式營運</div>
       <ul class="price-features">
         <li data-i18n="price_pro_feat1">無限對話次數</li>
@@ -442,7 +465,8 @@ footer {
     </div>
     <div class="price-card">
       <div class="price-name" data-i18n="price_enterprise_name">企業版</div>
-      <div class="price-amount" i18n-ignore>$199 <small>/月</small></div>
+      <div class="price-amount" i18n-ignore>NT$5,990 <small>/月</small></div>
+      <div class="price-usd" i18n-ignore>≈ $199 USD</div>
       <div class="price-desc" data-i18n="price_enterprise_desc">適合大型組織客製需求</div>
       <ul class="price-features">
         <li data-i18n="price_enterprise_feat1">私有部署（k3s）</li>
@@ -461,10 +485,54 @@ footer {
 <section class="section" id="contact">
   <div class="cta-section">
     <h2 data-i18n="cta_title">準備好啟動你的 AI 行銷了嗎？</h2>
-    <p data-i18n="cta_desc">留下 Email，我們會寄送完整產品介紹與免費試用連結。或直接搜尋 Telegram 頻道 https://t.me/+QgAyWlVyIxFjNmRl 或 @ailunora_bot 立即體驗。</p>
-    <form class="contact-form" onsubmit="handleSubmit(event)">
-      <input type="email" data-i18n-placeholder="cta_placeholder" placeholder="你的 Email 地址" required>
-      <button type="submit" class="btn-primary" data-i18n="cta_btn">📩 取得演示</button>
+    <p data-i18n="cta_desc">免費預約諮詢，30 分鐘了解如何用 AI 提升你的客戶服務與行銷效率</p>
+    <form class="contact-form" action="https://formsubmit.co/ericly76@gmail.com" method="POST">
+      <input type="hidden" name="_subject" value="🔔 新預約諮詢 - 翔川 Neo AI">
+      <input type="hidden" name="_template" value="box">
+      <input type="hidden" name="_captcha" value="true">
+      <input type="text" name="_honey" style="display:none">
+
+      <div class="form-row">
+        <div>
+          <label data-i18n="form_name_label">姓名 *</label>
+          <input type="text" name="姓名" required data-i18n-placeholder="form_name_ph" placeholder="請輸入姓名">
+        </div>
+        <div>
+          <label data-i18n="form_company_label">公司/店家</label>
+          <input type="text" name="公司" data-i18n-placeholder="form_company_ph" placeholder="公司或店名">
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div>
+          <label data-i18n="form_contact_label">Line ID / 手機 *</label>
+          <input type="text" name="聯絡方式" required data-i18n-placeholder="form_contact_ph" placeholder="Line ID 或手機號碼">
+        </div>
+        <div>
+          <label data-i18n="form_email_label">Email</label>
+          <input type="email" name="Email" data-i18n-placeholder="form_email_ph" placeholder="example@gmail.com">
+        </div>
+      </div>
+
+      <div style="margin-bottom:0.8rem">
+        <label data-i18n="form_industry_label">行業別</label>
+        <select name="行業別">
+          <option value="" data-i18n="form_industry_sel">請選擇...</option>
+          <option value="餐飲" data-i18n="form_ind_food">餐飲</option>
+          <option value="零售/電商" data-i18n="form_ind_retail">零售/電商</option>
+          <option value="診所/醫療" data-i18n="form_ind_clinic">診所/醫療</option>
+          <option value="房仲/不動產" data-i18n="form_ind_re">房仲/不動產</option>
+          <option value="教育/培訓" data-i18n="form_ind_edu">教育/培訓</option>
+          <option value="其他" data-i18n="form_ind_other">其他</option>
+        </select>
+      </div>
+
+      <div style="margin-bottom:0.8rem">
+        <label data-i18n="form_msg_label">想了解的服務</label>
+        <textarea name="備註" data-i18n-placeholder="form_msg_ph" placeholder="例如：我想了解 AI 客服如何運作，我的店是..."></textarea>
+      </div>
+
+      <button type="submit" class="btn-primary" data-i18n="form_btn">📩 預約免費諮詢</button>
     </form>
   </div>
 </section>
@@ -479,378 +547,7 @@ footer {
   <div class="footer-copy" data-i18n="footer_copy">© 2026 翔川 Neo｜曜科技 |Ai_bot</div>
 </footer>
 
-<div class="toast" id="toast"></div>
-
 <script>
-const DEMOS = {
-  'zh-TW': {
-    article: `---
-標題：個人品牌故事與定位
-平台：部落格
-語言：繁體中文
----
-
-你是否曾經夢想過自己成為某個領域的專家？
-在 AI 時代，建立個人品牌不再需要大量時間和資源。
-透過 AI 工具，你可以：
-• 自動生成高品質內容
-• 維持穩定的發文頻率
-• 分析哪些內容最能引起共鳴
-
-我從零開始建立個人品牌的過程中，發現 AI 不只是工具，
-更是一個能夠 24/7 運作的內容夥伴。
-從品牌定位、內容策略到社群經營，AI 都能提供具體建議。
-
-今天就開始打造你的個人品牌吧！`,
-    guide: `---
-標題：2026 AI 工具全攻略
-類型：創業者必備工具指南
----
-
-10 大免費 AI 工具推薦：
-
-1. Groq - 超快速 LLM API，適合串接智能客服
-2. Flutter - 跨平台 App 開發框架
-3. MyEdit - AI 影片生成，每日免費點數
-4. Runway - 專業級 AI 影片製作
-5. GitHub Actions - CI/CD 自動化部署
-6. Flask - 輕量 Web 後台
-7. Telegram Bot API - 即時通訊整合
-8. Docker + k3s - 容器化部署
-9. GitHub Pages - 免費靜態網站託管
-10. Markdown - 內容格式標準
-
-組合以上工具，就能打造完整的 AI 行銷系統。`,
-    drama: `🎬 穿越成為古代網紅
-
-類型：搞笑穿越
-集數：6 集
-
-第 1 集：穿越的開始
-場景：現代上海網紅工作室
-
-[畫面描述]
-一群網紅正在直播，背景是時尚精品。
-主角林妝正在唱歌，突然一道白光...
-
-[對白]
-林妝：這次直播一定要更吸引人！
-老師：妳唱得太棒了！注意風格！
-林妝：我要用魅力征服全世界！
-
-[AI 繪圖 Prompt]
-Modern influencer studio in Shanghai,
-young female streamer singing,
-luxury background, neon lights,
-dynamic camera angle, cinematic lighting
-
-第 2 集：醒來在古代
-場景：古代皇宮寢宮
-...`
-  },
-  en: {
-    article: `---
-Title: Personal Brand Story & Positioning
-Platform: Blog
-Language: English
----
-
-Have you ever dreamed of becoming an expert in your field?
-In the AI era, building a personal brand no longer requires massive time and resources.
-With AI tools, you can:
-• Auto-generate high-quality content
-• Maintain consistent posting frequency
-• Analyze which content resonates most
-
-In my journey building a personal brand from scratch,
-I found that AI is not just a tool,
-but a 24/7 content partner.
-From brand positioning to content strategy and community management,
-AI provides concrete suggestions.
-
-Start building your personal brand today!`,
-    guide: `---
-Title: 2026 AI Tools Ultimate Guide
-Type: Essential Tools for Entrepreneurs
----
-
-Top 10 Free AI Tools:
-
-1. Groq - Ultra-fast LLM API for smart customer service
-2. Flutter - Cross-platform app development framework
-3. MyEdit - AI video generation, free daily credits
-4. Runway - Professional AI video production
-5. GitHub Actions - CI/CD automation
-6. Flask - Lightweight web backend
-7. Telegram Bot API - Instant messaging integration
-8. Docker + k3s - Containerized deployment
-9. GitHub Pages - Free static website hosting
-10. Markdown - Content format standard
-
-Combine these tools to build a complete AI marketing system.`,
-    drama: `🎬 Time Travel to Become Ancient Influencer
-
-Genre: Comedy Time Travel
-Episodes: 6
-
-Episode 1: The Beginning of the Journey
-Scene: Modern Shanghai Influencer Studio
-
-[Scene Description]
-A group of influencers are live streaming.
-The protagonist Lin Zhuang is singing, when suddenly a white light...
-
-[Dialogue]
-Lin Zhuang: This stream must be even more engaging!
-Teacher: You sang brilliantly! Mind your style!
-Lin Zhuang: I will conquer the world with my charm!
-
-[AI Image Prompt]
-Modern influencer studio in Shanghai,
-young female streamer singing,
-luxury background, neon lights,
-dynamic camera angle, cinematic lighting
-
-Episode 2: Awakening in Ancient Times
-Scene: Ancient Imperial Palace Bedchamber
-...`
-  },
-  'zh-CN': {
-    article: `---
-标题：个人品牌故事与定位
-平台：博客
-语言：简体中文
----
-
-你是否曾经梦想过自己成为某个领域的专家？
-在 AI 时代，建立个人品牌不再需要大量时间和资源。
-通过 AI 工具，你可以：
-• 自动生成高品质内容
-• 维持稳定的发文频率
-• 分析哪些内容最能引起共鸣
-
-我从零开始建立个人品牌的过程中，发现 AI 不只是工具，
-更是一个能够 24/7 运作的内容伙伴。
-从品牌定位、内容策略到社群经营，AI 都能提供具体建议。
-
-今天就开始打造你的个人品牌吧！`,
-    guide: `---
-标题：2026 AI 工具全攻略
-类型：创业者必备工具指南
----
-
-10 大免费 AI 工具推荐：
-
-1. Groq - 超快速 LLM API，适合串接智能客服
-2. Flutter - 跨平台 App 开发框架
-3. MyEdit - AI 视频生成，每日免费点数
-4. Runway - 专业级 AI 视频制作
-5. GitHub Actions - CI/CD 自动化部署
-6. Flask - 轻量 Web 后台
-7. Telegram Bot API - 即时通讯整合
-8. Docker + k3s - 容器化部署
-9. GitHub Pages - 免费静态网站托管
-10. Markdown - 内容格式标准
-
-组合以上工具，就能打造完整的 AI 营销系统。`,
-    drama: `🎬 穿越成为古代网红
-
-类型：搞笑穿越
-集数：6 集
-
-第 1 集：穿越的开始
-场景：现代上海网红工作室
-
-[画面描述]
-一群网红正在直播，背景是时尚精品。
-主角林妆正在唱歌，突然一道白光...
-
-[对白]
-林妆：这次直播一定要更吸引人！
-老师：你唱得太棒了！注意风格！
-林妆：我要用魅力征服全世界！
-
-[AI 绘图 Prompt]
-Modern influencer studio in Shanghai,
-young female streamer singing,
-luxury background, neon lights,
-dynamic camera angle, cinematic lighting
-
-第 2 集：醒来在古代
-场景：古代皇宫寝宫
-...`
-  },
-  ru: {
-    article: `---
-Название: История личного бренда и позиционирование
-Платформа: Блог
-Язык: Русский
----
-
-Вы когда-нибудь мечтали стать экспертом в своей области?
-В эпоху ИИ построение личного бренда больше не требует огромных затрат времени и ресурсов.
-С помощью ИИ-инструментов вы можете:
-• Автоматически создавать качественный контент
-• Поддерживать регулярную частоту публикаций
-• Анализировать, какой контент находит наибольший отклик
-
-В моем путешествии по созданию личного бренда с нуля
-я обнаружил, что ИИ — это не просто инструмент,
-а круглосуточный партнер по контенту.
-От позиционирования бренда до контент-стратегии и управления сообществом —
-ИИ дает конкретные рекомендации.
-
-Начните строить свой личный бренд сегодня!`,
-    guide: `---
-Название: Полное руководство по ИИ-инструментам 2026
-Тип: Руководство для предпринимателей
----
-
-Топ-10 бесплатных ИИ-инструментов:
-
-1. Groq - Сверхбыстрый LLM API для умного обслуживания клиентов
-2. Flutter - Фреймворк для кроссплатформенной разработки приложений
-3. MyEdit - Генерация видео с ИИ, ежедневные бесплатные кредиты
-4. Runway - Профессиональное производство видео с ИИ
-5. GitHub Actions - CI/CD автоматизация
-6. Flask - Легкий веб-бэкенд
-7. Telegram Bot API - Интеграция мгновенных сообщений
-8. Docker + k3s - Контейнерное развертывание
-9. GitHub Pages - Бесплатный хостинг статических сайтов
-10. Markdown - Стандарт формата контента
-
-Комбинируйте эти инструменты для создания полной системы ИИ-маркетинга.`,
-    drama: `🎬 Путешествие во времени: стать древним инфлюенсером
-
-Жанр: Комедийное путешествие во времени
-Серий: 6
-
-Серия 1: Начало путешествия
-Сцена: Современная студия инфлюенсера в Шанхае
-
-[Описание сцены]
-Группа инфлюенсеров ведет прямую трансляцию.
-Протагонист Линь Чжуан поет, как вдруг вспыхивает белый свет...
-
-[Диалог]
-Линь Чжуан: Этот стрим должен быть еще увлекательнее!
-Учитель: Ты спел brilliantly! Следи за стилем!
-Линь Чжуан: Я покорю мир своим обаянием!
-
-[AI Image Prompt]
-Modern influencer studio in Shanghai,
-young female streamer singing,
-luxury background, neon lights,
-dynamic camera angle, cinematic lighting
-
-Серия 2: Пробуждение в древности
-Сцена: Спальня в древнем императорском дворце
-...`
-  }
-};
-
-const KB_KW = [
-  ['客服', '方案', 'customer service', 'support'],
-  ['平台', 'platform', '渠道', '分發', 'channel'],
-  ['內容', '生成', 'content', '文章', '自動產出'],
-  ['knowledge', 'base', '知識庫', '自增長', 'learn'],
-  ['價格', 'price', 'pricing', '費用', '方案', '付費', 'plan'],
-  ['開始', 'start', '開始使用', '試用', 'trial', 'sign up', '註冊'],
-  ['hello', 'hi', '你好', '嗨', '您好'],
-  ['telegram', 'bot', '機器人'],
-  ['功能', 'feature', 'product', '產品'],
-  ['app', '品牌', 'brand', '展示'],
-  ['guide', '攻略', '教學', '教程', 'tutorial'],
-  ['drama', '劇本', '短劇', 'movie', '影片']
-];
-
-const KB_MSG = {
-  'zh-TW': [
-    '我們提供三種方案：\n\n1️⃣ 入門版（免費）- 50次/天，10條知識庫\n2️⃣ 專業版（$29/月）- 無限對話，500條知識庫，LLM驅動\n3️⃣ 企業版（$199/月）- 私有部署，無限知識庫\n\n每種方案都包含 AI 智能客服、Telegram Bot 和多語言支援。請問你想了解哪個方案？',
-    '目前支援以下平台：\n\n📱 Telegram Bot - 即時對話客服\n🌐 Web App - 內容展示與管理\n📲 Flutter 品牌 App - Android/iOS 行動裝置\n📧 Email - 自動電子報\n📝 部落格/社群媒體 - 文章同步發佈\n\n一次產出，多平台上架！',
-    'AI 內容生成涵蓋 16 種主題，每主題產出 5 個平台（部落格/Threads/LinkedIn/電子報/Facebook）的中英文版本。\n\n只要設定好主題，AI 就會：\n1️⃣ 分析目標受眾\n2️⃣ 撰寫符合平台調性的內容\n3️⃣ 自動優化關鍵字\n4️⃣ 排程發佈\n\n目前已自動生成 133+ 篇高品質行銷內容！',
-    '知識庫會自動增長！當客戶與 Bot 互動時，他們可以對回覆按 👍（有用）或 👎（無用）。\n\n有用的回覆會自動存入知識庫供未來參考。越多人使用，Bot 就越聰明！\n\n這是一個自我改善的客服系統。',
-    '價格方案：\n\n🎯 入門版 - 免費\n  • AI 智能客服（50次/天）\n  • 10 條知識庫\n  • Telegram Bot\n\n🚀 專業版 - $29/月（最受歡迎）\n  • 無限對話\n  • 500 條知識庫\n  • LLM 驅動（Groq）\n  • 內容自動生成\n\n🏢 企業版 - $199/月\n  • 私有部署\n  • 無限知識庫\n  • 客製化服務\n\n現在加入免費試用！',
-    '開始使用很簡單！\n\n1️⃣ 留下 Email（下方表單），我們會寄送完整介紹\n2️⃣ 加入 Telegram 頻道 https://t.me/+QgAyWlVyIxFjNmRl 即時體驗\n3️⃣ 填寫需求，我們 24 小時內為你開通\n\n專業版首月只要 $29，立即升級你的客服系統！',
-    '你好！我是翔川 Neo｜曜科技 AI 智能客服 🤖\n\n我可以幫助你了解：\n• AI 客服方案與價格\n• 平台支援與整合\n• 內容自動生成\n• 知識庫自增長\n• 如何開始使用\n\n請問有什麼可以為你服務的嗎？',
-    '我們的 Telegram Bot 提供：\n\n🤖 24/7 AI 智能對話\n📚 知識庫自動檢索與學習\n🌐 多語言自動切換\n👍/👎 回饋機制\n💾 對話歷史記憶\n\n加入我們的 Telegram 頻道立即體驗：\nhttps://t.me/+QgAyWlVyIxFjNmRl',
-    'AI 行銷平台核心功能：\n\n🤖 AI 智能客服 - 24/7 自動回覆，多語言支援\n📝 自動內容生成 - 133+ 篇已產出，覆蓋 5 大平台\n📚 知識庫自增長 - 用戶回饋自動沉澱學習\n🌐 多平台分發 - Telegram/Web/App 全通路\n🎬 AI 短劇創作 - 劇本+分鏡+繪圖 Prompt\n📊 數據驅動優化 - AI 分析內容成效\n\n每項功能都為提升你的行銷效率而設計！',
-    '品牌 App 功能：\n\n📱 首頁 - 品牌形象展示與數據統計\n📝 品牌文章 - 133 篇 AI 生成內容\n📖 攻略教學 - AI 工具指南\n🎬 AI 短劇 - 原創劇本展示\n🔍 全文搜尋 - 快速找到相關內容\n🌐 多語言切換 - 繁中/簡中/英文\n\n立即體驗：https://lewislunora.github.io/lewislunora/flutter-app.html',
-    '我們有完整的 AI 工具攻略教學！\n\n涵蓋 10 大免費 AI 工具：\n1. Groq - 超快速 LLM API\n2. Flutter - 跨平台開發\n3. MyEdit - AI 影片\n4. Runway - 專業影片製作\n5. GitHub Actions - 自動化部署\n6. Flask - Web 後台\n7. Telegram Bot API\n8. Docker + k3s\n9. GitHub Pages\n10. Markdown\n\n組合這些工具，打造你的 AI 行銷系統！',
-    'AI 短劇創作功能：\n\n🎬 自動生成原創劇本\n📝 完整分鏡描述\n🎨 英文繪圖 Prompt（可直接用於 MyEdit/Runway）\n🌐 支援多語言版本\n\n目前已完成 2 部劇本：\n1️⃣ 穿越成為古代網紅（6集）\n2️⃣ AI 分身佔領了世界（8集）\n\n適合短影音、行銷影片、品牌故事創作！'
-  ],
-  en: [
-    'We offer three plans:\n\n1️⃣ Starter (Free) - 50/day, 10 KB entries\n2️⃣ Pro ($29/mo) - Unlimited conversations, 500 KB entries, LLM powered\n3️⃣ Enterprise ($199/mo) - Private deployment, unlimited KB\n\nAll plans include AI customer service, Telegram Bot, and multi-language support. Which plan interests you?',
-    'Supported platforms:\n\n📱 Telegram Bot - instant chat support\n🌐 Web App - content showcase & management\n📲 Flutter Brand App - Android/iOS\n📧 Email - auto newsletters\n📝 Blog/Social Media - cross-platform sync\n\nCreate once, publish everywhere!',
-    'AI content generation covers 16 topics, each generating content for 5 platforms (Blog/Threads/LinkedIn/Newsletter/Facebook) in Chinese and English.\n\nJust set a topic and AI will:\n1️⃣ Analyze your target audience\n2️⃣ Write platform-optimized content\n3️⃣ Auto-optimize keywords\n4️⃣ Schedule publishing\n\n133+ high-quality marketing pieces already generated!',
-    'Our knowledge base grows automatically! When customers interact with the bot, they can rate responses with 👍 (useful) or 👎 (not useful).\n\nUseful responses are saved to the knowledge base for future reference. The more people use the bot, the smarter it becomes!\n\nThis creates a self-improving customer service system that gets better over time.',
-    'Pricing plans:\n\n🎯 Starter - Free\n  • AI Customer Service (50/day)\n  • 10 KB entries\n  • Telegram Bot\n\n🚀 Pro - $29/mo (Most Popular)\n  • Unlimited conversations\n  • 500 KB entries\n  • LLM powered (Groq)\n  • Auto content generation\n\n🏢 Enterprise - $199/mo\n  • Private deployment\n  • Unlimited KB\n  • Customization\n\nStart your free trial now!',
-    'Getting started is easy!\n\n1️⃣ Leave your email (form below) and we will send the full intro\n2️⃣ Join our Telegram channel https://t.me/+QgAyWlVyIxFjNmRl\n3️⃣ Tell us your needs and we will activate within 24 hours\n\nPro plan starts at just $29/mo! Upgrade your customer service today!',
-    'Hello! I am XiangChuan Neo｜YaoTech AI Customer Service 🤖\n\nI can help you with:\n• AI service plans & pricing\n• Platform support & integration\n• Content generation\n• Knowledge base\n• Getting started\n\nHow can I help you today?',
-    'Our Telegram Bot features:\n\n🤖 24/7 AI conversations\n📚 Auto knowledge base retrieval & learning\n🌐 Multi-language auto switching\n👍/👎 Feedback system\n💾 Conversation history\n\nJoin our Telegram channel to try it now:\nhttps://t.me/+QgAyWlVyIxFjNmRl',
-    'AI Marketing Platform Core Features:\n\n🤖 AI Customer Service - 24/7 auto reply, multi-language\n📝 Auto Content Generation - 133+ pieces, 5 platforms\n📚 Self-Growing Knowledge Base - learns from feedback\n🌐 Multi-Platform Distribution - Telegram/Web/App\n🎬 AI Drama Creation - scripts+storyboards+prompts\n📊 Data-Driven Optimization - AI analyzes performance\n\nEvery feature designed to boost your marketing efficiency!',
-    'Brand App Features:\n\n📱 Home - brand showcase & stats\n📝 Brand Articles - 133 AI-generated pieces\n📖 Guides - AI tool tutorials\n🎬 AI Dramas - original scripts\n🔍 Full-text search\n🌐 Multi-language - TW/CN/EN\n\nTry it now: https://lewislunora.github.io/lewislunora/flutter-app.html',
-    'We have comprehensive AI tool guides!\n\nCovering 10 free AI tools:\n1. Groq - ultra-fast LLM API\n2. Flutter - cross-platform development\n3. MyEdit - AI video\n4. Runway - professional video production\n5. GitHub Actions - CI/CD automation\n6. Flask - web backend\n7. Telegram Bot API\n8. Docker + k3s\n9. GitHub Pages - free static hosting\n10. Markdown - content format\n\nCombine these to build your AI marketing system!',
-    'AI Drama Creation:\n\n🎬 Auto-generate original scripts\n📝 Complete storyboard descriptions\n🎨 English drawing prompts (compatible with MyEdit/Runway)\n🌐 Multi-language support\n\nCurrently completed 2 scripts:\n1️⃣ Time Travel to Become Ancient Influencer (6 eps)\n2️⃣ AI Clone Takes Over the World (8 eps)\n\nPerfect for short videos, marketing content, brand storytelling!'
-  ],
-  'zh-CN': [
-    '我们提供三种方案：\n\n1️⃣ 入门版（免费）- 50次/天，10条知识库\n2️⃣ 专业版（$29/月）- 无限对话，500条知识库，LLM驱动\n3️⃣ 企业版（$199/月）- 私有部署，无限知识库\n\n每种方案都包含 AI 智能客服、Telegram Bot 和多语言支持。请问你想了解哪个方案？',
-    '目前支持以下平台：\n\n📱 Telegram Bot - 即时对话客服\n🌐 Web App - 内容展示与管理\n📲 Flutter 品牌 App - Android/iOS 移动设备\n📧 Email - 自动电子报\n📝 博客/社交媒体 - 文章同步发布\n\n一次产出，多平台上线！',
-    'AI 内容生成涵盖 16 种主题，每主题产出 5 个平台（博客/Threads/LinkedIn/电子报/Facebook）的中英文版本。\n\n只要设定好主题，AI 就会：\n1️⃣ 分析目标受众\n2️⃣ 撰写符合平台调性的内容\n3️⃣ 自动优化关键词\n4️⃣ 排程发布\n\n目前已自动生成 133+ 篇高品质营销内容！',
-    '知识库会自动增长！当客户与 Bot 互动时，他们可以对回复按 👍（有用）或 👎（无用）。\n\n有用的回复会自动存入知识库供未来参考。越多人使用，Bot 就越聪明！\n\n这是一个自我改善的客服系统。',
-    '价格方案：\n\n🎯 入门版 - 免费\n  • AI 智能客服（50次/天）\n  • 10 条知识库\n  • Telegram Bot\n\n🚀 专业版 - $29/月（最受欢迎）\n  • 无限对话\n  • 500 条知识库\n  • LLM 驱动（Groq）\n  • 内容自动生成\n\n🏢 企业版 - $199/月\n  • 私有部署\n  • 无限知识库\n  • 定制化服务\n\n现在加入免费试用！',
-    '开始使用很简单！\n\n1️⃣ 留下 Email（下方表单），我们会寄送完整介绍\n2️⃣ 加入 Telegram 频道 https://t.me/+QgAyWlVyIxFjNmRl 即时体验\n3️⃣ 填写需求，我们 24 小时内为你开通\n\n专业版首月只要 $29，立即升级你的客服系统！',
-    '你好！我是翔川 Neo｜曜科技 AI 智能客服 🤖\n\n我可以帮助你了解：\n• AI 客服方案与价格\n• 平台支持与整合\n• 内容自动生成\n• 知识库自增长\n• 如何开始使用\n\n请问有什么可以为你服务的吗？',
-    '我们的 Telegram Bot 提供：\n\n🤖 24/7 AI 智能对话\n📚 知识库自动检索与学习\n🌐 多语言自动切换\n👍/👎 反馈机制\n💾 对话历史记忆\n\n加入我们的 Telegram 频道立即体验：\nhttps://t.me/+QgAyWlVyIxFjNmRl',
-    'AI 营销平台核心功能：\n\n🤖 AI 智能客服 - 24/7 自动回复，多语言支持\n📝 自动内容生成 - 133+ 篇已产出，覆盖 5 大平台\n📚 知识库自增长 - 用户反馈自动沉淀学习\n🌐 多平台分发 - Telegram/Web/App 全渠道\n🎬 AI 短剧创作 - 剧本+分镜+绘图 Prompt\n📊 数据驱动优化 - AI 分析内容成效\n\n每项功能都为提升你的营销效率而设计！',
-    '品牌 App 功能：\n\n📱 首页 - 品牌形象展示与数据统计\n📝 品牌文章 - 133 篇 AI 生成内容\n📖 攻略教学 - AI 工具指南\n🎬 AI 短剧 - 原创剧本展示\n🔍 全文搜索 - 快速找到相关内容\n🌐 多语言切换 - 繁中/简中/英文\n\n立即体验：https://lewislunora.github.io/lewislunora/flutter-app.html',
-    '我们有完整的 AI 工具攻略教学！\n\n涵盖 10 大免费 AI 工具：\n1. Groq - 超快速 LLM API\n2. Flutter - 跨平台开发\n3. MyEdit - AI 视频\n4. Runway - 专业视频制作\n5. GitHub Actions - 自动化部署\n6. Flask - Web 后台\n7. Telegram Bot API\n8. Docker + k3s\n9. GitHub Pages - 免费静态托管\n10. Markdown - 内容格式\n\n组合这些工具，打造你的 AI 营销系统！',
-    'AI 短剧创作功能：\n\n🎬 自动生成原创剧本\n📝 完整分镜描述\n🎨 英文绘图 Prompt（可直接用于 MyEdit/Runway）\n🌐 支持多语言版本\n\n目前已完成 2 部剧本：\n1️⃣ 穿越成为古代网红（6集）\n2️⃣ AI 分身占领了世界（8集）\n\n适合短视频、营销视频、品牌故事创作！'
-  ],
-  ru: [
-    'Мы предлагаем три плана:\n\n1️⃣ Стартовый (бесплатно) - 50/день, 10 записей БЗ\n2️⃣ Про ($29/мес) - безлимит, 500 записей БЗ, LLM\n3️⃣ Корпоративный ($199/мес) - частное развертывание\n\nВсе планы включают AI-сервис, Telegram Bot и мультиязычность. Какой план вас интересует?',
-    'Поддерживаемые платформы:\n\n📱 Telegram Bot - чат поддержка\n🌐 Web App - контент и управление\n📲 Flutter приложение - Android/iOS\n📧 Email - рассылки\n📝 Блог/Соцсети - синхронизация\n\nСоздайте один раз — публикуйте везде!',
-    'AI-генерация контента: 16 тем, 5 платформ (блог/Threads/LinkedIn/email/Facebook) на китайском и английском.\n\nAI анализирует аудиторию, пишет контент, оптимизирует ключевые слова и публикует по графику.\n\nУже сгенерировано 133+ материала!',
-    'База знаний растёт автоматически! Клиенты оценивают ответы 👍/👎.\n\nЛучшие ответы сохраняются в базу знаний. Чем больше людей используют бота, тем он умнее!\n\nСамообучающаяся система поддержки.',
-    'Цены:\n\n🎯 Стартовый - Бесплатно\n  • AI сервис (50/день)\n  • 10 записей БЗ\n  • Telegram Bot\n\n🚀 Про - $29/мес\n  • Безлимит\n  • 500 записей БЗ\n  • LLM (Groq)\n  • Автоконтент\n\n🏢 Корпоративный - $199/мес\n  • Частное размещение\n  • Безлимитная БЗ\n  • Кастомизация\n\nПопробуйте бесплатно!',
-    'Начать просто!\n\n1️⃣ Оставьте email — мы пришлём описание\n2️⃣ Telegram канал https://t.me/+QgAyWlVyIxFjNmRl\n3️⃣ Расскажите о своих задачах — подключим за 24ч\n\nПро план всего $29/мес!',
-    'Здравствуйте! Я XiangChuan Neo｜YaoTech AI 🤖\n\nПомогу вам с:\n• Планами и ценами\n• Платформами\n• Генерацией контента\n• Базой знаний\n• Началом работы\n\nЧем могу помочь?',
-    'Telegram Bot возможности:\n\n🤖 24/7 AI диалоги\n📚 База знаний\n🌐 Мультиязычность\n👍/👎 Обратная связь\n💾 История\n\nПрисоединяйтесь: https://t.me/+QgAyWlVyIxFjNmRl',
-    'Основные функции:\n\n🤖 AI сервис - 24/7\n📝 Автоконтент - 133+ шт\n📚 База знаний\n🌐 Все платформы\n🎬 AI драмы\n📊 Аналитика\n\nВсё для вашего маркетинга!',
-    'Бренд-приложение:\n\n📱 Главная\n📝 Статьи - 133 шт\n📖 Гайды\n🎬 Драмы\n🔍 Поиск\n🌐 TW/CN/EN\n\nПопробовать: https://lewislunora.github.io/lewislunora/flutter-app.html',
-    'Гайды по AI инструментам:\n\n1. Groq - LLM API\n2. Flutter - разработка\n3. MyEdit - видео\n4. Runway - проф. видео\n5. GitHub Actions - CI/CD\n6. Flask - backend\n7. Telegram Bot API\n8. Docker + k3s\n9. GitHub Pages\n10. Markdown\n\nСоберите свою AI-систему!',
-    'AI создание драм:\n\n🎬 Сценарии\n📝 Раскадровки\n🎨 Промпты (MyEdit/Runway)\n🌐 Мультиязычность\n\nГотово 2 сценария:\n1️⃣ Путешествие в древность (6 серий)\n2️⃣ AI-клоны захватили мир (8 серий)\n\nИдеально для short video, маркетинга!'
-  ]
-};
-
-function showDemo(type, el) {
-  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-  el.classList.add('active');
-  const lang = currentLang && DEMOS[currentLang] ? currentLang : 'zh-TW';
-  const text = (DEMOS[lang] && DEMOS[lang][type]) || (DEMOS['zh-TW'][type]) || '';
-  const pre = document.getElementById('demo-text');
-  pre.style.opacity = '0';
-  setTimeout(() => {
-    pre.textContent = text;
-    pre.style.opacity = '1';
-  }, 200);
-}
-
-function scrollToContact() {
-  document.getElementById('contact').scrollIntoView({ behavior: 'smooth' });
-}
-
-function handleSubmit(e) {
-  e.preventDefault();
-  const email = e.target.querySelector('input').value;
-  const toast = document.getElementById('toast');
-  const tmpl = (LANG[currentLang] && LANG[currentLang].toast_thanks) || '📩 感謝 {email}！我們會盡快與你聯絡';
-  toast.textContent = tmpl.replace('{email}', email);
-  toast.classList.add('show');
-  setTimeout(() => toast.classList.remove('show'), 4000);
-  e.target.reset();
-}
-
 let currentLang = 'zh-TW';
 
 const LANG = {
@@ -862,11 +559,11 @@ const LANG = {
     nav_pricing: 'Pricing',
     nav_contact: 'Contact',
     nav_content: 'Content App',
-    hero_badge: '🚀 2026 AI Marketing New Era',
-    hero_title: '<span>AI Customer Service</span> + Marketing Automation<br>Launch in One Week',
-    hero_desc: 'Integrate LLM smart conversations, auto-generate marketing content, knowledge base self-growth. From Telegram Bot to Brand App, one-stop AI marketing solution.',
-    hero_btn_demo: '📩 Get Demo',
-    hero_btn_watch: '▶ See How It Works',
+    hero_badge: '🏆 Taiwan Team · Local Support · Global Deploy',
+    hero_title: '<span>AI Customer Service</span> Enterprise Power,<br>Starting at $29/mo',
+    hero_desc: 'An AI marketing solution designed for SMBs. 24/7 AI customer service, auto content generation, multi-platform distribution — all in one system. Enterprise-grade AI without the enterprise price tag.',
+    hero_btn_demo: '📩 Free Consultation',
+    hero_btn_watch: '▶ Watch Demo',
     stat_content: 'AI Contents',
     stat_platform: 'Platforms',
     stat_lang: 'Languages',
@@ -926,10 +623,27 @@ const LANG = {
     price_enterprise_feat6: 'Full API Integration',
     price_enterprise_feat7: 'Custom Brand App',
     price_enterprise_btn: 'Contact Us',
-    cta_title: 'Ready to Launch Your AI Marketing?',
-    cta_desc: 'Leave your email and we will send you the full product intro and free trial link. Or join our Telegram channel https://t.me/+QgAyWlVyIxFjNmRl or @ailunora_bot to experience it now.',
-    cta_placeholder: 'Your Email Address',
-    cta_btn: '📩 Get Demo',
+    cta_title: 'Book a Free Consultation',
+    cta_desc: '30-min free consultation to learn how AI can boost your customer service and marketing efficiency.',
+    form_name_label: 'Name *',
+    form_name_ph: 'Your name',
+    form_company_label: 'Company',
+    form_company_ph: 'Company or store name',
+    form_contact_label: 'Line ID / Phone *',
+    form_contact_ph: 'Line ID or phone number',
+    form_email_label: 'Email',
+    form_email_ph: 'example@gmail.com',
+    form_industry_label: 'Industry',
+    form_industry_sel: 'Select...',
+    form_ind_food: 'Food & Beverage',
+    form_ind_retail: 'Retail / E-commerce',
+    form_ind_clinic: 'Clinic / Medical',
+    form_ind_re: 'Real Estate',
+    form_ind_edu: 'Education / Training',
+    form_ind_other: 'Other',
+    form_msg_label: 'Message',
+    form_msg_ph: 'e.g. I want to learn about AI customer service for my store...',
+    form_btn: '📩 Book Free Consultation',
     footer_features: 'Features',
     footer_pricing: 'Pricing',
     footer_contact: 'Contact',
@@ -944,7 +658,6 @@ const LANG = {
     chat_ai_label: '🤖 XiangChuan Neo｜YaoTech AI Bot',
     chat_welcome: 'Hello! I am XiangChuan Neo｜YaoTech AI Customer Service 🤖\n\nI can help you learn about our AI marketing solutions. Try clicking the suggested questions above, or type your question!',
     chat_welcome_html: 'Hello! I am XiangChuan Neo｜YaoTech AI Customer Service 🤖<br><br>I can help you learn about our AI marketing solutions. Try clicking the suggested questions above, or type your question!',
-    toast_thanks: '📩 Thank you {email}! We will contact you shortly',
     lang_zt: '繁體中文',
     lang_cn: '簡體中文',
     lang_en: 'English',
@@ -958,11 +671,11 @@ const LANG = {
     nav_pricing: '价格',
     nav_contact: '联系',
     nav_content: '内容展示',
-    hero_badge: '🚀 2026 AI 智慧营销新时代',
-    hero_title: '<span>AI 智能客服</span> + 营销自动化<br>一周内上线',
-    hero_desc: '串接 LLM 智能对话、自动产出营销内容、知识库自增长。从 Telegram Bot 到品牌 App，一站式 AI 营销解决方案。',
-    hero_btn_demo: '📩 获取演示',
-    hero_btn_watch: '▶ 看看如何运作',
+    hero_badge: '🏆 台湾团队 · 在地支援 · 全球部署',
+    hero_title: '<span>AI 客服</span> 小预算也能有大格局<br>从 NT$890/月 开始',
+    hero_desc: '专为台湾中小企业设计的 AI 营销解决方案。24 小时 AI 智能客服、自动内容生成、多平台分发 — 全部在一套系统内完成。不用百万预算，就能拥有企业级 AI 营销系统。',
+    hero_btn_demo: '📩 免费咨询',
+    hero_btn_watch: '▶ 观看展示',
     stat_content: 'AI 生成内容',
     stat_platform: '支持平台',
     stat_lang: '语言版本',
@@ -1022,10 +735,27 @@ const LANG = {
     price_enterprise_feat6: 'API 完整串接',
     price_enterprise_feat7: '品牌 App 定制',
     price_enterprise_btn: '联系我们',
-    cta_title: '准备好启动你的 AI 营销了吗？',
-    cta_desc: '留下 Email，我们会寄送完整产品介绍与免费试用链接。或直接搜索 Telegram 频道 https://t.me/+QgAyWlVyIxFjNmRl 或 @ailunora_bot 立即体验。',
-    cta_placeholder: '你的 Email 地址',
-    cta_btn: '📩 获取演示',
+    cta_title: '准备好让 AI 帮你营销了吗？',
+    cta_desc: '免费预约咨询，30 分钟了解如何用 AI 提升你的客户服务与营销效率。',
+    form_name_label: '姓名 *',
+    form_name_ph: '请输入姓名',
+    form_company_label: '公司/店家',
+    form_company_ph: '公司或店名',
+    form_contact_label: 'Line ID / 手机 *',
+    form_contact_ph: 'Line ID 或手机号码',
+    form_email_label: 'Email',
+    form_email_ph: 'example@gmail.com',
+    form_industry_label: '行业别',
+    form_industry_sel: '请选择...',
+    form_ind_food: '餐饮',
+    form_ind_retail: '零售/电商',
+    form_ind_clinic: '诊所/医疗',
+    form_ind_re: '房仲/不动产',
+    form_ind_edu: '教育/培训',
+    form_ind_other: '其他',
+    form_msg_label: '想了解的服务',
+    form_msg_ph: '例如：我想了解 AI 客服如何运作，我的店是...',
+    form_btn: '📩 预约免费咨询',
     footer_features: '功能',
     footer_pricing: '价格',
     footer_contact: '联系',
@@ -1040,7 +770,6 @@ const LANG = {
     chat_ai_label: '🤖 翔川 Neo｜曜科技 AI 客服',
     chat_welcome: '你好！我是翔川 Neo｜曜科技 AI 智能客服 🤖\n\n我可以帮助你了解我们的 AI 营销解决方案。试试点击上方的建议问题，或直接输入你的问题！',
     chat_welcome_html: '你好！我是翔川 Neo｜曜科技 AI 智能客服 🤖<br><br>我可以帮助你了解我们的 AI 营销解决方案。试试点击上方的建议问题，或直接输入你的问题！',
-    toast_thanks: '📩 感谢 {email}！我们会尽快与你联系',
     lang_zt: '繁體中文',
     lang_cn: '簡體中文',
     lang_en: 'English',
@@ -1054,11 +783,11 @@ const LANG = {
     nav_pricing: 'Цены',
     nav_contact: 'Контакты',
     nav_content: 'Контент',
-    hero_badge: '🚀 2026 Новая эра AI-маркетинга',
-    hero_title: '<span>AI Обслуживание</span> + Автоматизация<br>Запуск за неделю',
-    hero_desc: 'Интеграция умных диалогов LLM, автогенерация контента, самообучающаяся база знаний. От Telegram Bot до брендового приложения — комплексное AI-решение.',
-    hero_btn_demo: '📩 Получить демо',
-    hero_btn_watch: '▶ Как это работает',
+    hero_badge: '🏆 Тайваньская команда · Локальная поддержка · Глобальное развёртывание',
+    hero_title: '<span>AI Сервис</span> Возможности уровня Enterprise,<br>от NT$5,990/мес',
+    hero_desc: 'AI-решение для маркетинга, созданное для малого и среднего бизнеса. 24/7 AI-поддержка, автогенерация контента, публикация на多个 платформах — всё в одной системе.',
+    hero_btn_demo: '📩 Бесплатная консультация',
+    hero_btn_watch: '▶ Смотреть демо',
     stat_content: 'AI контент',
     stat_platform: 'Платформы',
     stat_lang: 'Языки',
@@ -1118,10 +847,27 @@ const LANG = {
     price_enterprise_feat6: 'Полный API',
     price_enterprise_feat7: 'Кастомное приложение',
     price_enterprise_btn: 'Связаться',
-    cta_title: 'Готовы запустить AI-маркетинг?',
-    cta_desc: 'Оставьте email — мы пришлём описание и ссылку на триал. Или в Telegram https://t.me/+QgAyWlVyIxFjNmRl / @ailunora_bot',
-    cta_placeholder: 'Ваш Email',
-    cta_btn: '📩 Получить демо',
+    cta_title: 'Готовы к AI-маркетингу?',
+    cta_desc: 'Бесплатная 30-минутная консультация — узнайте, как AI улучшит ваш сервис и маркетинг.',
+    form_name_label: 'Имя *',
+    form_name_ph: 'Ваше имя',
+    form_company_label: 'Компания',
+    form_company_ph: 'Название компании',
+    form_contact_label: 'Line ID / Телефон *',
+    form_contact_ph: 'Line ID или телефон',
+    form_email_label: 'Email',
+    form_email_ph: 'example@gmail.com',
+    form_industry_label: 'Отрасль',
+    form_industry_sel: 'Выберите...',
+    form_ind_food: 'Рестораны',
+    form_ind_retail: 'Розница / E-commerce',
+    form_ind_clinic: 'Клиники / Медицина',
+    form_ind_re: 'Недвижимость',
+    form_ind_edu: 'Образование',
+    form_ind_other: 'Другое',
+    form_msg_label: 'Сообщение',
+    form_msg_ph: 'Например: хочу узнать об AI-сервисе для моего магазина...',
+    form_btn: '📩 Записаться бесплатно',
     footer_features: 'Функции',
     footer_pricing: 'Цены',
     footer_contact: 'Контакты',
@@ -1136,7 +882,6 @@ const LANG = {
     chat_ai_label: '🤖 XiangChuan Neo｜YaoTech AI Бот',
     chat_welcome: 'Здравствуйте! Я AI-помощник XiangChuan Neo 🤖\n\nЗадайте вопрос или нажмите на подсказки выше!',
     chat_welcome_html: 'Здравствуйте! Я AI-помощник XiangChuan Neo 🤖<br><br>Задайте вопрос или нажмите на подсказки выше!',
-    toast_thanks: '📩 Спасибо {email}! Мы свяжемся с вами',
     lang_zt: '繁體中文',
     lang_cn: '簡體中文',
     lang_en: 'English',
@@ -1206,6 +951,52 @@ function addChatMsg(text, role) {
   container.scrollTop = container.scrollHeight;
 }
 
+const KB_KW = [
+  ['方案', '價格', '費用', '多少錢', 'pricing', 'plan', 'price', 'cost'],
+  ['功能', '能做什麼', 'features', 'capabilities'],
+  ['平台', '支援', 'platform', 'support', '整合'],
+  ['開始', '試用', '註冊', 'start', 'trial', 'begin', 'signup'],
+  ['客服', 'customer service', 'support'],
+  ['內容', 'content', '文章', '生成'],
+  ['知識庫', 'knowledge base', 'kb'],
+  ['品牌', 'brand', 'app', '應用'],
+  ['聯絡', 'contact', 'email', '電話', 'line'],
+  ['展示', 'demo', '演示'],
+  ['價格', '方案', '費用'],
+  ['ai', 'llm', 'groq', '人工智慧']
+];
+
+const KB_MSG = {
+  'zh-TW': [
+    '我們提供三種方案：\n\n① 入門版：免費，50次/天\n② 專業版：NT$890/月，無限次數\n③ 企業版：NT$5,990/月，私有部署\n\n詳細比較請看 👉 https://lewislunora.github.io/lewislunora/product/#pricing',
+    '主要功能包括：\n• AI 智能客服（24/7）\n• 自動內容生成（文章+社群）\n• 知識庫自增長\n• 多平台分發\n• 數據驅動優化\n• AI 短劇創作',
+    '目前已支援：Telegram、Line、Facebook、Instagram。使用 Playwright 自動化支援：Threads、Dcard、小紅書。更多平台持續新增中。',
+    '開始很簡單：\n1. 點擊「免費試用」按鈕\n2. 加入我們的 Telegram 頻道\n3. 設定你的知識庫\n4. AI 立即上線\n\n立即開始 👉 https://lewislunora.github.io/lewislunora/product/',
+    'AI 客服可以 24/7 自動回覆客戶問題。支援多語言、知識庫自增長、串接多平台。專業版每月只要 NT$890。',
+    '我們的自動內容生成系統可以產出：品牌文章、社群貼文、行銷文案、電子報、短劇劇本。支援中英雙語。',
+    '知識庫是 AI 客服的核心。好的回答會自動保存，不好的會被淘汰。支援 👍/👎 回饋機制，越用越聰明。',
+    '品牌 App 使用 Flutter 開發，同時支援 iOS、Android 和 Web。內容從 JSON 讀取，無需後端即可更新。',
+    '歡迎聯絡我們：\n📧 ericly76@gmail.com\n✈️ Telegram 頻道：https://t.me/+QgAyWlVyIxFjNmRl\n🤖 客服機器人：@ailunora_bot',
+    '觀看即時展示 👉 直接在上方聊天室輸入問題，體驗 AI 客服回覆。或前往商品頁查看完整介紹。',
+    '專業版 NT$890/月 · 企業版 NT$5,990/月。14 天免費試用，無需信用卡。',
+    '系統使用 Groq Llama 3 LLM 驅動，支援智慧對話、內容生成、情感分析等功能。'
+  ],
+  en: [
+    'We offer 3 plans:\n① Starter: Free, 50 chats/day\n② Pro: $29/mo, unlimited\n③ Enterprise: $199/mo, private deployment\n\nSee details 👉 https://lewislunora.github.io/lewislunora/product/#pricing',
+    'Key features:\n• AI Customer Service (24/7)\n• Auto Content Generation\n• Self-Growing Knowledge Base\n• Multi-Platform Distribution\n• Data-Driven Optimization',
+    'Supported platforms: Telegram, Line, Facebook, Instagram. Browser automation: Threads, Dcard, Xiaohongshu.',
+    'Getting started:\n1. Click "Free Trial"\n2. Join our Telegram\n3. Set up your knowledge base\n4. AI goes live instantly',
+    'AI customer service works 24/7. Multi-language, self-growing KB, multi-platform. Pro plan starts at $29/mo.',
+    'Auto content system generates: blog posts, social posts, marketing copy, newsletters, drama scripts. Chinese + English.',
+    'The knowledge base is the core. Good answers auto-save, bad ones get淘汰. 👍/👎 feedback system.',
+    'Brand app built with Flutter. iOS + Android + Web. Content from JSON, no backend needed.',
+    'Contact us:\n📧 ericly76@gmail.com\n✈️ Telegram: https://t.me/+QgAyWlVyIxFjNmRl\n🤖 Bot: @ailunora_bot',
+    'Live demo 👉 Try typing questions above to experience AI customer service.',
+    'Pro $29/mo · Enterprise $199/mo. 14-day free trial, no credit card.',
+    'Powered by Groq Llama 3 LLM. Smart conversations, content generation, sentiment analysis.'
+  ]
+};
+
 function getBotReply(text) {
   const lower = text.toLowerCase();
   const lang = currentLang && KB_MSG[currentLang] ? currentLang : 'zh-TW';
@@ -1251,6 +1042,11 @@ document.addEventListener('DOMContentLoaded', () => {
   const pre = document.getElementById('demo-text');
   pre.textContent = DEMOS['zh-TW'].article;
   pre.style.transition = 'opacity 0.3s';
+
+  for (const [key, val] of Object.entries(DEMOS['zh-TW'])) {
+    const btn = document.querySelector(`[data-tab="${key}"]`);
+    if (btn) btn.addEventListener('click', () => switchDemo(key));
+  }
 
   const now = new Date();
   document.getElementById('welcome-time').textContent =
