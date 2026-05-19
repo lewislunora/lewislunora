@@ -1051,8 +1051,11 @@ async function handleContact(e) {
   btn.disabled = true;
   btn.textContent = '送出中...';
   result.style.display = 'none';
+  const apiUrl = location.hostname.includes('github.io')
+    ? 'https://lewislunora.onrender.com/api/contact'
+    : '/api/contact';
   try {
-    const res = await fetch('/api/contact', {
+    const res = await fetch(apiUrl, {
       method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify(data),
     });
     const json = await res.json();
