@@ -1,0 +1,499 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>翔川 Neo｜曜科技 行銷自動化系統</title>
+<style>
+* { margin:0; padding:0; box-sizing:border-box; }
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
+  background: #0a0e27; color: #e0e0e0; min-height: 100vh;
+}
+.sidebar {
+  position: fixed; left:0; top:0; bottom:0; width:220px;
+  background: rgba(255,255,255,0.03); border-right: 1px solid rgba(255,255,255,0.06);
+  padding: 2rem 1rem; overflow-y: auto; z-index:10;
+}
+.sidebar .brand {
+  font-size: 1.1rem; font-weight: 700; margin-bottom: 2rem;
+  background: linear-gradient(135deg, #00d4ff, #7b68ee);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+}
+.sidebar nav { display:flex; flex-direction:column; gap:0.3rem; }
+.sidebar nav a {
+  color: rgba(255,255,255,0.5); text-decoration: none; padding: 0.7rem 1rem;
+  border-radius: 10px; font-size: 0.9rem; transition: all 0.2s; cursor:pointer;
+}
+.sidebar nav a:hover, .sidebar nav a.active {
+  background: rgba(0,212,255,0.1); color: #fff;
+}
+.main { margin-left: 220px; padding: 2rem; max-width: 1200px; }
+.page-title { font-size: 1.5rem; font-weight: 700; margin-bottom: 1.5rem; }
+.card {
+  background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 14px; padding: 1.5rem; margin-bottom: 1.5rem;
+}
+.card h3 { font-size: 1.1rem; margin-bottom: 1rem; }
+.stats-grid { display:grid; grid-template-columns: repeat(auto-fit, minmax(140px,1fr)); gap:1rem; margin-bottom: 2rem; }
+.stat-card {
+  background: rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.08);
+  border-radius:12px; padding:1.2rem; text-align:center;
+}
+.stat-card .num { font-size: 2rem; font-weight:700; background:linear-gradient(135deg,#00d4ff,#7b68ee); -webkit-background-clip:text; -webkit-text-fill-color:transparent; }
+.stat-card .label { font-size:0.8rem; color:rgba(255,255,255,0.4); margin-top:0.3rem; }
+.btn {
+  display:inline-block; padding:0.6rem 1.2rem; border-radius:8px; font-weight:600;
+  font-size:0.85rem; border:none; cursor:pointer; transition:all 0.2s; text-decoration:none;
+}
+.btn-primary { background:linear-gradient(135deg,#00d4ff,#7b68ee); color:#fff; }
+.btn-primary:hover { transform:translateY(-1px); box-shadow:0 4px 15px rgba(0,212,255,0.3); }
+.btn-outline { background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.15); color:#fff; }
+.btn-outline:hover { border-color:#00d4ff; }
+.btn-sm { padding:0.4rem 0.8rem; font-size:0.8rem; }
+.btn-danger { background:rgba(255,50,50,0.2); border:1px solid rgba(255,50,50,0.3); color:#ff6b6b; }
+table { width:100%; border-collapse:collapse; font-size:0.85rem; }
+th, td { padding:0.7rem 0.5rem; text-align:left; border-bottom:1px solid rgba(255,255,255,0.05); }
+th { color:rgba(255,255,255,0.4); font-weight:600; font-size:0.8rem; text-transform:uppercase; }
+tr:hover { background:rgba(255,255,255,0.02); }
+.badge {
+  display:inline-block; padding:0.15rem 0.5rem; border-radius:4px;
+  font-size:0.75rem; font-weight:600;
+}
+.badge-draft { background:rgba(255,255,255,0.1); color:rgba(255,255,255,0.5); }
+.badge-scheduled { background:rgba(0,212,255,0.15); color:#00d4ff; }
+.badge-published { background:rgba(80,200,120,0.15); color:#50c878; }
+.badge-failed { background:rgba(255,50,50,0.15); color:#ff6b6b; }
+.badge-pending { background:rgba(255,200,0,0.15); color:#ffc800; }
+.form-group { margin-bottom:1rem; }
+.form-group label { display:block; font-size:0.85rem; color:rgba(255,255,255,0.6); margin-bottom:0.3rem; font-weight:600; }
+.form-group input,.form-group select,.form-group textarea {
+  width:100%; padding:0.7rem 1rem; border-radius:8px;
+  background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.1);
+  color:#fff; font-size:0.9rem; font-family:inherit; outline:none;
+}
+.form-group textarea { min-height:120px; resize:vertical; }
+.form-group input:focus,.form-group select:focus,.form-group textarea:focus { border-color:#00d4ff; }
+.form-row { display:flex; gap:1rem; }
+.form-row > * { flex:1; }
+.platform-checkboxes { display:flex; gap:0.8rem; flex-wrap:wrap; }
+.platform-checkboxes label {
+  display:flex; align-items:center; gap:0.4rem; cursor:pointer;
+  padding:0.4rem 0.8rem; border-radius:8px;
+  background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.08);
+  font-size:0.85rem;
+}
+.platform-checkboxes input:checked + span { color:#00d4ff; }
+.hidden { display:none !important; }
+.toast {
+  position:fixed; bottom:2rem; right:2rem;
+  background:rgba(0,212,255,0.9); color:#fff; padding:1rem 1.5rem;
+  border-radius:10px; font-size:0.9rem; z-index:100;
+  opacity:0; transition:opacity 0.3s; pointer-events:none;
+}
+.toast.show { opacity:1; }
+@media(max-width:768px) {
+  .sidebar { width:100%; position:relative; height:auto; padding:1rem; }
+  .sidebar nav { flex-direction:row; flex-wrap:wrap; }
+  .main { margin-left:0; padding:1rem; }
+  .form-row { flex-direction:column; }
+}
+</style>
+</head>
+<body>
+
+<div class="sidebar">
+  <div class="brand">🤖 行銷自動化系統</div>
+  <nav id="nav">
+    <a class="active" onclick="showPage('dashboard')">📊 總覽</a>
+    <a onclick="showPage('content')">📝 內容管理</a>
+    <a onclick="showPage('create')">✏️ 新增內容</a>
+    <a onclick="showPage('schedule')">📅 排程</a>
+    <a onclick="showPage('accounts')">🔗 平台帳號</a>
+    <a onclick="showPage('ai')">🤖 AI 生成</a>
+    <a onclick="showPage('analytics')">📈 分析</a>
+  </nav>
+</div>
+
+<div class="main" id="main-content"></div>
+<div class="toast" id="toast"></div>
+
+<script>
+const API = window.location.origin;
+
+// --- Routing ---
+const pages = ['dashboard','content','create','schedule','accounts','ai','analytics'];
+
+function showPage(name) {
+  document.querySelectorAll('#nav a').forEach(a => a.classList.remove('active'));
+  document.querySelector(`#nav a[onclick*='${name}']`)?.classList.add('active');
+  const fn = pageRenderers[name];
+  if (fn) fn();
+}
+
+function toast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 3500);
+}
+
+// --- API helpers ---
+async function api(path, opts={}) {
+  const res = await fetch(API + path, {
+    headers: {'Content-Type':'application/json', ...opts.headers},
+    ...opts
+  });
+  if (!res.ok) {
+    const err = await res.text();
+    throw new Error(err);
+  }
+  return res.json();
+}
+
+// ==============================
+// Dashboard
+// ==============================
+pageRenderers = {};
+
+pageRenderers.dashboard = async function() {
+  const status = await api('/api/status');
+  const contents = await api('/api/content?per_page=5');
+  const schedules = await api('/api/schedules?per_page=5');
+
+  const main = document.getElementById('main-content');
+  main.innerHTML = `
+    <div class="page-title">📊 系統總覽</div>
+    <div class="stats-grid">
+      <div class="stat-card"><div class="num">${contents.total}</div><div class="label">總內容數</div></div>
+      <div class="stat-card"><div class="num">${status.scheduler.pending}</div><div class="label">待發布</div></div>
+      <div class="stat-card"><div class="num">${status.scheduler.done}</div><div class="label">已發布</div></div>
+      <div class="stat-card"><div class="num">${status.scheduler.failed}</div><div class="label">失敗</div></div>
+      <div class="stat-card"><div class="num">${status.ai_available ? '✅' : '⚠️'}</div><div class="label">AI 可用</div></div>
+    </div>
+    <div class="card">
+      <h3>平台狀態</h3>
+      <table>
+        <tr><th>平台</th><th>狀態</th></tr>
+        ${Object.entries(status.platforms).map(([k,v]) =>
+          `<tr><td>${k}</td><td><span class="badge ${v ? 'badge-published' : 'badge-draft'}">${v ? '啟用' : '停用'}</span></td></tr>`
+        ).join('')}
+      </table>
+    </div>
+    <div class="card">
+      <h3>最近內容</h3>
+      <table>
+        <tr><th>標題</th><th>狀態</th><th>時間</th></tr>
+        ${contents.items.map(c => `<tr><td>${c.title}</td><td><span class="badge badge-${c.status}">${c.status}</span></td><td>${c.created_at}</td></tr>`).join('')}
+      </table>
+    </div>
+  `;
+};
+
+// ==============================
+// Content List
+// ==============================
+pageRenderers.content = async function() {
+  const data = await api('/api/content?per_page=100');
+  const main = document.getElementById('main-content');
+  main.innerHTML = `
+    <div class="page-title">📝 內容管理</div>
+    <div style="margin-bottom:1rem">
+      <button class="btn btn-primary" onclick="showPage('create')">✏️ 新增內容</button>
+    </div>
+    <div class="card">
+      <table>
+        <tr><th>標題</th><th>語言</th><th>分類</th><th>狀態</th><th>平台</th><th>建立時間</th><th>操作</th></tr>
+        ${data.items.map(c => `
+          <tr>
+            <td>${c.title}</td>
+            <td>${c.language}</td>
+            <td>${c.category||'-'}</td>
+            <td><span class="badge badge-${c.status}">${c.status}</span></td>
+            <td>${(JSON.parse(c.platforms||'[]')).join(', ')}</td>
+            <td>${c.created_at}</td>
+            <td>
+              <button class="btn btn-sm btn-primary" onclick="publishNow(${c.id})">發布</button>
+              <button class="btn btn-sm btn-danger" onclick="deleteContent(${c.id})">刪除</button>
+            </td>
+          </tr>
+        `).join('')}
+      </table>
+    </div>
+  `;
+};
+
+async function publishNow(id) {
+  try {
+    const r = await api(`/api/content/${id}/publish`, {method:'POST'});
+    toast('✅ 發布完成');
+    showPage('content');
+  } catch(e) { toast('❌ 發布失敗: '+e.message); }
+}
+
+async function deleteContent(id) {
+  if (!confirm('確定刪除？')) return;
+  await api(`/api/content/${id}`, {method:'DELETE'});
+  toast('已刪除');
+  showPage('content');
+}
+
+// ==============================
+// Create Content
+// ==============================
+pageRenderers.create = async function() {
+  const platforms = ['telegram','line','facebook','twitter','threads','dcard','xiaohongshu'];
+  const main = document.getElementById('main-content');
+  main.innerHTML = `
+    <div class="page-title">✏️ 新增內容</div>
+    <div class="card">
+      <div class="form-group">
+        <label>標題</label>
+        <input id="c-title" placeholder="輸入標題">
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>語言</label>
+          <select id="c-lang"><option value="zh-TW">繁體中文</option><option value="zh-CN">簡體中文</option><option value="en">English</option></select>
+        </div>
+        <div class="form-group">
+          <label>分類</label>
+          <select id="c-cat"><option value="">無</option><option value="social">社群</option><option value="blog">部落格</option><option value="sales">銷售</option><option value="creative">創作</option></select>
+        </div>
+      </div>
+      <div class="form-group">
+        <label>發布平台</label>
+        <div class="platform-checkboxes">
+          ${platforms.map(p => `<label><input type="checkbox" class="c-platform" value="${p}"><span>${p}</span></label>`).join('')}
+        </div>
+      </div>
+      <div class="form-group">
+        <label>內文</label>
+        <textarea id="c-body" placeholder="輸入內容..."></textarea>
+      </div>
+      <div class="form-group">
+        <label>排程時間（留空立即發布）</label>
+        <input id="c-time" type="datetime-local">
+      </div>
+      <button class="btn btn-primary" onclick="createContent()">💾 儲存</button>
+    </div>
+  `;
+};
+
+async function createContent() {
+  const title = document.getElementById('c-title').value;
+  const body = document.getElementById('c-body').value;
+  if (!title || !body) { toast('請填寫標題和內文'); return; }
+  const platforms = [...document.querySelectorAll('.c-platform:checked')].map(e => e.value);
+  if (!platforms.length) { toast('請選擇至少一個平台'); return; }
+  try {
+    await api('/api/content', {
+      method:'POST',
+      body: JSON.stringify({
+        title, body, platforms,
+        language: document.getElementById('c-lang').value,
+        category: document.getElementById('c-cat').value,
+        scheduled_at: document.getElementById('c-time').value || null
+      })
+    });
+    toast('✅ 內容已建立');
+    showPage('content');
+  } catch(e) { toast('❌ '+e.message); }
+}
+
+// ==============================
+// Schedule
+// ==============================
+pageRenderers.schedule = async function() {
+  const data = await api('/api/schedules?per_page=100');
+  const main = document.getElementById('main-content');
+  main.innerHTML = `
+    <div class="page-title">📅 排程佇列</div>
+    <div class="card">
+      <table>
+        <tr><th>內容</th><th>平台</th><th>排程時間</th><th>狀態</th><th>錯誤</th></tr>
+        ${data.items.map(s => `
+          <tr>
+            <td>${s.title}</td>
+            <td>${s.platform}</td>
+            <td>${s.scheduled_at}</td>
+            <td><span class="badge badge-${s.status}">${s.status}</span></td>
+            <td style="color:#ff6b6b;font-size:0.8rem">${s.error||''}</td>
+          </tr>
+        `).join('')}
+      </table>
+    </div>
+  `;
+};
+
+// ==============================
+// Accounts
+// ==============================
+pageRenderers.accounts = async function() {
+  const data = await api('/api/accounts');
+  const platforms = ['telegram','line','facebook','twitter','threads','dcard','xiaohongshu'];
+  const main = document.getElementById('main-content');
+  main.innerHTML = `
+    <div class="page-title">🔗 平台帳號管理</div>
+    <div class="card">
+      <h3>新增帳號</h3>
+      <div class="form-row">
+        <div class="form-group">
+          <label>平台</label>
+          <select id="a-platform">
+            ${platforms.map(p => `<option value="${p}">${p}</option>`).join('')}
+          </select>
+        </div>
+        <div class="form-group">
+          <label>名稱</label>
+          <input id="a-label" placeholder="例如：官方頻道">
+        </div>
+      </div>
+      <div class="form-group">
+        <label>認證資訊 (JSON)</label>
+        <textarea id="a-creds" placeholder='{"bot_token":"xxx","chat_id":"xxx"}'></textarea>
+      </div>
+      <button class="btn btn-primary" onclick="addAccount()">➕ 新增</button>
+    </div>
+    <div class="card">
+      <h3>已綁定帳號</h3>
+      <table>
+        <tr><th>平台</th><th>名稱</th><th>啟用</th><th>操作</th></tr>
+        ${data.items.map(a => `
+          <tr>
+            <td>${a.platform}</td>
+            <td>${a.label||'-'}</td>
+            <td>${a.enabled ? '✅' : '❌'}</td>
+            <td>
+              <button class="btn btn-sm btn-outline" onclick="verifyAccount(${a.id})">驗證</button>
+              <button class="btn btn-sm btn-danger" onclick="deleteAccount(${a.id})">刪除</button>
+            </td>
+          </tr>
+        `).join('')}
+      </table>
+    </div>
+  `;
+};
+
+async function addAccount() {
+  const platform = document.getElementById('a-platform').value;
+  const label = document.getElementById('a-label').value;
+  let creds = {};
+  try { creds = JSON.parse(document.getElementById('a-creds').value || '{}'); } catch(e) { toast('❌ JSON 格式錯誤'); return; }
+  await api('/api/accounts', {method:'POST', body:JSON.stringify({platform,label,credentials:creds})});
+  toast('✅ 帳號已新增');
+  showPage('accounts');
+}
+
+async function verifyAccount(id) {
+  try {
+    const r = await api(`/api/accounts/${id}/verify`, {method:'POST'});
+    toast(r.verified ? '✅ 驗證成功' : '❌ 驗證失敗');
+  } catch(e) { toast('❌ '+e.message); }
+}
+
+async function deleteAccount(id) {
+  if (!confirm('確定刪除？')) return;
+  await api(`/api/accounts/${id}`, {method:'DELETE'});
+  toast('已刪除');
+  showPage('accounts');
+}
+
+// ==============================
+// AI Generator
+// ==============================
+pageRenderers.ai = async function() {
+  const templates = await api('/api/templates');
+  const main = document.getElementById('main-content');
+  main.innerHTML = `
+    <div class="page-title">🤖 AI 內容生成</div>
+    <div class="card">
+      <div class="form-group">
+        <label>模板</label>
+        <select id="ai-template">
+          ${templates.items.map(t => `<option value="${t.name}">${t.name}</option>`).join('')}
+        </select>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>主題</label>
+          <input id="ai-topic" placeholder="例如：AI 行銷趨勢">
+        </div>
+        <div class="form-group">
+          <label>語言</label>
+          <select id="ai-lang"><option value="zh-TW">繁體中文</option><option value="zh-CN">簡體中文</option><option value="en">English</option></select>
+        </div>
+        <div class="form-group">
+          <label>風格</label>
+          <select id="ai-style"><option value="專業">專業</option><option value="輕鬆">輕鬆</option><option value="熱情">熱情</option><option value="權威">權威</option></select>
+        </div>
+      </div>
+      <div class="form-group">
+        <label>長度 (字)</label>
+        <input id="ai-length" type="number" value="200" min="50" max="2000">
+      </div>
+      <button class="btn btn-primary" onclick="generateAI()">✨ 生成</button>
+      <div class="form-group" style="margin-top:1rem">
+        <label>產出結果</label>
+        <textarea id="ai-result" style="min-height:200px" readonly placeholder="AI 生成的內容會顯示在這裡..."></textarea>
+      </div>
+      <button class="btn btn-outline" onclick="useAIResult()" id="ai-use-btn" style="display:none">📝 使用此內容建立貼文</button>
+    </div>
+  `;
+};
+
+let lastAIResult = '';
+async function generateAI() {
+  const btn = document.querySelector('button[onclick="generateAI()"]');
+  btn.disabled = true; btn.textContent = '⏳ 生成中...';
+  try {
+    const r = await api('/api/content/ai-generate', {
+      method:'POST',
+      body: JSON.stringify({
+        template: document.getElementById('ai-template').value,
+        variables: {
+          topic: document.getElementById('ai-topic').value || 'AI 行銷',
+          language: document.getElementById('ai-lang').value === 'en' ? '英文' : (document.getElementById('ai-lang').value === 'zh-CN' ? '簡體中文' : '繁體中文'),
+          style: document.getElementById('ai-style').value,
+          length: document.getElementById('ai-length').value
+        }
+      })
+    });
+    lastAIResult = r.text;
+    document.getElementById('ai-result').value = r.text;
+    document.getElementById('ai-use-btn').style.display = 'inline-block';
+  } catch(e) { toast('❌ '+e.message); }
+  btn.disabled = false; btn.textContent = '✨ 生成';
+}
+
+function useAIResult() {
+  if (!lastAIResult) return;
+  document.getElementById('c-body').value = lastAIResult;
+  document.getElementById('c-title').value = document.getElementById('ai-topic').value || 'AI 生成內容';
+  showPage('create');
+}
+
+// ==============================
+// Analytics
+// ==============================
+pageRenderers.analytics = async function() {
+  const data = await api('/api/analytics?days=30');
+  const main = document.getElementById('main-content');
+  main.innerHTML = `
+    <div class="page-title">📈 分析</div>
+    <div class="card">
+      <h3>平台成效</h3>
+      <table>
+        <tr><th>平台</th><th>貼文數</th><th>總觀看</th><th>總按讚</th></tr>
+        ${(data.items||[]).map(a => `
+          <tr><td>${a.platform}</td><td>${a.posts}</td><td>${a.total_views||0}</td><td>${a.total_likes||0}</td></tr>
+        `).join('') || '<tr><td colspan="4" style="text-align:center;color:rgba(255,255,255,0.3)">暫無數據</td></tr>'}
+      </table>
+    </div>
+  `;
+};
+
+// --- Init ---
+showPage('dashboard');
+</script>
+</body>
+</html>

@@ -1,0 +1,252 @@
+import json
+import hashlib
+import secrets
+from datetime import datetime
+from fastapi import FastAPI, HTTPException, Request
+from fastapi.responses import HTMLResponse, JSONResponse
+from fastapi.staticfiles import StaticFiles
+from fastapi.middleware.cors import CORSMiddleware
+from pydantic import BaseModel
+from typing import Optional
+
+from ..database import init_db, execute, fetch, fetch_one
+from ..scheduler import ContentScheduler
+from ..ai.generator import AIContentGenerator
+from ..platforms.telegram_connector import TelegramConnector
+from ..platforms.line_connector import LineConnector
+from ..platforms.facebook_connector import FacebookConnector
+from ..platforms.twitter_connector import TwitterConnector
+from ..platforms.browser_automation import ThreadsConnector, DcardConnector, XiaohongshuConnector
+from ..config import PLATFORMS, DATA_DIR
+
+app = FastAPI(title="翔川 Neo｜曜科技 行銷自動化系統")
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+scheduler = ContentScheduler()
+ai_generator = AIContentGenerator()
+
+connectors = {}
+
+
+def get_connectors(account_id=None):
+    if account_id:
+        acct = fetch_one("SELECT * FROM accounts WHERE id=?", [account_id])
+        if not acct:
+            raise HTTPException(404, "Account not found")
+        creds = json.loads(acct["credentials"])
+        return _build_connector(acct["platform"], creds)
+    return connectors
+
+
+def _build_connector(platform, creds):
+    mapping = {
+        "telegram": TelegramConnector,
+        "line": LineConnector,
+        "facebook": FacebookConnector,
+        "twitter": TwitterConnector,
+        "threads": ThreadsConnector,
+        "dcard": DcardConnector,
+        "xiaohongshu": XiaohongshuConnector,
+    }
+    cls = mapping.get(platform)
+    if not cls:
+        raise HTTPException(400, f"Unsupported platform: {platform}")
+    return cls(creds)
+
+
+class ContentCreate(BaseModel):
+    title: str
+    body: str
+    platforms: list
+    scheduled_at: Optional[str] = None
+    language: str = "zh-TW"
+    category: str = ""
+    media_urls: list = []
+
+
+class ScheduleCreate(BaseModel):
+    content_id: int
+    platforms: list
+    scheduled_at: str
+
+
+class AIGenerateRequest(BaseModel):
+    template: str = "社群貼文"
+    variables: dict = {}
+
+
+class AccountCreate(BaseModel):
+    platform: str
+    label: str = ""
+    credentials: dict = {}
+
+
+@app.on_event("startup")
+def startup():
+    init_db()
+    scheduler.start()
+
+
+@app.on_event("shutdown")
+def shutdown():
+    scheduler.stop()
+
+
+@app.get("/api/status")
+def status():
+    return {
+        "ai_available": ai_generator.is_available(),
+        "scheduler": scheduler.get_status_summary(),
+        "platforms": {k: v["enabled"] for k, v in PLATFORMS.items()},
+    }
+
+
+@app.post("/api/content")
+def create_content(data: ContentCreate):
+    cid = execute(
+        "INSERT INTO contents (title, body, platforms, scheduled_at, status, language, category, media_urls) VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
+        [data.title, data.body, json.dumps(data.platforms), data.scheduled_at or datetime.now().strftime("%Y-%m-%d %H:%M"), "scheduled" if data.scheduled_at else "draft", data.language, data.category, json.dumps(data.media_urls)]
+    )
+    if data.scheduled_at and data.platforms:
+        scheduler.schedule_content(cid, data.platforms, data.scheduled_at)
+    return {"id": cid, "status": "created"}
+
+
+@app.get("/api/content")
+def list_contents(status: str = None, page: int = 1, per_page: int = 20):
+    where = ""
+    params = []
+    if status:
+        where = "WHERE status=?"
+        params.append(status)
+    offset = (page - 1) * per_page
+    items = fetch(f"SELECT * FROM contents {where} ORDER BY created_at DESC LIMIT ? OFFSET ?", params + [per_page, offset])
+    total = fetch(f"SELECT COUNT(*) as c FROM contents {where}", params)[0]["c"]
+    return {"items": items, "total": total, "page": page}
+
+
+@app.get("/api/content/{content_id}")
+def get_content(content_id: int):
+    item = fetch_one("SELECT * FROM contents WHERE id=?", [content_id])
+    if not item:
+        raise HTTPException(404, "Content not found")
+    item["schedules"] = fetch("SELECT * FROM schedules WHERE content_id=?", [content_id])
+    return item
+
+
+@app.delete("/api/content/{content_id}")
+def delete_content(content_id: int):
+    execute("DELETE FROM schedules WHERE content_id=?", [content_id])
+    execute("DELETE FROM analytics WHERE content_id=?", [content_id])
+    execute("DELETE FROM contents WHERE id=?", [content_id])
+    return {"status": "deleted"}
+
+
+@app.post("/api/content/{content_id}/publish")
+def publish_now(content_id: int):
+    item = fetch_one("SELECT * FROM contents WHERE id=?", [content_id])
+    if not item:
+        raise HTTPException(404, "Content not found")
+    platforms = json.loads(item["platforms"])
+    results = {}
+    for platform in platforms:
+        connector = _build_connector(platform, {})
+        try:
+            result = connector.post(item["body"], media_urls=json.loads(item.get("media_urls", "[]")))
+            results[platform] = result
+            execute("INSERT INTO schedules (content_id, platform, scheduled_at, status) VALUES (?, ?, datetime('now'), 'done')", [content_id, platform])
+        except Exception as e:
+            results[platform] = {"error": str(e)}
+            execute("INSERT INTO schedules (content_id, platform, scheduled_at, status, error) VALUES (?, ?, datetime('now'), 'failed', ?)", [content_id, platform, str(e)])
+    execute("UPDATE contents SET status='published', published_at=datetime('now') WHERE id=?", [content_id])
+    return {"results": results}
+
+
+@app.post("/api/content/ai-generate")
+def ai_generate(data: AIGenerateRequest):
+    if not ai_generator.is_available():
+        return {"text": "⚠️ Groq API 未設定，請設定 GROQ_API_KEY 環境變數。", "fallback": True}
+    result = ai_generator.generate(data.template, data.variables)
+    return {"text": result}
+
+
+@app.post("/api/accounts")
+def create_account(data: AccountCreate):
+    cid = execute(
+        "INSERT INTO accounts (platform, label, credentials) VALUES (?, ?, ?)",
+        [data.platform, data.label, json.dumps(data.credentials)]
+    )
+    return {"id": cid, "status": "created"}
+
+
+@app.get("/api/accounts")
+def list_accounts():
+    return {"items": fetch("SELECT * FROM accounts ORDER BY created_at DESC")}
+
+
+@app.delete("/api/accounts/{account_id}")
+def delete_account(account_id: int):
+    execute("DELETE FROM accounts WHERE id=?", [account_id])
+    return {"status": "deleted"}
+
+
+@app.post("/api/accounts/{account_id}/verify")
+def verify_account(account_id: int):
+    connector = get_connectors(account_id)
+    ok = connector.verify()
+    return {"verified": ok}
+
+
+@app.get("/api/schedules")
+def list_schedules(status: str = None, page: int = 1, per_page: int = 50):
+    where = ""
+    params = []
+    if status:
+        where = "WHERE s.status=?"
+        params.append(status)
+    offset = (page - 1) * per_page
+    items = fetch(
+        f"SELECT s.*, c.title, c.body FROM schedules s JOIN contents c ON s.content_id = c.id {where} ORDER BY s.scheduled_at DESC LIMIT ? OFFSET ?",
+        params + [per_page, offset]
+    )
+    total = fetch(f"SELECT COUNT(*) as c FROM schedules s {where}", params)[0]["c"]
+    return {"items": items, "total": total, "page": page}
+
+
+@app.get("/api/analytics")
+def get_analytics(days: int = 7):
+    items = fetch(
+        "SELECT platform, COUNT(*) as posts, SUM(views) as total_views, SUM(likes) as total_likes FROM analytics WHERE recorded_at >= datetime('now', ?) GROUP BY platform",
+        [f"-{days} days"]
+    )
+    return {"items": items}
+
+
+@app.get("/api/templates")
+def list_templates():
+    return {"items": fetch("SELECT * FROM ai_templates")}
+
+
+@app.get("/dashboard")
+async def dashboard():
+    html_path = DATA_DIR.parent / "frontend" / "dashboard.html"
+    return HTMLResponse(html_path.read_text(encoding="utf-8"))
+
+
+@app.get("/")
+def root():
+    return {
+        "name": "翔川 Neo｜曜科技 行銷自動化系統",
+        "version": "1.0",
+        "endpoints": {
+            "dashboard": "/dashboard",
+            "api": "/api/status"
+        }
+    }
