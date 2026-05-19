@@ -103,9 +103,11 @@ def shutdown():
 
 @app.get("/api/status")
 def status():
+    from ..config import TELEGRAM_BOT_TOKEN
     return {
         "ai_available": ai_generator.is_available(),
         "smtp_configured": smtp_configured(),
+        "telegram_bot_token_set": bool(TELEGRAM_BOT_TOKEN),
         "scheduler": scheduler.get_status_summary(),
         "platforms": {k: v["enabled"] for k, v in PLATFORMS.items()},
     }
