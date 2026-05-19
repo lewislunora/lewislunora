@@ -63,8 +63,8 @@ class MainScreen extends StatefulWidget {
 class _MainScreenState extends State<MainScreen> {
   int _index = 0;
 
-  final _pages = [
-    const HomePage(),
+  late final _pages = [
+    HomePage(onNavigate: (i) => setState(() => _index = i)),
     const ContentListPage(type: 'article', title: '品牌行銷'),
     const ContentListPage(type: 'guide', title: '攻略教學'),
     const ContentListPage(type: 'drama', title: 'AI 短劇'),

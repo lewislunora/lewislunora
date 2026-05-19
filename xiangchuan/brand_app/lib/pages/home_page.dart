@@ -1,7 +1,10 @@
+import 'dart:html' as html;
 import 'package:flutter/material.dart';
 
 class HomePage extends StatelessWidget {
-  const HomePage({super.key});
+  final void Function(int tabIndex)? onNavigate;
+
+  const HomePage({super.key, this.onNavigate});
 
   @override
   Widget build(BuildContext context) {
@@ -46,22 +49,34 @@ class HomePage extends StatelessWidget {
   }
 
   Widget _features(BuildContext context) {
-    final features = [
-      ('🤖', 'AI 智能客服', '24 小時自動回覆，串接 LLM 智能對話'),
-      ('📝', '內容自動生成', '一鍵產出部落格、社群貼文、行銷文案'),
-      ('📊', '多平台分發', 'Telegram、Web、App 全通路覆蓋'),
-      ('🎬', 'AI 短劇創作', '從劇本到分鏡，AI 輔助完整製作'),
-    ];
+    List<({String icon, String title, String desc, VoidCallback? onTap})> features;
+
+    if (onNavigate == null) {
+      features = [
+        (icon: '🤖', title: 'AI 智能客服', desc: '24 小時自動回覆，串接 LLM 智能對話', onTap: null),
+        (icon: '📝', title: '內容自動生成', desc: '一鍵產出部落格、社群貼文、行銷文案', onTap: null),
+        (icon: '📊', title: '多平台分發', desc: 'Telegram、Web、App 全通路覆蓋', onTap: null),
+        (icon: '🎬', title: 'AI 短劇創作', desc: '從劇本到分鏡，AI 輔助完整製作', onTap: null),
+      ];
+    } else {
+      features = [
+        (icon: '🤖', title: 'AI 智能客服', desc: '24 小時自動回覆，串接 LLM 智能對話', onTap: () => html.window.open('/ai-chat.html', '_blank')),
+        (icon: '📝', title: '內容自動生成', desc: '一鍵產出部落格、社群貼文、行銷文案', onTap: () => onNavigate!(1)),
+        (icon: '📊', title: '多平台分發', desc: 'Telegram、Web、App 全通路覆蓋', onTap: () => onNavigate!(1)),
+        (icon: '🎬', title: 'AI 短劇創作', desc: '從劇本到分鏡，AI 輔助完整製作', onTap: () => onNavigate!(3)),
+      ];
+    }
+
     return Column(
       children: [
         const Text('核心功能', style: TextStyle(fontSize: 20, fontWeight: FontWeight.w600)),
         const SizedBox(height: 16),
-        ...features.map((f) => _featureCard(f.$1, f.$2, f.$3)),
+        ...features.map((f) => _featureCard(f.icon, f.title, f.desc, f.onTap)),
       ],
     );
   }
 
-  Widget _featureCard(String icon, String title, String desc) {
+  Widget _featureCard(String icon, String title, String desc, VoidCallback? onTap) {
     return Card(
       margin: const EdgeInsets.only(bottom: 12),
       color: const Color(0xFF1A1F3A),
@@ -70,6 +85,7 @@ class HomePage extends StatelessWidget {
         leading: Text(icon, style: const TextStyle(fontSize: 28)),
         title: Text(title, style: const TextStyle(fontWeight: FontWeight.w600)),
         subtitle: Text(desc, style: const TextStyle(color: Colors.grey)),
+        onTap: onTap,
       ),
     );
   }

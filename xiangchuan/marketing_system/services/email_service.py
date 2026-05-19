@@ -13,7 +13,7 @@ def get_smtp_config():
         "port": int(os.getenv("SMTP_PORT", "587")),
         "user": os.getenv("SMTP_USER", ""),
         "password": os.getenv("SMTP_PASS", ""),
-        "to": os.getenv("CONTACT_TO", "ericly76@gmail.com"),
+        "to": os.getenv("CONTACT_TO", "lewislunora@gmail.com"),
     }
 
 
