@@ -293,6 +293,7 @@ const LANG = {
   }
 };
 function switchLang(val) {
+  localStorage.setItem('lang', val);
   if (val === 'zh-TW') { location.reload(); return; }
   const t = LANG[val];
   if (!t) return;
@@ -308,6 +309,11 @@ function switchLang(val) {
       }
     }
   });
+}
+const savedLang = localStorage.getItem('lang');
+if (savedLang && savedLang !== 'zh-TW') {
+  document.querySelector('.lang-select').value = savedLang;
+  switchLang(savedLang);
 }
 </script>
 </body>
