@@ -486,11 +486,7 @@ footer {
   <div class="cta-section">
     <h2 data-i18n="cta_title">準備好啟動你的 AI 行銷了嗎？</h2>
     <p data-i18n="cta_desc">免費預約諮詢，30 分鐘了解如何用 AI 提升你的客戶服務與行銷效率</p>
-    <form class="contact-form" action="https://formsubmit.co/ericly76@gmail.com" method="POST">
-      <input type="hidden" name="_subject" value="🔔 新預約諮詢 - 翔川 Neo AI">
-      <input type="hidden" name="_template" value="box">
-      <input type="hidden" name="_captcha" value="true">
-      <input type="text" name="_honey" style="display:none">
+    <form class="contact-form" id="contactForm" onsubmit="return handleContact(event)">
 
       <div class="form-row">
         <div>
@@ -532,7 +528,8 @@ footer {
         <textarea name="備註" data-i18n-placeholder="form_msg_ph" placeholder="例如：我想了解 AI 客服如何運作，我的店是..."></textarea>
       </div>
 
-      <button type="submit" class="btn-primary" data-i18n="form_btn">📩 預約免費諮詢</button>
+      <button type="submit" class="btn-primary" id="contactBtn" data-i18n="form_btn">📩 預約免費諮詢</button>
+      <div id="contactResult" style="margin-top:0.8rem;text-align:center;font-size:0.9rem;display:none"></div>
     </form>
   </div>
 </section>
@@ -1041,6 +1038,40 @@ function getBotReply(text) {
   };
   const fb = fallbacks[currentLang] || fallbacks['zh-TW'];
   return fb[Math.floor(Math.random() * fb.length)];
+}
+
+async function handleContact(e) {
+  e.preventDefault();
+  const btn = document.getElementById('contactBtn');
+  const result = document.getElementById('contactResult');
+  const form = document.getElementById('contactForm');
+  const fd = new FormData(form);
+  const data = {};
+  fd.forEach((v, k) => { data[k] = v; });
+  btn.disabled = true;
+  btn.textContent = '送出中...';
+  result.style.display = 'none';
+  try {
+    const res = await fetch('/api/contact', {
+      method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify(data),
+    });
+    const json = await res.json();
+    if (res.ok) {
+      result.textContent = '✅ 預約成功！我們會盡快與您聯繫。';
+      result.style.color = '#00d4ff';
+      form.reset();
+    } else {
+      result.textContent = '❌ ' + (json.message || '送出失敗，請重試');
+      result.style.color = '#ff6b6b';
+    }
+  } catch (err) {
+    result.textContent = '❌ 網路錯誤，請稍後再試';
+    result.style.color = '#ff6b6b';
+  }
+  result.style.display = 'block';
+  btn.disabled = false;
+  btn.textContent = '📩 預約免費諮詢';
+  return false;
 }
 
 document.addEventListener('DOMContentLoaded', () => {

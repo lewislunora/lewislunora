@@ -18,6 +18,7 @@ from ..platforms.facebook_connector import FacebookConnector
 from ..platforms.twitter_connector import TwitterConnector
 from ..platforms.browser_automation import ThreadsConnector, DcardConnector, XiaohongshuConnector
 from ..config import PLATFORMS, DATA_DIR, DOCS_DIR
+from ..services.email_service import send_contact_email, is_configured as smtp_configured
 
 app = FastAPI(title="翔川 Neo｜曜科技 行銷自動化系統")
 
@@ -103,9 +104,24 @@ def shutdown():
 def status():
     return {
         "ai_available": ai_generator.is_available(),
+        "smtp_configured": smtp_configured(),
         "scheduler": scheduler.get_status_summary(),
         "platforms": {k: v["enabled"] for k, v in PLATFORMS.items()},
     }
+
+
+@app.post("/api/contact")
+async def contact_form(request: Request):
+    data = await request.json()
+    required = ["姓名", "聯絡方式"]
+    for field in required:
+        if not data.get(field, "").strip():
+            return JSONResponse(
+                status_code=400,
+                content={"status": "error", "message": f"缺少必填欄位：{field}"},
+            )
+    result = send_contact_email(data)
+    return result
 
 
 @app.post("/api/content")
