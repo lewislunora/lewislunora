@@ -10,6 +10,8 @@ services:
         sync: false
       - key: TELEGRAM_BOT_TOKEN
         sync: false
+      - key: TELEGRAM_NOTIFY_CHAT_ID
+        value: "626453598"
       - key: RENDER
         value: "true"
     plan: free
