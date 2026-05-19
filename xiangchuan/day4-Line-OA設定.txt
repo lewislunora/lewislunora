@@ -1,0 +1,119 @@
+========================================
+Day 4 — Line 官方帳號設定
+========================================
+
+一、申請 Line OA
+====================
+1. 前往 https://manager.line.biz/
+2. 用你的 Line 帳號登入
+3. 點「建立新帳號」
+4. 填寫：
+   - 帳號名稱：翔川 Neo｜曜科技 AI 客服
+   - 說明：AI 智能客服 · 自動內容生成 · 品牌 App
+   - 大頭貼：可以使用品牌 Logo
+   - 類別：IT / 科技
+5. 選擇「免費方案」即可開始
+
+
+二、基本設定
+====================
+1. 點頭像 → 「帳號設定」
+   - 狀態訊息：24 小時 AI 智能客服，立即體驗 →
+   - 連結網址：https://lewislunora.github.io/lewislunora/
+
+2. 點頭像 → 「回應設定」
+   - 開啟「自動回應訊息」
+   - 關閉「加入好友時的回應」（我們用下面的歡迎訊息代替）
+
+
+三、歡迎訊息
+====================
+在「聊天室情境設定」→「加入好友歡迎訊息」貼上：
+
+[zh-TW]
+━━━ 翔川 Neo｜曜科技 AI 客服 ━━━
+🤖 你好！我是 AI 智能客服，24 小時在線為你服務。
+
+我可以：
+✅ 回答 AI 行銷方案相關問題
+✅ 展示即時客服對話
+✅ 協助預約免費諮詢
+
+試試看傳送以下關鍵字：
+「方案」— 查看價格方案
+「展示」— 即時客服演示
+「預約」— 預約免費諮詢
+「內容」— 品牌內容 App
+「命理」— AI 命理分析
+「助手」— AI 虛擬助手
+
+👉 立即體驗完整功能：
+https://lewislunora.github.io/lewislunora/
+
+[en]
+━━━ XiangChuan Neo｜YaoTech AI Service ━━━
+🤖 Hello! I'm your AI assistant, here 24/7.
+
+Send these keywords:
+「Plans」— View pricing
+「Demo」— Live AI chat demo
+「Contact」— Free consultation
+「App」— Brand content app
+「Fortune」— AI fortune analysis
+
+👉 Try it now:
+https://lewislunora.github.io/lewislunora/
+
+
+四、自動回覆訊息設定
+====================
+在「自動回應訊息」→「關鍵字回應」新增：
+
+關鍵字：方案 | 價格 | pricing
+回覆：
+━━ 方案與價格 ━━
+免費入門版：50次/天，適合個人測試
+專業版 NT$890/月，無限次數 + 500條知識庫
+企業版 NT$5,990/月，私有部署 + 無限知識庫
+
+詳細介紹 👉 https://lewislunora.github.io/lewislunora/product/#pricing
+
+關鍵字：展示 | demo | 客服
+回覆：
+━━ AI 客服即時展示 ━━
+點擊下方連結體驗 AI 客服實際對話
+👉 https://lewislunora.github.io/lewislunora/product/#demo
+
+關鍵字：預約 | 諮詢 | contact
+回覆：
+━━ 免費預約諮詢 ━━
+留下你的資訊，我們會盡快與你聯絡
+👉 https://lewislunora.github.io/lewislunora/product/#contact
+
+關鍵字：內容 | app
+回覆：
+━━ 品牌內容 App ━━
+AI 自動生成的品牌文章、攻略教學、短劇劇本
+👉 https://lewislunora.github.io/lewislunora/flutter-app.html
+
+
+五、加入好友 QR Code
+====================
+1. 在 Line OA 後台 → 「加入好友」→ 下載 QR Code
+2. 把 QR Code 放在：
+   - 商品頁的聯絡區塊
+   - FB 貼文附圖
+   - Email 簽名檔
+
+
+六、串接我們的 AI 客服（進階）
+====================
+當你準備好要把 AI 客服綁到 Line OA 上時，
+我們可以透過 Line Messaging API 串接：
+
+1. Line Developers Console → 建立 Provider → 建立 Channel (Messaging API)
+2. 取得 Channel Access Token 和 Channel Secret
+3. 設定 Webhook URL（指向你的 telegram-bot.py 或新的 webhook endpoint）
+
+我可以在 30 分鐘內幫你完成設定。
+需要時跟我說一聲。
