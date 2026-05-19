@@ -1,46 +1,320 @@
 <!DOCTYPE html>
-<html>
+<html lang="zh-TW">
 <head>
-  <!--
-    If you are serving your web app in a path other than the root, change the
-    href value below to reflect the base path you are serving from.
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title data-i18n="page_title">翔川 Neo｜曜科技 |Ai_bot — AI 智能客服與行銷自動化</title>
+<style>
+* { margin:0; padding:0; box-sizing:border-box; }
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
+  background: #0a0e27;
+  color: #fff;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+.bg-glow {
+  position: fixed; inset:0; pointer-events:none;
+  background: radial-gradient(ellipse at 20% 30%, rgba(0,212,255,0.08) 0%, transparent 50%),
+              radial-gradient(ellipse at 80% 70%, rgba(123,104,238,0.08) 0%, transparent 50%);
+}
+.lang-select {
+  position: fixed; top: 1.5rem; right: 1.5rem; z-index: 10;
+  background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.15);
+  color: #fff; padding: 0.4rem 0.8rem; border-radius: 6px;
+  font-size: 0.85rem; cursor: pointer; backdrop-filter: blur(4px);
+}
+.hero {
+  text-align: center; padding: 5rem 2rem 3rem;
+  position: relative;
+}
+.hero-badge {
+  display: inline-block; font-size: 0.85rem;
+  background: rgba(0,212,255,0.1); border: 1px solid rgba(0,212,255,0.25);
+  padding: 0.4rem 1rem; border-radius: 20px; margin-bottom: 1.5rem;
+  color: #00d4ff;
+}
+.hero h1 {
+  font-size: 2.8rem; font-weight: 800; line-height: 1.2;
+  max-width: 700px; margin: 0 auto 1.2rem;
+}
+.hero h1 span { background: linear-gradient(135deg, #00d4ff, #7b68ee); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+.hero p {
+  color: rgba(255,255,255,0.55); font-size: 1.15rem; line-height: 1.7;
+  max-width: 580px; margin: 0 auto 2rem;
+}
+.hero-actions { display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap; }
+.btn { display: inline-block; padding: 0.85rem 2rem; border-radius: 12px; font-weight: 600; font-size: 1rem; text-decoration: none; transition: all 0.3s; }
+.btn-primary { background: linear-gradient(135deg, #00d4ff, #7b68ee); color: #fff; }
+.btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(0,212,255,0.3); }
+.btn-outline { border: 1px solid rgba(255,255,255,0.2); color: #fff; }
+.btn-outline:hover { border-color: rgba(0,212,255,0.5); transform: translateY(-2px); }
+.stats {
+  display: flex; gap: 2.5rem; justify-content: center; flex-wrap: wrap;
+  margin-top: 3rem; padding: 1.5rem 0;
+}
+.stat-item { text-align: center; }
+.stat-number { font-size: 1.8rem; font-weight: 700; background: linear-gradient(135deg, #00d4ff, #7b68ee); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+.stat-label { font-size: 0.85rem; color: rgba(255,255,255,0.4); margin-top: 0.2rem; }
 
-    The path provided below has to start and end with a slash "/" in order for
-    it to work correctly.
+/* Pricing Preview */
+.pricing-section {
+  text-align: center; padding: 1rem 2rem 2.5rem;
+}
+.pricing-section h2 {
+  font-size: 1.8rem; font-weight: 700; margin-bottom: 0.6rem;
+}
+.pricing-section .sub { color: rgba(255,255,255,0.4); margin-bottom: 2rem; font-size: 1rem; }
+.pricing-grid { display: flex; gap: 1.2rem; justify-content: center; flex-wrap: wrap; max-width: 800px; margin: 0 auto; }
+.price-card {
+  background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 16px; padding: 1.8rem 1.5rem; width: 240px; text-align: center;
+  transition: all 0.3s;
+}
+.price-card:hover { transform: translateY(-3px); border-color: rgba(0,212,255,0.2); }
+.price-card.featured {
+  background: rgba(0,212,255,0.04); border-color: rgba(0,212,255,0.2);
+  position: relative;
+}
+.price-badge {
+  position: absolute; top: -0.7rem; left: 50%; transform: translateX(-50%);
+  background: linear-gradient(135deg, #00d4ff, #7b68ee);
+  font-size: 0.7rem; padding: 0.25rem 0.8rem; border-radius: 10px;
+  font-weight: 600; white-space: nowrap;
+}
+.price-name { font-size: 1.1rem; font-weight: 600; margin-bottom: 0.5rem; }
+.price-amount { font-size: 2rem; font-weight: 700; }
+.price-amount small { font-size: 0.85rem; font-weight: 400; color: rgba(255,255,255,0.35); }
+.price-usd { font-size: 0.75rem; color: rgba(255,255,255,0.25); margin-top: 0.1rem; }
+.price-desc { font-size: 0.85rem; color: rgba(255,255,255,0.4); margin: 0.5rem 0 1rem; }
+.price-cta { display: inline-block; margin-top: 1rem; font-weight: 600; font-size: 0.85rem; color: #00d4ff; text-decoration: none; }
 
-    For more details:
-    * https://developer.mozilla.org/en-US/docs/Web/HTML/Element/base
-
-    This is a placeholder for base href that will be replaced by the value of
-    the `--base-href` argument provided to `flutter build`.
-  -->
-  <base href="/lewislunora/">
-
-  <meta charset="UTF-8">
-  <meta content="IE=Edge" http-equiv="X-UA-Compatible">
-  <meta name="description" content="A new Flutter project.">
-
-  <!-- iOS meta tags & icons -->
-  <meta name="mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="black">
-  <meta name="apple-mobile-web-app-title" content="brand_app">
-  <link rel="apple-touch-icon" href="icons/Icon-192.png">
-
-  <!-- Favicon -->
-  <link rel="icon" type="image/png" href="favicon.png"/>
-
-  <title>brand_app</title>
-  <link rel="manifest" href="manifest.json">
+/* Cards */
+.section-title {
+  text-align: center; font-size: 1.8rem; font-weight: 700; margin: 2rem 0 0.5rem;
+}
+.section-sub {
+  text-align: center; color: rgba(255,255,255,0.4); font-size: 1rem; margin-bottom: 2rem;
+}
+.cards {
+  display: flex; gap: 1.2rem; flex-wrap: wrap; justify-content: center;
+  max-width: 800px; margin: 0 auto; padding: 0 2rem 3rem;
+}
+.card {
+  background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 20px; padding: 1.8rem 1.5rem; width: 360px;
+  text-decoration: none; color: #fff; transition: all 0.3s;
+  position: relative; overflow: hidden;
+}
+.card:hover { background: rgba(255,255,255,0.06); transform: translateY(-4px); border-color: rgba(0,212,255,0.3); }
+.card-icon { font-size: 2.5rem; margin-bottom: 1rem; }
+.card h3 { font-size: 1.3rem; margin-bottom: 0.5rem; }
+.card p { color: rgba(255,255,255,0.5); font-size: 0.9rem; line-height: 1.6; }
+.card .arrow {
+  display: inline-block; margin-top: 1.2rem;
+  background: linear-gradient(135deg, #00d4ff, #7b68ee);
+  padding: 0.5rem 1.5rem; border-radius: 10px;
+  font-weight: 600; font-size: 0.9rem;
+}
+.cta-section {
+  text-align: center; padding: 3rem 2rem;
+  background: linear-gradient(135deg, rgba(0,212,255,0.04), rgba(123,104,238,0.04));
+  border-top: 1px solid rgba(255,255,255,0.05);
+  border-bottom: 1px solid rgba(255,255,255,0.05);
+}
+.cta-section h2 { font-size: 1.8rem; font-weight: 700; margin-bottom: 0.8rem; }
+.cta-section p { color: rgba(255,255,255,0.45); margin-bottom: 1.5rem; font-size: 1rem; }
+.footer-text {
+  text-align: center; padding: 2rem; color: rgba(255,255,255,0.15); font-size: 0.8rem;
+}
+@media (max-width: 650px) {
+  .hero h1 { font-size: 2rem; }
+  .card, .price-card { width: 100%; max-width: 340px; }
+  .stats { gap: 1.5rem; }
+  .lang-select { top: 1rem; right: 1rem; }
+}
+</style>
 </head>
 <body>
-  <!--
-    You can customize the "flutter_bootstrap.js" script.
-    This is useful to provide a custom configuration to the Flutter loader
-    or to give the user feedback during the initialization process.
+<div class="bg-glow"></div>
+<select class="lang-select" onchange="switchLang(this.value)">
+  <option value="zh-TW" data-i18n="lang_zt">繁體中文</option>
+  <option value="zh-CN" data-i18n="lang_cn">簡體中文</option>
+  <option value="en" data-i18n="lang_en">English</option>
+</select>
 
-    For more details:
-    * https://docs.flutter.dev/platform-integration/web/initialization
-  -->
-  <script src="flutter_bootstrap.js" async></script>
+<section class="hero">
+  <div class="hero-badge" data-i18n="hero_badge">🏆 台灣團隊 · 在地支援 · 全球部署</div>
+  <h1 data-i18n="hero_title" data-i18n-html="true"><span>AI 客服</span> 讓小預算也能有大格局<br>從 NT$890/月 開始</h1>
+  <p data-i18n="hero_desc">專為台灣中小企業設計的 AI 行銷解決方案。24 小時 AI 客服、自動內容生成、多平台分發，全部在一套系統內完成。</p>
+  <div class="hero-actions">
+    <a href="product/" class="btn btn-primary" data-i18n="hero_btn_plan">📊 查看方案與價格</a>
+    <a href="product/#demo" class="btn btn-outline" data-i18n="hero_btn_demo">▶ 觀看即時展示</a>
+  </div>
+  <div class="stats">
+    <div class="stat-item">
+      <div class="stat-number" i18n-ignore>133+</div>
+      <div class="stat-label" data-i18n="stat_content">AI 生成內容</div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-number" i18n-ignore>5</div>
+      <div class="stat-label" data-i18n="stat_platform">支援平台</div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-number" i18n-ignore>4</div>
+      <div class="stat-label" data-i18n="stat_lang">語言版本</div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-number" i18n-ignore>24/7</div>
+      <div class="stat-label" data-i18n="stat_247">自動運行</div>
+    </div>
+  </div>
+</section>
+
+<section class="pricing-section">
+  <h2 data-i18n="price_title">方案與價格</h2>
+  <p class="sub" data-i18n="price_sub">從免費體驗到企業級部署，找到最適合你的方案</p>
+  <div class="pricing-grid">
+    <div class="price-card">
+      <div class="price-name" data-i18n="price_st_name">入門版</div>
+      <div class="price-amount" i18n-ignore>免費</div>
+      <div class="price-desc" data-i18n="price_st_desc">個人測試體驗</div>
+      <a href="product/#pricing" class="price-cta" data-i18n="price_st_cta">了解詳情 →</a>
+    </div>
+    <div class="price-card featured">
+      <div class="price-badge" data-i18n="price_pro_badge">最受歡迎</div>
+      <div class="price-name" data-i18n="price_pro_name">專業版</div>
+      <div class="price-amount" i18n-ignore>NT$890</div>
+      <div class="price-usd" i18n-ignore>≈ $29 USD /月</div>
+      <div class="price-desc" data-i18n="price_pro_desc">中小企業正式營運</div>
+      <a href="product/#pricing" class="price-cta" data-i18n="price_pro_cta">立即開通 →</a>
+    </div>
+    <div class="price-card">
+      <div class="price-name" data-i18n="price_ent_name">企業版</div>
+      <div class="price-amount" i18n-ignore>NT$5,990</div>
+      <div class="price-usd" i18n-ignore>≈ $199 USD /月</div>
+      <div class="price-desc" data-i18n="price_ent_desc">大型組織客製需求</div>
+      <a href="product/#contact" class="price-cta" data-i18n="price_ent_cta">聯絡我們 →</a>
+    </div>
+  </div>
+</section>
+
+<h2 class="section-title" data-i18n="service_title">探索更多服務</h2>
+<p class="section-sub" data-i18n="service_sub">點擊進入各項功能體驗</p>
+<div class="cards">
+  <a href="product/" class="card">
+    <div class="card-icon">🛒</div>
+    <h3 data-i18n="card_product_title">商品介紹</h3>
+    <p data-i18n="card_product_desc">AI 客服方案、價格、即時展示、功能特色<br>了解我們能為你做什麼</p>
+    <div class="arrow" data-i18n="card_product_btn">查看更多 →</div>
+  </a>
+  <a href="flutter-app.html" class="card">
+    <div class="card-icon">📱</div>
+    <h3 data-i18n="card_app_title">品牌內容 App</h3>
+    <p data-i18n="card_app_desc">133 篇 AI 生成內容<br>品牌文章 · 攻略教學 · AI 短劇</p>
+    <div class="arrow" data-i18n="card_app_btn">開啟 App →</div>
+  </a>
+  <a href="ai-character.html" class="card">
+    <div class="card-icon">🤖</div>
+    <h3 data-i18n="card_char_title">AI 虛擬助手</h3>
+    <p data-i18n="card_char_desc">互動式 AI 虛擬角色<br>即時對話 · 情感回應</p>
+    <div class="arrow" data-i18n="card_char_btn">開始體驗 →</div>
+  </a>
+  <a href="ai-fate.html" class="card">
+    <div class="card-icon">🔮</div>
+    <h3 data-i18n="card_fate_title">AI 命理分析</h3>
+    <p data-i18n="card_fate_desc">AI 智慧八字分析<br>命名建議 · 運勢預測</p>
+    <div class="arrow" data-i18n="card_fate_btn">開始分析 →</div>
+  </a>
+</div>
+
+<section class="cta-section">
+  <h2 data-i18n="cta_title">準備好讓 AI 幫你行銷了嗎？</h2>
+  <p data-i18n="cta_desc">免費諮詢，了解如何用最低成本導入 AI 行銷系統</p>
+  <a href="product/#contact" class="btn btn-primary" data-i18n="cta_btn">📩 立即預約諮詢</a>
+</section>
+
+<div class="footer-text" data-i18n="footer_copy">© 2026 翔川 Neo｜曜科技 |Ai_bot</div>
+
+<script>
+let currentLang = 'zh-TW';
+const LANG = {
+  en: {
+    page_title: 'XiangChuan Neo｜YaoTech |Ai_bot — AI Customer Service & Marketing Automation',
+    lang_zt: '繁體中文', lang_cn: '簡體中文', lang_en: 'English',
+    hero_badge: '🏆 Taiwan Team · Local Support · Global Deploy',
+    hero_title: '<span>AI Customer Service</span> Enterprise Power,<br>Starting at $29/mo',
+    hero_desc: 'An AI marketing solution built for SMBs. 24/7 AI customer service, auto content generation, multi-platform distribution — all in one system.',
+    hero_btn_plan: '📊 View Plans & Pricing',
+    hero_btn_demo: '▶ Watch Live Demo',
+    stat_content: 'AI Contents', stat_platform: 'Platforms', stat_lang: 'Languages', stat_247: 'Auto 24/7',
+    price_title: 'Plans & Pricing',
+    price_sub: 'From free trial to enterprise deployment, find the plan that fits',
+    price_st_name: 'Starter', price_st_desc: 'For personal trial', price_st_cta: 'Learn More →',
+    price_pro_badge: 'Most Popular', price_pro_name: 'Professional', price_pro_desc: 'For SMBs',
+    price_pro_cta: 'Get Started →',
+    price_ent_name: 'Enterprise', price_ent_desc: 'For large organizations', price_ent_cta: 'Contact Us →',
+    service_title: 'Explore More Services',
+    service_sub: 'Click to experience each feature',
+    card_product_title: 'Product', card_product_desc: 'AI plans, pricing, live demo, features<br>See what we can do for you', card_product_btn: 'Learn More →',
+    card_app_title: 'Brand Content App', card_app_desc: '133 AI-generated contents<br>Articles · Guides · AI Dramas', card_app_btn: 'Open App →',
+    card_char_title: 'AI Virtual Character', card_char_desc: 'Interactive AI virtual character<br>Live chat · Emotional response', card_char_btn: 'Try Now →',
+    card_fate_title: 'AI Fortune Analysis', card_fate_desc: 'AI Chinese astrology<br>Name suggestions · Fortune prediction', card_fate_btn: 'Analyze →',
+    cta_title: 'Ready to let AI handle your marketing?',
+    cta_desc: 'Free consultation — learn how to deploy an AI marketing system at minimal cost',
+    cta_btn: '📩 Book Free Consultation',
+    footer_copy: '© 2026 XiangChuan Neo｜YaoTech |Ai_bot'
+  },
+  'zh-CN': {
+    page_title: '翔川 Neo｜曜科技 |Ai_bot — AI 智能客服与营销自动化',
+    lang_zt: '繁體中文', lang_cn: '簡體中文', lang_en: 'English',
+    hero_badge: '🏆 台湾团队 · 在地支援 · 全球部署',
+    hero_title: '<span>AI 客服</span> 小预算也能有大格局<br>从 NT$890/月 开始',
+    hero_desc: '专为台湾中小企业设计的 AI 营销解决方案。24 小时 AI 客服、自动内容生成、多平台分发，全部在一套系统内完成。',
+    hero_btn_plan: '📊 查看方案与价格',
+    hero_btn_demo: '▶ 观看即时展示',
+    stat_content: 'AI 生成内容', stat_platform: '支持平台', stat_lang: '语言版本', stat_247: '自动运行',
+    price_title: '方案与价格',
+    price_sub: '从免费体验到企业级部署，找到最适合你的方案',
+    price_st_name: '入门版', price_st_desc: '个人测试体验', price_st_cta: '了解详情 →',
+    price_pro_badge: '最受欢迎', price_pro_name: '专业版', price_pro_desc: '中小企业正式营运',
+    price_pro_cta: '立即开通 →',
+    price_ent_name: '企业版', price_ent_desc: '大型组织客制需求', price_ent_cta: '联系我们 →',
+    service_title: '探索更多服务',
+    service_sub: '点击进入各项功能体验',
+    card_product_title: '商品介绍', card_product_desc: 'AI 客服方案、价格、即时展示、功能特色<br>了解我们能为你做什么', card_product_btn: '查看更多 →',
+    card_app_title: '品牌内容 App', card_app_desc: '133 篇 AI 生成内容<br>品牌文章 · 攻略教学 · AI 短剧', card_app_btn: '开启 App →',
+    card_char_title: 'AI 虚拟助手', card_char_desc: '互动式 AI 虚拟角色<br>即时对话 · 情感回应', card_char_btn: '开始体验 →',
+    card_fate_title: 'AI 命理分析', card_fate_desc: 'AI 智慧八字分析<br>命名建议 · 运势预测', card_fate_btn: '开始分析 →',
+    cta_title: '准备好让 AI 帮你营销了吗？',
+    cta_desc: '免费咨询，了解如何用最低成本导入 AI 营销系统',
+    cta_btn: '📩 立即预约咨询',
+    footer_copy: '© 2026 翔川 Neo｜曜科技 |Ai_bot'
+  }
+};
+function switchLang(val) {
+  localStorage.setItem('lang', val);
+  if (val === 'zh-TW') { location.reload(); return; }
+  const t = LANG[val];
+  if (!t) return;
+  document.documentElement.lang = val;
+  document.title = t.page_title || document.title;
+  document.querySelectorAll('[data-i18n]').forEach(el => {
+    const key = el.dataset.i18n;
+    if (t[key]) {
+      if (el.dataset.i18nHtml === 'true' || key.includes('title') || key.includes('desc') || key.includes('sub')) {
+        el.innerHTML = t[key];
+      } else {
+        el.textContent = t[key];
+      }
+    }
+  });
+}
+const savedLang = localStorage.getItem('lang');
+if (savedLang && savedLang !== 'zh-TW') {
+  document.querySelector('.lang-select').value = savedLang;
+  switchLang(savedLang);
+}
+</script>
 </body>
 </html>
