@@ -3,10 +3,7 @@ services:
     name: neo-marketing-system
     runtime: python
     region: oregon
-    buildCommand: |
-      cd xiangchuan/marketing_system
-      pip install -r requirements.txt
-      playwright install chromium
+    buildCommand: pip install -r xiangchuan/marketing_system/requirements.txt
     startCommand: cd xiangchuan/marketing_system && bash start.sh
     envVars:
       - key: GROQ_API_KEY
