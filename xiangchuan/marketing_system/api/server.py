@@ -120,8 +120,30 @@ async def contact_form(request: Request):
                 status_code=400,
                 content={"status": "error", "message": f"缺少必填欄位：{field}"},
             )
-    result = send_contact_email(data)
-    return result
+    cid = execute(
+        "INSERT INTO contacts (name, company, contact, email, industry, message) VALUES (?, ?, ?, ?, ?, ?)",
+        [
+            data.get("姓名", ""),
+            data.get("公司", ""),
+            data.get("聯絡方式", ""),
+            data.get("Email", ""),
+            data.get("行業別", ""),
+            data.get("備註", ""),
+        ],
+    )
+    send_contact_email(data)
+    return {"status": "ok", "id": cid}
+
+
+@app.get("/api/contacts")
+def list_contacts(page: int = 1, per_page: int = 50):
+    offset = (page - 1) * per_page
+    items = fetch(
+        "SELECT * FROM contacts ORDER BY created_at DESC LIMIT ? OFFSET ?",
+        [per_page, offset],
+    )
+    total = fetch("SELECT COUNT(*) as c FROM contacts")[0]["c"]
+    return {"items": items, "total": total, "page": page}
 
 
 @app.post("/api/content")

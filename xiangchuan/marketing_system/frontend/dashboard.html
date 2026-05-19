@@ -112,6 +112,7 @@ tr:hover { background:rgba(255,255,255,0.02); }
     <a onclick="showPage('accounts')">🔗 平台帳號</a>
     <a onclick="showPage('ai')">🤖 AI 生成</a>
     <a onclick="showPage('analytics')">📈 分析</a>
+    <a onclick="showPage('contacts')">📋 聯絡表單</a>
   </nav>
 </div>
 
@@ -122,7 +123,7 @@ tr:hover { background:rgba(255,255,255,0.02); }
 const API = window.location.origin;
 
 // --- Routing ---
-const pages = ['dashboard','content','create','schedule','accounts','ai','analytics'];
+const pages = ['dashboard','content','create','schedule','accounts','ai','analytics','contacts'];
 
 function showPage(name) {
   document.querySelectorAll('#nav a').forEach(a => a.classList.remove('active'));
@@ -487,6 +488,33 @@ pageRenderers.analytics = async function() {
         ${(data.items||[]).map(a => `
           <tr><td>${a.platform}</td><td>${a.posts}</td><td>${a.total_views||0}</td><td>${a.total_likes||0}</td></tr>
         `).join('') || '<tr><td colspan="4" style="text-align:center;color:rgba(255,255,255,0.3)">暫無數據</td></tr>'}
+      </table>
+    </div>
+  `;
+};
+
+pageRenderers.contacts = async function() {
+  const data = await api('/api/contacts?per_page=100');
+  const main = document.getElementById('main-content');
+  main.innerHTML = `
+    <div class="page-title">📋 聯絡表單</div>
+    <div class="stats-grid">
+      <div class="stat-card"><div class="num">${data.total}</div><div class="label">總預約數</div></div>
+    </div>
+    <div class="card">
+      <table>
+        <tr><th>姓名</th><th>公司</th><th>聯絡方式</th><th>Email</th><th>行業別</th><th>備註</th><th>時間</th></tr>
+        ${(data.items||[]).map(c => `
+          <tr>
+            <td>${c.name}</td>
+            <td>${c.company||'-'}</td>
+            <td>${c.contact}</td>
+            <td>${c.email||'-'}</td>
+            <td>${c.industry||'-'}</td>
+            <td style="max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${c.message||'-'}</td>
+            <td style="white-space:nowrap">${c.created_at}</td>
+          </tr>
+        `).join('') || '<tr><td colspan="7" style="text-align:center;color:rgba(255,255,255,0.3)">暫無資料</td></tr>'}
       </table>
     </div>
   `;
