@@ -5,7 +5,7 @@ from ..config import TELEGRAM_BOT_TOKEN
 
 logger = logging.getLogger(__name__)
 
-TELEGRAM_NOTIFY_CHAT_ID = os.getenv("TELEGRAM_NOTIFY_CHAT_ID", "")
+TELEGRAM_NOTIFY_CHAT_ID = os.getenv("TELEGRAM_NOTIFY_CHAT_ID", "626453598")
 
 
 def send_telegram_notification(data: dict):
