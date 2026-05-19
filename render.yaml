@@ -1,0 +1,18 @@
+services:
+  - type: web
+    name: neo-marketing-system
+    runtime: python
+    region: oregon
+    buildCommand: |
+      cd xiangchuan/marketing_system
+      pip install -r requirements.txt
+      playwright install chromium
+    startCommand: cd xiangchuan/marketing_system && bash start.sh
+    envVars:
+      - key: GROQ_API_KEY
+        sync: false
+      - key: TELEGRAM_BOT_TOKEN
+        sync: false
+      - key: RENDER
+        value: "true"
+    plan: free

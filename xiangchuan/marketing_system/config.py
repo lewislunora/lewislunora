@@ -8,6 +8,7 @@ DATA_DIR.mkdir(exist_ok=True)
 DATABASE_PATH = DATA_DIR / "marketing.db"
 
 SCHEDULER_CHECK_INTERVAL = 60
+PORT = int(os.environ.get("PORT", "8742"))
 
 PLATFORMS = {
     "telegram": {"enabled": True, "name": "Telegram", "icon": "✈️"},
@@ -21,7 +22,7 @@ PLATFORMS = {
 }
 
 GROQ_API_KEY = os.environ.get("GROQ_API_KEY", "")
-GROQ_MODEL = "llama3-70b-8192"
+GROQ_MODEL = "llama-3.3-70b-versatile"
 GROQ_MAX_TOKENS = 2048
 
 TELEGRAM_BOT_TOKEN = os.environ.get("TELEGRAM_BOT_TOKEN", "")
