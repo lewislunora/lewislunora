@@ -17,7 +17,7 @@ from ..platforms.line_connector import LineConnector
 from ..platforms.facebook_connector import FacebookConnector
 from ..platforms.twitter_connector import TwitterConnector
 from ..platforms.browser_automation import ThreadsConnector, DcardConnector, XiaohongshuConnector
-from ..config import PLATFORMS, DATA_DIR
+from ..config import PLATFORMS, DATA_DIR, DOCS_DIR
 
 app = FastAPI(title="翔川 Neo｜曜科技 行銷自動化系統")
 
@@ -241,12 +241,11 @@ async def dashboard():
 
 
 @app.get("/")
-def root():
-    return {
-        "name": "翔川 Neo｜曜科技 行銷自動化系統",
-        "version": "1.0",
-        "endpoints": {
-            "dashboard": "/dashboard",
-            "api": "/api/status"
-        }
-    }
+async def root():
+    landing = DOCS_DIR / "index.html"
+    if landing.exists():
+        return HTMLResponse(landing.read_text(encoding="utf-8"))
+    return {"name": "翔川 Neo｜曜科技 行銷自動化系統", "version": "1.0"}
+
+
+app.mount("/", StaticFiles(directory=str(DOCS_DIR), html=True), name="site")
