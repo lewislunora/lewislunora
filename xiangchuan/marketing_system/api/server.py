@@ -19,6 +19,7 @@ from ..platforms.twitter_connector import TwitterConnector
 from ..platforms.browser_automation import ThreadsConnector, DcardConnector, XiaohongshuConnector
 from ..config import PLATFORMS, DATA_DIR, DOCS_DIR
 from ..services.email_service import send_contact_email, is_configured as smtp_configured
+from ..services.notification_service import send_telegram_notification
 
 app = FastAPI(title="翔川 Neo｜曜科技 行銷自動化系統")
 
@@ -131,7 +132,10 @@ async def contact_form(request: Request):
             data.get("備註", ""),
         ],
     )
-    send_contact_email(data)
+    if smtp_configured():
+        send_contact_email(data)
+    else:
+        send_telegram_notification(data)
     return {"status": "ok", "id": cid}
 
 
