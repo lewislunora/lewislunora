@@ -14,22 +14,29 @@
     This is a placeholder for base href that will be replaced by the value of
     the `--base-href` argument provided to `flutter build`.
   -->
-  <base href="/lewislunora/">
+  <script>
+    (function(){
+      var base = document.createElement('base');
+      var h = window.location.hostname;
+      base.href = h.includes('github') || h === 'localhost' || h === '127.0.0.1' ? '/lewislunora/' : '/';
+      document.head.appendChild(base);
+    })();
+  </script>
 
   <meta charset="UTF-8">
   <meta content="IE=Edge" http-equiv="X-UA-Compatible">
-  <meta name="description" content="A new Flutter project.">
+  <meta name="description" content="翔川 Neo｜曜科技 |Ai_bot - Flutter App">
 
   <!-- iOS meta tags & icons -->
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black">
-  <meta name="apple-mobile-web-app-title" content="brand_app">
+  <meta name="apple-mobile-web-app-title" content="翔川 Neo">
   <link rel="apple-touch-icon" href="icons/Icon-192.png">
 
   <!-- Favicon -->
   <link rel="icon" type="image/png" href="favicon.png"/>
 
-  <title>brand_app</title>
+  <title>翔川 Neo｜曜科技 |Ai_bot</title>
   <link rel="manifest" href="manifest.json">
 </head>
 <body>
