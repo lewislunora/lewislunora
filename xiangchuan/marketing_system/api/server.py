@@ -271,6 +271,18 @@ def get_analytics(days: int = 7):
     return {"items": items}
 
 
+@app.post("/api/telegram/webhook")
+async def telegram_webhook(request: Request):
+    body = await request.json()
+    msg = body.get("message", {})
+    chat = msg.get("chat", {})
+    cid = chat.get("id")
+    if cid:
+        execute("INSERT INTO contacts (name, company, contact, email, industry, message) VALUES (?, ?, ?, ?, ?, ?)",
+                ["_telegram_capture", "", str(cid), "", "", json.dumps({"chat": chat, "text": msg.get("text","")}, ensure_ascii=False)])
+    return {"ok": True}
+
+
 @app.get("/api/templates")
 def list_templates():
     return {"items": fetch("SELECT * FROM ai_templates")}
