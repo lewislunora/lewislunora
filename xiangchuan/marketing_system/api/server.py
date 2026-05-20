@@ -384,27 +384,15 @@ async def telegram_webhook(request: Request):
         reply = get_kb_reply(clean)
         if not reply:
             save_unanswered(clean, "zh-TW")
-            try:
-                from ..ai.generator import AIContentGenerator
-                gen = AIContentGenerator()
-                if gen.is_available():
-                    lang_hint = "繁體中文" if all(ord(c) > 127 for c in clean[:3]) else "English"
-                    ai_resp = gen.generate("custom", {
-                        "prompt": f"""你是翔川 Neo｜曜科技（YaoTech）的品牌AI助手。
-公司定位：AI行銷自動化平台，提供多平台內容管理、排程發佈、分析追蹤、AI生成文案。
-回答風格：親切、有洞察力、展現品牌個性。
-回答限制：用{lang_hint}，200字內，不要編造事實，不知道就說不知道。
-
-問題：{clean}"""
-                    })
-                    if ai_resp and not ai_resp.startswith("❌"):
-                        reply = ai_resp
-                    else:
-                        reply = None
-                if not reply:
-                    reply = "🤖 感謝您的問題！已記錄下來，管理員會盡快補充。"
-            except Exception:
-                reply = "🤖 感謝您的問題！已記錄下來，管理員會盡快補充。"
+            reply = (
+                "🤖 抱歉，這個問題我還不太會回答，已記錄給管理員學習。\n\n"
+                "你可以問我：\n"
+                "• 方案與價格\n"
+                "• 功能介紹\n"
+                "• 平台支援\n"
+                "• 如何開始\n"
+                "• 其他行銷相關問題"
+            )
 
     HARDCODED_BOT_TOKEN = "8653211794:AAG08xDDj0UDkX18TE60BQSVs-bwwVh8AH8"
     token = os.getenv("TELEGRAM_BOT_TOKEN") or HARDCODED_BOT_TOKEN
