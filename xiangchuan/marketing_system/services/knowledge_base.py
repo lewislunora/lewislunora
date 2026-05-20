@@ -5,19 +5,47 @@ from ..database import fetch, execute
 logger = logging.getLogger(__name__)
 
 
+import re
+
+
+import re
+
+
 def get_kb_reply(text: str, lang: str = "zh-TW") -> str | None:
     rows = fetch("SELECT keywords, answer FROM kb_entries WHERE language=?", [lang])
     if not rows:
         rows = fetch("SELECT keywords, answer, language FROM kb_entries")
     lower = text.lower()
+    best = None
+    best_kw = ""
     for row in rows:
         try:
             keywords = json.loads(row["keywords"])
         except Exception:
             continue
         for kw in keywords:
-            if kw.lower() in lower:
-                return row["answer"]
+            lkw = kw.lower()
+            idx = lower.find(lkw)
+            if idx == -1:
+                continue
+            if re.search(r"[a-zA-Z]", kw):
+                before = lower[idx - 1] if idx > 0 else " "
+                after = lower[idx + len(kw)] if idx + len(kw) < len(lower) else " "
+                if (before.isascii() and before.isalnum()) or (after.isascii() and after.isalnum()):
+                    continue
+            if len(kw) > len(best_kw):
+                best = row["answer"]
+                best_kw = kw
+    if best and (len(best_kw) >= 3 or len(best_kw) / max(len(text), 1) >= 0.3):
+        return best
+    for row in rows:
+        try:
+            keywords = json.loads(row["keywords"])
+        except Exception:
+            continue
+        matches = [kw for kw in keywords if kw.lower() in lower]
+        if len(matches) >= 2:
+            return row["answer"]
     return None
 
 
