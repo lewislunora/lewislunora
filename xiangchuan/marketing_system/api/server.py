@@ -382,12 +382,24 @@ async def telegram_webhook(request: Request):
     else:
         clean = text.replace(f"@{bot_username}", "").strip() if is_group else text
         reply = get_kb_reply(clean)
-        if not reply and is_group:
-            save_unanswered(clean, "zh-TW")
-            return {"ok": True}
         if not reply:
             save_unanswered(clean, "zh-TW")
-            reply = "🤖 我還不太確定怎麼回答，已記錄您的問題。\n管理員會盡快補充知識庫，謝謝！"
+            try:
+                from ..ai.generator import AIContentGenerator
+                gen = AIContentGenerator()
+                if gen.is_available():
+                    lang_hint = "繁體中文" if all(ord(c) > 127 for c in clean[:3]) else "English"
+                    ai_resp = gen.generate("custom", {
+                        "prompt": f"你是一個AI行銷助手，品牌是翔川 Neo｜曜科技。用{lang_hint}回答以下問題（50字內，親切口吻）：{clean}"
+                    })
+                    if ai_resp and not ai_resp.startswith("❌"):
+                        reply = ai_resp
+                    else:
+                        reply = None
+                if not reply:
+                    reply = "🤖 感謝您的問題！已記錄下來，管理員會盡快補充。"
+            except Exception:
+                reply = "🤖 感謝您的問題！已記錄下來，管理員會盡快補充。"
 
     HARDCODED_BOT_TOKEN = "8653211794:AAG08xDDj0UDkX18TE60BQSVs-bwwVh8AH8"
     token = os.getenv("TELEGRAM_BOT_TOKEN") or HARDCODED_BOT_TOKEN
