@@ -21,7 +21,7 @@ from ..platforms.browser_automation import ThreadsConnector, DcardConnector, Xia
 from ..config import PLATFORMS, DATA_DIR, DOCS_DIR
 from ..services.email_service import send_contact_email, is_configured as smtp_configured
 from ..services.notification_service import send_telegram_notification
-from ..services.knowledge_base import get_kb_reply
+from ..services.knowledge_base import get_kb_reply, save_unanswered, get_pending, auto_learn
 
 app = FastAPI(title="翔川 Neo｜曜科技 行銷自動化系統")
 
@@ -316,6 +316,35 @@ def delete_kb(kid: int):
     return {"status": "deleted"}
 
 
+@app.get("/api/kb/pending")
+def list_pending(page: int = 1):
+    return get_pending(page)
+
+
+@app.post("/api/kb/pending/{pid}/approve")
+def approve_pending(pid: int):
+    row = fetch_one("SELECT * FROM kb_pending WHERE id=?", [pid])
+    if not row:
+        raise HTTPException(404, "Not found")
+    from ..ai.generator import AIContentGenerator
+    gen = AIContentGenerator()
+    suggest = ""
+    if gen.is_available():
+        try:
+            resp = gen.generate("custom", {"prompt": f"根據以下問題，用{row['language']}產生一個簡短回答（50字內）：{row['question']}"})
+            if resp and not resp.startswith("❌"):
+                suggest = resp
+        except Exception:
+            pass
+    return {"question": row["question"], "language": row["language"], "ai_suggest": suggest}
+
+
+@app.post("/api/kb/pending/{pid}/reject")
+def reject_pending(pid: int):
+    execute("UPDATE kb_pending SET status='rejected' WHERE id=?", [pid])
+    return {"status": "rejected"}
+
+
 @app.post("/api/telegram/webhook")
 async def telegram_webhook(request: Request):
     body = await request.json()
@@ -354,9 +383,11 @@ async def telegram_webhook(request: Request):
         clean = text.replace(f"@{bot_username}", "").strip() if is_group else text
         reply = get_kb_reply(clean)
         if not reply and is_group:
+            save_unanswered(clean, "zh-TW")
             return {"ok": True}
         if not reply:
-            reply = "感謝您的訊息！我們會盡快回覆。如有緊急需求請直接聯絡 📧 lewislunora@gmail.com"
+            save_unanswered(clean, "zh-TW")
+            reply = "🤖 我還不太確定怎麼回答，已記錄您的問題。\n管理員會盡快補充知識庫，謝謝！"
 
     HARDCODED_BOT_TOKEN = "8653211794:AAG08xDDj0UDkX18TE60BQSVs-bwwVh8AH8"
     token = os.getenv("TELEGRAM_BOT_TOKEN") or HARDCODED_BOT_TOKEN

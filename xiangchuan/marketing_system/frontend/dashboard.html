@@ -114,6 +114,7 @@ tr:hover { background:rgba(255,255,255,0.02); }
     <a onclick="showPage('analytics')">📈 分析</a>
     <a onclick="showPage('contacts')">📋 聯絡表單</a>
     <a onclick="showPage('kb')">🧠 知識庫</a>
+    <a onclick="showPage('kbPending')">📖 待學習</a>
   </nav>
 </div>
 
@@ -124,7 +125,7 @@ tr:hover { background:rgba(255,255,255,0.02); }
 const API = window.location.origin;
 
 // --- Routing ---
-const pages = ['dashboard','content','create','schedule','accounts','ai','analytics','contacts','kb'];
+const pages = ['dashboard','content','create','schedule','accounts','ai','analytics','contacts','kb','kbPending'];
 
 function showPage(name) {
   document.querySelectorAll('#nav a').forEach(a => a.classList.remove('active'));
@@ -617,6 +618,73 @@ async function deleteKb(id) {
   await api(`/api/kb/${id}`, {method: 'DELETE'});
   toast('✅ 已刪除');
   showPage('kb');
+}
+
+pageRenderers.kbPending = async function() {
+  const data = await api('/api/kb/pending');
+  const main = document.getElementById('main-content');
+  main.innerHTML = `
+    <div class="page-title">📖 待學習問題</div>
+    <div class="stats-grid">
+      <div class="stat-card"><div class="num">${data.total}</div><div class="label">待學習</div></div>
+    </div>
+    <div class="card">
+      <table>
+        <tr><th>問題</th><th>次數</th><th>語言</th><th>時間</th><th>操作</th></tr>
+        ${(data.items||[]).map(p => `
+          <tr>
+            <td>${p.question}</td>
+            <td>${p.count}</td>
+            <td>${p.language}</td>
+            <td style="white-space:nowrap">${p.created_at}</td>
+            <td>
+              <button class="btn btn-sm btn-primary" onclick="approvePending(${p.id})">✅ AI 建議</button>
+              <button class="btn btn-sm btn-danger" onclick="rejectPending(${p.id})">✕ 忽略</button>
+            </td>
+          </tr>
+        `).join('') || '<tr><td colspan="5" style="text-align:center;color:rgba(255,255,255,0.3)">暫無待學習問題</td></tr>'}
+      </table>
+    </div>
+    <div id="pendingResult" style="margin-top:1rem"></div>
+  `;
+};
+
+async function approvePending(pid) {
+  const res = await api(`/api/kb/pending/${pid}/approve`, {method: 'POST'});
+  const div = document.getElementById('pendingResult');
+  div.innerHTML = `
+    <div class="card">
+      <h3>📝 AI 建議回答</h3>
+      <p style="margin-bottom:0.5rem;color:rgba(255,255,255,0.5)">問題：${res.question}</p>
+      <textarea id="aiAnswer" rows="4" style="width:100%;padding:0.6rem;border-radius:8px;border:1px solid rgba(255,255,255,0.1);background:#0a0e27;color:#fff;margin-bottom:0.5rem;resize:vertical">${res.ai_suggest}</textarea>
+      <div style="display:flex;gap:0.5rem">
+        <button class="btn btn-primary" onclick="addToKb(${pid})">📥 加入知識庫</button>
+        <button class="btn btn-outline" onclick="showPage('kbPending')">取消</button>
+      </div>
+    </div>
+  `;
+}
+
+async function addToKb(pid) {
+  const answer = document.getElementById('aiAnswer').value.trim();
+  if (!answer) { toast('請填寫回答'); return; }
+  await api(`/api/kb/${pid}/approve`, {method: 'POST', body: JSON.stringify({answer})});
+  // Actually, let's use the pending entry to create a new KB entry
+  const row = document.querySelector(`#pendingResult textarea`);
+  const kw = prompt('請輸入關鍵字（逗號分隔）：');
+  if (!kw) return;
+  const keywords = kw.split(',').map(s => s.trim()).filter(Boolean);
+  await api('/api/kb', {method: 'POST', body: JSON.stringify({keywords, answer, language: 'zh-TW'})});
+  await api(`/api/kb/pending/${pid}/reject`, {method: 'POST'});
+  toast('✅ 已加入知識庫');
+  showPage('kbPending');
+}
+
+async function rejectPending(pid) {
+  if (!confirm('確定忽略此問題？')) return;
+  await api(`/api/kb/pending/${pid}/reject`, {method: 'POST'});
+  toast('✅ 已忽略');
+  showPage('kbPending');
 }
 
 // Override kb renderer to cache data

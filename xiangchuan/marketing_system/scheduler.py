@@ -37,9 +37,18 @@ class ContentScheduler:
                     self._keep_alive()
                 if self._ping_count % 1440 == 0:
                     self._daily_backup()
+                if self._ping_count % 60 == 0:
+                    self._auto_learn_kb()
             except Exception as e:
                 logger.error(f"Scheduler error: {e}")
             time.sleep(60)
+
+    def _auto_learn_kb(self):
+        try:
+            from ..services.knowledge_base import auto_learn
+            auto_learn()
+        except Exception as e:
+            logger.warning(f"Auto-learn KB failed: {e}")
 
     def _daily_backup(self):
         try:

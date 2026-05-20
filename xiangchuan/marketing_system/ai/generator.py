@@ -24,14 +24,15 @@ class AIContentGenerator:
             return "⚠️ Groq API 未設定或額度已用盡。"
 
         variables = variables or {}
-        template = fetch_one(
-            "SELECT prompt_template FROM ai_templates WHERE name=?",
-            [template_name]
-        )
-        if not template:
-            return f"❌ 找不到模板: {template_name}"
-
-        prompt = template["prompt_template"].format(**variables)
+        prompt = variables.get("prompt", "")
+        if not prompt:
+            template = fetch_one(
+                "SELECT prompt_template FROM ai_templates WHERE name=?",
+                [template_name]
+            )
+            if not template:
+                return f"❌ 找不到模板: {template_name}"
+            prompt = template["prompt_template"].format(**variables)
 
         try:
             response = self.client.chat.completions.create(

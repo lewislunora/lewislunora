@@ -105,6 +105,17 @@ def init_db():
         (21, '["ai","llm","groq","人工智慧"]', '系統使用 Groq Llama 3 LLM 驅動，支援智慧對話、內容生成、情感分析等功能。', 'zh-TW'),
         (22, '["ai","llm","groq","人工智慧"]', 'Powered by Groq Llama 3 LLM. Smart conversations, content generation, sentiment analysis.', 'en');
 
+        CREATE TABLE IF NOT EXISTS kb_pending (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            question TEXT NOT NULL,
+            language TEXT DEFAULT 'zh-TW',
+            count INTEGER DEFAULT 1,
+            ai_suggest TEXT DEFAULT '',
+            status TEXT DEFAULT 'pending',
+            created_at TEXT DEFAULT (datetime('now')),
+            updated_at TEXT DEFAULT (datetime('now'))
+        );
+
         CREATE TABLE IF NOT EXISTS contacts (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             name TEXT NOT NULL,
