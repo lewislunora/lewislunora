@@ -1,3 +1,4 @@
+import os
 import json
 import hashlib
 import secrets
@@ -20,6 +21,7 @@ from ..platforms.browser_automation import ThreadsConnector, DcardConnector, Xia
 from ..config import PLATFORMS, DATA_DIR, DOCS_DIR
 from ..services.email_service import send_contact_email, is_configured as smtp_configured
 from ..services.notification_service import send_telegram_notification
+from ..services.knowledge_base import get_kb_reply
 
 app = FastAPI(title="翔川 Neo｜曜科技 行銷自動化系統")
 
@@ -279,9 +281,54 @@ async def telegram_webhook(request: Request):
     msg = body.get("message", {})
     chat = msg.get("chat", {})
     cid = chat.get("id")
-    if cid:
-        execute("INSERT INTO contacts (name, company, contact, email, industry, message) VALUES (?, ?, ?, ?, ?, ?)",
-                ["_telegram_capture", "", str(cid), "", "", json.dumps({"chat": chat, "text": msg.get("text","")}, ensure_ascii=False)])
+    text = (msg.get("text") or "").strip()
+    chat_type = chat.get("type", "private")
+
+    if not cid or not text:
+        return {"ok": True}
+
+    is_bot_command = text.startswith("/")
+    is_group = chat_type in ("group", "supergroup")
+    bot_username = "ailunora_bot"
+
+    mentioned = bot_username in text.lower() if is_group else True
+
+    if is_bot_command:
+        if text in ("/start", "/help"):
+            reply = (
+                "🤖 歡迎使用 @ailunora_bot！\n\n"
+                "你可以問我：\n"
+                "• 方案與價格\n"
+                "• 功能介紹\n"
+                "• 平台支援\n"
+                "• 如何開始\n"
+                "• 其他行銷相關問題\n\n"
+                "或在群組中 @ailunora_bot 你的問題"
+            )
+        else:
+            return {"ok": True}
+    elif not mentioned:
+        return {"ok": True}
+    else:
+        clean = text.replace(f"@{bot_username}", "").strip() if is_group else text
+        reply = get_kb_reply(clean)
+        if not reply and is_group:
+            return {"ok": True}
+        if not reply:
+            reply = "感謝您的訊息！我們會盡快回覆。如有緊急需求請直接聯絡 📧 lewislunora@gmail.com"
+
+    HARDCODED_BOT_TOKEN = "8653211794:AAG08xDDj0UDkX18TE60BQSVs-bwwVh8AH8"
+    token = os.getenv("TELEGRAM_BOT_TOKEN") or HARDCODED_BOT_TOKEN
+    try:
+        import requests as req
+        req.post(
+            f"https://api.telegram.org/bot{token}/sendMessage",
+            json={"chat_id": cid, "text": reply, "parse_mode": "HTML"},
+            timeout=10,
+        )
+    except Exception:
+        pass
+
     return {"ok": True}
 
 
