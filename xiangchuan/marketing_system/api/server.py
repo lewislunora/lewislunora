@@ -320,6 +320,13 @@ def list_pending(page: int = 1):
     return get_pending(page)
 
 
+@app.post("/api/kb/pending/auto-learn")
+def trigger_auto_learn():
+    from ..services.knowledge_base import auto_learn
+    auto_learn()
+    return {"status": "ok"}
+
+
 @app.post("/api/kb/pending/{pid}/suggest")
 def suggest_pending(pid: int):
     row = fetch_one("SELECT * FROM kb_pending WHERE id=?", [pid])
