@@ -390,7 +390,12 @@ async def telegram_webhook(request: Request):
                 if gen.is_available():
                     lang_hint = "繁體中文" if all(ord(c) > 127 for c in clean[:3]) else "English"
                     ai_resp = gen.generate("custom", {
-                        "prompt": f"你是一個AI行銷助手，品牌是翔川 Neo｜曜科技。用{lang_hint}回答以下問題（50字內，親切口吻）：{clean}"
+                        "prompt": f"""你是翔川 Neo｜曜科技（YaoTech）的品牌AI助手。
+公司定位：AI行銷自動化平台，提供多平台內容管理、排程發佈、分析追蹤、AI生成文案。
+回答風格：親切、有洞察力、展現品牌個性。
+回答限制：用{lang_hint}，200字內，不要編造事實，不知道就說不知道。
+
+問題：{clean}"""
                     })
                     if ai_resp and not ai_resp.startswith("❌"):
                         reply = ai_resp
