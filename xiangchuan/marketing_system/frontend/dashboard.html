@@ -143,8 +143,8 @@ function toast(msg) {
 // --- API helpers ---
 async function api(path, opts={}) {
   const res = await fetch(API + path, {
+    ...opts,
     headers: {'Content-Type':'application/json', ...opts.headers},
-    ...opts
   });
   if (!res.ok) {
     const err = await res.text();
@@ -649,8 +649,11 @@ pageRenderers.kbPending = async function() {
   `;
 };
 
+let _pendingLang = 'zh-TW';
+
 async function approvePending(pid) {
-  const res = await api(`/api/kb/pending/${pid}/approve`, {method: 'POST'});
+  const res = await api(`/api/kb/pending/${pid}/suggest`, {method: 'POST'});
+  _pendingLang = res.language;
   const div = document.getElementById('pendingResult');
   div.innerHTML = `
     <div class="card">
@@ -668,13 +671,10 @@ async function approvePending(pid) {
 async function addToKb(pid) {
   const answer = document.getElementById('aiAnswer').value.trim();
   if (!answer) { toast('請填寫回答'); return; }
-  await api(`/api/kb/${pid}/approve`, {method: 'POST', body: JSON.stringify({answer})});
-  // Actually, let's use the pending entry to create a new KB entry
-  const row = document.querySelector(`#pendingResult textarea`);
   const kw = prompt('請輸入關鍵字（逗號分隔）：');
   if (!kw) return;
   const keywords = kw.split(',').map(s => s.trim()).filter(Boolean);
-  await api('/api/kb', {method: 'POST', body: JSON.stringify({keywords, answer, language: 'zh-TW'})});
+  await api('/api/kb', {method: 'POST', body: JSON.stringify({keywords, answer, language: _pendingLang})});
   await api(`/api/kb/pending/${pid}/reject`, {method: 'POST'});
   toast('✅ 已加入知識庫');
   showPage('kbPending');

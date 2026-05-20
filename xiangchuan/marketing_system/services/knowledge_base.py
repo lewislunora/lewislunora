@@ -8,7 +8,7 @@ logger = logging.getLogger(__name__)
 def get_kb_reply(text: str, lang: str = "zh-TW") -> str | None:
     rows = fetch("SELECT keywords, answer FROM kb_entries WHERE language=?", [lang])
     if not rows:
-        rows = fetch("SELECT keywords, answer FROM kb_entries WHERE language='zh-TW'")
+        rows = fetch("SELECT keywords, answer, language FROM kb_entries")
     lower = text.lower()
     for row in rows:
         try:

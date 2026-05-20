@@ -18,7 +18,7 @@ from ..platforms.line_connector import LineConnector
 from ..platforms.facebook_connector import FacebookConnector
 from ..platforms.twitter_connector import TwitterConnector
 from ..platforms.browser_automation import ThreadsConnector, DcardConnector, XiaohongshuConnector
-from ..config import PLATFORMS, DATA_DIR, DOCS_DIR
+from ..config import PLATFORMS, DATA_DIR, DOCS_DIR, TELEGRAM_BOT_TOKEN
 from ..services.email_service import send_contact_email, is_configured as smtp_configured
 from ..services.notification_service import send_telegram_notification
 from ..services.knowledge_base import get_kb_reply, save_unanswered, get_pending, auto_learn
@@ -111,7 +111,6 @@ def shutdown():
 
 @app.get("/api/status")
 def status():
-    from ..config import TELEGRAM_BOT_TOKEN
     return {
         "ai_available": ai_generator.is_available(),
         "smtp_configured": smtp_configured(),
@@ -321,8 +320,8 @@ def list_pending(page: int = 1):
     return get_pending(page)
 
 
-@app.post("/api/kb/pending/{pid}/approve")
-def approve_pending(pid: int):
+@app.post("/api/kb/pending/{pid}/suggest")
+def suggest_pending(pid: int):
     row = fetch_one("SELECT * FROM kb_pending WHERE id=?", [pid])
     if not row:
         raise HTTPException(404, "Not found")
@@ -394,8 +393,7 @@ async def telegram_webhook(request: Request):
                 "• 其他行銷相關問題"
             )
 
-    HARDCODED_BOT_TOKEN = "8653211794:AAG08xDDj0UDkX18TE60BQSVs-bwwVh8AH8"
-    token = os.getenv("TELEGRAM_BOT_TOKEN") or HARDCODED_BOT_TOKEN
+    token = TELEGRAM_BOT_TOKEN
     try:
         import requests as req
         req.post(
