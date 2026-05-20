@@ -14,13 +14,4 @@ services:
         value: "626453598"
       - key: RENDER
         value: "true"
-      - key: DATABASE_URL
-        fromDatabase:
-          name: neo-postgres
-          property: connectionString
-    plan: free
-
-databases:
-  - name: neo-postgres
-    region: oregon
     plan: free

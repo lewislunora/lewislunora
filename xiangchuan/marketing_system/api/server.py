@@ -111,10 +111,13 @@ def shutdown():
 
 @app.get("/api/status")
 def status():
+    from ..database import _use_pg, DATABASE_URL
     return {
         "ai_available": ai_generator.is_available(),
         "smtp_configured": smtp_configured(),
         "telegram_bot_token_set": bool(TELEGRAM_BOT_TOKEN),
+        "database_type": "postgresql" if _use_pg else "sqlite",
+        "database_url_set": bool(DATABASE_URL),
         "scheduler": scheduler.get_status_summary(),
         "platforms": {k: v["enabled"] for k, v in PLATFORMS.items()},
     }
