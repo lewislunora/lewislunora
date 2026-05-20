@@ -4,9 +4,12 @@ from pathlib import Path
 BASE_DIR = Path(__file__).parent
 DATA_DIR = BASE_DIR / "data"
 DOCS_DIR = BASE_DIR.parent.parent / "docs"
+BACKUP_DIR = BASE_DIR.parent.parent / "docs" / "data"
 DATA_DIR.mkdir(exist_ok=True)
+BACKUP_DIR.mkdir(exist_ok=True)
 
 DATABASE_PATH = DATA_DIR / "marketing.db"
+DATABASE_BACKUP_PATH = BACKUP_DIR / "db_backup.json"
 
 SCHEDULER_CHECK_INTERVAL = 60
 PORT = int(os.environ.get("PORT", "8742"))
