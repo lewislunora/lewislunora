@@ -81,6 +81,12 @@ class ScheduleCreate(BaseModel):
     scheduled_at: str
 
 
+class KBEntryCreate(BaseModel):
+    keywords: list[str]
+    answer: str
+    language: str = "zh-TW"
+
+
 class AIGenerateRequest(BaseModel):
     template: str = "社群貼文"
     variables: dict = {}
@@ -273,6 +279,41 @@ def get_analytics(days: int = 7):
         [f"-{days} days"]
     )
     return {"items": items}
+
+
+@app.get("/api/kb")
+def list_kb(language: str = None):
+    if language:
+        items = fetch("SELECT * FROM kb_entries WHERE language=? ORDER BY id", [language])
+    else:
+        items = fetch("SELECT * FROM kb_entries ORDER BY language, id")
+    for i in items:
+        i["keywords"] = json.loads(i["keywords"])
+    return {"items": items}
+
+
+@app.post("/api/kb")
+def create_kb(data: KBEntryCreate):
+    cid = execute(
+        "INSERT INTO kb_entries (keywords, answer, language) VALUES (?, ?, ?)",
+        [json.dumps(data.keywords, ensure_ascii=False), data.answer, data.language],
+    )
+    return {"id": cid, "status": "created"}
+
+
+@app.put("/api/kb/{kid}")
+def update_kb(kid: int, data: KBEntryCreate):
+    execute(
+        "UPDATE kb_entries SET keywords=?, answer=?, language=?, updated_at=datetime('now') WHERE id=?",
+        [json.dumps(data.keywords, ensure_ascii=False), data.answer, data.language, kid],
+    )
+    return {"status": "updated"}
+
+
+@app.delete("/api/kb/{kid}")
+def delete_kb(kid: int):
+    execute("DELETE FROM kb_entries WHERE id=?", [kid])
+    return {"status": "deleted"}
 
 
 @app.post("/api/telegram/webhook")

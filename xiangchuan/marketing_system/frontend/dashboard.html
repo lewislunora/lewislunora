@@ -113,6 +113,7 @@ tr:hover { background:rgba(255,255,255,0.02); }
     <a onclick="showPage('ai')">🤖 AI 生成</a>
     <a onclick="showPage('analytics')">📈 分析</a>
     <a onclick="showPage('contacts')">📋 聯絡表單</a>
+    <a onclick="showPage('kb')">🧠 知識庫</a>
   </nav>
 </div>
 
@@ -123,7 +124,7 @@ tr:hover { background:rgba(255,255,255,0.02); }
 const API = window.location.origin;
 
 // --- Routing ---
-const pages = ['dashboard','content','create','schedule','accounts','ai','analytics','contacts'];
+const pages = ['dashboard','content','create','schedule','accounts','ai','analytics','contacts','kb'];
 
 function showPage(name) {
   document.querySelectorAll('#nav a').forEach(a => a.classList.remove('active'));
@@ -518,6 +519,112 @@ pageRenderers.contacts = async function() {
       </table>
     </div>
   `;
+};
+
+pageRenderers.kb = async function() {
+  const data = await api('/api/kb');
+  const main = document.getElementById('main-content');
+  main.innerHTML = `
+    <div class="page-title">🧠 知識庫管理</div>
+    <div style="margin-bottom:1rem;display:flex;gap:0.5rem;align-items:center">
+      <button class="btn btn-primary" onclick="showKbForm()">➕ 新增問答</button>
+      <select id="kbLangFilter" onchange="showPage('kb')" style="background:#1a1f3a;color:#fff;border:1px solid rgba(255,255,255,0.1);border-radius:8px;padding:0.5rem">
+        <option value="">全部語言</option>
+        <option value="zh-TW">繁體中文</option>
+        <option value="en">English</option>
+      </select>
+    </div>
+    <div class="card">
+      <table>
+        <tr><th>ID</th><th>語言</th><th>關鍵字</th><th>回答</th><th>更新時間</th><th>操作</th></tr>
+        ${(data.items||[]).filter(i => {
+          const f = document.getElementById('kbLangFilter');
+          return !f || !f.value || i.language === f.value;
+        }).map(i => `
+          <tr>
+            <td>${i.id}</td>
+            <td>${i.language}</td>
+            <td>${(i.keywords||[]).join(', ')}</td>
+            <td style="max-width:300px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${i.answer}</td>
+            <td style="white-space:nowrap">${i.updated_at||i.created_at}</td>
+            <td>
+              <button class="btn btn-sm btn-primary" onclick="showKbForm(${i.id})">編輯</button>
+              <button class="btn btn-sm btn-danger" onclick="deleteKb(${i.id})">刪除</button>
+            </td>
+          </tr>
+        `).join('') || '<tr><td colspan="6" style="text-align:center;color:rgba(255,255,255,0.3)">暫無資料</td></tr>'}
+      </table>
+    </div>
+  `;
+};
+
+let kbEditId = null;
+
+function showKbForm(id) {
+  kbEditId = id || null;
+  const overlay = document.createElement('div');
+  overlay.id = 'kbOverlay';
+  overlay.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.6);z-index:1000;display:flex;align-items:center;justify-content:center';
+  overlay.innerHTML = `
+    <div style="background:#1a1f3a;border:1px solid rgba(255,255,255,0.1);border-radius:16px;padding:2rem;width:600px;max-width:90vw;max-height:80vh;overflow-y:auto">
+      <h3 style="margin-bottom:1rem">${id ? '編輯' : '新增'}知識庫問答</h3>
+      <label style="display:block;margin-bottom:0.3rem;font-size:0.85rem;color:rgba(255,255,255,0.5)">語言</label>
+      <select id="kbFormLang" style="width:100%;padding:0.6rem;border-radius:8px;border:1px solid rgba(255,255,255,0.1);background:#0a0e27;color:#fff;margin-bottom:1rem">
+        <option value="zh-TW">繁體中文</option>
+        <option value="en">English</option>
+      </select>
+      <label style="display:block;margin-bottom:0.3rem;font-size:0.85rem;color:rgba(255,255,255,0.5)">關鍵字（逗號分隔）</label>
+      <input id="kbFormKw" style="width:100%;padding:0.6rem;border-radius:8px;border:1px solid rgba(255,255,255,0.1);background:#0a0e27;color:#fff;margin-bottom:1rem" placeholder="方案, 價格, 費用">
+      <label style="display:block;margin-bottom:0.3rem;font-size:0.85rem;color:rgba(255,255,255,0.5)">回答內容</label>
+      <textarea id="kbFormAns" rows="6" style="width:100%;padding:0.6rem;border-radius:8px;border:1px solid rgba(255,255,255,0.1);background:#0a0e27;color:#fff;margin-bottom:1rem;resize:vertical"></textarea>
+      <div style="display:flex;gap:0.5rem;justify-content:flex-end">
+        <button class="btn btn-outline" onclick="document.getElementById('kbOverlay').remove()">取消</button>
+        <button class="btn btn-primary" onclick="saveKb()">${id ? '儲存' : '新增'}</button>
+      </div>
+    </div>
+  `;
+  document.body.appendChild(overlay);
+  if (id) {
+    const item = kbCache.find(i => i.id === id);
+    if (item) {
+      document.getElementById('kbFormLang').value = item.language;
+      document.getElementById('kbFormKw').value = (item.keywords||[]).join(', ');
+      document.getElementById('kbFormAns').value = item.answer;
+    }
+  }
+}
+
+let kbCache = [];
+
+async function saveKb() {
+  const lang = document.getElementById('kbFormLang').value;
+  const kw = document.getElementById('kbFormKw').value.split(',').map(s => s.trim()).filter(Boolean);
+  const ans = document.getElementById('kbFormAns').value.trim();
+  if (!kw.length || !ans) { toast('請填寫關鍵字和回答'); return; }
+  const body = JSON.stringify({keywords: kw, answer: ans, language: lang});
+  if (kbEditId) {
+    await api(`/api/kb/${kbEditId}`, {method: 'PUT', body});
+  } else {
+    await api('/api/kb', {method: 'POST', body});
+  }
+  document.getElementById('kbOverlay').remove();
+  toast('✅ 已儲存');
+  showPage('kb');
+}
+
+async function deleteKb(id) {
+  if (!confirm('確定刪除此問答？')) return;
+  await api(`/api/kb/${id}`, {method: 'DELETE'});
+  toast('✅ 已刪除');
+  showPage('kb');
+}
+
+// Override kb renderer to cache data
+const _origKb = pageRenderers.kb;
+pageRenderers.kb = async function() {
+  const data = await api('/api/kb');
+  kbCache = data.items || [];
+  _origKb();
 };
 
 // --- Init ---
