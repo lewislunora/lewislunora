@@ -285,6 +285,22 @@ async def telegram_webhook(request: Request):
     return {"ok": True}
 
 
+@app.get("/api/backup")
+def backup_database():
+    tables = ["contents", "schedules", "analytics", "contacts", "accounts", "ai_templates"]
+    data = {}
+    for t in tables:
+        try:
+            data[t] = fetch(f"SELECT * FROM {t}")
+        except Exception:
+            data[t] = []
+    from datetime import datetime
+    now = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
+    backup_path = DATA_DIR / f"backup_{now}.json"
+    backup_path.write_text(json.dumps(data, ensure_ascii=False, default=str), encoding="utf-8")
+    return {"status": "ok", "file": backup_path.name, "tables": {t: len(data[t]) for t in tables}}
+
+
 @app.get("/api/templates")
 def list_templates():
     return {"items": fetch("SELECT * FROM ai_templates")}
