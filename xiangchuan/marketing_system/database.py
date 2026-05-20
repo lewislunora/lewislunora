@@ -1,19 +1,250 @@
-import sqlite3
+import os
 import json
+import logging
 from datetime import datetime
 from pathlib import Path
 from .config import DATABASE_PATH
 
+logger = logging.getLogger(__name__)
 
-def get_conn():
-    conn = sqlite3.connect(str(DATABASE_PATH))
-    conn.row_factory = sqlite3.Row
+DATABASE_URL = os.environ.get("DATABASE_URL", "")
+
+_use_pg = bool(DATABASE_URL)
+
+
+def _pg_conn():
+    import psycopg2
+    conn = psycopg2.connect(DATABASE_URL)
+    conn.autocommit = True
+    return conn
+
+
+def _sqlite_conn():
+    conn = __import__("sqlite3").connect(str(DATABASE_PATH))
+    conn.row_factory = __import__("sqlite3").Row
     conn.execute("PRAGMA journal_mode=WAL")
     return conn
 
 
+def get_conn():
+    return _pg_conn() if _use_pg else _sqlite_conn()
+
+
+def _dicts(rows, description):
+    cols = [d.name for d in description]
+    return [dict(zip(cols, row)) for row in rows]
+
+
+def execute(sql, params=None):
+    params = params or []
+    if _use_pg:
+        conn = _pg_conn()
+        cur = conn.cursor()
+        pg_sql = sql.replace("?", "%s").replace("datetime('now')", "CURRENT_TIMESTAMP")
+        cur.execute(pg_sql, params)
+        last_id = cur.fetchone()[0] if cur.description else None
+        if last_id is None:
+            cur.execute("SELECT LASTVAL()")
+            row = cur.fetchone()
+            last_id = row[0] if row else None
+        conn.close()
+        return last_id
+    else:
+        conn = _sqlite_conn()
+        cur = conn.execute(sql, params)
+        conn.commit()
+        last_id = cur.lastrowid
+        conn.close()
+        return last_id
+
+
+def fetch(sql, params=None):
+    params = params or []
+    if _use_pg:
+        conn = _pg_conn()
+        cur = conn.cursor()
+        pg_sql = sql.replace("?", "%s").replace("datetime('now')", "CURRENT_TIMESTAMP")
+        cur.execute(pg_sql, params)
+        rows = _dicts(cur.fetchall(), cur.description)
+        conn.close()
+        return rows
+    else:
+        conn = _sqlite_conn()
+        rows = conn.execute(sql, params).fetchall()
+        conn.close()
+        return [dict(r) for r in rows]
+
+
+def fetch_one(sql, params=None):
+    rows = fetch(sql, params)
+    return rows[0] if rows else None
+
+
 def init_db():
-    conn = get_conn()
+    if _use_pg:
+        _init_pg()
+    else:
+        _init_sqlite()
+
+
+def _init_pg():
+    conn = _pg_conn()
+    cur = conn.cursor()
+    cur.executescript("""
+        CREATE TABLE IF NOT EXISTS accounts (
+            id SERIAL PRIMARY KEY,
+            platform TEXT NOT NULL,
+            label TEXT DEFAULT '',
+            credentials TEXT DEFAULT '{}',
+            enabled INTEGER DEFAULT 1,
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        );
+
+        CREATE TABLE IF NOT EXISTS contents (
+            id SERIAL PRIMARY KEY,
+            title TEXT NOT NULL,
+            body TEXT NOT NULL,
+            platforms TEXT DEFAULT '[]',
+            scheduled_at TEXT,
+            status TEXT DEFAULT 'draft',
+            language TEXT DEFAULT 'zh-TW',
+            category TEXT DEFAULT '',
+            media_urls TEXT DEFAULT '[]',
+            ai_generated INTEGER DEFAULT 0,
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            published_at TEXT
+        );
+
+        CREATE TABLE IF NOT EXISTS schedules (
+            id SERIAL PRIMARY KEY,
+            content_id INTEGER NOT NULL,
+            platform TEXT NOT NULL,
+            scheduled_at TEXT NOT NULL,
+            status TEXT DEFAULT 'pending',
+            error TEXT,
+            retry_count INTEGER DEFAULT 0,
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        );
+
+        CREATE TABLE IF NOT EXISTS analytics (
+            id SERIAL PRIMARY KEY,
+            content_id INTEGER NOT NULL,
+            platform TEXT NOT NULL,
+            views INTEGER DEFAULT 0,
+            likes INTEGER DEFAULT 0,
+            shares INTEGER DEFAULT 0,
+            comments INTEGER DEFAULT 0,
+            recorded_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        );
+
+        CREATE TABLE IF NOT EXISTS ai_templates (
+            id SERIAL PRIMARY KEY,
+            name TEXT NOT NULL UNIQUE,
+            prompt_template TEXT NOT NULL,
+            platform TEXT DEFAULT '',
+            category TEXT DEFAULT '',
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        );
+
+        CREATE TABLE IF NOT EXISTS kb_entries (
+            id SERIAL PRIMARY KEY,
+            keywords TEXT NOT NULL,
+            answer TEXT NOT NULL,
+            language TEXT DEFAULT 'zh-TW',
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        );
+
+        CREATE TABLE IF NOT EXISTS kb_pending (
+            id SERIAL PRIMARY KEY,
+            question TEXT NOT NULL,
+            language TEXT DEFAULT 'zh-TW',
+            count INTEGER DEFAULT 1,
+            ai_suggest TEXT DEFAULT '',
+            status TEXT DEFAULT 'pending',
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        );
+
+        CREATE TABLE IF NOT EXISTS contacts (
+            id SERIAL PRIMARY KEY,
+            name TEXT NOT NULL,
+            company TEXT DEFAULT '',
+            contact TEXT NOT NULL,
+            email TEXT DEFAULT '',
+            industry TEXT DEFAULT '',
+            message TEXT DEFAULT '',
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        );
+
+        CREATE TABLE IF NOT EXISTS users (
+            id SERIAL PRIMARY KEY,
+            username TEXT NOT NULL UNIQUE,
+            password_hash TEXT NOT NULL,
+            plan TEXT DEFAULT 'free',
+            api_key TEXT UNIQUE,
+            is_active INTEGER DEFAULT 1,
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        );
+    """)
+
+    _seed_pg(cur, conn)
+    conn.close()
+    logger.info("PostgreSQL database initialized")
+
+
+def _seed_pg(cur, conn):
+    cur.execute("SELECT COUNT(*) FROM kb_entries")
+    if cur.fetchone()[0] > 0:
+        return
+
+    seeds = [
+        (1, '["方案","價格","費用","多少錢","pricing","plan","price","cost"]', '我們提供三種方案：\n\n① 入門版：免費，50次/天\n② 專業版：NT$890/月，無限次數\n③ 企業版：NT$5,990/月，無限次數+私有部署\n\n詳細比較請看 👉 https://lewislunora.onrender.com/product/#pricing', 'zh-TW'),
+        (2, '["方案","價格","費用","多少錢","pricing","plan","price","cost"]', 'We offer 3 plans:\n① Starter: Free, 50 chats/day\n② Pro: $29/mo, unlimited\n③ Enterprise: $199/mo, unlimited+private deployment\n\nSee details 👉 https://lewislunora.onrender.com/product/#pricing', 'en'),
+        (3, '["功能","能做什麼","features","capabilities"]', '主要功能包括：\n• AI 智能客服（24/7）\n• 自動內容生成（文章+社群）\n• 知識庫自增長\n• 多平台分發\n• 數據驅動優化\n• AI 短劇創作', 'zh-TW'),
+        (4, '["功能","能做什麼","features","capabilities"]', 'Key features:\n• AI Customer Service (24/7)\n• Auto Content Generation\n• Self-Growing Knowledge Base\n• Multi-Platform Distribution\n• Data-Driven Optimization', 'en'),
+        (5, '["平台","支援","platform","support","整合"]', '目前已支援：Telegram、Line、Facebook、Instagram。更多平台持續新增中。', 'zh-TW'),
+        (6, '["平台","支援","platform","support","整合"]', 'Supported platforms: Telegram, Line, Facebook, Instagram. More coming soon.', 'en'),
+        (7, '["開始","試用","註冊","start","trial","begin","signup"]', '開始很簡單：\n1. 點擊「免費試用」按鈕\n2. 加入我們的 Telegram 頻道\n3. 設定你的知識庫\n4. AI 立即上線\n\n立即開始 👉 https://lewislunora.onrender.com/product/', 'zh-TW'),
+        (8, '["開始","試用","註冊","start","trial","begin","signup"]', 'Getting started:\n1. Click "Free Trial"\n2. Join our Telegram\n3. Set up your knowledge base\n4. AI goes live instantly', 'en'),
+        (9, '["客服","customer service","support"]', 'AI 客服可以 24/7 自動回覆客戶問題。支援多語言、知識庫自增長、串接多平台。專業版每月只要 NT$890。企業版含私有部署。', 'zh-TW'),
+        (10, '["客服","customer service","support"]', 'AI customer service works 24/7. Multi-language, self-growing KB, multi-platform. Pro $29/mo. Enterprise includes private deployment.', 'en'),
+        (11, '["內容","content","文章","生成"]', '自動內容生成系統可以產出：品牌文章、社群貼文、行銷文案、電子報、短劇劇本。支援中英雙語。', 'zh-TW'),
+        (12, '["內容","content","文章","生成"]', 'Auto content system generates: blog posts, social posts, marketing copy, newsletters, drama scripts. Chinese + English.', 'en'),
+        (13, '["知識庫","knowledge base","kb"]', '知識庫是 AI 客服的核心。好的回答會自動保存，不好的會被淘汰。支援 👍/👎 回饋機制，越用越聰明。你現在就可以在 Dashboard 中編輯知識庫內容。', 'zh-TW'),
+        (14, '["知識庫","knowledge base","kb"]', 'The knowledge base is the core. Good answers auto-save, bad ones get淘汰. 👍/👎 feedback system. You can edit KB entries in the Dashboard.', 'en'),
+        (15, '["品牌","brand","app","應用"]', '品牌 App 使用 Flutter 開發，同時支援 iOS、Android 和 Web。內容從 JSON 讀取，無需後端即可更新。', 'zh-TW'),
+        (16, '["品牌","brand","app","應用"]', 'Brand app built with Flutter. iOS + Android + Web. Content from JSON, no backend needed.', 'en'),
+        (17, '["聯絡","contact","email","電話","line"]', '歡迎聯絡我們：\n📧 lewislunora@gmail.com\n✈️ Telegram 頻道：https://t.me/+QgAyWlVyIxFjNmRl\n🤖 客服機器人：@ailunora_bot', 'zh-TW'),
+        (18, '["聯絡","contact","email","電話","line"]', 'Contact us:\n📧 lewislunora@gmail.com\n✈️ Telegram: https://t.me/+QgAyWlVyIxFjNmRl\n🤖 Bot: @ailunora_bot', 'en'),
+        (19, '["展示","demo","演示"]', '觀看即時展示 👉 前往商品頁 https://lewislunora.onrender.com/product/ 直接體驗 AI 客服回覆。', 'zh-TW'),
+        (20, '["展示","demo","演示"]', 'Live demo 👉 Visit https://lewislunora.onrender.com/product/ to try AI customer service.', 'en'),
+        (21, '["ai","llm","groq","人工智慧"]', '系統使用 Groq Llama 3 LLM 驅動，支援智慧對話、內容生成、情感分析等功能。', 'zh-TW'),
+        (22, '["ai","llm","groq","人工智慧"]', 'Powered by Groq Llama 3 LLM. Smart conversations, content generation, sentiment analysis.', 'en'),
+    ]
+    for sid, keywords, answer, lang in seeds:
+        cur.execute(
+            "INSERT INTO kb_entries (id, keywords, answer, language) VALUES (%s, %s, %s, %s) ON CONFLICT (id) DO NOTHING",
+            [sid, keywords, answer, lang],
+        )
+
+    templates = [
+        ('社群貼文', '以{language}寫一篇關於{topic}的社群貼文，語氣{style}，長度約{length}字。加入3-5個相關hashtag。', 'facebook', 'social'),
+        ('品牌文章', '以{language}寫一篇關於{topic}的品牌部落格文章，字數約{length}字，語氣{style}。包含引言、主體和結語。', 'blog', 'content'),
+        ('產品文案', '以{language}寫一段關於{product}的產品推廣文案，字數約{length}字。強調{benefits}。', 'instagram', 'sales'),
+        ('短劇劇本', '以{language}創作一個關於{topic}的短劇劇本，約{length}字。包含場景描述、對白和情感節奏。', 'drama', 'creative'),
+    ]
+    for name, prompt, platform, category in templates:
+        cur.execute(
+            "INSERT INTO ai_templates (name, prompt_template, platform, category) VALUES (%s, %s, %s, %s) ON CONFLICT (name) DO NOTHING",
+            [name, prompt, platform, category],
+        )
+
+    conn.commit()
+
+
+def _init_sqlite():
+    conn = _sqlite_conn()
     conn.executescript("""
         CREATE TABLE IF NOT EXISTS accounts (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -145,24 +376,3 @@ def init_db():
     """)
     conn.commit()
     conn.close()
-
-
-def execute(sql, params=None):
-    conn = get_conn()
-    cur = conn.execute(sql, params or [])
-    conn.commit()
-    last_id = cur.lastrowid
-    conn.close()
-    return last_id
-
-
-def fetch(sql, params=None):
-    conn = get_conn()
-    rows = conn.execute(sql, params or []).fetchall()
-    conn.close()
-    return [dict(r) for r in rows]
-
-
-def fetch_one(sql, params=None):
-    rows = fetch(sql, params)
-    return rows[0] if rows else None
