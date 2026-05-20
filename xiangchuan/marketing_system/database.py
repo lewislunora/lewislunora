@@ -9,7 +9,17 @@ logger = logging.getLogger(__name__)
 
 DATABASE_URL = os.environ.get("DATABASE_URL", "")
 
-_use_pg = bool(DATABASE_URL)
+_use_pg = False
+if DATABASE_URL:
+    try:
+        import psycopg2
+        conn = psycopg2.connect(DATABASE_URL)
+        conn.close()
+        _use_pg = True
+        logger.info("Using PostgreSQL")
+    except Exception as e:
+        logger.warning(f"DATABASE_URL set but PostgreSQL unavailable: {e}. Falling back to SQLite.")
+        _use_pg = False
 
 
 def _pg_conn():
