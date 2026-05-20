@@ -213,9 +213,28 @@
       "language": "en",
       "created_at": "2026-05-20 15:20:36",
       "updated_at": "2026-05-20 15:20:36"
+    },
+    {
+      "id": 23,
+      "keywords": "[\"zxcvbnm測試唯一問題987654321\"]",
+      "answer": "無相關信息，無法回答。",
+      "language": "zh-TW",
+      "created_at": "2026-05-20 15:29:50",
+      "updated_at": "2026-05-20 15:29:50"
     }
   ],
-  "kb_pending": [],
+  "kb_pending": [
+    {
+      "id": 1,
+      "question": "zxcvbnm測試唯一問題987654321",
+      "language": "zh-TW",
+      "count": 3,
+      "ai_suggest": "無相關信息，無法回答。",
+      "status": "rejected",
+      "created_at": "2026-05-20 15:29:28",
+      "updated_at": "2026-05-20 15:29:46"
+    }
+  ],
   "contacts": [
     {
       "id": 1,
