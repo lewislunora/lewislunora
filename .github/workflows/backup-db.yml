@@ -1,0 +1,28 @@
+name: Backup Database
+on:
+  schedule:
+    - cron: '*/30 * * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  backup:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Fetch database backup from Render
+        run: |
+          curl -sL "https://lewislunora.onrender.com/data/db_backup.json" -o docs/data/db_backup.json
+      - name: Commit and push if changed
+        run: |
+          git config user.name "DB Backup Bot"
+          git config user.email "bot@lewislunora.onrender.com"
+          git add docs/data/db_backup.json
+          if git diff --cached --quiet; then
+            echo "No changes"
+          else
+            git commit -m "auto-backup $(date -u +'%Y-%m-%dT%H:%M:%SZ')"
+            git push
+          fi
