@@ -444,7 +444,7 @@ footer {
         <li data-i18n="price_starter_feat3">基礎回覆模板</li>
         <li data-i18n="price_starter_feat4">Telegram Bot（@ailunora_bot）</li>
       </ul>
-      <button class="btn btn-outline" onclick="scrollToContact()" data-i18n="price_starter_btn">免費試用</button>
+      <button class="btn btn-outline" onclick="scrollToContact('入門版')" data-i18n="price_starter_btn">免費試用</button>
     </div>
     <div class="price-card featured">
       <div class="price-badge" data-i18n="price_pro_badge">最受歡迎</div>
@@ -461,7 +461,7 @@ footer {
         <li data-i18n="price_pro_feat6">內容自動生成</li>
         <li data-i18n="price_pro_feat7">多語言支援</li>
       </ul>
-      <button class="btn btn-primary" onclick="scrollToContact()" data-i18n="price_pro_btn">立即開通</button>
+      <button class="btn btn-primary" onclick="scrollToContact('專業版')" data-i18n="price_pro_btn">立即開通</button>
     </div>
     <div class="price-card">
       <div class="price-name" data-i18n="price_enterprise_name">企業版</div>
@@ -477,7 +477,7 @@ footer {
         <li data-i18n="price_enterprise_feat6">API 完整串接</li>
         <li data-i18n="price_enterprise_feat7">品牌 App 客製</li>
       </ul>
-      <button class="btn btn-outline" onclick="scrollToContact()" data-i18n="price_enterprise_btn">聯絡我們</button>
+      <button class="btn btn-outline" onclick="scrollToContact('企業版')" data-i18n="price_enterprise_btn">聯絡我們</button>
     </div>
   </div>
 </section>
@@ -1043,6 +1043,21 @@ function getBotReply(text) {
   };
   const fb = fallbacks[currentLang] || fallbacks['zh-TW'];
   return fb[Math.floor(Math.random() * fb.length)];
+}
+
+function scrollToContact(plan) {
+  const el = document.getElementById('contact');
+  if (el) {
+    el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    const msg = document.querySelector('textarea[name="備註"]');
+    if (msg && plan) {
+      const prefix = `[感興趣方案：${plan}] `;
+      if (!msg.value.startsWith(prefix)) {
+        msg.value = prefix + (msg.value.replace(/\[感興趣方案：.*?\]\s*/g, ''));
+      }
+      msg.focus();
+    }
+  }
 }
 
 async function handleContact(e) {
