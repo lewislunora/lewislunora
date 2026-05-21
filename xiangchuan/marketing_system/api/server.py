@@ -352,6 +352,27 @@ def reject_pending(pid: int):
     return {"status": "rejected"}
 
 
+@app.post("/api/telegram/broadcast")
+def telegram_broadcast(text: str = None):
+    if not text:
+        raise HTTPException(400, "Missing text")
+    groups = fetch("SELECT * FROM accounts WHERE platform='telegram_chat'")
+    token = TELEGRAM_BOT_TOKEN
+    results = []
+    for g in groups:
+        try:
+            creds = json.loads(g["credentials"])
+            cid = creds.get("chat_id")
+            if cid:
+                import requests as req
+                r = req.post(f"https://api.telegram.org/bot{token}/sendMessage",
+                    json={"chat_id": cid, "text": text, "parse_mode": "HTML"}, timeout=10)
+                results.append({"chat": g["label"], "ok": r.json().get("ok", False)})
+        except Exception as e:
+            results.append({"chat": g["label"], "error": str(e)})
+    return {"broadcast": results, "total": len(results)}
+
+
 @app.post("/api/telegram/webhook")
 async def telegram_webhook(request: Request):
     body = await request.json()
@@ -369,6 +390,12 @@ async def telegram_webhook(request: Request):
     bot_username = "ailunora_bot"
 
     mentioned = bot_username in text.lower() if is_group else True
+
+    if is_group:
+        execute(
+            "INSERT OR IGNORE INTO accounts (platform, label, credentials) VALUES (?, ?, ?)",
+            ["telegram_chat", chat.get("title", str(cid)), json.dumps({"chat_id": cid, "type": chat_type})],
+        )
 
     if is_bot_command:
         if text in ("/start", "/help"):
