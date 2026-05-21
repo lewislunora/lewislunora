@@ -373,6 +373,13 @@ def telegram_broadcast(text: str = None):
     return {"broadcast": results, "total": len(results)}
 
 
+@app.post("/api/telegram/test")
+def telegram_test():
+    """Test the bot responds correctly by simulating a mention."""
+    reply = get_kb_reply("方案價格") or "⚠️ KB 無匹配"
+    return {"text": reply}
+
+
 @app.post("/api/telegram/webhook")
 async def telegram_webhook(request: Request):
     body = await request.json()
@@ -436,13 +443,15 @@ async def telegram_webhook(request: Request):
         payload = {"chat_id": cid, "text": reply, "parse_mode": "HTML"}
         if msg_id:
             payload["reply_to_message_id"] = msg_id
-        req.post(
+        resp = req.post(
             f"https://api.telegram.org/bot{token}/sendMessage",
             json=payload,
             timeout=10,
         )
-    except Exception:
-        pass
+        if not resp.json().get("ok"):
+            print(f"[TELEGRAM BOT] sendMessage failed: {resp.text}")
+    except Exception as e:
+        print(f"[TELEGRAM BOT] sendMessage error: {e}")
 
     return {"ok": True}
 
