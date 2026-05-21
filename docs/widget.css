@@ -1,4 +1,4 @@
-/* ===== Google Sign-In ===== */
+/* ===== User Area ===== */
 .gsi-container {
   position: fixed; top: 1rem; right: 9rem; z-index: 100;
   display: flex; align-items: center; gap: 0.5rem;
@@ -14,7 +14,41 @@
 .gsi-name { font-size: 0.8rem; color: rgba(255,255,255,0.8); max-width: 100px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .gsi-logout { font-size: 0.7rem; color: rgba(255,255,255,0.4); padding: 0.2rem 0.5rem; cursor: pointer; border-radius: 4px; }
 .gsi-logout:hover { color: #ff6b6b; background: rgba(255,107,107,0.1); }
-#gsi-button { height: 36px; }
+.btn-login-local {
+  font-size: 0.78rem; padding: 0.4rem 0.8rem; border-radius: 20px;
+  background: linear-gradient(135deg, rgba(0,212,255,0.15), rgba(123,104,238,0.15));
+  border: 1px solid rgba(0,212,255,0.25); color: #00d4ff; cursor: pointer;
+  transition: all 0.2s; white-space: nowrap;
+}
+.btn-login-local:hover { background: linear-gradient(135deg, rgba(0,212,255,0.25), rgba(123,104,238,0.25)); }
+
+/* ===== Login Overlay ===== */
+.login-modal {
+  background: #131837; border: 1px solid rgba(255,255,255,0.12);
+  border-radius: 20px; padding: 2rem; width: 340px; max-width: 90vw;
+  position: relative; box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+}
+.login-modal h3 { font-size: 1.2rem; margin-bottom: 0.3rem; }
+.login-close {
+  position: absolute; top: 1rem; right: 1rem; background: none; border: none;
+  color: rgba(255,255,255,0.4); font-size: 1.2rem; cursor: pointer;
+}
+.login-close:hover { color: #fff; }
+.login-input {
+  width: 100%; padding: 0.7rem 1rem; border-radius: 10px;
+  border: 1px solid rgba(255,255,255,0.1); background: rgba(255,255,255,0.05);
+  color: #fff; font-size: 0.9rem; outline: none; box-sizing: border-box;
+}
+.login-input:focus { border-color: rgba(0,212,255,0.4); }
+.login-input::placeholder { color: rgba(255,255,255,0.3); }
+.btn-login-submit {
+  width: 100%; margin-top: 1rem; padding: 0.7rem;
+  border-radius: 10px; border: none;
+  background: linear-gradient(135deg, #00d4ff, #7b68ee);
+  color: #fff; font-weight: 600; font-size: 0.95rem; cursor: pointer;
+  transition: all 0.2s;
+}
+.btn-login-submit:hover { transform: translateY(-1px); box-shadow: 0 4px 15px rgba(0,212,255,0.3); }
 
 /* ===== WebChat Widget ===== */
 .chat-bubble {

@@ -474,6 +474,13 @@ def backup_database():
     return {"status": "ok", "file": backup_path.name, "tables": {t: len(data[t]) for t in tables}}
 
 
+@app.get("/api/config")
+def client_config():
+    return {
+        "google_client_id": os.environ.get("GOOGLE_CLIENT_ID", ""),
+    }
+
+
 @app.get("/api/templates")
 def list_templates():
     return {"items": fetch("SELECT * FROM ai_templates")}
