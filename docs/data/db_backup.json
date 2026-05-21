@@ -1,124 +1,8 @@
 {
-  "accounts": [
-    {
-      "id": 1,
-      "platform": "telegram",
-      "label": "Test",
-      "credentials": "{}",
-      "enabled": 1,
-      "created_at": "2026-05-21 16:28:54"
-    },
-    {
-      "id": 3,
-      "platform": "telegram",
-      "label": "T",
-      "credentials": "{}",
-      "enabled": 1,
-      "created_at": "2026-05-21 16:31:36"
-    }
-  ],
-  "contents": [
-    {
-      "id": 1,
-      "title": "AI 行銷測試",
-      "body": "這是一篇自動發布測試貼文 🚀\n\nAI 讓行銷變得更簡單。\n\n#AI行銷 #自動化",
-      "platforms": "[\"telegram\"]",
-      "scheduled_at": "2026-05-19 15:50",
-      "status": "published",
-      "language": "zh-TW",
-      "category": "",
-      "media_urls": "[]",
-      "ai_generated": 0,
-      "created_at": "2026-05-19 07:50:22",
-      "published_at": "2026-05-19 07:50:24"
-    },
-    {
-      "id": 2,
-      "title": "Test",
-      "body": "Body",
-      "platforms": "[\"telegram\"]",
-      "scheduled_at": "2026-05-22 00:28",
-      "status": "draft",
-      "language": "zh-TW",
-      "category": "",
-      "media_urls": "[]",
-      "ai_generated": 0,
-      "created_at": "2026-05-21 16:28:54",
-      "published_at": null
-    },
-    {
-      "id": 4,
-      "title": "APost",
-      "body": "Body",
-      "platforms": "[]",
-      "scheduled_at": null,
-      "status": "draft",
-      "language": "zh-TW",
-      "category": "",
-      "media_urls": "[]",
-      "ai_generated": 0,
-      "created_at": "2026-05-21 16:29:19",
-      "published_at": null
-    },
-    {
-      "id": 5,
-      "title": "APost",
-      "body": "Body",
-      "platforms": "[]",
-      "scheduled_at": null,
-      "status": "draft",
-      "language": "zh-TW",
-      "category": "",
-      "media_urls": "[]",
-      "ai_generated": 0,
-      "created_at": "2026-05-21 16:29:24",
-      "published_at": null
-    }
-  ],
-  "schedules": [
-    {
-      "id": 1,
-      "content_id": 1,
-      "platform": "telegram",
-      "scheduled_at": "2026-05-19 07:50:24",
-      "status": "failed",
-      "error": "Telegram API error: {'ok': False, 'error_code': 404, 'description': 'Not Found'}",
-      "retry_count": 0,
-      "created_at": "2026-05-19 07:50:24"
-    }
-  ],
-  "analytics": [
-    {
-      "id": 1,
-      "content_id": 4,
-      "platform": "telegram",
-      "views": 100,
-      "likes": 10,
-      "shares": 0,
-      "comments": 0,
-      "recorded_at": "2026-05-21 16:29:19"
-    },
-    {
-      "id": 2,
-      "content_id": 4,
-      "platform": "line",
-      "views": 200,
-      "likes": 20,
-      "shares": 0,
-      "comments": 0,
-      "recorded_at": "2026-05-21 16:29:19"
-    },
-    {
-      "id": 3,
-      "content_id": 5,
-      "platform": "telegram",
-      "views": 100,
-      "likes": 10,
-      "shares": 0,
-      "comments": 0,
-      "recorded_at": "2026-05-21 16:29:24"
-    }
-  ],
+  "accounts": [],
+  "contents": [],
+  "schedules": [],
+  "analytics": [],
   "ai_templates": [
     {
       "id": 1,
@@ -126,7 +10,7 @@
       "prompt_template": "以{language}寫一篇關於{topic}的社群貼文，語氣{style}，長度約{length}字。加入3-5個相關hashtag。",
       "platform": "facebook",
       "category": "social",
-      "created_at": "2026-05-19 07:50:10"
+      "created_at": "2026-05-20 15:20:36"
     },
     {
       "id": 2,
@@ -134,7 +18,7 @@
       "prompt_template": "以{language}寫一篇關於{topic}的品牌部落格文章，字數約{length}字，語氣{style}。包含引言、主體和結語。",
       "platform": "blog",
       "category": "content",
-      "created_at": "2026-05-19 07:50:10"
+      "created_at": "2026-05-20 15:20:36"
     },
     {
       "id": 3,
@@ -142,7 +26,7 @@
       "prompt_template": "以{language}寫一段關於{product}的產品推廣文案，字數約{length}字。強調{benefits}。",
       "platform": "instagram",
       "category": "sales",
-      "created_at": "2026-05-19 07:50:10"
+      "created_at": "2026-05-20 15:20:36"
     },
     {
       "id": 4,
@@ -150,7 +34,7 @@
       "prompt_template": "以{language}創作一個關於{topic}的短劇劇本，約{length}字。包含場景描述、對白和情感節奏。",
       "platform": "drama",
       "category": "creative",
-      "created_at": "2026-05-19 07:50:10"
+      "created_at": "2026-05-20 15:20:36"
     }
   ],
   "kb_entries": [
@@ -159,195 +43,277 @@
       "keywords": "[\"方案\",\"價格\",\"費用\",\"多少錢\",\"pricing\",\"plan\",\"price\",\"cost\"]",
       "answer": "我們提供三種方案：\\n\\n① 入門版：免費，50次/天\\n② 專業版：NT$890/月，無限次數\\n③ 企業版：NT$5,990/月，無限次數+私有部署\\n\\n詳細比較請看 👉 https://lewislunora.onrender.com/product/#pricing",
       "language": "zh-TW",
-      "created_at": "2026-05-20 15:35:11",
-      "updated_at": "2026-05-20 15:35:11"
+      "created_at": "2026-05-20 15:20:36",
+      "updated_at": "2026-05-20 15:20:36"
     },
     {
       "id": 2,
       "keywords": "[\"方案\",\"價格\",\"費用\",\"多少錢\",\"pricing\",\"plan\",\"price\",\"cost\"]",
       "answer": "We offer 3 plans:\\n① Starter: Free, 50 chats/day\\n② Pro: $29/mo, unlimited\\n③ Enterprise: $199/mo, unlimited+private deployment\\n\\nSee details 👉 https://lewislunora.onrender.com/product/#pricing",
       "language": "en",
-      "created_at": "2026-05-20 15:35:11",
-      "updated_at": "2026-05-20 15:35:11"
+      "created_at": "2026-05-20 15:20:36",
+      "updated_at": "2026-05-20 15:20:36"
     },
     {
       "id": 3,
       "keywords": "[\"功能\",\"能做什麼\",\"features\",\"capabilities\"]",
       "answer": "主要功能包括：\\n• AI 智能客服（24/7）\\n• 自動內容生成（文章+社群）\\n• 知識庫自增長\\n• 多平台分發\\n• 數據驅動優化\\n• AI 短劇創作",
       "language": "zh-TW",
-      "created_at": "2026-05-20 15:35:11",
-      "updated_at": "2026-05-20 15:35:11"
+      "created_at": "2026-05-20 15:20:36",
+      "updated_at": "2026-05-20 15:20:36"
     },
     {
       "id": 4,
       "keywords": "[\"功能\",\"能做什麼\",\"features\",\"capabilities\"]",
       "answer": "Key features:\\n• AI Customer Service (24/7)\\n• Auto Content Generation\\n• Self-Growing Knowledge Base\\n• Multi-Platform Distribution\\n• Data-Driven Optimization",
       "language": "en",
-      "created_at": "2026-05-20 15:35:11",
-      "updated_at": "2026-05-20 15:35:11"
+      "created_at": "2026-05-20 15:20:36",
+      "updated_at": "2026-05-20 15:20:36"
     },
     {
       "id": 5,
       "keywords": "[\"平台\",\"支援\",\"platform\",\"support\",\"整合\"]",
       "answer": "目前已支援：Telegram、Line、Facebook、Instagram。更多平台持續新增中。",
       "language": "zh-TW",
-      "created_at": "2026-05-20 15:35:11",
-      "updated_at": "2026-05-20 15:35:11"
+      "created_at": "2026-05-20 15:20:36",
+      "updated_at": "2026-05-20 15:20:36"
     },
     {
       "id": 6,
       "keywords": "[\"平台\",\"支援\",\"platform\",\"support\",\"整合\"]",
       "answer": "Supported platforms: Telegram, Line, Facebook, Instagram. More coming soon.",
       "language": "en",
-      "created_at": "2026-05-20 15:35:11",
-      "updated_at": "2026-05-20 15:35:11"
+      "created_at": "2026-05-20 15:20:36",
+      "updated_at": "2026-05-20 15:20:36"
     },
     {
       "id": 7,
       "keywords": "[\"開始\",\"試用\",\"註冊\",\"start\",\"trial\",\"begin\",\"signup\"]",
       "answer": "開始很簡單：\\n1. 點擊「免費試用」按鈕\\n2. 加入我們的 Telegram 頻道\\n3. 設定你的知識庫\\n4. AI 立即上線\\n\\n立即開始 👉 https://lewislunora.onrender.com/product/",
       "language": "zh-TW",
-      "created_at": "2026-05-20 15:35:11",
-      "updated_at": "2026-05-20 15:35:11"
+      "created_at": "2026-05-20 15:20:36",
+      "updated_at": "2026-05-20 15:20:36"
     },
     {
       "id": 8,
       "keywords": "[\"開始\",\"試用\",\"註冊\",\"start\",\"trial\",\"begin\",\"signup\"]",
       "answer": "Getting started:\\n1. Click \"Free Trial\"\\n2. Join our Telegram\\n3. Set up your knowledge base\\n4. AI goes live instantly",
       "language": "en",
-      "created_at": "2026-05-20 15:35:11",
-      "updated_at": "2026-05-20 15:35:11"
+      "created_at": "2026-05-20 15:20:36",
+      "updated_at": "2026-05-20 15:20:36"
     },
     {
       "id": 9,
       "keywords": "[\"客服\",\"customer service\",\"support\"]",
       "answer": "AI 客服可以 24/7 自動回覆客戶問題。支援多語言、知識庫自增長、串接多平台。專業版每月只要 NT$890。企業版含私有部署。",
       "language": "zh-TW",
-      "created_at": "2026-05-20 15:35:11",
-      "updated_at": "2026-05-20 15:35:11"
+      "created_at": "2026-05-20 15:20:36",
+      "updated_at": "2026-05-20 15:20:36"
     },
     {
       "id": 10,
       "keywords": "[\"客服\",\"customer service\",\"support\"]",
       "answer": "AI customer service works 24/7. Multi-language, self-growing KB, multi-platform. Pro $29/mo. Enterprise includes private deployment.",
       "language": "en",
-      "created_at": "2026-05-20 15:35:11",
-      "updated_at": "2026-05-20 15:35:11"
+      "created_at": "2026-05-20 15:20:36",
+      "updated_at": "2026-05-20 15:20:36"
     },
     {
       "id": 11,
       "keywords": "[\"內容\",\"content\",\"文章\",\"生成\"]",
       "answer": "自動內容生成系統可以產出：品牌文章、社群貼文、行銷文案、電子報、短劇劇本。支援中英雙語。",
       "language": "zh-TW",
-      "created_at": "2026-05-20 15:35:11",
-      "updated_at": "2026-05-20 15:35:11"
+      "created_at": "2026-05-20 15:20:36",
+      "updated_at": "2026-05-20 15:20:36"
     },
     {
       "id": 12,
       "keywords": "[\"內容\",\"content\",\"文章\",\"生成\"]",
       "answer": "Auto content system generates: blog posts, social posts, marketing copy, newsletters, drama scripts. Chinese + English.",
       "language": "en",
-      "created_at": "2026-05-20 15:35:11",
-      "updated_at": "2026-05-20 15:35:11"
+      "created_at": "2026-05-20 15:20:36",
+      "updated_at": "2026-05-20 15:20:36"
     },
     {
       "id": 13,
       "keywords": "[\"知識庫\",\"knowledge base\",\"kb\"]",
       "answer": "知識庫是 AI 客服的核心。好的回答會自動保存，不好的會被淘汰。支援 👍/👎 回饋機制，越用越聰明。你現在就可以在 Dashboard 中編輯知識庫內容。",
       "language": "zh-TW",
-      "created_at": "2026-05-20 15:35:11",
-      "updated_at": "2026-05-20 15:35:11"
+      "created_at": "2026-05-20 15:20:36",
+      "updated_at": "2026-05-20 15:20:36"
     },
     {
       "id": 14,
       "keywords": "[\"知識庫\",\"knowledge base\",\"kb\"]",
       "answer": "The knowledge base is the core. Good answers auto-save, bad ones get淘汰. 👍/👎 feedback system. You can edit KB entries in the Dashboard.",
       "language": "en",
-      "created_at": "2026-05-20 15:35:11",
-      "updated_at": "2026-05-20 15:35:11"
+      "created_at": "2026-05-20 15:20:36",
+      "updated_at": "2026-05-20 15:20:36"
     },
     {
       "id": 15,
       "keywords": "[\"品牌\",\"brand\",\"app\",\"應用\"]",
       "answer": "品牌 App 使用 Flutter 開發，同時支援 iOS、Android 和 Web。內容從 JSON 讀取，無需後端即可更新。",
       "language": "zh-TW",
-      "created_at": "2026-05-20 15:35:11",
-      "updated_at": "2026-05-20 15:35:11"
+      "created_at": "2026-05-20 15:20:36",
+      "updated_at": "2026-05-20 15:20:36"
     },
     {
       "id": 16,
       "keywords": "[\"品牌\",\"brand\",\"app\",\"應用\"]",
       "answer": "Brand app built with Flutter. iOS + Android + Web. Content from JSON, no backend needed.",
       "language": "en",
-      "created_at": "2026-05-20 15:35:11",
-      "updated_at": "2026-05-20 15:35:11"
+      "created_at": "2026-05-20 15:20:36",
+      "updated_at": "2026-05-20 15:20:36"
     },
     {
       "id": 17,
       "keywords": "[\"聯絡\",\"contact\",\"email\",\"電話\",\"line\"]",
       "answer": "歡迎聯絡我們：\\n📧 lewislunora@gmail.com\\n✈️ Telegram 頻道：https://t.me/+QgAyWlVyIxFjNmRl\\n🤖 客服機器人：@ailunora_bot",
       "language": "zh-TW",
-      "created_at": "2026-05-20 15:35:11",
-      "updated_at": "2026-05-20 15:35:11"
+      "created_at": "2026-05-20 15:20:36",
+      "updated_at": "2026-05-20 15:20:36"
     },
     {
       "id": 18,
       "keywords": "[\"聯絡\",\"contact\",\"email\",\"電話\",\"line\"]",
       "answer": "Contact us:\\n📧 lewislunora@gmail.com\\n✈️ Telegram: https://t.me/+QgAyWlVyIxFjNmRl\\n🤖 Bot: @ailunora_bot",
       "language": "en",
-      "created_at": "2026-05-20 15:35:11",
-      "updated_at": "2026-05-20 15:35:11"
+      "created_at": "2026-05-20 15:20:36",
+      "updated_at": "2026-05-20 15:20:36"
     },
     {
       "id": 19,
       "keywords": "[\"展示\",\"demo\",\"演示\"]",
       "answer": "觀看即時展示 👉 前往商品頁 https://lewislunora.onrender.com/product/ 直接體驗 AI 客服回覆。",
       "language": "zh-TW",
-      "created_at": "2026-05-20 15:35:11",
-      "updated_at": "2026-05-20 15:35:11"
+      "created_at": "2026-05-20 15:20:36",
+      "updated_at": "2026-05-20 15:20:36"
     },
     {
       "id": 20,
       "keywords": "[\"展示\",\"demo\",\"演示\"]",
       "answer": "Live demo 👉 Visit https://lewislunora.onrender.com/product/ to try AI customer service.",
       "language": "en",
-      "created_at": "2026-05-20 15:35:11",
-      "updated_at": "2026-05-20 15:35:11"
+      "created_at": "2026-05-20 15:20:36",
+      "updated_at": "2026-05-20 15:20:36"
     },
     {
       "id": 21,
       "keywords": "[\"ai\",\"llm\",\"groq\",\"人工智慧\"]",
       "answer": "系統使用 Groq Llama 3 LLM 驅動，支援智慧對話、內容生成、情感分析等功能。",
       "language": "zh-TW",
-      "created_at": "2026-05-20 15:35:11",
-      "updated_at": "2026-05-20 15:35:11"
+      "created_at": "2026-05-20 15:20:36",
+      "updated_at": "2026-05-20 15:20:36"
     },
     {
       "id": 22,
       "keywords": "[\"ai\",\"llm\",\"groq\",\"人工智慧\"]",
       "answer": "Powered by Groq Llama 3 LLM. Smart conversations, content generation, sentiment analysis.",
       "language": "en",
-      "created_at": "2026-05-20 15:35:11",
-      "updated_at": "2026-05-20 15:35:11"
+      "created_at": "2026-05-20 15:20:36",
+      "updated_at": "2026-05-20 15:20:36"
     },
     {
       "id": 23,
-      "keywords": "[\"test\"]",
-      "answer": "ans",
-      "language": "en",
-      "created_at": "2026-05-21 16:28:54",
-      "updated_at": "2026-05-21 16:28:54"
+      "keywords": "[\"zxcvbnm測試唯一問題987654321\"]",
+      "answer": "無相關信息，無法回答。",
+      "language": "zh-TW",
+      "created_at": "2026-05-20 15:29:50",
+      "updated_at": "2026-05-20 15:29:50"
     },
     {
-      "id": 24,
-      "keywords": "[\"test\"]",
-      "answer": "ans",
-      "language": "en",
-      "created_at": "2026-05-21 16:29:11",
-      "updated_at": "2026-05-21 16:29:11"
+      "id": 25,
+      "keywords": "[\"zxcvbnm獨特問題98765\"]",
+      "answer": "zxcvbnm是一個常見的鍵盤連續按鍵組合。",
+      "language": "zh-TW",
+      "created_at": "2026-05-21 02:02:22",
+      "updated_at": "2026-05-21 02:02:22"
     }
   ],
-  "kb_pending": [],
-  "contacts": [],
+  "kb_pending": [
+    {
+      "id": 1,
+      "question": "zxcvbnm測試唯一問題987654321",
+      "language": "zh-TW",
+      "count": 3,
+      "ai_suggest": "無相關信息，無法回答。",
+      "status": "rejected",
+      "created_at": "2026-05-20 15:29:28",
+      "updated_at": "2026-05-20 15:29:46"
+    },
+    {
+      "id": 2,
+      "question": "zxcvbnm獨特問題98765",
+      "language": "zh-TW",
+      "count": 3,
+      "ai_suggest": "zxcvbnm是一個常見的鍵盤連續按鍵組合。",
+      "status": "learned",
+      "created_at": "2026-05-21 02:02:13",
+      "updated_at": "2026-05-21 02:02:18"
+    },
+    {
+      "id": 3,
+      "question": "北極光行銷",
+      "language": "zh-TW",
+      "count": 2,
+      "ai_suggest": "",
+      "status": "pending",
+      "created_at": "2026-05-21 02:09:10",
+      "updated_at": "2026-05-21 02:09:12"
+    },
+    {
+      "id": 4,
+      "question": "午安",
+      "language": "zh-TW",
+      "count": 3,
+      "ai_suggest": "",
+      "status": "pending",
+      "created_at": "2026-05-21 04:01:09",
+      "updated_at": "2026-05-21 04:02:42"
+    },
+    {
+      "id": 5,
+      "question": "test",
+      "language": "zh-TW",
+      "count": 1,
+      "ai_suggest": "",
+      "status": "pending",
+      "created_at": "2026-05-21 05:40:26",
+      "updated_at": "2026-05-21 05:40:26"
+    }
+  ],
+  "contacts": [
+    {
+      "id": 1,
+      "name": "自動備份測試",
+      "company": "",
+      "contact": "0911111111",
+      "email": "",
+      "industry": "",
+      "message": "",
+      "created_at": "2026-05-20 15:20:56"
+    },
+    {
+      "id": 2,
+      "name": "Render測試",
+      "company": "",
+      "contact": "0912345678",
+      "email": "",
+      "industry": "",
+      "message": "",
+      "created_at": "2026-05-21 01:49:06"
+    },
+    {
+      "id": 3,
+      "name": "全面測試",
+      "company": "曜科技自動化測試",
+      "contact": "0912345678",
+      "email": "lewislunora@gmail.com",
+      "industry": "科技",
+      "message": "自動化測試 - 可忽略",
+      "created_at": "2026-05-21 02:02:07"
+    }
+  ],
   "users": []
 }
