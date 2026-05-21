@@ -373,13 +373,6 @@ def telegram_broadcast(text: str = None):
     return {"broadcast": results, "total": len(results)}
 
 
-@app.get("/api/telegram/test")
-def telegram_test():
-    """Test the bot responds correctly by simulating a mention."""
-    reply = get_kb_reply("方案價格") or "⚠️ KB 無匹配"
-    return {"text": reply}
-
-
 @app.post("/api/telegram/webhook")
 async def telegram_webhook(request: Request):
     body = await request.json()
