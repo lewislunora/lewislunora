@@ -486,13 +486,64 @@ def list_templates():
     return {"items": fetch("SELECT * FROM ai_templates")}
 
 
+class AuthRegister(BaseModel):
+    email: str
+    password: str
+
+
+class AuthLogin(BaseModel):
+    email: str
+    password: str
+
+
+@app.post("/api/auth/register")
+def auth_register(body: AuthRegister):
+    email = body.email.strip().lower()
+    existing = fetch_one("SELECT id FROM users WHERE email=? OR username=?", (email, email))
+    if existing:
+        raise HTTPException(400, "此 Email 已經註冊過")
+    salt = secrets.token_hex(8)
+    pw_hash = hashlib.sha256((body.password + salt).encode()).hexdigest()
+    token = secrets.token_hex(24)
+    execute("INSERT INTO users (username, email, password_hash, salt, token) VALUES (?,?,?,?,?)",
+            (email, email, pw_hash, salt, token))
+    return {"token": token, "email": email, "name": email.split("@")[0]}
+
+
+@app.post("/api/auth/login")
+def auth_login(body: AuthLogin):
+    email = body.email.strip().lower()
+    row = fetch_one("SELECT id,password_hash,salt,token FROM users WHERE email=? OR username=?", (email, email))
+    if not row:
+        raise HTTPException(401, "Email 或密碼錯誤")
+    pw_hash = hashlib.sha256((body.password + row["salt"]).encode()).hexdigest()
+    if pw_hash != row["password_hash"]:
+        raise HTTPException(401, "Email 或密碼錯誤")
+    token = row["token"] or secrets.token_hex(24)
+    if not row["token"]:
+        execute("UPDATE users SET token=? WHERE id=?", (token, row["id"]))
+    return {"token": token, "email": email, "name": email.split("@")[0]}
+
+
+@app.get("/api/auth/me")
+def auth_me(token: str = ""):
+    if not token:
+        raise HTTPException(401, "未登入")
+    row = fetch_one("SELECT email FROM users WHERE token=?", (token,))
+    if not row:
+        raise HTTPException(401, "Token 無效")
+    return {"email": row["email"], "name": row["email"].split("@")[0] if row["email"] else ""}
+
+
 @app.get("/dashboard")
 async def dashboard():
     html_path = DATA_DIR.parent / "frontend" / "dashboard.html"
     html = html_path.read_text(encoding="utf-8")
     guard = '<script src="/auth-guard.js"></script>'
+    wcss = '<link rel="stylesheet" href="/widget.css">'
+    wjs = '<script src="/widget.js"></script>'
     if guard not in html:
-        html = html.replace("<head>", "<head>\n" + guard)
+        html = html.replace("<head>", "<head>\n" + guard + "\n" + wcss + "\n" + wjs)
     return HTMLResponse(html)
 
 

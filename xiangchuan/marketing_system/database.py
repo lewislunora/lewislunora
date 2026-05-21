@@ -230,7 +230,10 @@ def init_db():
         CREATE TABLE IF NOT EXISTS users (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             username TEXT NOT NULL UNIQUE,
+            email TEXT DEFAULT '',
             password_hash TEXT NOT NULL,
+            salt TEXT DEFAULT '',
+            token TEXT DEFAULT '',
             plan TEXT DEFAULT 'free',
             api_key TEXT UNIQUE,
             is_active INTEGER DEFAULT 1,
@@ -243,6 +246,12 @@ def init_db():
         ('產品文案', '以{language}寫一段關於{product}的產品推廣文案，字數約{length}字。強調{benefits}。', 'instagram', 'sales'),
         ('短劇劇本', '以{language}創作一個關於{topic}的短劇劇本，約{length}字。包含場景描述、對白和情感節奏。', 'drama', 'creative');
     """)
+    # Migration: add missing columns
+    for col, col_def in [("email", "TEXT DEFAULT ''"), ("salt", "TEXT DEFAULT ''"), ("token", "TEXT DEFAULT ''")]:
+        try:
+            conn.execute(f"ALTER TABLE users ADD COLUMN {col} {col_def}")
+        except sqlite3.OperationalError:
+            pass
     conn.commit()
     conn.close()
 
