@@ -428,12 +428,17 @@ async def telegram_webhook(request: Request):
                 "• 其他行銷相關問題"
             )
 
+    msg_id = msg.get("message_id")
+
     token = TELEGRAM_BOT_TOKEN
     try:
         import requests as req
+        payload = {"chat_id": cid, "text": reply, "parse_mode": "HTML"}
+        if msg_id:
+            payload["reply_to_message_id"] = msg_id
         req.post(
             f"https://api.telegram.org/bot{token}/sendMessage",
-            json={"chat_id": cid, "text": reply, "parse_mode": "HTML"},
+            json=payload,
             timeout=10,
         )
     except Exception:
