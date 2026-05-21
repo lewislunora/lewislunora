@@ -1,7 +1,7 @@
-/* ===== Auth Guard: Google-only login ===== */
+/* ===== Auth Guard: Google-only login with fallback ===== */
 (function() {
   var user = JSON.parse(localStorage.getItem('chat_user') || 'null');
-  if (user) return;
+  if (user && user.sub) return;
 
   if (!document.querySelector('script[src*="accounts.google.com/gsi/client"]')) {
     var gs = document.createElement('script');
@@ -19,6 +19,12 @@
 .auth-box h2{font-size:1.3rem;margin-bottom:0.3rem}\
 .auth-box p{color:rgba(255,255,255,0.5);font-size:0.85rem;margin-bottom:1.5rem}\
 #gsi-box{display:flex;justify-content:center;margin:1rem 0}\
+.auth-fallback{margin-top:1rem;border-top:1px solid rgba(255,255,255,0.1);padding-top:1rem}\
+.auth-fallback input{width:100%;padding:0.6rem 1rem;border-radius:10px;border:1px solid rgba(255,255,255,0.1);background:rgba(255,255,255,0.05);color:#fff;font-size:0.85rem;outline:none;box-sizing:border-box}\
+.auth-fallback input:focus{border-color:rgba(0,212,255,0.4)}\
+.auth-fallback .btn{width:100%;margin-top:0.5rem;padding:0.6rem;border-radius:10px;border:none;background:linear-gradient(135deg,#00d4ff,#7b68ee);color:#fff;font-weight:600;font-size:0.85rem;cursor:pointer}\
+.auth-fallback .btn:hover{opacity:0.9}\
+.auth-fallback .hint{font-size:0.7rem;color:rgba(255,255,255,0.25);margin-top:0.5rem}\
 ';
   document.head.appendChild(style);
 
@@ -41,6 +47,14 @@
     location.reload();
   }
 
+  function doFallback(){
+    var name = document.getElementById('fbName').value.trim();
+    if(!name) return;
+    var u = {name:name,email:'',avatar:'',sub:'fb_'+Date.now(),provider:'fallback'};
+    localStorage.setItem('chat_user', JSON.stringify(u));
+    location.reload();
+  }
+
   document.body.innerHTML = '\
 <div class="auth-overlay">\
   <div class="auth-box">\
@@ -48,6 +62,13 @@
     <h2>\u6b61\u8fce\u56de\u4f86</h2>\
     <p>\u8acb\u4f7f\u7528 Google \u5e33\u865f\u767b\u5165</p>\
     <div id="gsi-box"></div>\
+    <div class="auth-fallback">\
+      <input id="fbName" placeholder="\u8f38\u5165\u540d\u7a31\u5148\u884c\u767b\u5165" onkeydown="if(event.key==\'Enter\')doFallback()">\
+      <button class="btn" onclick="doFallback()">\u5148\u767b\u5165</button>\
+      <div class="hint">Google \u767b\u5165\u8a2d\u5b9a\u5b8c\u6210\u5f8c\u5373\u53ef\u4f7f\u7528</div>\
+    </div>\
   </div>\
 </div>';
+
+  window.doFallback = doFallback;
 })();
