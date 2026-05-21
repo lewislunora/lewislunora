@@ -443,15 +443,13 @@ async def telegram_webhook(request: Request):
         payload = {"chat_id": cid, "text": reply, "parse_mode": "HTML"}
         if msg_id:
             payload["reply_to_message_id"] = msg_id
-        resp = req.post(
+        req.post(
             f"https://api.telegram.org/bot{token}/sendMessage",
             json=payload,
             timeout=10,
         )
-        if not resp.json().get("ok"):
-            print(f"[TELEGRAM BOT] sendMessage failed: {resp.text}")
-    except Exception as e:
-        print(f"[TELEGRAM BOT] sendMessage error: {e}")
+    except Exception:
+        pass
 
     return {"ok": True}
 
