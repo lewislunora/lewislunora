@@ -50,15 +50,6 @@
 }
 .btn-login-submit:hover { transform: translateY(-1px); box-shadow: 0 4px 15px rgba(0,212,255,0.3); }
 
-/* ===== Auth Tabs ===== */
-.auth-tab.active { color: #00d4ff !important; border-bottom-color: #00d4ff !important; }
-.auth-tab:hover { color: rgba(255,255,255,0.7) !important; }
-.auth-panel { display: none; }
-.auth-panel.active { display: block; }
-.auth-error { color: #ff6b6b; font-size: 0.8rem; margin-bottom: 0.5rem; display: none; }
-.auth-toggle { text-align: center; font-size: 0.8rem; color: rgba(255,255,255,0.4); margin-top: 0.8rem; cursor: pointer; }
-.auth-toggle:hover { color: #00d4ff; }
-
 /* ===== WebChat Widget ===== */
 .chat-bubble {
   position: fixed; bottom: 1.5rem; right: 1.5rem; z-index: 9999;

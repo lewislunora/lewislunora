@@ -21,90 +21,19 @@ function initGoogle(containerId) {
     client_id: GOOGLE_CLIENT_ID,
     callback: r => {
       const p = JSON.parse(atob(r.credential.split('.')[1]));
-      setUser({ name: p.name, email: p.email, avatar: p.picture, sub: p.sub, provider: 'google' }, true);
+      setUser({ name: p.name, email: p.email, avatar: p.picture, sub: p.sub, provider: 'google' });
     },
   });
   const btn = document.getElementById(containerId || 'gsi-button');
   if (btn) google.accounts.id.renderButton(btn, { type: 'standard', shape: 'pill', theme: 'outline', size: containerId === 'gsi-button-alt' ? 'large' : 'small', text: 'signin_with' });
 }
 
-/* ===== Local Login (stored in localStorage) ===== */
-function getUsers() { return JSON.parse(localStorage.getItem('auth_users') || '{}'); }
-function saveUsers(u) { localStorage.setItem('auth_users', JSON.stringify(u)); }
-
-let _loginIsRegister = false;
-
-function showLocalLogin() {
-  const overlay = document.getElementById('loginOverlay');
-  if (overlay) overlay.style.display = 'flex';
-  _loginIsRegister = false;
-  updateLoginModal();
-}
-
-function hideLocalLogin() {
-  const overlay = document.getElementById('loginOverlay');
-  if (overlay) overlay.style.display = 'none';
-}
-
-function switchTab(tab) {
-  document.querySelectorAll('.auth-tab').forEach(t => t.classList.remove('active'));
-  document.querySelector(`.auth-tab[data-tab="${tab}"]`)?.classList.add('active');
-  document.querySelectorAll('.auth-panel').forEach(p => p.classList.remove('active'));
-  const panel = document.getElementById('panel' + tab.charAt(0).toUpperCase() + tab.slice(1));
-  if (panel) panel.classList.add('active');
-  if (tab === 'google' && GOOGLE_CLIENT_ID && typeof google !== 'undefined') {
-    const gBtn = document.getElementById('gsi-btn-modal');
-    if (gBtn) google.accounts.id.renderButton(gBtn, { type: 'standard', shape: 'pill', theme: 'outline', size: 'large', text: 'signin_with' });
-  }
-}
-
-function toggleAuthMode() {
-  _loginIsRegister = !_loginIsRegister;
-  updateLoginModal();
-}
-
-function updateLoginModal() {
-  const btn = document.getElementById('authSubmitBtn');
-  const toggle = document.getElementById('authToggle');
-  const pass2 = document.getElementById('authPass2');
-  if (btn) btn.textContent = _loginIsRegister ? '註冊' : '登入';
-  if (toggle) toggle.textContent = _loginIsRegister ? '已有帳號？點此登入' : '沒有帳號？點此註冊';
-  if (pass2) pass2.style.display = _loginIsRegister ? 'block' : 'none';
-  const err = document.getElementById('authError');
-  if (err) err.style.display = 'none';
-}
-
-function doAuthAction() {
-  const email = document.getElementById('authEmail').value.trim();
-  const pass = document.getElementById('authPass').value;
-  const errEl = document.getElementById('authError');
-  errEl.style.display = 'none';
-  if (!email || !pass) { errEl.textContent = '請填寫 Email 和密碼'; errEl.style.display = 'block'; return; }
-  if (_loginIsRegister) {
-    const pass2 = document.getElementById('authPass2').value;
-    if (pass !== pass2) { errEl.textContent = '兩次密碼不一致'; errEl.style.display = 'block'; return; }
-    if (pass.length < 4) { errEl.textContent = '密碼至少 4 個字元'; errEl.style.display = 'block'; return; }
-    const users = getUsers();
-    if (users[email]) { errEl.textContent = '此 Email 已經註冊過'; errEl.style.display = 'block'; return; }
-    users[email] = { password: pass, created: Date.now() };
-    saveUsers(users);
-    setUser({ name: email.split('@')[0], email, avatar: '', sub: 'local_' + Date.now(), provider: 'local' }, true);
-  } else {
-    const users = getUsers();
-    if (!users[email] || users[email].password !== pass) {
-      errEl.textContent = 'Email 或密碼錯誤'; errEl.style.display = 'block'; return;
-    }
-    setUser({ name: email.split('@')[0], email, avatar: '', sub: 'local_' + Date.now(), provider: 'local' }, true);
-  }
-}
-
 /* ===== User State ===== */
-function setUser(user, closeModal) {
+function setUser(user) {
   currentUser = user;
   localStorage.setItem(USER_KEY, JSON.stringify(user));
   updateUI();
   if (typeof onUserLogin === 'function') onUserLogin(user);
-  if (closeModal) hideLocalLogin();
 }
 
 function signOut() {
@@ -132,7 +61,7 @@ function updateUI() {
     } else {
       area.innerHTML = `
         <div id="gsi-button" style="display:${GOOGLE_CLIENT_ID ? 'inline-block' : 'none'}"></div>
-        <button class="btn-login-local" onclick="showLocalLogin()">🔑 註冊/登入</button>`;
+        <button class="btn-login-local" onclick="showLogin()">🔑 Google 登入</button>`;
       if (GOOGLE_CLIENT_ID) initGoogle('gsi-button');
     }
   }
@@ -141,39 +70,33 @@ function updateUI() {
 
 function showUserMenu() {}
 
-/* ===== Login Overlay HTML ===== */
+/* ===== Login Overlay ===== */
 if (!document.getElementById('loginOverlay')) {
   const div = document.createElement('div');
   div.id = 'loginOverlay';
   div.innerHTML = `
-    <div class="login-modal" style="width:380px">
-      <button class="login-close" onclick="hideLocalLogin()">✕</button>
-      <h3>🔑 註冊 / 登入</h3>
-      <div class="auth-tabs" style="display:flex;gap:0;margin:1rem 0;border-bottom:1px solid rgba(255,255,255,0.1)">
-        <div class="auth-tab active" data-tab="account" onclick="switchTab('account')" style="flex:1;padding:0.6rem 0;text-align:center;font-size:0.85rem;cursor:pointer;color:rgba(255,255,255,0.4);border-bottom:2px solid transparent">帳號密碼</div>
-        <div class="auth-tab" data-tab="google" onclick="switchTab('google')" style="flex:1;padding:0.6rem 0;text-align:center;font-size:0.85rem;cursor:pointer;color:rgba(255,255,255,0.4);border-bottom:2px solid transparent">Google</div>
-        <div class="auth-tab" data-tab="wechat" onclick="switchTab('wechat')" style="flex:1;padding:0.6rem 0;text-align:center;font-size:0.85rem;cursor:pointer;color:rgba(255,255,255,0.4);border-bottom:2px solid transparent">微信</div>
-      </div>
-      <div class="auth-panel active" id="panelAccount">
-        <div class="auth-error" id="authError" style="color:#ff6b6b;font-size:0.8rem;margin-bottom:0.5rem;display:none"></div>
-        <input id="authEmail" class="login-input" type="email" placeholder="Email" autocomplete="email" onkeydown="if(event.key==='Enter')doAuthAction()">
-        <input id="authPass" class="login-input" type="password" placeholder="密碼" autocomplete="current-password" style="margin-top:0.5rem" onkeydown="if(event.key==='Enter')doAuthAction()">
-        <input id="authPass2" class="login-input" type="password" placeholder="確認密碼" autocomplete="new-password" style="margin-top:0.5rem;display:none" onkeydown="if(event.key==='Enter')doAuthAction()">
-        <button class="btn-login-submit" id="authSubmitBtn" onclick="doAuthAction()">登入</button>
-        <div class="auth-toggle" id="authToggle" onclick="toggleAuthMode()" style="text-align:center;font-size:0.8rem;color:rgba(255,255,255,0.4);margin-top:0.8rem;cursor:pointer">沒有帳號？點此註冊</div>
-      </div>
-      <div class="auth-panel" id="panelGoogle">
-        <div id="gsi-btn-modal" style="display:flex;justify-content:center;margin:1rem 0"></div>
-        <p style="text-align:center;font-size:0.8rem;color:rgba(255,255,255,0.3)">使用 Google 帳戶即可登入</p>
-      </div>
-      <div class="auth-panel" id="panelWeChat">
-        <div style="width:180px;height:180px;margin:1rem auto;border-radius:8px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);text-align:center;line-height:180px;font-size:0.8rem;color:rgba(255,255,255,0.3)">微信授權中...</div>
-        <p style="text-align:center;font-size:0.85rem;color:rgba(255,255,255,0.5)">請使用微信掃描上方 QR Code 登入</p>
-        <p style="text-align:center;font-size:0.75rem;color:rgba(255,255,255,0.3);margin-top:0.5rem">暫時使用帳號密碼或 Google 登入</p>
-      </div>
+    <div class="login-modal" style="width:360px;text-align:center">
+      <button class="login-close" onclick="hideLogin()">✕</button>
+      <div style="font-size:2.5rem;margin-bottom:0.5rem">🔑</div>
+      <h3 style="margin-bottom:0.3rem">歡迎回來</h3>
+      <p style="color:rgba(255,255,255,0.5);font-size:0.85rem;margin-bottom:1.5rem">請使用 Google 帳戶登入</p>
+      <div id="gsi-button-alt" style="display:flex;justify-content:center"></div>
     </div>`;
   div.style.cssText = 'display:none;position:fixed;inset:0;z-index:99999;background:rgba(0,0,0,0.6);align-items:center;justify-content:center;backdrop-filter:blur(4px)';
   document.body.appendChild(div);
+}
+
+function showLogin() {
+  const overlay = document.getElementById('loginOverlay');
+  if (overlay) overlay.style.display = 'flex';
+  if (GOOGLE_CLIENT_ID && typeof google !== 'undefined') {
+    google.accounts.id.renderButton(document.getElementById('gsi-button-alt'), { type: 'standard', shape: 'pill', theme: 'outline', size: 'large', text: 'signin_with' });
+  }
+}
+
+function hideLogin() {
+  const overlay = document.getElementById('loginOverlay');
+  if (overlay) overlay.style.display = 'none';
 }
 
 /* ===== Knowledge Base ===== */
