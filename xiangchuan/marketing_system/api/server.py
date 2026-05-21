@@ -489,7 +489,11 @@ def list_templates():
 @app.get("/dashboard")
 async def dashboard():
     html_path = DATA_DIR.parent / "frontend" / "dashboard.html"
-    return HTMLResponse(html_path.read_text(encoding="utf-8"))
+    html = html_path.read_text(encoding="utf-8")
+    guard = '<script src="/auth-guard.js"></script>'
+    if guard not in html:
+        html = html.replace("<head>", "<head>\n" + guard)
+    return HTMLResponse(html)
 
 
 @app.get("/")
