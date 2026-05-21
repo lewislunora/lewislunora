@@ -355,7 +355,7 @@ def reject_pending(pid: int):
 @app.post("/api/telegram/webhook")
 async def telegram_webhook(request: Request):
     body = await request.json()
-    msg = body.get("message", {})
+    msg = body.get("message") or body.get("channel_post") or {}
     chat = msg.get("chat", {})
     cid = chat.get("id")
     text = (msg.get("text") or "").strip()
@@ -365,7 +365,7 @@ async def telegram_webhook(request: Request):
         return {"ok": True}
 
     is_bot_command = text.startswith("/")
-    is_group = chat_type in ("group", "supergroup")
+    is_group = chat_type in ("group", "supergroup", "channel")
     bot_username = "ailunora_bot"
 
     mentioned = bot_username in text.lower() if is_group else True
