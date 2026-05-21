@@ -373,7 +373,7 @@ def telegram_broadcast(text: str = None):
     return {"broadcast": results, "total": len(results)}
 
 
-@app.post("/api/telegram/test")
+@app.get("/api/telegram/test")
 def telegram_test():
     """Test the bot responds correctly by simulating a mention."""
     reply = get_kb_reply("方案價格") or "⚠️ KB 無匹配"
