@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title data-i18n="page_title">翔川 Neo｜曜科技 |Ai_bot - AI 智能客服與行銷自動化平台</title>
+<link rel="stylesheet" href="../widget.css">
 <style>
 * { margin:0; padding:0; box-sizing:border-box; }
 body {
@@ -309,6 +310,7 @@ footer {
     <a href="#demo" data-i18n="nav_demo">展示</a>
     <a href="#pricing" data-i18n="nav_pricing">價格</a>
     <a href="#contact" data-i18n="nav_contact">聯絡</a>
+    <div id="gsi-user-area" style="display:inline-flex;align-items:center"></div>
     <select class="lang-select" onchange="switchLang(this.value)">
       <option value="zh-TW" data-i18n="lang_zt">繁體中文</option>
       <option value="zh-CN" data-i18n="lang_cn">簡體中文</option>
@@ -1118,5 +1120,31 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 });
 </script>
+
+<button class="chat-bubble" onclick="toggleChat()" id="chatBubble" title="AI 客服聊天">💬</button>
+<div class="chat-panel" id="chatPanel">
+  <div class="chat-header">
+    <h3>🤖 AI 客服</h3>
+    <button class="chat-close" onclick="toggleChat()">✕</button>
+  </div>
+  <div class="chat-login-prompt" id="chatLoginPrompt">
+    <div style="font-size:3rem;opacity:0.2">💬</div>
+    <p>請先登入 Google 帳號<br>即可開始與 AI 客服對話</p>
+  </div>
+  <div class="chat-messages" id="chatMessages" style="display:none"></div>
+  <div class="chat-suggestions" id="chatSuggestions" style="display:none">
+    <button onclick="suggestClick('方案與價格')">💰 方案與價格</button>
+    <button onclick="suggestClick('有哪些功能')">⚡ 功能介紹</button>
+    <button onclick="suggestClick('支援哪些平台')">🔗 支援平台</button>
+    <button onclick="suggestClick('如何開始')">🚀 如何開始</button>
+  </div>
+  <div class="chat-input-area" style="display:none">
+    <input id="chatInput" placeholder="輸入你的問題..." onkeydown="chatKeydown(event)">
+    <button class="chat-send" onclick="sendChat(document.getElementById('chatInput').value)">➤</button>
+  </div>
+</div>
+
+<script src="https://accounts.google.com/gsi/client" async defer></script>
+<script src="../widget.js"></script>
 </body>
 </html>

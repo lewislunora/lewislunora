@@ -346,6 +346,17 @@ def suggest_pending(pid: int):
     return {"question": row["question"], "language": row["language"], "ai_suggest": suggest}
 
 
+@app.post("/api/kb/query")
+async def kb_query(request: Request):
+    body = await request.json()
+    text = body.get("text", "")
+    if not text:
+        raise HTTPException(400, "Missing text")
+    from ..services.knowledge_base import get_kb_reply
+    reply = get_kb_reply(text)
+    return {"reply": reply}
+
+
 @app.post("/api/kb/pending/{pid}/reject")
 def reject_pending(pid: int):
     execute("UPDATE kb_pending SET status='rejected' WHERE id=?", [pid])
