@@ -1,0 +1,653 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>維運文件模板 | 翔川 Neo</title>
+<link rel="stylesheet" href="../widget.css">
+<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+<style>
+* { margin:0; padding:0; box-sizing:border-box; }
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
+  background: #0a0e27;
+  color: #fff;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+.bg-glow {
+  position: fixed; inset:0; pointer-events:none;
+  background: radial-gradient(ellipse at 20% 30%, rgba(0,212,255,0.06) 0%, transparent 50%),
+              radial-gradient(ellipse at 80% 70%, rgba(123,104,238,0.06) 0%, transparent 50%);
+}
+.layout {
+  display: flex;
+  max-width: 1500px;
+  margin: 0 auto;
+  padding: 2rem 1.5rem;
+  gap: 1.5rem;
+  position: relative;
+  z-index: 1;
+  min-height: 100vh;
+}
+/* ── Sidebar ── */
+.sidebar {
+  width: 250px;
+  flex-shrink: 0;
+  position: sticky;
+  top: 2rem;
+  align-self: flex-start;
+  max-height: calc(100vh - 4rem);
+  overflow-y: auto;
+}
+.sidebar h2 {
+  font-size: 1rem;
+  font-weight: 700;
+  margin-bottom: 1rem;
+  background: linear-gradient(135deg, #00d4ff, #7b68ee);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+.sidebar nav { display: flex; flex-direction: column; gap: 0.2rem; }
+.sidebar a {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.5rem 0.8rem;
+  border-radius: 8px;
+  color: rgba(255,255,255,0.5);
+  text-decoration: none;
+  font-size: 0.8rem;
+  transition: all 0.2s;
+  line-height: 1.25;
+}
+.sidebar a:hover { background: rgba(255,255,255,0.04); color: rgba(255,255,255,0.75); }
+.sidebar a.active {
+  background: rgba(0,212,255,0.08);
+  color: #00d4ff;
+  border: 1px solid rgba(0,212,255,0.12);
+}
+.sidebar .num {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  border-radius: 5px;
+  background: rgba(255,255,255,0.06);
+  font-size: 0.65rem;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+.sidebar a.active .num {
+  background: rgba(0,212,255,0.15);
+  color: #00d4ff;
+}
+/* ── Main ── */
+.main {
+  flex: 1;
+  min-width: 0;
+  background: rgba(255,255,255,0.02);
+  border: 1px solid rgba(255,255,255,0.06);
+  border-radius: 16px;
+  padding: 1.5rem 2rem;
+  overflow-x: auto;
+  display: flex;
+  flex-direction: column;
+}
+.main .empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 50vh;
+  text-align: center;
+  gap: 1rem;
+}
+.empty-state .icon { font-size: 3.5rem; opacity: 0.2; }
+.empty-state p { color: rgba(255,255,255,0.25); font-size: 1rem; }
+/* ── Toolbar ── */
+.toolbar {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+  flex-wrap: wrap;
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+  padding-bottom: 0.8rem;
+}
+.toolbar .back-link {
+  color: rgba(255,255,255,0.3);
+  text-decoration: none;
+  font-size: 0.8rem;
+  margin-right: auto;
+  transition: color 0.2s;
+}
+.toolbar .back-link:hover { color: #00d4ff; }
+.toolbar .doc-title {
+  font-size: 0.8rem;
+  color: rgba(255,255,255,0.25);
+  margin-right: auto;
+}
+.tool-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.35rem 0.7rem;
+  border-radius: 7px;
+  border: 1px solid rgba(255,255,255,0.1);
+  background: rgba(255,255,255,0.03);
+  color: rgba(255,255,255,0.5);
+  font-size: 0.75rem;
+  cursor: pointer;
+  transition: all 0.2s;
+  text-decoration: none;
+  font-family: inherit;
+}
+.tool-btn:hover { background: rgba(255,255,255,0.06); color: rgba(255,255,255,0.8); }
+.tool-btn.active {
+  background: rgba(0,212,255,0.1);
+  border-color: rgba(0,212,255,0.25);
+  color: #00d4ff;
+}
+/* ── Content ── */
+.content-wrap {
+  flex: 1;
+  min-height: 40vh;
+}
+.markdown-body {
+  color: rgba(255,255,255,0.85);
+  font-size: 0.92rem;
+  line-height: 1.7;
+}
+.markdown-body h1 {
+  font-size: 1.6rem;
+  font-weight: 700;
+  margin: 0 0 0.4rem;
+  background: linear-gradient(135deg, #00d4ff, #7b68ee);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+.markdown-body h2 {
+  font-size: 1.25rem;
+  font-weight: 700;
+  margin: 1.5rem 0 0.6rem;
+  padding-bottom: 0.3rem;
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+  color: #fff;
+}
+.markdown-body h3 {
+  font-size: 1.05rem;
+  font-weight: 600;
+  margin: 1.2rem 0 0.4rem;
+  color: rgba(255,255,255,0.9);
+}
+.markdown-body p { margin: 0.5rem 0; }
+.markdown-body strong { color: #00d4ff; }
+.markdown-body table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 0.8rem 0;
+  font-size: 0.82rem;
+}
+.markdown-body th, .markdown-body td {
+  padding: 0.45rem 0.6rem;
+  border: 1px solid rgba(255,255,255,0.08);
+  text-align: left;
+}
+.markdown-body th {
+  background: rgba(0,212,255,0.06);
+  font-weight: 600;
+  color: rgba(255,255,255,0.8);
+  white-space: nowrap;
+}
+.markdown-body td { color: rgba(255,255,255,0.65); }
+.markdown-body tr:nth-child(even) td { background: rgba(255,255,255,0.015); }
+.markdown-body blockquote {
+  border-left: 3px solid rgba(0,212,255,0.3);
+  padding: 0.5rem 0.8rem;
+  margin: 0.8rem 0;
+  background: rgba(0,212,255,0.03);
+  border-radius: 0 8px 8px 0;
+  color: rgba(255,255,255,0.55);
+  font-size: 0.88rem;
+}
+.markdown-body code {
+  background: rgba(255,255,255,0.06);
+  padding: 0.12rem 0.35rem;
+  border-radius: 4px;
+  font-size: 0.85em;
+  color: rgba(255,255,255,0.7);
+}
+.markdown-body pre {
+  background: rgba(0,0,0,0.3);
+  padding: 0.8rem 1rem;
+  border-radius: 8px;
+  border: 1px solid rgba(255,255,255,0.05);
+  overflow-x: auto;
+  margin: 0.8rem 0;
+}
+.markdown-body pre code {
+  background: none;
+  padding: 0;
+  font-size: 0.8rem;
+  color: rgba(255,255,255,0.65);
+  line-height: 1.5;
+}
+.markdown-body hr {
+  border: none;
+  border-top: 1px solid rgba(255,255,255,0.06);
+  margin: 2rem 0;
+}
+.markdown-body ul, .markdown-body ol {
+  padding-left: 1.4rem;
+  margin: 0.4rem 0;
+}
+.markdown-body li { margin: 0.2rem 0; color: rgba(255,255,255,0.65); }
+.markdown-body input[type="checkbox"] {
+  margin-right: 0.3rem;
+  accent-color: #00d4ff;
+}
+/* ── Edit textarea ── */
+.edit-area {
+  display: none;
+  width: 100%;
+  min-height: 60vh;
+  background: rgba(0,0,0,0.35);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 10px;
+  color: rgba(255,255,255,0.8);
+  font-family: "SF Mono", "Fira Code", "Menlo", monospace;
+  font-size: 0.82rem;
+  line-height: 1.6;
+  padding: 1rem;
+  resize: vertical;
+  tab-size: 2;
+}
+.edit-area:focus { outline: none; border-color: rgba(0,212,255,0.25); }
+.edit-actions {
+  display: flex;
+  gap: 0.5rem;
+  margin-top: 0.6rem;
+}
+.edit-actions .tool-btn.save-btn {
+  background: linear-gradient(135deg, #00d4ff, #7b68ee);
+  color: #fff;
+  border: none;
+}
+.edit-actions .tool-btn.save-btn:hover { opacity: 0.85; }
+.toast {
+  position: fixed; bottom: 2rem; right: 2rem;
+  background: rgba(0,212,255,0.15);
+  border: 1px solid rgba(0,212,255,0.25);
+  color: #00d4ff;
+  padding: 0.6rem 1.2rem;
+  border-radius: 10px;
+  font-size: 0.85rem;
+  opacity: 0;
+  transition: opacity 0.3s;
+  pointer-events: none;
+  z-index: 100;
+}
+.toast.show { opacity: 1; }
+/* ── Blank mode styling ── */
+.markdown-body.is-blank td:not(:first-child) {
+  color: rgba(255,255,255,0.2);
+  font-style: italic;
+}
+.markdown-body.is-blank td:not(:first-child)::before {
+  content: "________";
+  opacity: 0.15;
+}
+.markdown-body.is-blank td:not(:first-child):empty::before {
+  content: "________";
+  opacity: 0.15;
+}
+.markdown-body.is-blank pre code {
+  color: rgba(255,255,255,0.15);
+}
+.markdown-body.is-blank pre code::before {
+  content: "（請填寫內容）";
+  font-style: italic;
+  opacity: 0.3;
+}
+.markdown-body.is-blank .example-section {
+  display: none !important;
+}
+/* ── Loading ── */
+.loading-wrap {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 40vh;
+  gap: 0.6rem;
+  color: rgba(255,255,255,0.2);
+  font-size: 0.9rem;
+}
+.spinner {
+  width: 22px;
+  height: 22px;
+  border: 2px solid rgba(0,212,255,0.1);
+  border-top-color: #00d4ff;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+/* ── Print ── */
+@media print {
+  body { background: #fff; color: #000; }
+  .bg-glow, .sidebar, .toolbar, .edit-area, .edit-actions, .toast, .back-link { display: none !important; }
+  .layout { display: block; padding: 0; }
+  .main { border: none; padding: 0; background: #fff; box-shadow: none; }
+  .markdown-body { color: #000; font-size: 11pt; }
+  .markdown-body h1 { -webkit-text-fill-color: #000; color: #000; }
+  .markdown-body h2 { color: #000; border-bottom-color: #ccc; }
+  .markdown-body h3 { color: #000; }
+  .markdown-body strong { color: #000; }
+  .markdown-body th { background: #f5f5f5; color: #000; }
+  .markdown-body td { color: #333; }
+  .markdown-body tr:nth-child(even) td { background: #fafafa; }
+  .markdown-body pre { background: #f5f5f5; border-color: #ddd; }
+  .markdown-body pre code { color: #333; }
+  .markdown-body blockquote { color: #666; border-left-color: #999; }
+  .markdown-body code { background: #f0f0f0; color: #333; }
+  .markdown-body hr { border-top-color: #ddd; }
+  .markdown-body.is-blank td:not(:first-child)::before { color: #ccc; }
+  .markdown-body.is-blank pre code::before { color: #ccc; }
+  @page { margin: 1.5cm; }
+}
+/* ── Responsive ── */
+@media (max-width: 800px) {
+  .layout { flex-direction: column; padding: 1rem; }
+  .sidebar {
+    width: 100%;
+    position: static;
+    max-height: none;
+  }
+  .sidebar nav {
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 0.25rem;
+  }
+  .sidebar a {
+    flex: 1 1 auto;
+    min-width: 100px;
+    font-size: 0.75rem;
+    padding: 0.4rem 0.6rem;
+  }
+  .main { padding: 1rem; }
+  .markdown-body h1 { font-size: 1.25rem; }
+}
+</style>
+</head>
+<body>
+<div class="bg-glow"></div>
+
+<div class="layout">
+  <aside class="sidebar">
+    <h2>📋 維運模板</h2>
+    <nav id="sidebarNav">
+      <a href="#" data-file="00-guide.md" style="border:1px solid rgba(0,212,255,0.12);background:rgba(0,212,255,0.04);margin-bottom:0.3rem"><span class="num" style="background:rgba(0,212,255,0.15);color:#00d4ff">★</span> 統一文件與溝通指南</a>
+      <a href="#" data-file="01-incident-report.md"><span class="num">01</span> 事件通報單</a>
+      <a href="#" data-file="02-change-request.md"><span class="num">02</span> 變更申請單</a>
+      <a href="#" data-file="03-sop-template.md"><span class="num">03</span> 標準作業程序</a>
+      <a href="#" data-file="04-knowledge-transfer.md"><span class="num">04</span> 交接文件</a>
+      <a href="#" data-file="05-weekly-report.md"><span class="num">05</span> 維運週/月報</a>
+      <a href="#" data-file="06-it-service-catalog.md"><span class="num">06</span> IT 服務目錄</a>
+      <a href="#" data-file="07-monitoring-alerting.md"><span class="num">07</span> 監控告警標準</a>
+      <a href="#" data-file="08-dr-backup-policy.md"><span class="num">08</span> 災難備援政策</a>
+      <a href="#" data-file="09-onboarding-plan.md"><span class="num">09</span> 新人訓練計畫</a>
+      <a href="#" data-file="10-naming-communication.md"><span class="num">10</span> 命名溝通規範</a>
+    </nav>
+  </aside>
+
+  <main class="main" id="contentArea">
+    <div class="empty-state">
+      <div class="icon">📄</div>
+      <p>選擇左側模板以檢視內容</p>
+    </div>
+  </main>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const TEMPLATE_DIR = 'templates/';
+let currentFile = '';
+let currentMode = 'template'; // template | blank
+let isEditing = false;
+let currentMarkdown = '';
+
+const sidebarLinks = document.querySelectorAll('#sidebarNav a');
+const contentArea = document.getElementById('contentArea');
+const toast = document.getElementById('toast');
+
+function showToast(msg) {
+  toast.textContent = msg;
+  toast.classList.add('show');
+  clearTimeout(toast._timer);
+  toast._timer = setTimeout(() => toast.classList.remove('show'), 2000);
+}
+
+function buildToolbar(file, title) {
+  const div = document.createElement('div');
+  div.className = 'toolbar';
+  div.innerHTML = `
+    <a href="../index.html" class="back-link">←</a>
+    <span class="doc-title">${title}</span>
+    <button class="tool-btn ${currentMode === 'template' ? 'active' : ''}" data-action="template">📖 範本</button>
+    <button class="tool-btn ${currentMode === 'blank' ? 'active' : ''}" data-action="blank">📝 空白</button>
+    <button class="tool-btn ${isEditing ? 'active' : ''}" data-action="edit">✏️ 編輯</button>
+    <button class="tool-btn" data-action="print">🖨️ 列印</button>
+    <button class="tool-btn" data-action="download">⬇️ 下載</button>
+  `;
+  div.addEventListener('click', e => {
+    const btn = e.target.closest('.tool-btn');
+    if (!btn) return;
+    const action = btn.dataset.action;
+    if (action === 'template') switchMode('template');
+    else if (action === 'blank') switchMode('blank');
+    else if (action === 'edit') toggleEdit();
+    else if (action === 'print') window.print();
+    else if (action === 'download') downloadMarkdown();
+  });
+  return div;
+}
+
+function switchMode(mode) {
+  currentMode = mode;
+  if (!currentFile) return;
+  isEditing = false;
+  renderView(currentMarkdown);
+}
+
+function toggleEdit() {
+  if (!currentFile) return;
+  isEditing = !isEditing;
+  if (isEditing) {
+    renderEditView();
+  } else {
+    renderView(document.querySelector('.edit-area').value);
+  }
+}
+
+function renderEditView() {
+  const wrap = contentArea.querySelector('.content-wrap');
+  const md = wrap ? currentMarkdown : currentMarkdown;
+  contentArea.innerHTML = '';
+  contentArea.appendChild(buildToolbar(currentFile, getTitle(currentFile)));
+  const textarea = document.createElement('textarea');
+  textarea.className = 'edit-area';
+  textarea.style.display = 'block';
+  textarea.value = md;
+  contentArea.appendChild(textarea);
+  const actions = document.createElement('div');
+  actions.className = 'edit-actions';
+  actions.innerHTML = `
+    <button class="tool-btn save-btn" id="saveEditBtn">💾 儲存編輯</button>
+    <button class="tool-btn" id="cancelEditBtn">↩ 取消</button>
+  `;
+  actions.querySelector('#saveEditBtn').onclick = () => {
+    currentMarkdown = textarea.value;
+    isEditing = false;
+    renderView(currentMarkdown);
+    showToast('✅ 已套用編輯內容');
+  };
+  actions.querySelector('#cancelEditBtn').onclick = () => {
+    isEditing = false;
+    renderView(currentMarkdown);
+  };
+  contentArea.appendChild(actions);
+}
+
+function getTitle(file) {
+  const map = {
+    '00-guide.md': '統一文件與溝通標準建立指南',
+    '01-incident-report.md': '事件通報單',
+    '02-change-request.md': '變更申請單',
+    '03-sop-template.md': '標準作業程序',
+    '04-knowledge-transfer.md': '交接文件',
+    '05-weekly-report.md': '維運週/月報',
+    '06-it-service-catalog.md': 'IT 服務目錄',
+    '07-monitoring-alerting.md': '監控告警分級標準',
+    '08-dr-backup-policy.md': '災難備援與備份政策',
+    '09-onboarding-plan.md': '新人訓練計畫',
+    '10-naming-communication.md': '命名規範與溝通語言對照表',
+  };
+  return map[file] || file;
+}
+
+function renderView(md) {
+  currentMarkdown = md;
+  contentArea.innerHTML = '';
+  contentArea.appendChild(buildToolbar(currentFile, getTitle(currentFile)));
+  const wrap = document.createElement('div');
+  wrap.className = 'content-wrap';
+  const html = marked.parse(md, { breaks: true, gfm: true });
+  const div = document.createElement('div');
+  div.className = `markdown-body${currentMode === 'blank' ? ' is-blank' : ''}`;
+  div.innerHTML = html;
+  // Post-process for blank mode
+  if (currentMode === 'blank') {
+    applyBlankTransform(div);
+  }
+  wrap.appendChild(div);
+  contentArea.appendChild(wrap);
+}
+
+function applyBlankTransform(root) {
+  // Clear code block text
+  root.querySelectorAll('pre code').forEach(el => {
+    el.textContent = '';
+  });
+  // Clear table data cells (not header)
+  root.querySelectorAll('td').forEach(td => {
+    // Keep if parent is in version record section (last table)
+    // Keep checkboxes
+    if (td.querySelector('input[type="checkbox"], strong, input')) return;
+    // Clear example text
+    const text = td.textContent.trim();
+    if (text && !text.match(/^[□✅❌]$/) && !text.startsWith('□')) {
+      td.innerHTML = '';
+    }
+  });
+  // Hide example sections
+  root.querySelectorAll('h2').forEach(h => {
+    if (h.textContent.includes('範例')) {
+      let el = h.nextElementSibling;
+      while (el && el.tagName !== 'H2') {
+        const next = el.nextElementSibling;
+        el.classList.add('example-section');
+        el.style.display = 'none';
+        el = next;
+      }
+      h.classList.add('example-section');
+      h.style.display = 'none';
+    }
+  });
+  // Hide example sections (h3 variant)
+  root.querySelectorAll('h3').forEach(h => {
+    if (h.textContent.includes('範例')) {
+      let el = h.nextElementSibling;
+      while (el && el.tagName !== 'H2' && el.tagName !== 'H3') {
+        const next = el.nextElementSibling;
+        el.classList.add('example-section');
+        el.style.display = 'none';
+        el = next;
+      }
+      h.classList.add('example-section');
+      h.style.display = 'none';
+    }
+  });
+  // Hide the "SOP-K8S-Deploy" example section (follows --- after 參考資料)
+  // Mark all content after "範例：SOP-K8S-Deploy" as example
+  root.querySelectorAll('h2, h3').forEach(h => {
+    if (h.textContent.includes('範例') || h.textContent.includes('Example')) {
+      let sib = h.nextElementSibling;
+      while (sib && !['H2', 'H3'].includes(sib.tagName)) {
+        const next = sib.nextElementSibling;
+        sib.classList.add('example-section');
+        sib.style.display = 'none';
+        sib = next;
+      }
+    }
+  });
+}
+
+function downloadMarkdown() {
+  if (!currentMarkdown) return;
+  const md = isEditing
+    ? document.querySelector('.edit-area').value
+    : currentMarkdown;
+  const blob = new Blob([md], { type: 'text/markdown;charset=utf-8' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = currentFile;
+  a.click();
+  URL.revokeObjectURL(url);
+  showToast('⬇️ 已下載 ' + currentFile);
+}
+
+async function loadTemplate(file) {
+  currentFile = file;
+  isEditing = false;
+  currentMode = 'template';
+  contentArea.innerHTML = '<div class="loading-wrap"><div class="spinner"></div>載入中…</div>';
+  try {
+    const r = await fetch(TEMPLATE_DIR + file);
+    if (!r.ok) throw new Error(`HTTP ${r.status}`);
+    const md = await r.text();
+    renderView(md);
+  } catch (e) {
+    contentArea.innerHTML = `
+      <div class="empty-state" style="min-height:30vh">
+        <div class="icon">⚠️</div>
+        <p>無法載入模板<br><span style="font-size:0.8rem;opacity:0.5">${e.message}</span></p>
+      </div>`;
+  }
+}
+
+sidebarLinks.forEach(a => {
+  a.addEventListener('click', e => {
+    e.preventDefault();
+    sidebarLinks.forEach(x => x.classList.remove('active'));
+    a.classList.add('active');
+    const file = a.dataset.file;
+    history.replaceState(null, '', '#' + file.replace('.md', ''));
+    loadTemplate(file);
+  });
+});
+
+// Auto-load from hash
+const hash = location.hash.replace('#', '');
+if (hash) {
+  const target = sidebarLinks.find(a => a.dataset.file === hash + '.md');
+  if (target) {
+    target.classList.add('active');
+    loadTemplate(target.dataset.file);
+  }
+}
+</script>
+</body>
+</html>

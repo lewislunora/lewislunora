@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title data-i18n="page_title">翔川 Neo｜曜科技 |Ai_bot - AI 智能客服與行銷自動化平台</title>
+<script src="../auth-guard.js"></script>
 <link rel="stylesheet" href="../widget.css">
 <style>
 * { margin:0; padding:0; box-sizing:border-box; }
@@ -394,14 +395,14 @@ footer {
       <h3 data-i18n="demo_chat_title">🤖 AI 智能客服即時展示</h3>
       <p style="color:rgba(255,255,255,0.4);font-size:0.85rem;margin-top:0.5rem;" data-i18n="demo_chat_hint">點擊下方建議問題，或自行輸入，體驗 AI 客服回覆</p>
       <div class="chat-container">
-        <div class="chat-messages" id="chatMessages">
+        <div class="chat-messages" id="demoChatMessages">
           <div class="chat-msg ai" id="welcome-msg">
             <div class="msg-label" data-i18n="chat_ai_label">🤖 翔川 Neo｜曜科技 AI 客服</div>
             <div class="msg-text" data-i18n="chat_welcome_html" data-i18n-html="true">你好！我是翔川 Neo｜曜科技 AI 智能客服 🤖<br><br>我可以幫助你了解我們的 AI 行銷解決方案。試試點擊上方的建議問題，或直接輸入你的問題！</div>
             <div class="msg-time" id="welcome-time"></div>
           </div>
         </div>
-        <div class="chat-suggestions" id="chatSuggestions">
+        <div class="chat-suggestions" id="demoChatSuggestions">
           <button onclick="chatSend('我想了解你們的 AI 客服方案')" data-i18n="chat_suggest_1">AI 客服方案</button>
           <button onclick="chatSend('你們支援哪些平台？')" data-i18n="chat_suggest_2">支援平台</button>
           <button onclick="chatSend('行銷內容如何自動生成？')" data-i18n="chat_suggest_3">內容生成</button>
@@ -410,7 +411,7 @@ footer {
           <button onclick="chatSend('如何開始使用？')" data-i18n="chat_suggest_6">開始使用</button>
         </div>
         <div class="chat-input">
-          <input type="text" id="chatInput" data-i18n-placeholder="demo_chat_placeholder" placeholder="輸入你的問題..." onkeydown="if(event.key==='Enter') chatSend()">
+          <input type="text" id="demoChatInput" data-i18n-placeholder="demo_chat_placeholder" placeholder="輸入你的問題..." onkeydown="if(event.key==='Enter') chatSend()">
           <button onclick="chatSend()" data-i18n="demo_chat_send">發送</button>
         </div>
       </div>
@@ -446,7 +447,7 @@ footer {
         <li data-i18n="price_starter_feat3">基礎回覆模板</li>
         <li data-i18n="price_starter_feat4">Telegram Bot（@ailunora_bot）</li>
       </ul>
-      <button class="btn btn-outline" onclick="scrollToContact('入門版')" data-i18n="price_starter_btn">免費試用</button>
+      <button class="btn btn-outline" onclick="handleFreePlan()" data-i18n="price_starter_btn">了解詳情 →</button>
     </div>
     <div class="price-card featured">
       <div class="price-badge" data-i18n="price_pro_badge">最受歡迎</div>
@@ -609,7 +610,7 @@ const LANG = {
     price_starter_feat2: '10 Knowledge Base Entries',
     price_starter_feat3: 'Basic Reply Templates',
     price_starter_feat4: 'Telegram Bot (@ailunora_bot)',
-    price_starter_btn: 'Free Trial',
+    price_starter_btn: 'Learn More →',
     price_pro_name: 'Pro',
     price_pro_badge: 'Most Popular',
     price_pro_desc: 'For SMBs in production',
@@ -721,7 +722,7 @@ const LANG = {
     price_starter_feat2: '10 条知识库',
     price_starter_feat3: '基础回复模板',
     price_starter_feat4: 'Telegram Bot（@ailunora_bot）',
-    price_starter_btn: '免费试用',
+    price_starter_btn: '了解详情 →',
     price_pro_name: '专业版',
     price_pro_badge: '最受欢迎',
     price_pro_desc: '适合中小企业正式运营',
@@ -833,7 +834,7 @@ const LANG = {
     price_starter_feat2: '10 записей базы знаний',
     price_starter_feat3: 'Базовые шаблоны',
     price_starter_feat4: 'Telegram Bot (@ailunora_bot)',
-    price_starter_btn: 'Бесплатно',
+    price_starter_btn: 'Узнать больше →',
     price_pro_name: 'Про',
     price_pro_badge: 'Популярное',
     price_pro_desc: 'Для малого бизнеса',
@@ -929,32 +930,31 @@ function switchLang(val) {
 let chatHistory = [];
 
 function chatSend(msg) {
-  const input = document.getElementById('chatInput');
+  const input = document.getElementById('demoChatInput');
   const text = msg || input.value.trim();
   if (!text) return;
   input.value = '';
 
-  addChatMsg(text, 'user');
-  chatHistory.push({ role: 'user', text });
+  demoAddChatMsg(text, 'user');
 
   setTimeout(() => {
     const reply = getBotReply(text);
-    addChatMsg(reply, 'ai');
-    chatHistory.push({ role: 'ai', text: reply });
+    demoAddChatMsg(reply, 'ai');
   }, 600 + Math.random() * 400);
 }
 
-function addChatMsg(text, role) {
-  const container = document.getElementById('chatMessages');
-  const div = document.createElement('div');
-  div.className = `chat-msg ${role}`;
-  const now = new Date();
-  const time = now.getHours().toString().padStart(2,'0') + ':' + now.getMinutes().toString().padStart(2,'0');
+function demoAddChatMsg(text, role) {
+  var container = document.getElementById('demoChatMessages');
+  if (!container) return;
+  var div = document.createElement('div');
+  div.className = 'chat-msg ' + role;
+  var now = new Date();
+  var time = now.getHours().toString().padStart(2,'0') + ':' + now.getMinutes().toString().padStart(2,'0');
   if (role === 'ai') {
-    const label = (LANG[currentLang] && LANG[currentLang].chat_ai_label) || '🤖 翔川 Neo｜曜科技 AI 客服';
-    div.innerHTML = `<div class="msg-label">${label}</div>${text.replace(/\n/g, '<br>')}<div class="msg-time">${time}</div>`;
+    var label = (LANG[currentLang] && LANG[currentLang].chat_ai_label) || '🤖 翔川 Neo｜曜科技 AI 客服';
+    div.innerHTML = '<div class="msg-label">' + label + '</div>' + text.replace(/\n/g, '<br>') + '<div class="msg-time">' + time + '</div>';
   } else {
-    div.innerHTML = `${text.replace(/\n/g, '<br>')}<div class="msg-time">${time}</div>`;
+    div.innerHTML = text.replace(/\n/g, '<br>') + '<div class="msg-time">' + time + '</div>';
   }
   container.appendChild(div);
   container.scrollTop = container.scrollHeight;
@@ -1006,6 +1006,243 @@ const KB_MSG = {
   ]
 };
 
+const DEMOS = {
+  'zh-TW': {
+    article: [
+      '翔川 Neo AI 行銷系統正式上線！',
+      '我們提供一站式的 AI 行銷解決方案。',
+      '',
+      '▎核心功能',
+      '• AI 智能客服 24/7 自動回覆',
+      '• 知識庫管理與自增長',
+      '• 多平台內容自動發布',
+      '• 數據分析與優化',
+      '',
+      '▎適用場景',
+      '中小企業、電商、餐飲、診所、',
+      '房仲、教育機構。',
+      '',
+      '立即預約免費諮詢，30 分鐘了解如何用 AI',
+      '提升你的客戶服務與行銷效率。',
+    ].join('\n'),
+    guide: [
+      '如何開始使用 AI 行銷系統？',
+      '',
+      '第一步：預約諮詢',
+      '點擊頁面下方的「預約免費諮詢」按鈕，',
+      '填寫基本資料，我們會主動聯繫你。',
+      '',
+      '第二步：設定知識庫',
+      '提供常見問題與回答，',
+      'AI 會自動學習你的業務知識。',
+      '',
+      '第三步：上線運行',
+      '串接 Telegram / LINE 等平台，',
+      'AI 客服立即開始服務。',
+      '',
+      '第四步：持續優化',
+      '查看 Dashboard 數據分析，',
+      '讓 AI 越用越聰明。',
+    ].join('\n'),
+    drama: [
+      '【AI 短劇：未來的客服】',
+      '',
+      '場景：深夜 2 點，客服專線響起...',
+      '',
+      '客戶：請問你們的服務怎麼收費？',
+      'AI：您好！我們提供三種方案：',
+      '入門版免費，專業版 NT$890/月，',
+      '企業版 NT$5,990/月。',
+      '',
+      '客戶：那...可以試用嗎？',
+      'AI：當然可以！14 天免費試用，',
+      '無需信用卡，點擊即可開始。',
+      '',
+      '客戶：太棒了！我現在就要試試！',
+      '',
+      '—— AI 客服，24 小時為您服務 ——',
+    ].join('\n'),
+  },
+  en: {
+    article: [
+      'XiangChuan Neo AI Marketing System Launch!',
+      'All-in-one AI marketing solution.',
+      '',
+      '▎Core Features',
+      '• 24/7 AI Customer Service',
+      '• Self-Growing Knowledge Base',
+      '• Multi-Platform Auto Publishing',
+      '• Data Analytics & Optimization',
+      '',
+      '▎Use Cases',
+      'SMBs, E-commerce, F&B, Clinic,',
+      'Real Estate, Education.',
+      '',
+      'Book a free 30-min consultation',
+      'to learn how AI can boost your business.',
+    ].join('\n'),
+    guide: [
+      'How to Get Started?',
+      '',
+      'Step 1: Book a Consultation',
+      'Fill in the contact form below,',
+      'we will reach out to you.',
+      '',
+      'Step 2: Set Up Knowledge Base',
+      'Provide FAQs and answers,',
+      'AI learns your business knowledge.',
+      '',
+      'Step 3: Go Live',
+      'Connect Telegram / LINE and more,',
+      'AI starts serving immediately.',
+      '',
+      'Step 4: Optimize',
+      'Check Dashboard analytics,',
+      'AI gets smarter over time.',
+    ].join('\n'),
+    drama: [
+      '[AI Short Drama: Future of Support]',
+      '',
+      'Scene: 2 AM, support call comes in...',
+      '',
+      'Customer: How much does your service cost?',
+      'AI: Hello! We offer 3 plans:',
+      'Starter Free, Pro $29/mo,',
+      'Enterprise $199/mo.',
+      '',
+      'Customer: Can I try it?',
+      'AI: Of course! 14-day free trial,',
+      'no credit card needed.',
+      '',
+      'Customer: Awesome! Let me try now!',
+      '',
+      '—— AI Support, 24/7 at your service ——',
+    ].join('\n'),
+  },
+  'zh-CN': {
+    article: [
+      '翔川 Neo AI 营销系统正式上线！',
+      '我们提供一站式的 AI 营销解决方案。',
+      '',
+      '▎核心功能',
+      '• AI 智能客服 24/7 自动回复',
+      '• 知识库管理与自增长',
+      '• 多平台内容自动发布',
+      '• 数据分析与优化',
+      '',
+      '▎适用场景',
+      '中小企业、电商、餐饮、诊所、',
+      '房仲、教育机构。',
+      '',
+      '立即预约免费咨询，30 分钟了解如何用 AI',
+      '提升你的客户服务与营销效率。',
+    ].join('\n'),
+    guide: [
+      '如何开始使用 AI 营销系统？',
+      '',
+      '第一步：预约咨询',
+      '点击页面下方的「预约免费咨询」按钮，',
+      '填写基本资料，我们会主动联系你。',
+      '',
+      '第二步：设定知识库',
+      '提供常见问题与回答，',
+      'AI 会自动学习你的业务知识。',
+      '',
+      '第三步：上线运行',
+      '串接 Telegram / LINE 等平台，',
+      'AI 客服立即开始服务。',
+      '',
+      '第四步：持续优化',
+      '查看 Dashboard 数据分析，',
+      '让 AI 越用越聪明。',
+    ].join('\n'),
+    drama: [
+      '【AI 短剧：未来的客服】',
+      '',
+      '场景：深夜 2 点，客服专线响起...',
+      '',
+      '客户：请问你们的服务怎么收费？',
+      'AI：您好！我们提供三种方案：',
+      '入门版免费，专业版 NT$890/月，',
+      '企业版 NT$5,990/月。',
+      '',
+      '客户：那...可以试用吗？',
+      'AI：当然可以！14 天免费试用，',
+      '无需信用卡，点击即可开始。',
+      '',
+      '客户：太棒了！我现在就要试试！',
+      '',
+      '—— AI 客服，24 小时为您服务 ——',
+    ].join('\n'),
+  },
+  ru: {
+    article: [
+      'Система AI-маркетинга XiangChuan Neo запущена!',
+      'Комплексное AI-решение для маркетинга.',
+      '',
+      '▎Основные функции',
+      '• AI-поддержка 24/7',
+      '• Растущая база знаний',
+      '• Автопубликация на несколько платформ',
+      '• Аналитика и оптимизация',
+      '',
+      '▎Для кого',
+      'Малый и средний бизнес,',
+      'E-commerce, Рестораны, Клиники,',
+      'Недвижимость, Образование.',
+    ].join('\n'),
+    guide: [
+      'Как начать?',
+      '',
+      'Шаг 1: Запишитесь на консультацию',
+      'Заполните форму ниже,',
+      'мы свяжемся с вами.',
+      '',
+      'Шаг 2: Настройте базу знаний',
+      'Добавьте вопросы и ответы,',
+      'AI изучит ваш бизнес.',
+      '',
+      'Шаг 3: Запуск',
+      'Подключите Telegram / LINE,',
+      'AI начнёт обслуживание.',
+      '',
+      'Шаг 4: Оптимизация',
+      'Анализируйте данные в Dashboard,',
+      'AI становится умнее.',
+    ].join('\n'),
+    drama: [
+      '[AI Короткая драма: Будущее поддержки]',
+      '',
+      'Ночь, 2 часа. Звонок в поддержку...',
+      '',
+      'Клиент: Сколько стоит ваш сервис?',
+      'AI: Здравствуйте! У нас 3 плана:',
+      'Стартовый бесплатно, Про $29/мес,',
+      'Корпоративный $199/мес.',
+      '',
+      'Клиент: Можно попробовать?',
+      'AI: Конечно! 14 дней бесплатно,',
+      'без кредитной карты.',
+      '',
+      'Клиент: Отлично! Начинаю!',
+      '',
+      '—— AI поддержка, 24/7 к вашим услугам ——',
+    ].join('\n'),
+  },
+};
+let currentDemo = 'article';
+
+function showDemo(type, tab) {
+  const lang = currentLang && DEMOS[currentLang] ? currentLang : 'zh-TW';
+  const pre = document.getElementById('demo-text');
+  if (DEMOS[lang] && DEMOS[lang][type]) {
+    pre.textContent = DEMOS[lang][type];
+  }
+  document.querySelectorAll('.tabs .tab').forEach(function(t) { t.classList.remove('active'); });
+  if (tab) tab.classList.add('active');
+  currentDemo = type;
+}
+
 function getBotReply(text) {
   const lower = text.toLowerCase();
   const lang = currentLang && KB_MSG[currentLang] ? currentLang : 'zh-TW';
@@ -1048,16 +1285,32 @@ function getBotReply(text) {
 }
 
 function scrollToContact(plan) {
-  const el = document.getElementById('contact');
-  if (el) {
-    el.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    const msg = document.querySelector('textarea[name="備註"]');
-    if (msg && plan) {
-      const prefix = `[感興趣方案：${plan}] `;
-      if (!msg.value.startsWith(prefix)) {
-        msg.value = prefix + (msg.value.replace(/\[感興趣方案：.*?\]\s*/g, ''));
+  try {
+    var el = document.getElementById('contact');
+    if (el) {
+      el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      var msg = document.querySelector('textarea[name="\u5099\u8a3b"]');
+      if (msg && plan) {
+        var prefix = '[\u611f\u8208\u8da3\u65b9\u6848\uff1a' + plan + '] ';
+        if (msg.value.indexOf(prefix) !== 0) {
+          msg.value = prefix + msg.value.replace(/\[感興趣方案：.*?\]\s*/g, '');
+        }
+        setTimeout(function() { msg.focus(); }, 500);
       }
-      msg.focus();
+    }
+  } catch (e) {
+    console.warn('scrollToContact error:', e);
+  }
+}
+
+function handleFreePlan() {
+  var user = JSON.parse(localStorage.getItem('chat_user') || 'null');
+  if (user && user.sub) {
+    var el = document.getElementById('demo');
+    if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  } else {
+    if (typeof showLogin === 'function') {
+      showLogin();
     }
   }
 }
@@ -1099,23 +1352,26 @@ async function handleContact(e) {
   return false;
 }
 
-document.addEventListener('DOMContentLoaded', () => {
-  const pre = document.getElementById('demo-text');
-  pre.textContent = DEMOS['zh-TW'].article;
+document.addEventListener('DOMContentLoaded', function() {
+  var pre = document.getElementById('demo-text');
+  var lang = localStorage.getItem('lang') || 'zh-TW';
+  if (DEMOS[lang] && DEMOS[lang].article) {
+    pre.textContent = DEMOS[lang].article;
+  } else {
+    pre.textContent = DEMOS['zh-TW'].article;
+  }
   pre.style.transition = 'opacity 0.3s';
 
-  for (const [key, val] of Object.entries(DEMOS['zh-TW'])) {
-    const btn = document.querySelector(`[data-tab="${key}"]`);
-    if (btn) btn.addEventListener('click', () => switchDemo(key));
+  var now = new Date();
+  var wt = document.getElementById('welcome-time');
+  if (wt) {
+    wt.textContent = now.getHours().toString().padStart(2,'0') + ':' + now.getMinutes().toString().padStart(2,'0');
   }
 
-  const now = new Date();
-  document.getElementById('welcome-time').textContent =
-    now.getHours().toString().padStart(2,'0') + ':' + now.getMinutes().toString().padStart(2,'0');
-
-  const savedLang = localStorage.getItem('lang');
+  var savedLang = localStorage.getItem('lang');
   if (savedLang && savedLang !== 'zh-TW') {
-    document.querySelector('.lang-select').value = savedLang;
+    var sel = document.querySelector('.lang-select');
+    if (sel) { sel.value = savedLang; }
     switchLang(savedLang);
   }
 });
@@ -1130,7 +1386,7 @@ document.addEventListener('DOMContentLoaded', () => {
   <div class="chat-login-prompt" id="chatLoginPrompt">
     <div style="font-size:3rem;opacity:0.2">💬</div>
     <p>請先註冊/登入<br>即可開始與 AI 客服對話</p>
-    <button class="btn-login-local" onclick="showLocalLogin()" style="margin-top:0.5rem">🔑 註冊/登入</button>
+    <button class="btn-login-local" onclick="showLogin()" style="margin-top:0.5rem">🔑 註冊/登入</button>
   </div>
   <div class="chat-messages" id="chatMessages" style="display:none"></div>
   <div class="chat-suggestions" id="chatSuggestions" style="display:none">
