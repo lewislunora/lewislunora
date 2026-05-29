@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI 個人品牌實戰指南 - 免費下載</title>
+<style>
+* { margin:0; padding:0; box-sizing:border-box; }
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
+  background: #0a0a0f; color: #e0e0e0; line-height: 1.6;
+}
+.section { padding: 4rem 1.5rem; }
+.container { max-width: 800px; margin: 0 auto; }
+.badge {
+  display: inline-block; padding: 0.3rem 0.8rem; border-radius: 20px;
+  font-size: 0.75rem; font-weight: 600; margin-bottom: 1rem;
+  background: rgba(123,104,238,0.15); color: #7b68ee; border: 1px solid rgba(123,104,238,0.2);
+}
+h1 { font-size: 2.5rem; font-weight: 800; line-height: 1.2; margin-bottom: 1rem; }
+h1 .gradient {
+  background: linear-gradient(135deg, #7b68ee, #00d4ff);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+}
+h2 { font-size: 1.8rem; font-weight: 700; margin-bottom: 1.5rem; text-align: center; }
+h3 { font-size: 1.2rem; font-weight: 600; margin-bottom: 0.5rem; }
+.subtitle { font-size: 1.1rem; color: rgba(255,255,255,0.5); margin-bottom: 2rem; }
+.hero {
+  text-align: center; padding: 5rem 1.5rem 3rem;
+  background: radial-gradient(ellipse at top, rgba(123,104,238,0.08) 0%, transparent 60%);
+}
+.hero .stats {
+  display: flex; justify-content: center; gap: 2rem; margin-top: 2rem; flex-wrap: wrap;
+}
+.hero .stats .item { text-align: center; }
+.hero .stats .num { font-size: 1.8rem; font-weight: 700; color: #7b68ee; }
+.hero .stats .label { font-size: 0.8rem; color: rgba(255,255,255,0.4); }
+.problem-box {
+  background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.06);
+  border-radius: 16px; padding: 2rem; margin: 2rem 0;
+}
+.problem-box p { color: rgba(255,255,255,0.6); margin-bottom: 0.8rem; padding-left: 1rem; border-left: 2px solid rgba(255,80,80,0.3); }
+.feature-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1.5rem; margin: 2rem 0; }
+.feature-card {
+  background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 14px; padding: 1.5rem; transition: 0.2s;
+}
+.feature-card:hover { border-color: rgba(123,104,238,0.3); transform: translateY(-2px); }
+.feature-card .icon { font-size: 2rem; margin-bottom: 0.8rem; }
+.feature-card p { font-size: 0.9rem; color: rgba(255,255,255,0.5); }
+.secret-grid { display: grid; gap: 1.5rem; margin: 2rem 0; }
+.secret-card {
+  background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 14px; padding: 1.5rem;
+}
+.secret-card .num {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 32px; height: 32px; border-radius: 50%;
+  background: linear-gradient(135deg, #7b68ee, #00d4ff);
+  color: #fff; font-size: 0.85rem; font-weight: 700; margin-bottom: 0.8rem;
+}
+.cta-box {
+  text-align: center; padding: 3rem 2rem;
+  background: linear-gradient(135deg, rgba(123,104,238,0.1), rgba(0,212,255,0.05));
+  border: 1px solid rgba(123,104,238,0.2);
+  border-radius: 16px; margin: 2rem 0;
+}
+.cta-box h3 { font-size: 1.4rem; }
+.cta-box p { color: rgba(255,255,255,0.5); margin-bottom: 1.5rem; }
+.form-group { margin-bottom: 1rem; }
+.form-group input {
+  width: 100%; padding: 0.9rem 1.2rem; border-radius: 10px;
+  background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1);
+  color: #fff; font-size: 0.95rem; outline: none;
+}
+.form-group input:focus { border-color: #7b68ee; }
+.form-row { display: flex; gap: 1rem; }
+.form-row > * { flex: 1; }
+@media(max-width:600px){ .form-row { flex-direction: column; } }
+.btn {
+  display: inline-block; padding: 0.9rem 2.5rem; border-radius: 10px;
+  font-size: 1rem; font-weight: 700; border: none; cursor: pointer;
+  transition: all 0.2s; width: 100%;
+  background: linear-gradient(135deg, #7b68ee, #00d4ff); color: #fff;
+}
+.btn:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(123,104,238,0.3); }
+.btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+.result { margin-top: 1rem; text-align: center; font-size: 0.9rem; min-height: 2rem; }
+.faq-item { margin-bottom: 1rem; }
+.faq-q {
+  padding: 1rem; border-radius: 10px;
+  background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.06);
+  cursor: pointer; font-weight: 600; font-size: 0.9rem;
+}
+.faq-a {
+  padding: 1rem; font-size: 0.85rem; color: rgba(255,255,255,0.5);
+  display: none; border-left: 2px solid rgba(123,104,238,0.3); margin-left: 1rem;
+}
+.faq-item.open .faq-a { display: block; }
+.footer { text-align: center; padding: 2rem; font-size: 0.75rem; color: rgba(255,255,255,0.2); }
+</style>
+</head>
+<body>
+
+<div class="hero">
+  <div class="container">
+    <div class="badge">🔥 限時免費</div>
+    <h1><span class="gradient">AI 個人品牌實戰指南</span></h1>
+    <p class="subtitle">不用露臉、不用寫程式<br>用 AI 打造你的自動化個人品牌系統</p>
+    <div class="stats">
+      <div class="item"><div class="num">3</div><div class="label">核心資產</div></div>
+      <div class="item"><div class="num">7</div><div class="label">實戰章節</div></div>
+      <div class="item"><div class="num">50+</div><div class="label">AI 提示詞模板</div></div>
+    </div>
+  </div>
+</div>
+
+<div class="section">
+  <div class="container">
+    <h2>學了很多 AI 工具，為什麼還是沒有成果？</h2>
+    <div class="problem-box">
+      <p>😰 <strong>追著工具跑，越學越焦慮</strong><br>每天都有新工具出現，但始終不知道怎麼整合成自己的系統</p>
+      <p>😰 <strong>做了很多內容，卻沒有積累</strong><br>發了很多文章，但沒有形成可重複利用的資產</p>
+      <p>😰 <strong>想做卻不知道怎麼開始</strong><br>看到別人做得很好，但自己不確定定位和切入點</p>
+    </div>
+  </div>
+</div>
+
+<div class="section" style="background:rgba(255,255,255,0.01)">
+  <div class="container">
+    <h2>建立你的 3 大核心資產</h2>
+    <div class="feature-grid">
+      <div class="feature-card">
+        <div class="icon">📝</div>
+        <h3>內容資產</h3>
+        <p>建立可重複使用的內容系統，用 AI 持續產出高品質內容，讓舊內容持續產生新價值</p>
+      </div>
+      <div class="feature-card">
+        <div class="icon">🤝</div>
+        <h3>客戶資產</h3>
+        <p>打造忠實粉絲與精準潛在客戶，AI 驅動的客戶關係管理，自動化互動系統</p>
+      </div>
+      <div class="feature-card">
+        <div class="icon">🚀</div>
+        <h3>產品服務資產</h3>
+        <p>將專業知識系統化，用 AI 加速產品開發，建立可規模化的服務模式</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="section">
+  <div class="container">
+    <h2>你將學到</h2>
+    <div class="secret-grid">
+      <div class="secret-card">
+        <div class="num">1</div>
+        <h3>AI 時代的個人品牌定位策略</h3>
+        <p style="color:rgba(255,255,255,0.5); font-size:0.9rem">
+          找到你的獨特價值主張、建立內容資產的系統化思維、用 AI 規劃個人品牌定位
+        </p>
+      </div>
+      <div class="secret-card">
+        <div class="num">2</div>
+        <h3>用 AI 精準內容吸引潛在客戶</h3>
+        <p style="color:rgba(255,255,255,0.5); font-size:0.9rem">
+          高效內容創作的 AI 工作流、建立可重複使用的內容素材庫、AI 驅動的客戶管理
+        </p>
+      </div>
+      <div class="secret-card">
+        <div class="num">3</div>
+        <h3>將知識技能轉化為產品</h3>
+        <p style="color:rgba(255,255,255,0.5); font-size:0.9rem">
+          專業知識轉化為數位產品、用 AI 加速產品開發與優化、建立自動化銷售漏斗
+        </p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="section" style="background:rgba(255,255,255,0.01)">
+  <div class="container">
+    <div class="cta-box">
+      <h3>📥 免費下載完整指南</h3>
+      <p>填入 Email，立即收到 AI 個人品牌實戰指南 PDF + 50 組 AI 提示詞模板</p>
+      <form id="leadForm" onsubmit="return submitLead(event)">
+        <div class="form-row">
+          <div class="form-group">
+            <input type="text" id="leadName" placeholder="你的姓名" required>
+          </div>
+          <div class="form-group">
+            <input type="email" id="leadEmail" placeholder="Email 信箱" required>
+          </div>
+        </div>
+        <div class="form-group">
+          <input type="text" id="leadContact" placeholder="Line ID 或 Telegram（選填）">
+        </div>
+        <button type="submit" class="btn" id="leadBtn">📩 免費領取指南</button>
+      </form>
+      <div class="result" id="leadResult"></div>
+    </div>
+  </div>
+</div>
+
+<div class="section">
+  <div class="container">
+    <h2>常見問題</h2>
+    <div class="faq-item" onclick="this.classList.toggle('open')">
+      <div class="faq-q">❓ 完全免費嗎？</div>
+      <div class="faq-a">是的，這份指南完全免費。填寫 Email 即可下載，後續不會有任何強制收費。</div>
+    </div>
+    <div class="faq-item" onclick="this.classList.toggle('open')">
+      <div class="faq-q">❓ 我完全沒有經驗，能學會嗎？</div>
+      <div class="faq-a">可以。指南從最基礎的概念開始，不需要任何技術背景或程式經驗。</div>
+    </div>
+    <div class="faq-item" onclick="this.classList.toggle('open')">
+      <div class="faq-q">❓ 需要哪些工具？</div>
+      <div class="faq-a">只需要有網路和瀏覽器。指南中會介紹免費的 AI 工具，不需要額外花錢。</div>
+    </div>
+    <div class="faq-item" onclick="this.classList.toggle('open')">
+      <div class="faq-q">❓ 需要露臉或錄影片嗎？</div>
+      <div class="faq-a">完全不用。指南專注於「不露臉」的個人品牌建立方式，以文字和 AI 生成內容為主。</div>
+    </div>
+  </div>
+</div>
+
+<div class="footer">
+  © 翔川 Neo｜曜科技<br>
+  不保證特定成果。所有案例僅供參考。
+</div>
+
+<script>
+async function submitLead(e) {
+  e.preventDefault();
+  const btn = document.getElementById('leadBtn');
+  const result = document.getElementById('leadResult');
+  const name = document.getElementById('leadName').value.trim();
+  const email = document.getElementById('leadEmail').value.trim();
+  const contact = document.getElementById('leadContact').value.trim();
+  if (!name || !email) { result.textContent = '請填寫姓名和 Email'; result.style.color = '#ff6b6b'; return false; }
+  btn.disabled = true;
+  btn.textContent = '送出中...';
+  result.textContent = '';
+  const apiUrl = location.hostname.includes('github.io')
+    ? 'https://lewislunora.onrender.com/api/contact'
+    : '/api/contact';
+  try {
+    const res = await fetch(apiUrl, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        姓名: name,
+        Email: email,
+        聯絡方式: contact || email,
+        行業別: '個人品牌',
+        備註: 'AI 品牌指南下載'
+      }),
+    });
+    const json = await res.json();
+    if (res.ok) {
+      result.innerHTML = '✅ 已收到！<br>指南連結已寄到你的 Email（或請至 Telegram @ailunora_bot 索取）';
+      result.style.color = '#00d4ff';
+      document.getElementById('leadForm').reset();
+    } else {
+      result.textContent = '❌ ' + (json.message || '送出失敗');
+      result.style.color = '#ff6b6b';
+    }
+  } catch (err) {
+    result.textContent = '❌ 網路錯誤，請稍後再試';
+    result.style.color = '#ff6b6b';
+  }
+  btn.disabled = false;
+  btn.textContent = '📩 免費領取指南';
+  return false;
+}
+</script>
+</body>
+</html>
