@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>合作夥伴入口</title>
+<style>
+* { margin:0; padding:0; box-sizing:border-box; }
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
+  background: #0a0a0f; color: #e0e0e0;
+  min-height: 100vh; display: flex; align-items: center; justify-content: center;
+}
+.login-box {
+  background: rgba(255,255,255,0.03);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 16px; padding: 2.5rem;
+  width: 360px; max-width: 90vw;
+}
+.login-box h1 {
+  font-size: 1.3rem; font-weight: 700;
+  margin-bottom: 0.3rem; text-align: center;
+}
+.login-box .sub {
+  font-size: 0.8rem; color: rgba(255,255,255,0.4);
+  text-align: center; margin-bottom: 2rem;
+}
+.form-group { margin-bottom: 1.2rem; }
+.form-group label {
+  display: block; font-size: 0.8rem;
+  color: rgba(255,255,255,0.5); margin-bottom: 0.4rem;
+}
+.form-group input {
+  width: 100%; padding: 0.8rem 1rem; border-radius: 8px;
+  background: rgba(255,255,255,0.05);
+  border: 1px solid rgba(255,255,255,0.1);
+  color: #fff; font-size: 0.95rem; outline: none;
+}
+.form-group input:focus { border-color: #7b68ee; }
+.btn {
+  width: 100%; padding: 0.8rem; border-radius: 8px;
+  border: none; font-size: 0.95rem; font-weight: 600;
+  cursor: pointer; transition: all 0.2s;
+  background: linear-gradient(135deg, #7b68ee, #00d4ff);
+  color: #fff;
+}
+.btn:hover { transform: translateY(-1px); box-shadow: 0 4px 20px rgba(123,104,238,0.3); }
+.error {
+  color: #ff6b6b; font-size: 0.85rem;
+  text-align: center; margin-bottom: 1rem;
+  min-height: 1.5rem;
+}
+</style>
+</head>
+<body>
+<div class="login-box">
+  <h1>合作夥伴後台</h1>
+  <p class="sub">請輸入驗證密碼</p>
+  <div class="error" id="error"></div>
+  <div class="form-group">
+    <label>密碼</label>
+    <input type="password" id="password" placeholder="請輸入密碼" autofocus
+           onkeydown="if(event.key==='Enter') login()">
+  </div>
+  <button class="btn" onclick="login()">進入後台</button>
+</div>
+<script>
+function login() {
+  const pw = document.getElementById('password').value.trim();
+  if (!pw) { document.getElementById('error').textContent = '請輸入密碼'; return; }
+  // 密碼驗證 - 可自行修改
+  const validPasswords = ['xiangchuan99u', 'lewis99u', 'test123'];
+  if (validPasswords.includes(pw) || pw === 'aa0101') {
+    sessionStorage.setItem('99u_auth', '1');
+    sessionStorage.setItem('99u_login', new Date().toISOString());
+    window.location.href = 'dashboard.html';
+  } else {
+    document.getElementById('error').textContent = '密碼錯誤';
+  }
+}
+</script>
+</body>
+</html>

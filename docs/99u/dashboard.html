@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>合作夥伴後台</title>
+<style>
+* { margin:0; padding:0; box-sizing:border-box; }
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
+  background: #0a0a0f; color: #e0e0e0; min-height: 100vh;
+}
+.topbar {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 1rem 2rem;
+  background: rgba(255,255,255,0.02);
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+}
+.topbar .brand { font-size: 1rem; font-weight: 700; color: rgba(255,255,255,0.6); }
+.topbar .logout {
+  font-size: 0.8rem; color: rgba(255,255,255,0.4);
+  cursor: pointer; padding: 0.4rem 0.8rem; border-radius: 6px;
+  border: 1px solid rgba(255,255,255,0.1); background: transparent; transition: 0.2s;
+}
+.topbar .logout:hover { border-color: #ff6b6b; color: #ff6b6b; }
+.container { max-width: 1000px; margin: 0 auto; padding: 2rem; }
+.page-title { font-size: 1.4rem; font-weight: 700; margin-bottom: 0.3rem; }
+.page-sub { font-size: 0.85rem; color: rgba(255,255,255,0.4); margin-bottom: 2rem; }
+.stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 1rem; margin-bottom: 2rem; }
+.stat-card {
+  background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 12px; padding: 1.2rem; text-align: center;
+}
+.stat-card .num {
+  font-size: 2rem; font-weight: 700;
+  background: linear-gradient(135deg, #7b68ee, #00d4ff);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+}
+.stat-card .label { font-size: 0.75rem; color: rgba(255,255,255,0.4); margin-top: 0.3rem; }
+.card {
+  background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 14px; padding: 1.5rem; margin-bottom: 1.5rem;
+}
+.card h3 { font-size: 1rem; margin-bottom: 1rem; font-weight: 600; }
+.form-group { margin-bottom: 1rem; }
+.form-group label { display: block; font-size: 0.8rem; color: rgba(255,255,255,0.5); margin-bottom: 0.3rem; }
+.form-group input, .form-group textarea, .form-group select {
+  width: 100%; padding: 0.7rem 1rem; border-radius: 8px;
+  background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1);
+  color: #fff; font-size: 0.9rem; font-family: inherit; outline: none;
+}
+.form-group textarea { min-height: 100px; resize: vertical; }
+.form-group input:focus, .form-group textarea:focus, .form-group select:focus { border-color: #7b68ee; }
+.form-row { display: flex; gap: 1rem; }
+.form-row > * { flex: 1; }
+@media(max-width:600px){ .form-row { flex-direction: column; } }
+.btn {
+  display: inline-block; padding: 0.6rem 1.2rem; border-radius: 8px;
+  font-weight: 600; font-size: 0.85rem; border: none; cursor: pointer;
+  transition: all 0.2s;
+}
+.btn-primary { background: linear-gradient(135deg, #7b68ee, #00d4ff); color: #fff; }
+.btn-primary:hover { transform: translateY(-1px); box-shadow: 0 4px 15px rgba(123,104,238,0.3); }
+.btn-outline {
+  background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.15);
+  color: #fff;
+}
+.btn-outline:hover { border-color: #7b68ee; }
+.btn-sm { padding: 0.4rem 0.8rem; font-size: 0.78rem; }
+.link-box {
+  display: flex; align-items: center; gap: 0.5rem;
+  background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 8px; padding: 0.7rem 1rem; font-size: 0.85rem;
+  word-break: break-all;
+}
+.link-box .link-text { flex: 1; color: #00d4ff; }
+.link-box .copy-btn {
+  flex-shrink: 0; padding: 0.3rem 0.8rem; border-radius: 6px;
+  background: rgba(123,104,238,0.2); border: 1px solid rgba(123,104,238,0.3);
+  color: #7b68ee; cursor: pointer; font-size: 0.75rem; transition: 0.2s;
+}
+.link-box .copy-btn:hover { background: rgba(123,104,238,0.3); }
+.tabs { display: flex; gap: 0.5rem; margin-bottom: 1.5rem; }
+.tab {
+  padding: 0.5rem 1.2rem; border-radius: 8px; font-size: 0.85rem;
+  cursor: pointer; transition: 0.2s;
+  background: rgba(255,255,255,0.03); border: 1px solid transparent;
+  color: rgba(255,255,255,0.5);
+}
+.tab:hover { border-color: rgba(255,255,255,0.1); color: #fff; }
+.tab.active { background: rgba(123,104,238,0.15); border-color: rgba(123,104,238,0.3); color: #fff; }
+.tab-content { display: none; }
+.tab-content.active { display: block; }
+table { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
+th, td { padding: 0.6rem 0.5rem; text-align: left; border-bottom: 1px solid rgba(255,255,255,0.05); }
+th { color: rgba(255,255,255,0.4); font-weight: 600; font-size: 0.75rem; }
+tr:hover { background: rgba(255,255,255,0.02); }
+.badge {
+  display: inline-block; padding: 0.15rem 0.5rem; border-radius: 4px;
+  font-size: 0.7rem; font-weight: 600;
+}
+.badge-active { background: rgba(80,200,120,0.15); color: #50c878; }
+.badge-pending { background: rgba(255,200,0,0.15); color: #ffc800; }
+.toast {
+  position: fixed; bottom: 2rem; right: 2rem;
+  background: rgba(123,104,238,0.9); color: #fff;
+  padding: 0.8rem 1.5rem; border-radius: 10px; font-size: 0.85rem;
+  z-index: 100; opacity: 0; transition: opacity 0.3s;
+  pointer-events: none;
+}
+.toast.show { opacity: 1; }
+.empty { text-align: center; padding: 2rem; color: rgba(255,255,255,0.3); font-size: 0.85rem; }
+.loading { text-align: center; padding: 2rem; color: rgba(255,255,255,0.3); }
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <span class="brand">合作夥伴後台</span>
+  <button class="logout" onclick="logout()">登出</button>
+</div>
+
+<div class="container">
+  <div class="page-title">代理仪表板</div>
+  <div class="page-sub">分潤比例：30% ｜ 不負擔輸贏</div>
+
+  <div class="stats-grid">
+    <div class="stat-card"><div class="num" id="statClicks">0</div><div class="label">今日點擊</div></div>
+    <div class="stat-card"><div class="num" id="statSignups">0</div><div class="label">今日註冊</div></div>
+    <div class="stat-card"><div class="num" id="statDeposits">0</div><div class="label">總充值</div></div>
+    <div class="stat-card"><div class="num" id="statCommission">0</div><div class="label">累計佣金</div></div>
+  </div>
+
+  <div class="tabs">
+    <div class="tab active" onclick="switchTab('links', this)">推廣連結</div>
+    <div class="tab" onclick="switchTab('content', this)">內容產生</div>
+    <div class="tab" onclick="switchTab('records', this)">業績記錄</div>
+    <div class="tab" onclick="switchTab('settings', this)">設定</div>
+  </div>
+
+  <!-- 推廣連結 -->
+  <div class="tab-content active" id="tabLinks">
+    <div class="card">
+      <h3>推廣連結產生器</h3>
+      <div class="form-group">
+        <label>推廣名稱（辨識用）</label>
+        <input type="text" id="linkName" placeholder="例如：Telegram 群組、FB 社團">
+      </div>
+      <button class="btn btn-primary" onclick="generateLink()">產生推廣連結</button>
+    </div>
+    <div class="card" id="linksList">
+      <h3>我的推廣連結</h3>
+      <div id="linkItems"><div class="empty">尚未產生連結</div></div>
+    </div>
+  </div>
+
+  <!-- 內容產生 -->
+  <div class="tab-content" id="tabContent">
+    <div class="card">
+      <h3>AI 推廣文案產生</h3>
+      <div class="form-group">
+        <label>文案類型</label>
+        <select id="contentType">
+          <option value="社群貼文">社群貼文</option>
+          <option value="私訊推廣">私訊推廣</option>
+          <option value="群組介紹">群組介紹</option>
+          <option value="廣告文案">廣告文案</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>補充說明（選填）</label>
+        <input type="text" id="contentHint" placeholder="例如：主打體育賽事、百家樂">
+      </div>
+      <button class="btn btn-primary" onclick="generateContent()">產生文案</button>
+      <div id="contentResult" style="margin-top:1rem; display:none;">
+        <div class="form-group">
+          <label>產出文案</label>
+          <textarea id="generatedText" readonly></textarea>
+        </div>
+        <button class="btn btn-outline btn-sm" onclick="copyContent()">複製文案</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 業績記錄 -->
+  <div class="tab-content" id="tabRecords">
+    <div class="card">
+      <h3>業績記錄</h3>
+      <table>
+        <thead><tr><th>日期</th><th>來源</th><th>點擊</th><th>註冊</th><th>充值</th><th>佣金</th></tr></thead>
+        <tbody id="recordsBody"><tr><td colspan="6" class="empty">暫無記錄</td></tr></tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- 設定 -->
+  <div class="tab-content" id="tabSettings">
+    <div class="card">
+      <h3>代理資訊</h3>
+      <div class="form-group"><label>代理 ID</label><input type="text" id="agentId" readonly></div>
+      <div class="form-group"><label>分潤比例</label><input type="text" value="30%" readonly></div>
+      <div class="form-group"><label>密碼修改</label><input type="password" id="newPw" placeholder="新密碼"></div>
+      <button class="btn btn-primary" onclick="changePassword()">修改密碼</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// === Auth Guard ===
+if (!sessionStorage.getItem('99u_auth')) {
+  window.location.href = 'index.html';
+}
+
+const AGENT_ID = 'AGENT_' + Date.now().toString(36).toUpperCase();
+
+function logout() {
+  sessionStorage.removeItem('99u_auth');
+  window.location.href = 'index.html';
+}
+
+// === Toast ===
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2500);
+}
+
+// === Tabs ===
+function switchTab(name, el) {
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+  el.classList.add('active');
+  document.getElementById('tab' + name.charAt(0).toUpperCase() + name.slice(1)).classList.add('active');
+}
+
+// === Referral Links ===
+const SITE_URL = 'https://lewislunora.onrender.com';
+
+function getLinks() {
+  try { return JSON.parse(localStorage.getItem('99u_links') || '[]'); } catch { return []; }
+}
+
+function saveLinks(links) {
+  localStorage.setItem('99u_links', JSON.stringify(links));
+}
+
+function generateLink() {
+  const name = document.getElementById('linkName').value.trim();
+  if (!name) { showToast('請輸入推廣名稱'); return; }
+  const code = '99U_' + Date.now().toString(36).toUpperCase();
+  const url = SITE_URL + '/99u/landing.html?ref=' + code;
+  const links = getLinks();
+  links.unshift({ code, name, url, created: new Date().toLocaleString(), clicks: 0, signups: 0 });
+  saveLinks(links);
+  document.getElementById('linkName').value = '';
+  renderLinks();
+  showToast('推廣連結已產生');
+}
+
+function renderLinks() {
+  const links = getLinks();
+  const container = document.getElementById('linkItems');
+  if (!links.length) {
+    container.innerHTML = '<div class="empty">尚未產生連結</div>';
+    return;
+  }
+  container.innerHTML = links.map(l => `
+    <div style="margin-bottom: 1rem; padding-bottom: 1rem; border-bottom: 1px solid rgba(255,255,255,0.05);">
+      <div style="font-size:0.85rem; margin-bottom:0.4rem;">
+        <strong>${l.name}</strong>
+        <span style="color:rgba(255,255,255,0.3); font-size:0.75rem; margin-left:0.5rem;">${l.created}</span>
+        <span style="color:rgba(255,255,255,0.3); font-size:0.75rem; margin-left:0.5rem;">點擊 ${l.clicks} | 註冊 ${l.signups}</span>
+      </div>
+      <div class="link-box">
+        <span class="link-text">${l.url}</span>
+        <button class="copy-btn" onclick="copyText('${l.url}')">複製</button>
+      </div>
+    </div>
+  `).join('');
+}
+
+function copyText(text) {
+  navigator.clipboard.writeText(text).then(() => showToast('已複製'));
+}
+
+// === Content Generation ===
+const CONTENT_TEMPLATES = {
+  '社群貼文': [
+    '🎰 限時活動🔥 新會員首存即送100%！\n\n不用擔心輸贏，我們只在乎你的體驗。\n✅ 百家樂、老虎機、體育賽事通通有\n✅ 出金快速，24小時客服\n✅ 代理真實分潤，玩家福利最敢給\n\n👉 點我加入：{link}',
+    '⚡️ 玩遊戲也能賺錢？\n\n平台體驗金免費送，註冊就送！\n✅ 多元遊戲任你選\n✅ 免擔心資金問題，小額也能玩\n✅ 出金穩定有保障\n\n還在等什麼？手速要快🔥\n👉 {link}',
+    '📢 誠徵合作夥伴\n\n不用出資金、不用擔輸贏\n只要你有流量、有人脈\n我們提供平台、你賺分潤！\n\n✅ 30% 高佣金\n✅ 週結/月結靈活\n✅ 專屬推廣後台\n\n有興趣私訊或直接註冊👇\n{link}',
+  ],
+  '私訊推廣': [
+    '哈囉，有沒有興趣加減賺點外快？\n我現在在配合一個平台當推廣，不用出錢也不用擔輸贏，有人透過我的連結去玩，玩家輸錢我就有分潤。\n有興趣可以看看👇\n{link}',
+    '嗨～最近發現一個蠻穩的平台，我自己有在配合，他們分潤給得很乾脆。\n你不用出半毛錢，只需要分享連結，有人玩你就有錢拿。\n想了解的話可以私訊我，或直接註冊看看👇\n{link}',
+  ],
+  '群組介紹': [
+    '📌 本群為休閒娛樂交流群\n\n群內不定期分享平台優惠活動\n✅ 遊戲交流\n✅ 優惠資訊\n✅ 代理福利\n\n‼️ 請勿騷擾群友，違者踢出\n\n平台入口：{link}',
+  ],
+  '廣告文案': [
+    '【限時活動】新會員首充翻倍送！\n\n🔥 註冊即送體驗金\n🔥 首充 1000 送 1000\n🔥 每日簽到領獎勵\n🔥 出金快速 5 分鐘到帳\n\n⚡️ 點擊即玩：{link}',
+  ],
+};
+
+function generateContent() {
+  const type = document.getElementById('contentType').value;
+  const hint = document.getElementById('contentHint').value.trim();
+  const templates = CONTENT_TEMPLATES[type] || CONTENT_TEMPLATES['社群貼文'];
+  const template = templates[Math.floor(Math.random() * templates.length)];
+  const links = getLinks();
+  const link = links.length ? links[0].url : SITE_URL + '/99u/landing.html';
+  let text = template.replace('{link}', link);
+  if (hint) {
+    text = text + '\n\n---\n💡 ' + hint;
+  }
+  document.getElementById('generatedText').value = text;
+  document.getElementById('contentResult').style.display = 'block';
+  showToast('文案已產生');
+}
+
+function copyContent() {
+  const text = document.getElementById('generatedText').value;
+  navigator.clipboard.writeText(text).then(() => showToast('文案已複製'));
+}
+
+// === Records ===
+function loadRecords() {
+  try {
+    const data = JSON.parse(localStorage.getItem('99u_records') || '[]');
+    const tbody = document.getElementById('recordsBody');
+    if (!data.length) {
+      tbody.innerHTML = '<tr><td colspan="6" class="empty">暫無記錄</td></tr>';
+      return;
+    }
+    tbody.innerHTML = data.map(r => `
+      <tr>
+        <td>${r.date}</td>
+        <td>${r.source}</td>
+        <td>${r.clicks}</td>
+        <td>${r.signups}</td>
+        <td>${r.deposits}</td>
+        <td>${r.commission}</td>
+      </tr>
+    `).join('');
+  } catch { /* ignore */ }
+}
+
+// === Init ===
+document.getElementById('agentId').value = AGENT_ID;
+renderLinks();
+loadRecords();
+</script>
+</body>
+</html>

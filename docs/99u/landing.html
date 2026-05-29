@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>歡迎加入</title>
+<style>
+* { margin:0; padding:0; box-sizing:border-box; }
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
+  background: linear-gradient(135deg, #0a0a1a 0%, #1a0a2e 50%, #0a0a1a 100%);
+  color: #e0e0e0; min-height: 100vh;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  padding: 2rem;
+}
+.hero {
+  text-align: center; max-width: 500px;
+}
+.hero h1 {
+  font-size: 2rem; font-weight: 800;
+  background: linear-gradient(135deg, #7b68ee, #00d4ff);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  margin-bottom: 0.5rem;
+}
+.hero p {
+  color: rgba(255,255,255,0.5); font-size: 0.95rem;
+  margin-bottom: 2rem; line-height: 1.6;
+}
+.features {
+  display: flex; flex-direction: column; gap: 0.8rem;
+  text-align: left; margin-bottom: 2rem;
+}
+.features .item {
+  display: flex; align-items: center; gap: 0.8rem;
+  font-size: 0.9rem; color: rgba(255,255,255,0.7);
+}
+.features .item .icon {
+  width: 32px; height: 32px; border-radius: 8px;
+  background: rgba(123,104,238,0.15);
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+}
+.btn {
+  display: inline-block; padding: 1rem 3rem; border-radius: 12px;
+  font-size: 1.1rem; font-weight: 700; text-decoration: none;
+  background: linear-gradient(135deg, #7b68ee, #00d4ff);
+  color: #fff; transition: all 0.2s;
+}
+.btn:hover { transform: translateY(-2px); box-shadow: 0 8px 30px rgba(123,104,238,0.3); }
+.footer {
+  margin-top: 2rem; font-size: 0.75rem; color: rgba(255,255,255,0.2);
+}
+</style>
+</head>
+<body>
+<div class="hero">
+  <h1>歡迎加入</h1>
+  <p>多元遊戲、穩定出金、即時客服<br>立即註冊領取專屬優惠</p>
+  <div class="features">
+    <div class="item"><div class="icon">🎰</div><span>百家樂、老虎機、體育賽事</span></div>
+    <div class="item"><div class="icon">⚡</div><span>出金快速、5分鐘到帳</span></div>
+    <div class="item"><div class="icon">🎁</div><span>新會員首存 100% 回饋</span></div>
+    <div class="item"><div class="icon">💬</div><span>24小時中文客服</span></div>
+  </div>
+  <a class="btn" href="#" onclick="trackRegister()" target="_blank">立即註冊</a>
+  <div class="footer">合作夥伴推廣</div>
+</div>
+
+<script>
+// Track referral click
+(function() {
+  const params = new URLSearchParams(window.location.search);
+  const ref = params.get('ref');
+  if (ref) {
+    try {
+      const links = JSON.parse(localStorage.getItem('99u_links') || '[]');
+      const idx = links.findIndex(l => l.code === ref);
+      if (idx !== -1) {
+        links[idx].clicks = (links[idx].clicks || 0) + 1;
+        localStorage.setItem('99u_links', JSON.stringify(links));
+      }
+    } catch(e) { /* ignore */ }
+  }
+})();
+
+function trackRegister() {
+  const params = new URLSearchParams(window.location.search);
+  const ref = params.get('ref');
+  if (ref) {
+    try {
+      const links = JSON.parse(localStorage.getItem('99u_links') || '[]');
+      const idx = links.findIndex(l => l.code === ref);
+      if (idx !== -1) {
+        links[idx].signups = (links[idx].signups || 0) + 1;
+        localStorage.setItem('99u_links', JSON.stringify(links));
+      }
+    } catch(e) { /* ignore */ }
+  }
+  alert('註冊連結請向您的合作夥伴索取');
+}
+</script>
+</body>
+</html>
