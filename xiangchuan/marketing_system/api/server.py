@@ -555,4 +555,15 @@ async def root():
     return {"name": "翔川 Neo｜曜科技 行銷自動化系統", "version": "1.0"}
 
 
+for _sp in ("99u", "ai-brand", "guides", "solopreneur"):
+    exec(f"""
+@app.get("/{_sp}")
+@app.get("/{_sp}/")
+async def _serve_{_sp.replace('-','_')}():
+    fp = DOCS_DIR / "{_sp}" / "index.html"
+    if fp.exists(): return HTMLResponse(fp.read_text(encoding="utf-8"))
+    raise HTTPException(404, "Not found")
+""")
+
+
 app.mount("/", StaticFiles(directory=str(DOCS_DIR), html=True), name="site")
