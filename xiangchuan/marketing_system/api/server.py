@@ -547,6 +547,19 @@ async def dashboard():
     return HTMLResponse(html)
 
 
+@app.get("/api/debug")
+async def debug_info():
+    import os
+    return {
+        "cwd": os.getcwd(),
+        "docs_dir": str(DOCS_DIR),
+        "docs_exists": DOCS_DIR.exists(),
+        "99u_exists": (DOCS_DIR / "99u" / "index.html").exists(),
+        "ai_brand_exists": (DOCS_DIR / "ai-brand" / "index.html").exists(),
+        "files": sorted([str(f) for f in DOCS_DIR.rglob("*.html")])[-20:] if DOCS_DIR.exists() else [],
+    }
+
+
 @app.get("/")
 async def root():
     landing = DOCS_DIR / "index.html"
