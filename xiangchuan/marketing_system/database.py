@@ -109,11 +109,13 @@ def _try_git_push():
 
 def init_db():
     db_exists = DATABASE_PATH.exists() and DATABASE_PATH.stat().st_size > 100
-
-    if not db_exists and _backup_exists():
-        _restore_from_backup()
+    restore = not db_exists and _backup_exists()
 
     conn = _conn()
+
+    if restore:
+        conn.execute("PRAGMA foreign_keys=OFF")
+
     conn.executescript("""
         CREATE TABLE IF NOT EXISTS accounts (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -246,6 +248,13 @@ def init_db():
         ('產品文案', '以{language}寫一段關於{product}的產品推廣文案，字數約{length}字。強調{benefits}。', 'instagram', 'sales'),
         ('短劇劇本', '以{language}創作一個關於{topic}的短劇劇本，約{length}字。包含場景描述、對白和情感節奏。', 'drama', 'creative');
     """)
+    conn.commit()
+
+    if restore:
+        conn.close()
+        _restore_from_backup()
+        return
+
     # Migration: add missing columns
     for col, col_def in [("email", "TEXT DEFAULT ''"), ("salt", "TEXT DEFAULT ''"), ("token", "TEXT DEFAULT ''")]:
         try:
