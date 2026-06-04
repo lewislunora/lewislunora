@@ -3,7 +3,7 @@ services:
     name: neo-marketing-system
     runtime: python
     region: oregon
-    buildCommand: pip install -r xiangchuan/marketing_system/requirements.txt
+    buildCommand: pip install --force-reinstall --no-cache-dir -r xiangchuan/marketing_system/requirements.txt
     startCommand: PYTHONPATH=xiangchuan:$PYTHONPATH python3 -m uvicorn marketing_system.api.server:app --host 0.0.0.0 --port $PORT
     envVars:
       - key: GROQ_API_KEY
