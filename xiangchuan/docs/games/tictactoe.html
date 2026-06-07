@@ -447,7 +447,7 @@ body { width: 100%; padding: 16px; }
         }
       }
 
-      if (!gameActive || currentTurn === 'ai' || mark || isProcessing) {
+      if (!gameActive || currentTurn === 'ai' || mark) {
         cell.classList.add('disabled');
       }
 
@@ -622,8 +622,8 @@ body { width: 100%; padding: 16px; }
 
     currentTurn = 'player';
     updateTurnUI();
-    renderBoard();
     isProcessing = false;
+    renderBoard();
   }
 
   function endGame(result) {
