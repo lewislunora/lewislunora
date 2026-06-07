@@ -360,10 +360,9 @@ body { width: 100%; padding: 16px; }
 </div>
 
 <script>
-(function() {
+(function(){
   'use strict';
 
-  // DOM refs
   const boardEl = document.getElementById('board');
   const turnLabel = document.getElementById('turnLabel');
   const turnBadge = document.getElementById('turnBadge');
@@ -376,146 +375,100 @@ body { width: 100%; padding: 16px; }
   const playAgainBtn = document.getElementById('playAgainBtn');
   const resetBtn = document.getElementById('resetBtn');
 
-  // State
   let board = Array(9).fill(null);
   let gameActive = true;
   let playerSymbol = 'O';
   let aiSymbol = 'X';
-  let currentTurn = 'player'; // 'player' | 'ai' | 'over'
+  let currentTurn = 'player';
   let scores = { win: 0, loss: 0, draw: 0 };
   let winningLine = null;
-  let isProcessing = false;
-
-  // --- localStorage helpers ---
+  let aiTimer = null;
 
   function loadScores() {
     try {
-      const data = JSON.parse(localStorage.getItem('tictactoe_scores'));
-      if (data && typeof data.wins === 'number') scores.win = data.wins;
-      if (data && typeof data.losses === 'number') scores.loss = data.losses;
-      if (data && typeof data.draws === 'number') scores.draw = data.draws;
+      const d = JSON.parse(localStorage.getItem('tictactoe_scores'));
+      if (d && typeof d.wins === 'number') scores.win = d.wins;
+      if (d && typeof d.losses === 'number') scores.loss = d.losses;
+      if (d && typeof d.draws === 'number') scores.draw = d.draws;
     } catch (_) {}
   }
 
   function saveScores() {
     try {
       localStorage.setItem('tictactoe_scores', JSON.stringify({
-        wins: scores.win,
-        losses: scores.loss,
-        draws: scores.draw
+        wins: scores.win, losses: scores.loss, draws: scores.draw
       }));
     } catch (_) {}
   }
 
-  // --- SVG generators ---
-
-  function createXSVG() {
+  function createSVG(type) {
     const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
     svg.setAttribute('viewBox', '0 0 100 100');
-    svg.setAttribute('class', 'x-svg');
-    svg.innerHTML =
-      '<line class="x-line x-line-1" x1="20" y1="20" x2="80" y2="80"/>' +
-      '<line class="x-line x-line-2" x1="80" y1="20" x2="20" y2="80"/>';
+    svg.setAttribute('class', type === 'X' ? 'x-svg' : 'o-svg');
+    if (type === 'X') {
+      svg.innerHTML = '<line class="x-line x-line-1" x1="20" y1="20" x2="80" y2="80"/>' +
+        '<line class="x-line x-line-2" x1="80" y1="20" x2="20" y2="80"/>';
+    } else {
+      svg.innerHTML = '<circle class="o-circle" cx="50" cy="50" r="38"/>';
+    }
     return svg;
   }
 
-  function createOSVG() {
-    const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
-    svg.setAttribute('viewBox', '0 0 100 100');
-    svg.setAttribute('class', 'o-svg');
-    svg.innerHTML =
-      '<circle class="o-circle" cx="50" cy="50" r="38"/>';
-    return svg;
-  }
-
-  // --- Board rendering ---
-
-  function renderBoard() {
+  function render() {
     boardEl.innerHTML = '';
     for (let i = 0; i < 9; i++) {
       const cell = document.createElement('div');
       cell.className = 'cell';
       cell.dataset.index = i;
-
       const mark = board[i];
       if (mark) {
         cell.classList.add('taken');
-        if (mark === 'X') {
-          cell.appendChild(createXSVG());
-        } else {
-          cell.appendChild(createOSVG());
-        }
+        cell.appendChild(createSVG(mark));
       }
-
       if (!gameActive || currentTurn === 'ai' || mark) {
         cell.classList.add('disabled');
       }
-
-      cell.addEventListener('click', () => handleCellClick(i));
+      cell.addEventListener('click', function(){ clickCell(i); });
       boardEl.appendChild(cell);
     }
-
-    // Toggle AI-thinking visual feedback
     boardEl.classList.toggle('ai-thinking', currentTurn === 'ai');
-
-    // Apply winning highlights
     if (winningLine) {
       const cells = boardEl.children;
       for (const idx of winningLine) {
         cells[idx].classList.add('win-highlight');
-        if (board[idx] === 'X') cells[idx].classList.add('x-win');
-        else cells[idx].classList.add('o-win');
+        cells[idx].classList.add(board[idx] === 'X' ? 'x-win' : 'o-win');
       }
     }
   }
 
-  // --- Game logic ---
-
-  function checkWinner(boardArr) {
-    const lines = [
-      [0,1,2],[3,4,5],[6,7,8],
-      [0,3,6],[1,4,7],[2,5,8],
-      [0,4,8],[2,4,6]
-    ];
-    for (const line of lines) {
-      const [a,b,c] = line;
-      if (boardArr[a] && boardArr[a] === boardArr[b] && boardArr[a] === boardArr[c]) {
-        return { winner: boardArr[a], line };
+  function checkWinner(brd) {
+    const lines = [[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]];
+    for (const l of lines) {
+      const [a,b,c] = l;
+      if (brd[a] && brd[a] === brd[b] && brd[a] === brd[c]) {
+        return { winner: brd[a], line: l };
       }
     }
     return null;
   }
 
-  function isBoardFull(boardArr) {
-    return boardArr.every(c => c !== null);
-  }
+  function isFull(brd) { return brd.every(c => c !== null); }
+  function avail(brd) { const m = []; for (let i = 9; i--;) if (!brd[i]) m.push(i); return m; }
 
-  function getAvailableMoves(boardArr) {
-    const moves = [];
-    for (let i = 0; i < 9; i++) {
-      if (boardArr[i] === null) moves.push(i);
-    }
-    return moves;
-  }
-
-  // --- Minimax (unbeatable) ---
-
-  function minimax(boardArr, depth, isMaximizing, alpha = -Infinity, beta = Infinity) {
-    const result = checkWinner(boardArr);
-    if (result) {
-      if (result.winner === aiSymbol) return 10 - depth;
-      if (result.winner === playerSymbol) return depth - 10;
-    }
-    if (isBoardFull(boardArr)) return 0;
-
-    const moves = getAvailableMoves(boardArr);
-    if (isMaximizing) {
+  function minimax(brd, depth, maxing, alpha, beta) {
+    if (alpha === undefined) alpha = -Infinity;
+    if (beta === undefined) beta = Infinity;
+    const r = checkWinner(brd);
+    if (r) return r.winner === aiSymbol ? 10 - depth : depth - 10;
+    if (isFull(brd)) return 0;
+    const moves = avail(brd);
+    if (maxing) {
       let best = -Infinity;
       for (const i of moves) {
-        boardArr[i] = aiSymbol;
-        const val = minimax(boardArr, depth + 1, false, alpha, beta);
-        boardArr[i] = null;
-        if (val > best) best = val;
+        brd[i] = aiSymbol;
+        const v = minimax(brd, depth + 1, false, alpha, beta);
+        brd[i] = null;
+        if (v > best) best = v;
         if (best >= beta) break;
         if (best > alpha) alpha = best;
       }
@@ -523,10 +476,10 @@ body { width: 100%; padding: 16px; }
     } else {
       let best = Infinity;
       for (const i of moves) {
-        boardArr[i] = playerSymbol;
-        const val = minimax(boardArr, depth + 1, true, alpha, beta);
-        boardArr[i] = null;
-        if (val < best) best = val;
+        brd[i] = playerSymbol;
+        const v = minimax(brd, depth + 1, true, alpha, beta);
+        brd[i] = null;
+        if (v < best) best = v;
         if (best <= alpha) break;
         if (best < beta) beta = best;
       }
@@ -534,127 +487,68 @@ body { width: 100%; padding: 16px; }
     }
   }
 
-  function getBestMove() {
-    let bestScore = -Infinity;
-    let bestMove = -1;
-    const boardCopy = [...board];
-    const moves = getAvailableMoves(boardCopy);
+  function bestMove() {
+    let bestScore = -Infinity, bestMove = -1;
+    const bc = [...board], moves = avail(bc);
     for (const i of moves) {
-      boardCopy[i] = aiSymbol;
-      const score = minimax(boardCopy, 0, false);
-      boardCopy[i] = null;
-      if (score > bestScore) {
-        bestScore = score;
-        bestMove = i;
-      }
+      bc[i] = aiSymbol;
+      const score = minimax(bc, 0, false);
+      bc[i] = null;
+      if (score > bestScore) { bestScore = score; bestMove = i; }
     }
     return bestMove;
   }
 
-  // --- Turn management ---
-
-  function handleCellClick(index) {
-    if (!gameActive) return;
-    if (currentTurn !== 'player') return;
-    if (board[index] !== null) return;
-    if (isProcessing) return;
-
-    makePlayerMove(index);
+  function clickCell(i) {
+    if (!gameActive || currentTurn !== 'player' || board[i] !== null || aiTimer) return;
+    playerMove(i);
   }
 
-  function makePlayerMove(index) {
-    isProcessing = true;
-    board[index] = playerSymbol;
-    renderBoard();
-
-    const result = checkWinner(board);
-    if (result) {
-      endGame(result);
-      isProcessing = false;
-      return;
-    }
-
-    if (isBoardFull(board)) {
-      endGame(null);
-      isProcessing = false;
-      return;
-    }
-
+  function playerMove(i) {
+    board[i] = playerSymbol;
+    render();
+    const r = checkWinner(board);
+    if (r) { endGame(r); return; }
+    if (isFull(board)) { endGame(null); return; }
     currentTurn = 'ai';
-    updateTurnUI();
-    renderBoard();
-
-    // Small delay before AI moves
-    setTimeout(() => {
-      makeAIMove();
-    }, 200);
+    updateUI();
+    render();
+    aiTimer = setTimeout(function(){ aiMove(); }, 200);
   }
 
-  function makeAIMove() {
-    if (!gameActive) { isProcessing = false; return; }
-    if (currentTurn !== 'ai') { isProcessing = false; return; }
-
-    const move = getBestMove();
-    if (move === -1) {
-      // Shouldn't happen if game is active, but safety
-      if (isBoardFull(board)) {
-        endGame(null);
-      }
-      isProcessing = false;
-      return;
-    }
-
-    board[move] = aiSymbol;
-    renderBoard();
-
-    const result = checkWinner(board);
-    if (result) {
-      endGame(result);
-      isProcessing = false;
-      return;
-    }
-
-    if (isBoardFull(board)) {
-      endGame(null);
-      isProcessing = false;
-      return;
-    }
-
+  function aiMove() {
+    aiTimer = null;
+    if (!gameActive || currentTurn !== 'ai') return;
+    const m = bestMove();
+    if (m === -1) { if (isFull(board)) endGame(null); return; }
+    board[m] = aiSymbol;
+    render();
+    const r = checkWinner(board);
+    if (r) { endGame(r); return; }
+    if (isFull(board)) { endGame(null); return; }
     currentTurn = 'player';
-    updateTurnUI();
-    isProcessing = false;
-    renderBoard();
+    updateUI();
+    render();
   }
 
   function endGame(result) {
     gameActive = false;
     currentTurn = 'over';
-
     if (result) {
       winningLine = result.line;
-      if (result.winner === playerSymbol) {
-        // Player wins (O)
-        scores.win++;
-        showOverlay('你贏了！', '恭喜你擊敗了 AI 🎉', 'win-text');
-      } else {
-        // AI wins (X)
-        scores.loss++;
-        showOverlay('你輸了！', 'AI 獲勝，再接再厲', 'lose-text');
-      }
+      if (result.winner === playerSymbol) { scores.win++; showOverlay('你贏了！', '恭喜你擊敗了 AI 🎉', 'win-text'); }
+      else { scores.loss++; showOverlay('你輸了！', 'AI 獲勝，再接再厲', 'lose-text'); }
     } else {
       scores.draw++;
       showOverlay('平局！', '勢均力敵', 'draw-text');
     }
-
     updateScoreUI();
     saveScores();
-    renderBoard();
-    updateTurnUI();
+    render();
+    updateUI();
   }
 
-  // --- UI updates ---
-
-  function updateTurnUI() {
+  function updateUI() {
     if (currentTurn === 'player') {
       turnLabel.textContent = '換你下棋';
       turnBadge.className = 'turn-badge player-turn';
@@ -687,45 +581,27 @@ body { width: 100%; padding: 16px; }
     overlay.classList.remove('show');
   }
 
-  // --- Game control ---
-
-  function resetGame(keepScores = true) {
-    isProcessing = false;
+  function resetGame(keepScores) {
+    if (aiTimer) { clearTimeout(aiTimer); aiTimer = null; }
     hideOverlay();
     board = Array(9).fill(null);
     gameActive = true;
-    winningLine = null;
     currentTurn = 'player';
-    if (!keepScores) {
-      scores = { win: 0, loss: 0, draw: 0 };
-      updateScoreUI();
-    }
-    updateTurnUI();
-    renderBoard();
+    winningLine = null;
+    if (!keepScores) { scores = { win: 0, loss: 0, draw: 0 }; updateScoreUI(); }
+    updateUI();
+    render();
   }
 
-  function newGame() {
-    resetGame(true);
-  }
+  function newGame() { resetGame(true); }
+  function fullReset() { resetGame(false); }
 
-  function fullReset() {
-    resetGame(false);
-  }
-
-  // --- Init ---
-
-  function init() {
-    loadScores();
-    resetGame(false);
-    updateScoreUI();
-  }
-
-  // Event listeners
   playAgainBtn.addEventListener('click', newGame);
   resetBtn.addEventListener('click', fullReset);
 
-  init();
-
+  loadScores();
+  resetGame(false);
+  updateScoreUI();
 })();
 </script>
 </body>
