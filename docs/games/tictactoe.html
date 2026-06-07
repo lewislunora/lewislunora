@@ -142,6 +142,8 @@ body { width: 100%; padding: 16px; }
 .cell:not(.taken):active { transform: scale(0.95); }
 .cell.taken { cursor: default; }
 .cell.disabled { cursor: default; pointer-events: none; }
+.board.ai-thinking .cell { opacity: 0.5; transition: opacity 0.3s; }
+.board.ai-thinking .cell.taken { opacity: 0.7; }
 
 /* X and O SVG drawings */
 .cell svg {
@@ -384,6 +386,27 @@ body { width: 100%; padding: 16px; }
   let winningLine = null;
   let isProcessing = false;
 
+  // --- localStorage helpers ---
+
+  function loadScores() {
+    try {
+      const data = JSON.parse(localStorage.getItem('tictactoe_scores'));
+      if (data && typeof data.wins === 'number') scores.win = data.wins;
+      if (data && typeof data.losses === 'number') scores.loss = data.losses;
+      if (data && typeof data.draws === 'number') scores.draw = data.draws;
+    } catch (_) {}
+  }
+
+  function saveScores() {
+    try {
+      localStorage.setItem('tictactoe_scores', JSON.stringify({
+        wins: scores.win,
+        losses: scores.loss,
+        draws: scores.draw
+      }));
+    } catch (_) {}
+  }
+
   // --- SVG generators ---
 
   function createXSVG() {
@@ -432,6 +455,9 @@ body { width: 100%; padding: 16px; }
       boardEl.appendChild(cell);
     }
 
+    // Toggle AI-thinking visual feedback
+    boardEl.classList.toggle('ai-thinking', currentTurn === 'ai');
+
     // Apply winning highlights
     if (winningLine) {
       const cells = boardEl.children;
@@ -474,7 +500,7 @@ body { width: 100%; padding: 16px; }
 
   // --- Minimax (unbeatable) ---
 
-  function minimax(boardArr, depth, isMaximizing) {
+  function minimax(boardArr, depth, isMaximizing, alpha = -Infinity, beta = Infinity) {
     const result = checkWinner(boardArr);
     if (result) {
       if (result.winner === aiSymbol) return 10 - depth;
@@ -487,18 +513,22 @@ body { width: 100%; padding: 16px; }
       let best = -Infinity;
       for (const i of moves) {
         boardArr[i] = aiSymbol;
-        const val = minimax(boardArr, depth + 1, false);
+        const val = minimax(boardArr, depth + 1, false, alpha, beta);
         boardArr[i] = null;
         if (val > best) best = val;
+        if (best >= beta) break;
+        if (best > alpha) alpha = best;
       }
       return best;
     } else {
       let best = Infinity;
       for (const i of moves) {
         boardArr[i] = playerSymbol;
-        const val = minimax(boardArr, depth + 1, true);
+        const val = minimax(boardArr, depth + 1, true, alpha, beta);
         boardArr[i] = null;
         if (val < best) best = val;
+        if (best <= alpha) break;
+        if (best < beta) beta = best;
       }
       return best;
     }
@@ -557,7 +587,7 @@ body { width: 100%; padding: 16px; }
     // Small delay before AI moves
     setTimeout(() => {
       makeAIMove();
-    }, 350);
+    }, 200);
   }
 
   function makeAIMove() {
@@ -617,6 +647,7 @@ body { width: 100%; padding: 16px; }
     }
 
     updateScoreUI();
+    saveScores();
     renderBoard();
     updateTurnUI();
   }
@@ -684,7 +715,9 @@ body { width: 100%; padding: 16px; }
   // --- Init ---
 
   function init() {
+    loadScores();
     resetGame(false);
+    updateScoreUI();
   }
 
   // Event listeners

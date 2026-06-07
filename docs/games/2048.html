@@ -408,6 +408,7 @@ footer a:hover {
       this.won = false;
       this.keepPlaying = false;
       this.moving = false;
+      this._restarting = false;
 
       this.renderGridBg();
       this.restart();
@@ -424,6 +425,8 @@ footer a:hover {
     }
 
     restart() {
+      if (this._restarting) return;
+      this._restarting = true;
       this.grid = Array.from({ length: SIZE }, () => Array(SIZE).fill(0));
       this.tiles = [];
       this.nextId = 0;
@@ -433,11 +436,11 @@ footer a:hover {
       this.keepPlaying = false;
       this.moving = false;
       this.overlay.classList.remove('show');
-      this.overlay.style.display = 'none';
       this.renderScore();
       this.spawnTile();
       this.spawnTile();
       this.render();
+      this._restarting = false;
     }
 
     spawnTile() {
@@ -682,23 +685,25 @@ footer a:hover {
       if (type === 'win') {
         this.overlayTitle.className = 'title win';
         this.overlayTitle.textContent = '你贏了！';
-        this.overlaySubtitle.textContent = '分數：' + this.score + '，太厲害了！';
+        this.overlaySubtitle.innerHTML = '分數：' + this.score + '，太厲害了！<br>最佳紀錄：' + this.bestScore;
         this.overlayBtns.innerHTML =
           '<button class="btn btn-primary" onclick="g.keepGoing()">繼續遊戲</button>' +
           '<button class="btn btn-secondary" onclick="g.restart()">重新開始</button>';
       } else {
         this.overlayTitle.className = 'title lose';
         this.overlayTitle.textContent = '遊戲結束';
-        this.overlaySubtitle.textContent = '最終分數：' + this.score;
+        this.overlaySubtitle.innerHTML = '最終分數：' + this.score + '<br>最佳紀錄：' + this.bestScore;
         this.overlayBtns.innerHTML =
           '<button class="btn btn-primary" onclick="g.restart()">重新開始</button>';
       }
     }
 
     keepGoing() {
+      if (this._restarting) return;
+      this._restarting = true;
       this.keepPlaying = true;
       this.overlay.classList.remove('show');
-      setTimeout(() => { this.overlay.style.display = 'none'; }, 300);
+      this._restarting = false;
     }
 
     bindEvents() {

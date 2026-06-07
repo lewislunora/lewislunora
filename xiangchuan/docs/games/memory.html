@@ -320,6 +320,7 @@
   let seconds = 0;
   let isLocked = false;
   let gameStarted = false;
+  let flipTimeout = null;
 
   const grid = document.getElementById('grid');
   const pairsEl = document.getElementById('pairs');
@@ -356,7 +357,7 @@
 
   function updateBestDisplay() {
     const best = getBest();
-    bestDisplay.textContent = best !== null ? `最佳 ${best}` : '';
+    bestDisplay.textContent = best !== null ? `最佳 ${best}` : '最佳 -';
   }
 
   function shuffleArray(arr) {
@@ -428,7 +429,9 @@
       if (cards[i1].id === cards[i2].id) {
         cards[i1].matched = true;
         cards[i2].matched = true;
+        getCardEl(i1).classList.remove('flipped');
         getCardEl(i1).classList.add('matched');
+        getCardEl(i2).classList.remove('flipped');
         getCardEl(i2).classList.add('matched');
         matchedPairs++;
         flippedIndices = [];
@@ -438,11 +441,12 @@
           completeGame();
         }
       } else {
-        setTimeout(() => {
+        flipTimeout = setTimeout(() => {
           flipCard(i1);
           flipCard(i2);
           flippedIndices = [];
           isLocked = false;
+          flipTimeout = null;
         }, 800);
       }
     }
@@ -490,6 +494,10 @@
   }
 
   function resetGame() {
+    if (flipTimeout) {
+      clearTimeout(flipTimeout);
+      flipTimeout = null;
+    }
     stopTimer();
     overlay.classList.remove('show');
     isLocked = false;

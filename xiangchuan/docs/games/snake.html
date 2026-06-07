@@ -231,7 +231,7 @@ footer a::before { content: "← "; }
 
   let snake, food, direction, nextDirection, score, highScore;
   let gameOver, paused, win;
-  let gameLoop, speed, SPEED_BASE;
+  let gameLoop, SPEED_BASE;
 
   const LS_KEY = 'snake_highscore';
 
@@ -262,7 +262,6 @@ footer a::before { content: "← "; }
     gameOver = false;
     paused = false;
     win = false;
-    speed = 0;
     SPEED_BASE = 150;
     scoreEl.textContent = '0';
     overlay.classList.remove('active');
@@ -306,14 +305,6 @@ footer a::before { content: "← "; }
       saveHighScore();
       return;
     }
-    for (let i = 0; i < snake.length; i++) {
-      if (snake[i].x === nx && snake[i].y === ny) {
-        gameOver = true;
-        showOverlay('遊戲結束', '咬到自己了…');
-        saveHighScore();
-        return;
-      }
-    }
 
     const ate = (nx === food.x && ny === food.y);
     snake.unshift({ x: nx, y: ny });
@@ -327,6 +318,15 @@ footer a::before { content: "← "; }
       if (gameOver) return;
     }
 
+    for (let i = 1; i < snake.length; i++) {
+      if (snake[i].x === snake[0].x && snake[i].y === snake[0].y) {
+        gameOver = true;
+        showOverlay('遊戲結束', '咬到自己了…');
+        saveHighScore();
+        return;
+      }
+    }
+
     draw();
     clearInterval(gameLoop);
     gameLoop = setInterval(tick, getSpeed());
@@ -334,7 +334,7 @@ footer a::before { content: "← "; }
 
   function showOverlay (title, sub) {
     overlayTitle.textContent = title;
-    overlaySub.textContent = sub;
+    overlaySub.textContent = `${sub}  分數: ${score}  最高: ${highScore}`;
     overlay.classList.add('active');
   }
 
@@ -422,7 +422,7 @@ footer a::before { content: "← "; }
 
   function setDirection (dx, dy) {
     if (gameOver || paused) return;
-    if (direction.x + dx === 0 && direction.y + dy === 0) return;
+    if (nextDirection.x + dx === 0 && nextDirection.y + dy === 0) return;
     nextDirection = { x: dx, y: dy };
   }
 
@@ -495,14 +495,14 @@ footer a::before { content: "← "; }
     });
   });
 
-  let touchStartX = 0, touchStartY = 0;
+  let touchStartX = null, touchStartY = null;
   canvas.addEventListener('touchstart', function (e) {
     const t = e.touches[0];
     touchStartX = t.clientX;
     touchStartY = t.clientY;
   }, { passive: true });
   canvas.addEventListener('touchend', function (e) {
-    if (!touchStartX || !touchStartY) return;
+    if (touchStartX === null || touchStartY === null) return;
     const t = e.changedTouches[0];
     const dx = t.clientX - touchStartX;
     const dy = t.clientY - touchStartY;
@@ -514,8 +514,8 @@ footer a::before { content: "← "; }
     } else {
       setDirection(0, dy > 0 ? 1 : -1);
     }
-    touchStartX = 0;
-    touchStartY = 0;
+    touchStartX = null;
+    touchStartY = null;
   }, { passive: true });
 })();
 </script>
