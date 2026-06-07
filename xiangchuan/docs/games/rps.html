@@ -1,0 +1,1074 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>剪刀石頭布 — 翔川 Neo｜曜科技</title>
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html, body {
+  height: 100%;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Microsoft JhengHei', 'PingFang TC', 'Noto Sans TC', Helvetica, Arial, sans-serif;
+  background: linear-gradient(145deg, #0f0f13 0%, #1a1a2e 50%, #16213e 100%);
+  color: #e0e0e0;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  overflow-y: auto;
+}
+body { width: 100%; padding: 20px 16px; }
+
+.game-container {
+  position: relative;
+  max-width: 480px;
+  width: 100%;
+  background: rgba(255,255,255,0.04);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-radius: 32px;
+  padding: 28px 24px 16px;
+  box-shadow: 0 25px 60px rgba(0,0,0,0.6), inset 0 1px 0 rgba(255,255,255,0.06);
+  border: 1px solid rgba(255,255,255,0.06);
+  margin-bottom: 20px;
+}
+
+.title {
+  text-align: center;
+  font-size: 28px;
+  font-weight: 700;
+  letter-spacing: 4px;
+  background: linear-gradient(135deg, #f7971e, #ffd200);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin-bottom: 4px;
+  user-select: none;
+}
+.subtitle {
+  text-align: center;
+  font-size: 13px;
+  color: rgba(255,255,255,0.35);
+  margin-bottom: 16px;
+  user-select: none;
+}
+
+/* Mode tabs */
+.mode-tabs {
+  display: flex;
+  gap: 6px;
+  margin-bottom: 16px;
+  background: rgba(255,255,255,0.04);
+  border-radius: 12px;
+  padding: 4px;
+}
+.mode-tab {
+  flex: 1;
+  padding: 8px 12px;
+  border: none;
+  border-radius: 10px;
+  background: transparent;
+  color: rgba(255,255,255,0.5);
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  font-family: inherit;
+  -webkit-tap-highlight-color: transparent;
+}
+.mode-tab.active {
+  background: rgba(255,255,255,0.1);
+  color: #fff;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.2);
+}
+.mode-tab:hover:not(.active) { color: rgba(255,255,255,0.7); }
+
+/* Scoreboard */
+.scoreboard {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  margin-bottom: 8px;
+  user-select: none;
+  flex-wrap: wrap;
+}
+.score-item {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  padding: 5px 14px;
+  border-radius: 14px;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.06);
+  font-size: 13px;
+  font-weight: 500;
+}
+.score-item .label { color: rgba(255,255,255,0.45); }
+.score-item .value {
+  min-width: 18px;
+  text-align: center;
+  font-weight: 700;
+}
+.score-item.win .value { color: #4ade80; }
+.score-item.loss .value { color: #f87171; }
+.score-item.draw .value { color: #94a3b8; }
+.score-item.rate .value { color: #ffd700; }
+.score-item.best .value { color: #a78bfa; }
+
+/* Mode content */
+.mode-content { display: none; }
+.mode-content.active { display: block; }
+
+/* Manual mode - choice buttons */
+.choices {
+  display: flex;
+  justify-content: center;
+  gap: 14px;
+  margin: 16px 0;
+}
+.choice-btn {
+  width: 80px;
+  height: 80px;
+  border-radius: 20px;
+  border: 1px solid rgba(255,255,255,0.08);
+  background: rgba(255,255,255,0.04);
+  font-size: 36px;
+  cursor: pointer;
+  transition: all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+  -webkit-tap-highlight-color: transparent;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+.choice-btn:hover {
+  background: rgba(255,255,255,0.1);
+  border-color: rgba(255,255,255,0.2);
+  transform: translateY(-4px);
+  box-shadow: 0 8px 24px rgba(0,0,0,0.3);
+}
+.choice-btn:active { transform: scale(0.9); }
+.choice-btn .label {
+  position: absolute;
+  bottom: -18px;
+  font-size: 11px;
+  color: rgba(255,255,255,0.4);
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+/* Matchup display */
+.matchup {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 20px;
+  margin: 28px 0 20px;
+  min-height: 90px;
+  position: relative;
+}
+.matchup-player, .matchup-computer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+.matchup-player .hand, .matchup-computer .hand {
+  font-size: 54px;
+  transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.3s;
+  width: 70px;
+  height: 70px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.matchup-player .hand { transform-origin: center; }
+.matchup-computer .hand { transform-origin: center; transform: scaleX(-1); }
+.matchup-player .hand.animate { animation: throwHand 0.45s cubic-bezier(0.34, 1.56, 0.64, 1) both; }
+.matchup-computer .hand.animate { animation: throwHand 0.45s cubic-bezier(0.34, 1.56, 0.64, 1) 0.1s both; }
+@keyframes throwHand {
+  0% { transform: scale(0) rotate(-30deg); opacity: 0; }
+  60% { transform: scale(1.2) rotate(5deg); opacity: 1; }
+  100% { transform: scale(1) rotate(0deg); opacity: 1; }
+}
+.matchup-computer .hand.animate {
+  animation-name: throwHandComp;
+}
+@keyframes throwHandComp {
+  0% { transform: scale(0) scaleX(-1) rotate(30deg); opacity: 0; }
+  60% { transform: scale(1.2) scaleX(-1) rotate(-5deg); opacity: 1; }
+  100% { transform: scale(1) scaleX(-1) rotate(0deg); opacity: 1; }
+}
+.matchup .vs {
+  font-size: 18px;
+  font-weight: 700;
+  color: rgba(255,255,255,0.2);
+  letter-spacing: 2px;
+}
+.matchup-player .tag, .matchup-computer .tag {
+  font-size: 11px;
+  color: rgba(255,255,255,0.35);
+}
+.matchup-player .choice-name, .matchup-computer .choice-name {
+  font-size: 13px;
+  font-weight: 600;
+  color: rgba(255,255,255,0.6);
+}
+
+/* Result */
+.result {
+  text-align: center;
+  margin: 4px 0 12px;
+  min-height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.result-text {
+  font-size: 22px;
+  font-weight: 800;
+  letter-spacing: 1px;
+  transition: all 0.3s;
+  opacity: 0;
+  transform: scale(0.8);
+}
+.result-text.show {
+  opacity: 1;
+  transform: scale(1);
+}
+.result-text.win { color: #4ade80; }
+.result-text.lose { color: #f87171; }
+.result-text.draw { color: #94a3b8; }
+
+/* Camera mode */
+.camera-area {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  margin: 12px 0;
+}
+.camera-feed-wrap {
+  position: relative;
+  width: 240px;
+  height: 180px;
+  border-radius: 16px;
+  overflow: hidden;
+  background: #0a0a14;
+  border: 1px solid rgba(255,255,255,0.06);
+  box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+}
+.camera-feed {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transform: scaleX(-1);
+  display: block;
+}
+.camera-overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0,0,0,0.5);
+  backdrop-filter: blur(2px);
+  transition: opacity 0.3s;
+}
+.camera-overlay.hidden { opacity: 0; pointer-events: none; }
+.camera-overlay .cam-icon { font-size: 32px; margin-bottom: 8px; opacity: 0.6; }
+.camera-overlay .cam-text { font-size: 13px; color: rgba(255,255,255,0.5); }
+
+.camera-detect {
+  font-size: 26px;
+  font-weight: 700;
+  min-height: 40px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.camera-detect .detect-label { font-size: 13px; color: rgba(255,255,255,0.4); font-weight: 500; }
+.camera-detect .detect-value { color: #ffd700; transition: all 0.2s; }
+.camera-detect .detect-value.confirmed { color: #4ade80; }
+
+.camera-countdown {
+  font-size: 14px;
+  color: rgba(255,255,255,0.4);
+  min-height: 20px;
+}
+
+.btn-camera {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 10px 28px;
+  border: none;
+  border-radius: 100px;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+  -webkit-tap-highlight-color: transparent;
+  font-family: inherit;
+  user-select: none;
+}
+.btn-camera:active { transform: scale(0.94); }
+.btn-camera.enable {
+  background: linear-gradient(135deg, #f7971e, #ffd200);
+  color: #1a1a2e;
+  box-shadow: 0 4px 20px rgba(247,151,30,0.3);
+}
+.btn-camera.enable:hover { box-shadow: 0 6px 28px rgba(247,151,30,0.45); transform: translateY(-1px); }
+.btn-camera.enable:active { transform: scale(0.94) translateY(0); }
+.btn-camera.disable {
+  background: rgba(255,255,255,0.06);
+  color: rgba(255,255,255,0.6);
+  border: 1px solid rgba(255,255,255,0.1);
+}
+.btn-camera.disable:hover { background: rgba(255,80,80,0.15); color: #f87171; border-color: rgba(255,80,80,0.2); }
+
+/* History */
+.history-section {
+  margin-top: 4px;
+}
+.history-title {
+  font-size: 12px;
+  color: rgba(255,255,255,0.3);
+  text-align: center;
+  margin-bottom: 6px;
+  font-weight: 600;
+  letter-spacing: 1px;
+  user-select: none;
+}
+.history-list {
+  display: flex;
+  justify-content: center;
+  gap: 6px;
+  min-height: 36px;
+  flex-wrap: wrap;
+}
+.history-item {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 14px;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.06);
+  transition: all 0.3s;
+  animation: fadeInItem 0.3s ease;
+}
+@keyframes fadeInItem {
+  from { opacity: 0; transform: scale(0.8); }
+  to { opacity: 1; transform: scale(1); }
+}
+.history-item .h-result { font-weight: 700; }
+.history-item.h-win { border-color: rgba(74,222,128,0.2); }
+.history-item.h-win .h-result { color: #4ade80; }
+.history-item.h-lose { border-color: rgba(248,113,113,0.2); }
+.history-item.h-lose .h-result { color: #f87171; }
+.history-item.h-draw { border-color: rgba(148,163,184,0.2); }
+.history-item.h-draw .h-result { color: #94a3b8; }
+
+.history-empty {
+  color: rgba(255,255,255,0.2);
+  font-size: 13px;
+  text-align: center;
+  padding: 8px;
+}
+
+/* Buttons */
+.actions {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  margin-top: 16px;
+}
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 10px 24px;
+  border: none;
+  border-radius: 100px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+  -webkit-tap-highlight-color: transparent;
+  user-select: none;
+  font-family: inherit;
+}
+.btn:active { transform: scale(0.94); }
+.btn-secondary {
+  background: rgba(255,255,255,0.06);
+  color: rgba(255,255,255,0.7);
+  border: 1px solid rgba(255,255,255,0.1);
+}
+.btn-secondary:hover { background: rgba(255,255,255,0.1); color: #fff; }
+
+/* Footer */
+.footer {
+  text-align: center;
+  margin-top: 14px;
+  padding-top: 14px;
+  border-top: 1px solid rgba(255,255,255,0.05);
+}
+.footer a {
+  color: rgba(255,255,255,0.3);
+  text-decoration: none;
+  font-size: 13px;
+  transition: color 0.2s;
+}
+.footer a:hover { color: rgba(255,255,255,0.6); }
+
+/* Responsive */
+@media (max-width: 480px) {
+  .game-container { padding: 20px 16px 14px; }
+  .title { font-size: 24px; }
+  .score-item { padding: 4px 10px; font-size: 12px; }
+  .choice-btn { width: 68px; height: 68px; font-size: 30px; }
+  .matchup-player .hand, .matchup-computer .hand { font-size: 44px; width: 56px; height: 56px; }
+  .matchup { gap: 14px; margin: 20px 0 14px; }
+  .result-text { font-size: 19px; }
+  .camera-feed-wrap { width: 200px; height: 150px; }
+}
+@media (max-width: 360px) {
+  .game-container { padding: 14px 10px 10px; }
+  .title { font-size: 20px; }
+  .choice-btn { width: 58px; height: 58px; font-size: 26px; }
+  .matchup-player .hand, .matchup-computer .hand { font-size: 36px; width: 48px; height: 48px; }
+}
+</style>
+</head>
+<body>
+
+<div class="game-container" id="app">
+  <div class="title">✊ 石頭 ✋ 布 ✌️ 剪刀</div>
+  <div class="subtitle">人機互動 · 經典對戰</div>
+
+  <!-- Mode tabs -->
+  <div class="mode-tabs">
+    <button class="mode-tab active" data-mode="manual">🖱️ 手動</button>
+    <button class="mode-tab" data-mode="camera">📷 鏡頭</button>
+  </div>
+
+  <!-- Scoreboard -->
+  <div class="scoreboard">
+    <div class="score-item win">
+      <span class="label">勝</span>
+      <span class="value" id="winCount">0</span>
+    </div>
+    <div class="score-item loss">
+      <span class="label">敗</span>
+      <span class="value" id="lossCount">0</span>
+    </div>
+    <div class="score-item draw">
+      <span class="label">平</span>
+      <span class="value" id="drawCount">0</span>
+    </div>
+    <div class="score-item rate">
+      <span class="label">勝率</span>
+      <span class="value" id="winRate">0%</span>
+    </div>
+    <div class="score-item best">
+      <span class="label">Bo</span>
+      <span class="value" id="bestRound">0</span>
+    </div>
+  </div>
+
+  <!-- Manual mode -->
+  <div class="mode-content active" id="manualMode">
+    <div class="matchup" id="matchup">
+      <div class="matchup-player">
+        <div class="hand" id="playerHand">🤚</div>
+        <div class="tag">你</div>
+        <div class="choice-name" id="playerChoiceName">—</div>
+      </div>
+      <div class="vs">VS</div>
+      <div class="matchup-computer">
+        <div class="hand" id="computerHand">🤖</div>
+        <div class="tag">電腦</div>
+        <div class="choice-name" id="computerChoiceName">—</div>
+      </div>
+    </div>
+
+    <div class="result">
+      <div class="result-text" id="resultText">猜拳吧！</div>
+    </div>
+
+    <div class="choices" id="choices">
+      <button class="choice-btn" data-choice="rock">
+        ✊
+        <span class="label">石頭</span>
+      </button>
+      <button class="choice-btn" data-choice="paper">
+        ✋
+        <span class="label">布</span>
+      </button>
+      <button class="choice-btn" data-choice="scissors">
+        ✌️
+        <span class="label">剪刀</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- Camera mode -->
+  <div class="mode-content" id="cameraMode">
+    <div class="camera-area">
+      <div class="camera-feed-wrap">
+        <video class="camera-feed" id="cameraFeed" autoplay playsinline muted></video>
+        <canvas id="cameraCanvas" style="display:none"></canvas>
+        <div class="camera-overlay" id="cameraOverlay">
+          <div class="cam-icon">📷</div>
+          <div class="cam-text">點擊下方按鈕啟用鏡頭</div>
+        </div>
+      </div>
+      <div class="camera-detect">
+        <span class="detect-label">偵測:</span>
+        <span class="detect-value" id="detectValue">—</span>
+      </div>
+      <div class="camera-countdown" id="cameraCountdown"></div>
+      <button class="btn-camera enable" id="cameraToggle">📷 啟用鏡頭</button>
+    </div>
+
+    <div class="matchup" id="cameraMatchup">
+      <div class="matchup-player">
+        <div class="hand" id="camPlayerHand">🤚</div>
+        <div class="tag">你</div>
+        <div class="choice-name" id="camPlayerChoiceName">—</div>
+      </div>
+      <div class="vs">VS</div>
+      <div class="matchup-computer">
+        <div class="hand" id="camComputerHand">🤖</div>
+        <div class="tag">電腦</div>
+        <div class="choice-name" id="camComputerChoiceName">—</div>
+      </div>
+    </div>
+
+    <div class="result">
+      <div class="result-text" id="camResultText">舉手偵測中...</div>
+    </div>
+  </div>
+
+  <!-- History -->
+  <div class="history-section">
+    <div class="history-title">┃ 最近對戰 ┃</div>
+    <div class="history-list" id="historyList">
+      <div class="history-empty">尚無對戰記錄</div>
+    </div>
+  </div>
+
+  <!-- Actions -->
+  <div class="actions">
+    <button class="btn btn-secondary" id="resetBtn">🔄 重新開始</button>
+  </div>
+
+  <!-- Footer -->
+  <div class="footer">
+    <a href="../games/">← 返回遊戲大廳</a>
+  </div>
+</div>
+
+<script>
+(function(){
+  'use strict';
+
+  // ─── DOM refs ──────────────────────────────────────────────
+  const winCountEl = document.getElementById('winCount');
+  const lossCountEl = document.getElementById('lossCount');
+  const drawCountEl = document.getElementById('drawCount');
+  const winRateEl = document.getElementById('winRate');
+  const bestRoundEl = document.getElementById('bestRound');
+  const resultText = document.getElementById('resultText');
+  const playerHand = document.getElementById('playerHand');
+  const computerHand = document.getElementById('computerHand');
+  const playerChoiceName = document.getElementById('playerChoiceName');
+  const computerChoiceName = document.getElementById('computerChoiceName');
+  const historyList = document.getElementById('historyList');
+  const resetBtn = document.getElementById('resetBtn');
+
+  const manualMode = document.getElementById('manualMode');
+  const cameraMode = document.getElementById('cameraMode');
+  const modeTabs = document.querySelectorAll('.mode-tab');
+
+  const cameraFeed = document.getElementById('cameraFeed');
+  const cameraCanvas = document.getElementById('cameraCanvas');
+  const cameraOverlay = document.getElementById('cameraOverlay');
+  const cameraToggle = document.getElementById('cameraToggle');
+  const cameraCountdown = document.getElementById('cameraCountdown');
+  const detectValue = document.getElementById('detectValue');
+
+  const camPlayerHand = document.getElementById('camPlayerHand');
+  const camComputerHand = document.getElementById('camComputerHand');
+  const camPlayerChoiceName = document.getElementById('camPlayerChoiceName');
+  const camComputerChoiceName = document.getElementById('camComputerChoiceName');
+  const camResultText = document.getElementById('camResultText');
+
+  // ─── State ──────────────────────────────────────────────────
+  const EMOJI_MAP = { rock: '✊', paper: '✋', scissors: '✌️' };
+  const NAME_MAP = { rock: '石頭', paper: '布', scissors: '剪刀' };
+
+  let scores = { win: 0, loss: 0, draw: 0 };
+  let history = []; // [{player, computer, result}]
+  let currentMode = 'manual';
+  let isPlaying = false;
+
+  // Camera state
+  let cameraStream = null;
+  let cameraActive = false;
+  let animFrameId = null;
+  let detectTimer = null;
+  let stableFrames = 0;
+  let lastDetected = null;
+  const STABLE_THRESHOLD = 40; // frames (~1s at 40fps processing)
+  let cameraMounted = false;
+
+  // ─── localStorage ───────────────────────────────────────────
+  const LS_KEY = 'rps_scores';
+  const LS_HISTORY_KEY = 'rps_history';
+  const LS_BEST_KEY = 'rps_best';
+
+  let bestRound = 0;
+  function loadData() {
+    try {
+      const d = JSON.parse(localStorage.getItem(LS_KEY));
+      if (d) {
+        if (typeof d.win === 'number') scores.win = d.win;
+        if (typeof d.loss === 'number') scores.loss = d.loss;
+        if (typeof d.draw === 'number') scores.draw = d.draw;
+      }
+    } catch (_) {}
+    try {
+      const h = JSON.parse(localStorage.getItem(LS_HISTORY_KEY));
+      if (Array.isArray(h)) history = h.slice(-5);
+    } catch (_) {}
+    try {
+      const b = parseInt(localStorage.getItem(LS_BEST_KEY), 10);
+      if (!isNaN(b)) bestRound = b;
+    } catch (_) {}
+  }
+  function saveScores() {
+    try { localStorage.setItem(LS_KEY, JSON.stringify(scores)); } catch (_) {}
+  }
+  function saveHistory() {
+    try { localStorage.setItem(LS_HISTORY_KEY, JSON.stringify(history)); } catch (_) {}
+  }
+  function saveBest() {
+    try { localStorage.setItem(LS_BEST_KEY, String(bestRound)); } catch (_) {}
+  }
+
+  // ─── UI Update ──────────────────────────────────────────────
+  function updateScoreUI() {
+    winCountEl.textContent = scores.win;
+    lossCountEl.textContent = scores.loss;
+    drawCountEl.textContent = scores.draw;
+    const total = scores.win + scores.loss + scores.draw;
+    const rate = total === 0 ? 0 : Math.round((scores.win / total) * 100);
+    winRateEl.textContent = rate + '%';
+    bestRoundEl.textContent = bestRound;
+  }
+
+  function renderHistory() {
+    historyList.innerHTML = '';
+    if (history.length === 0) {
+      historyList.innerHTML = '<div class="history-empty">尚無對戰記錄</div>';
+      return;
+    }
+    const max = 5;
+    const items = history.slice(-max);
+    for (const h of items) {
+      const div = document.createElement('div');
+      div.className = 'history-item h-' + h.result;
+      const pEmoji = EMOJI_MAP[h.player] || '?';
+      const cEmoji = EMOJI_MAP[h.computer] || '?';
+      let resultSymbol = '';
+      if (h.result === 'win') resultSymbol = 'W';
+      else if (h.result === 'lose') resultSymbol = 'L';
+      else resultSymbol = 'D';
+      div.innerHTML = `<span>${pEmoji}</span><span class="h-result">${resultSymbol}</span><span>${cEmoji}</span>`;
+      historyList.appendChild(div);
+    }
+  }
+
+  function showResult(el, text, cls) {
+    el.textContent = text;
+    el.className = 'result-text';
+    // force reflow for animation restart
+    void el.offsetWidth;
+    el.classList.add('show');
+    if (cls) el.classList.add(cls);
+  }
+
+  function resetResult(el) {
+    el.textContent = '';
+    el.className = 'result-text';
+  }
+
+  function animateHand(el, emoji) {
+    el.textContent = emoji;
+    el.className = 'hand';
+    void el.offsetWidth;
+    el.classList.add('animate');
+  }
+
+  function clearHandAnim(el) {
+    el.className = 'hand';
+  }
+
+  // ─── Game Logic ─────────────────────────────────────────────
+  function getComputerChoice() {
+    const choices = ['rock', 'paper', 'scissors'];
+    return choices[Math.floor(Math.random() * 3)];
+  }
+
+  function determineWinner(player, computer) {
+    if (player === computer) return 'draw';
+    if (
+      (player === 'rock' && computer === 'scissors') ||
+      (player === 'paper' && computer === 'rock') ||
+      (player === 'scissors' && computer === 'paper')
+    ) return 'win';
+    return 'lose';
+  }
+
+  function processRound(playerChoice, computerChoice, mode) {
+    const hPlayer = mode === 'manual' ? playerHand : camPlayerHand;
+    const hComputer = mode === 'manual' ? computerHand : camComputerHand;
+    const nPlayer = mode === 'manual' ? playerChoiceName : camPlayerChoiceName;
+    const nComputer = mode === 'manual' ? computerChoiceName : camComputerChoiceName;
+    const rEl = mode === 'manual' ? resultText : camResultText;
+
+    // Animate
+    animateHand(hPlayer, EMOJI_MAP[playerChoice]);
+    animateHand(hComputer, EMOJI_MAP[computerChoice]);
+    nPlayer.textContent = NAME_MAP[playerChoice];
+    nComputer.textContent = NAME_MAP[computerChoice];
+
+    const result = determineWinner(playerChoice, computerChoice);
+    const totalBefore = scores.win + scores.loss + scores.draw;
+    const bestBefore = bestRound;
+
+    if (result === 'win') {
+      scores.win++;
+      const total = scores.win + scores.loss + scores.draw;
+      if (scores.win > scores.loss && scores.win > totalBefore - scores.win) {
+        if (scores.win > bestRound) {
+          bestRound = scores.win;
+        }
+      }
+      showResult(rEl, '🎉 你贏了！', 'win');
+    } else if (result === 'lose') {
+      scores.loss++;
+      showResult(rEl, '😵 你輸了！', 'lose');
+    } else {
+      scores.draw++;
+      showResult(rEl, '🤝 平手！', 'draw');
+    }
+
+    history.push({ player: playerChoice, computer: computerChoice, result });
+    if (history.length > 20) history = history.slice(-20);
+
+    updateScoreUI();
+    saveScores();
+    saveHistory();
+    renderHistory();
+    saveBest();
+
+    if (bestRound > bestBefore) {
+      // flash best round
+      bestRoundEl.style.transition = 'color 0.15s';
+      bestRoundEl.style.color = '#ffd700';
+      setTimeout(() => { bestRoundEl.style.color = ''; }, 600);
+    }
+
+    isPlaying = false;
+  }
+
+  // ─── Manual Mode ────────────────────────────────────────────
+  document.querySelectorAll('.choice-btn').forEach(btn => {
+    btn.addEventListener('click', function() {
+      if (isPlaying) return;
+      if (currentMode !== 'manual') return;
+      isPlaying = true;
+      const choice = this.dataset.choice;
+      const computer = getComputerChoice();
+      processRound(choice, computer, 'manual');
+    });
+  });
+
+  // ─── Camera Mode ────────────────────────────────────────────
+  function processCameraGesture(gesture) {
+    if (isPlaying || !cameraActive) return;
+    isPlaying = true;
+    const computer = getComputerChoice();
+    processRound(gesture, computer, 'camera');
+  }
+
+  // Skin detection in YCrCb
+  function detectGestureFromVideo() {
+    if (!cameraActive || cameraFeed.readyState < 2) return;
+
+    const vw = cameraFeed.videoWidth;
+    const vh = cameraFeed.videoHeight;
+    if (vw === 0 || vh === 0) return;
+
+    cameraCanvas.width = vw;
+    cameraCanvas.height = vh;
+    const ctx = cameraCanvas.getContext('2d');
+    ctx.drawImage(cameraFeed, 0, 0, vw, vh);
+    const imageData = ctx.getImageData(0, 0, vw, vh);
+    const data = imageData.data;
+
+    // Region of interest: center 60% of frame
+    const roiX = Math.floor(vw * 0.2);
+    const roiY = Math.floor(vh * 0.15);
+    const roiW = Math.floor(vw * 0.6);
+    const roiH = Math.floor(vh * 0.7);
+
+    let skinPixels = [];
+    let skinCount = 0;
+    const totalRoi = roiW * roiH;
+
+    for (let y = roiY; y < roiY + roiH; y++) {
+      for (let x = roiX; x < roiX + roiW; x++) {
+        const idx = (y * vw + x) * 4;
+        const r = data[idx];
+        const g = data[idx + 1];
+        const b = data[idx + 2];
+
+        // Convert RGB to YCrCb (full range)
+        const cr = 128 + 0.5 * r - 0.4187 * g - 0.0813 * b;
+        const cb = 128 - 0.1687 * r - 0.3313 * g + 0.5 * b;
+
+        // Skin color range in CrCb
+        if (cr >= 133 && cr <= 175 && cb >= 77 && cb <= 127) {
+          skinCount++;
+          skinPixels.push({ x, y });
+        }
+      }
+    }
+
+    const skinRatio = skinCount / totalRoi;
+
+    // Need minimum skin to proceed
+    if (skinRatio < 0.05 || skinPixels.length < 50) {
+      detectValue.textContent = '❓';
+      stableFrames = 0;
+      lastDetected = null;
+      return;
+    }
+
+    // Find bounding box of skin pixels
+    let minX = Infinity, maxX = -Infinity;
+    let minY = Infinity, maxY = -Infinity;
+    for (const p of skinPixels) {
+      if (p.x < minX) minX = p.x;
+      if (p.x > maxX) maxX = p.x;
+      if (p.y < minY) minY = p.y;
+      if (p.y > maxY) maxY = p.y;
+    }
+    const spreadW = maxX - minX;
+    const spreadH = maxY - minY;
+    const aspect = spreadW / (spreadH || 1);
+
+    let gesture;
+    // Heuristics
+    if (aspect > 1.5 && skinRatio > 0.12) {
+      gesture = 'scissors'; // two fingers → wide spread
+    } else if (skinRatio > 0.4) {
+      gesture = 'paper'; // open hand → lots of skin
+    } else {
+      gesture = 'rock'; // fist → concentrated skin
+    }
+
+    detectValue.textContent = EMOJI_MAP[gesture] + ' ' + NAME_MAP[gesture];
+
+    // Stabilize detection
+    if (gesture === lastDetected) {
+      stableFrames++;
+      if (stableFrames >= STABLE_THRESHOLD && !isPlaying) {
+        cameraCountdown.textContent = '✅ 偵測穩定，出拳！';
+        processCameraGesture(gesture);
+        stableFrames = 0;
+        lastDetected = null;
+        return;
+      }
+      if (stableFrames >= Math.floor(STABLE_THRESHOLD * 0.5)) {
+        const remain = Math.ceil((STABLE_THRESHOLD - stableFrames) / 40);
+        cameraCountdown.textContent = `⏳ ${Math.max(1, remain)}s 後出拳...`;
+        detectValue.classList.add('confirmed');
+      } else {
+        cameraCountdown.textContent = `👀 保持姿勢...`;
+      }
+    } else {
+      lastDetected = gesture;
+      stableFrames = 1;
+      cameraCountdown.textContent = '👀 偵測中...';
+      detectValue.classList.remove('confirmed');
+    }
+  }
+
+  function cameraLoop() {
+    if (!cameraActive) return;
+    if (currentMode === 'camera') {
+      detectGestureFromVideo();
+    }
+    animFrameId = requestAnimationFrame(cameraLoop);
+  }
+
+  async function startCamera() {
+    try {
+      cameraStream = await navigator.mediaDevices.getUserMedia({
+        video: { facingMode: 'user', width: { ideal: 320 }, height: { ideal: 240 } }
+      });
+      cameraFeed.srcObject = cameraStream;
+      await cameraFeed.play();
+      cameraActive = true;
+      cameraOverlay.classList.add('hidden');
+      cameraToggle.textContent = '🛑 關閉鏡頭';
+      cameraToggle.className = 'btn-camera disable';
+      stableFrames = 0;
+      lastDetected = null;
+      cameraCountdown.textContent = '👀 舉手偵測中...';
+      detectValue.textContent = '—';
+      cameraLoop();
+    } catch (err) {
+      alert('無法存取鏡頭: ' + err.message);
+    }
+  }
+
+  function stopCamera() {
+    cameraActive = false;
+    if (animFrameId) { cancelAnimationFrame(animFrameId); animFrameId = null; }
+    if (cameraStream) {
+      cameraStream.getTracks().forEach(t => t.stop());
+      cameraStream = null;
+    }
+    cameraFeed.srcObject = null;
+    cameraOverlay.classList.remove('hidden');
+    cameraToggle.textContent = '📷 啟用鏡頭';
+    cameraToggle.className = 'btn-camera enable';
+    cameraCountdown.textContent = '';
+    detectValue.textContent = '—';
+    detectValue.classList.remove('confirmed');
+    stableFrames = 0;
+    lastDetected = null;
+    if (detectTimer) { clearTimeout(detectTimer); detectTimer = null; }
+    resetResult(camResultText);
+    camPlayerHand.textContent = '🤚';
+    camComputerHand.textContent = '🤖';
+    camPlayerHand.className = 'hand';
+    camComputerHand.className = 'hand';
+    camPlayerChoiceName.textContent = '—';
+    camComputerChoiceName.textContent = '—';
+  }
+
+  cameraToggle.addEventListener('click', function() {
+    if (cameraActive) {
+      stopCamera();
+    } else {
+      startCamera();
+    }
+  });
+
+  // ─── Mode Switching ─────────────────────────────────────────
+  modeTabs.forEach(tab => {
+    tab.addEventListener('click', function() {
+      const mode = this.dataset.mode;
+      if (mode === currentMode) return;
+
+      modeTabs.forEach(t => t.classList.remove('active'));
+      this.classList.add('active');
+
+      if (mode === 'camera') {
+        // Reset camera matchup display
+        camPlayerHand.textContent = '🤚';
+        camComputerHand.textContent = '🤖';
+        camPlayerHand.className = 'hand';
+        camComputerHand.className = 'hand';
+        camPlayerChoiceName.textContent = '—';
+        camComputerChoiceName.textContent = '—';
+        resetResult(camResultText);
+        camResultText.textContent = '舉手偵測中...';
+      } else {
+        // Switching to manual - don't stop camera automatically
+      }
+
+      manualMode.classList.toggle('active', mode === 'manual');
+      cameraMode.classList.toggle('active', mode === 'camera');
+      currentMode = mode;
+
+      // Sync matchup result display
+      if (mode === 'manual') {
+        if (resultText.textContent === '') {
+          resultText.textContent = '猜拳吧！';
+          resultText.className = 'result-text show';
+        }
+      }
+    });
+  });
+
+  // ─── Reset ──────────────────────────────────────────────────
+  function fullReset() {
+    isPlaying = false;
+    scores = { win: 0, loss: 0, draw: 0 };
+    history = [];
+    bestRound = 0;
+    updateScoreUI();
+    renderHistory();
+    saveScores();
+    saveHistory();
+    saveBest();
+
+    // Reset manual display
+    playerHand.textContent = '🤚';
+    computerHand.textContent = '🤖';
+    playerHand.className = 'hand';
+    computerHand.className = 'hand';
+    playerChoiceName.textContent = '—';
+    computerChoiceName.textContent = '—';
+    resultText.textContent = '已重置！';
+    resultText.className = 'result-text show';
+
+    // Reset camera display
+    camPlayerHand.textContent = '🤚';
+    camComputerHand.textContent = '🤖';
+    camPlayerHand.className = 'hand';
+    camComputerHand.className = 'hand';
+    camPlayerChoiceName.textContent = '—';
+    camComputerChoiceName.textContent = '—';
+    resetResult(camResultText);
+    camResultText.textContent = '舉手偵測中...';
+  }
+
+  resetBtn.addEventListener('click', fullReset);
+
+  // ─── Init ───────────────────────────────────────────────────
+  loadData();
+  updateScoreUI();
+  renderHistory();
+  resultText.textContent = '猜拳吧！';
+  resultText.className = 'result-text show';
+  playerHand.textContent = '🤚';
+  computerHand.textContent = '🤖';
+  playerChoiceName.textContent = '—';
+  computerChoiceName.textContent = '—';
+  camPlayerHand.textContent = '🤚';
+  camComputerHand.textContent = '🤖';
+  camPlayerChoiceName.textContent = '—';
+  camComputerChoiceName.textContent = '—';
+  camResultText.textContent = '舉手偵測中...';
+
+  // Cleanup on page unload
+  window.addEventListener('beforeunload', function() {
+    if (cameraActive) stopCamera();
+  });
+
+})();
+</script>
+</body>
+</html>

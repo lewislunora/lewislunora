@@ -600,4 +600,33 @@ async def serve_solopreneur(): return await _serve_sub("solopreneur")
 async def serve_games(): return await _serve_sub("games")
 
 
+class GameQuestion(BaseModel):
+    topic: str
+    question: str
+
+
+@app.post("/api/game/questions")
+async def game_20questions(body: GameQuestion):
+    from ..ai.generator import AIContentGenerator
+    gen = AIContentGenerator()
+    if not gen.is_available():
+        return JSONResponse({"answer": "不確定", "hint_level": 0, "fallback": True})
+    prompt = (
+        f"你正在玩 20 問遊戲。你心裡想的是「{body.topic}」。\n"
+        f"玩家問：{body.question}\n\n"
+        f"請用「是」「否」「不確定」其中一個詞回答。\n"
+        f"如果問題與「{body.topic}」直接相關，回答「是」或「否」。\n"
+        f"如果問題模糊或無法確定，回答「不確定」。\n"
+        f"只回答一個詞，不要加任何解釋。"
+    )
+    try:
+        resp = gen.generate("custom", {"prompt": prompt})
+        answer = resp.strip() if resp else "不確定"
+        if answer not in ("是", "否"):
+            answer = "不確定"
+        return JSONResponse({"answer": answer, "hint_level": 0})
+    except Exception:
+        return JSONResponse({"answer": "不確定", "hint_level": 0})
+
+
 app.mount("/", StaticFiles(directory=str(DOCS_DIR), html=True), name="site")

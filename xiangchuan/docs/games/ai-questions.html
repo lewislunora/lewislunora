@@ -1,0 +1,1118 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<title>AI 20 問</title>
+<style>
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans TC", system-ui, sans-serif;
+  background: linear-gradient(135deg, #0a0e27 0%, #1a1f3a 50%, #0d1233 100%);
+  color: #e0e0e0;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  overflow-x: hidden;
+}
+header {
+  width: 100%;
+  max-width: 600px;
+  padding: 1.5rem 1rem 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  animation: fadeIn 0.4s ease-out;
+}
+.header-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  gap: 8px;
+}
+h1 {
+  font-size: 2rem;
+  font-weight: 800;
+  background: linear-gradient(135deg, #667eea, #764ba2);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  line-height: 1.2;
+}
+h1 .mode-badge {
+  font-size: 0.6rem;
+  -webkit-text-fill-color: initial;
+  background: rgba(255,255,255,0.08);
+  border: 1px solid rgba(255,255,255,0.12);
+  border-radius: 20px;
+  padding: 2px 10px;
+  vertical-align: middle;
+  margin-left: 6px;
+  color: #9999cc;
+  font-weight: 500;
+}
+.status-badge {
+  display: inline-block;
+  font-size: 0.85rem;
+  padding: 4px 16px;
+  border-radius: 20px;
+  background: rgba(102,126,234,0.15);
+  border: 1px solid rgba(102,126,234,0.25);
+  color: #b8b8ff;
+  margin-top: 2px;
+}
+.status-badge .category-icon { margin-right: 4px; }
+.count-box {
+  background: rgba(255,255,255,0.06);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 10px;
+  padding: 4px 14px;
+  text-align: center;
+  white-space: nowrap;
+}
+.count-box .label {
+  font-size: 0.65rem;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: rgba(255,255,255,0.4);
+}
+.count-box .value {
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: #fff;
+}
+.btn {
+  background: rgba(255,255,255,0.08);
+  border: 1px solid rgba(255,255,255,0.1);
+  color: #fff;
+  padding: 8px 18px;
+  border-radius: 10px;
+  cursor: pointer;
+  font-size: 0.85rem;
+  font-weight: 600;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+  -webkit-tap-highlight-color: transparent;
+  user-select: none;
+  font-family: inherit;
+}
+.btn:hover {
+  background: rgba(102,126,234,0.15);
+  border-color: rgba(102,126,234,0.3);
+  transform: translateY(-1px);
+}
+.btn:active { transform: translateY(0); }
+.btn-primary {
+  background: linear-gradient(135deg, #667eea, #764ba2);
+  border: none;
+  color: #fff;
+}
+.btn-primary:hover { opacity: 0.9; transform: translateY(-1px); }
+.btn-primary:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+  transform: none;
+}
+.btn-secondary {
+  background: rgba(255,255,255,0.1);
+  border: 1px solid rgba(255,255,255,0.15);
+  color: #fff;
+}
+.btn-secondary:hover { background: rgba(255,255,255,0.15); }
+.btn-success {
+  background: linear-gradient(135deg, #4ade80, #22c55e);
+  border: none;
+  color: #fff;
+}
+.btn-success:hover { opacity: 0.9; transform: translateY(-1px); }
+.btn-danger {
+  background: linear-gradient(135deg, #f472b6, #ec4899);
+  border: none;
+  color: #fff;
+}
+.btn-danger:hover { opacity: 0.9; transform: translateY(-1px); }
+
+#game-container {
+  width: 100%;
+  max-width: 600px;
+  padding: 0 1rem;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  animation: fadeIn 0.4s ease-out;
+}
+
+/* History area */
+#history-area {
+  flex: 1;
+  min-height: 200px;
+  max-height: calc(100vh - 340px);
+  overflow-y: auto;
+  margin: 0.75rem 0;
+  padding: 0.5rem;
+  background: rgba(255,255,255,0.02);
+  border: 1px solid rgba(255,255,255,0.04);
+  border-radius: 12px;
+  scroll-behavior: smooth;
+}
+#history-area::-webkit-scrollbar { width: 4px; }
+#history-area::-webkit-scrollbar-track { background: transparent; }
+#history-area::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.15); border-radius: 4px; }
+
+.history-empty {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  min-height: 120px;
+  color: rgba(255,255,255,0.25);
+  font-size: 0.9rem;
+  text-align: center;
+  line-height: 1.6;
+}
+
+.qa-entry {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 10px;
+  animation: slideIn 0.3s ease-out;
+}
+.qa-entry:last-child { margin-bottom: 0; }
+.question-bubble {
+  align-self: flex-end;
+  background: rgba(102,126,234,0.2);
+  border: 1px solid rgba(102,126,234,0.2);
+  border-radius: 14px 14px 4px 14px;
+  padding: 8px 14px;
+  max-width: 85%;
+  font-size: 0.92rem;
+  color: #d0d0ff;
+  word-break: break-word;
+}
+.answer-bubble {
+  align-self: flex-start;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  border-radius: 14px 14px 14px 4px;
+  padding: 8px 14px;
+  max-width: 85%;
+  font-size: 0.92rem;
+  margin-top: 4px;
+  word-break: break-word;
+}
+.answer-bubble.yes {
+  background: rgba(74,222,128,0.15);
+  border: 1px solid rgba(74,222,128,0.2);
+  color: #86efac;
+}
+.answer-bubble.no {
+  background: rgba(244,114,182,0.15);
+  border: 1px solid rgba(244,114,182,0.2);
+  color: #f9a8d4;
+}
+.answer-bubble.uncertain {
+  background: rgba(251,191,36,0.12);
+  border: 1px solid rgba(251,191,36,0.15);
+  color: #fcd34d;
+}
+.answer-bubble .hint-dots {
+  font-size: 0.7rem;
+  letter-spacing: 2px;
+  opacity: 0.5;
+}
+.answer-bubble .qa-num {
+  font-size: 0.65rem;
+  opacity: 0.4;
+  margin-left: auto;
+  padding-left: 8px;
+}
+
+/* Input area */
+#input-area {
+  display: flex;
+  gap: 8px;
+  margin: 0.5rem 0 0.75rem;
+}
+#question-input {
+  flex: 1;
+  background: rgba(255,255,255,0.06);
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 10px;
+  padding: 10px 14px;
+  color: #e0e0e0;
+  font-size: 0.95rem;
+  font-family: inherit;
+  outline: none;
+  transition: border-color 0.2s;
+}
+#question-input:focus {
+  border-color: rgba(102,126,234,0.5);
+  box-shadow: 0 0 0 3px rgba(102,126,234,0.1);
+}
+#question-input::placeholder { color: rgba(255,255,255,0.25); }
+#question-input:disabled { opacity: 0.5; }
+
+/* Action row */
+#action-row {
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+  margin-bottom: 1rem;
+}
+#action-row .btn { flex: 1; justify-content: center; display: flex; align-items: center; gap: 6px; }
+
+footer {
+  width: 100%;
+  max-width: 600px;
+  padding: 0.5rem 1rem 1.5rem;
+  text-align: center;
+}
+footer a {
+  color: rgba(255,255,255,0.3);
+  text-decoration: none;
+  font-size: 0.8rem;
+  transition: color 0.2s;
+}
+footer a:hover { color: rgba(255,255,255,0.6); }
+
+/* Modal overlay */
+.modal-overlay {
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(0,0,0,0.7);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  z-index: 100;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+.modal-overlay.show {
+  display: flex;
+  opacity: 1;
+}
+.modal-box {
+  background: #1a1f3a;
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 20px;
+  padding: 2rem;
+  width: 90%;
+  max-width: 400px;
+  text-align: center;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+  transform: scale(0.9);
+  transition: transform 0.3s ease;
+}
+.modal-overlay.show .modal-box { transform: scale(1); }
+.modal-box h2 {
+  font-size: 1.3rem;
+  margin-bottom: 0.75rem;
+  color: #fff;
+}
+.modal-box p {
+  color: rgba(255,255,255,0.5);
+  font-size: 0.85rem;
+  margin-bottom: 1rem;
+}
+.modal-box input {
+  width: 100%;
+  background: rgba(255,255,255,0.06);
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 10px;
+  padding: 10px 14px;
+  color: #e0e0e0;
+  font-size: 0.95rem;
+  font-family: inherit;
+  outline: none;
+  transition: border-color 0.2s;
+  margin-bottom: 1rem;
+}
+.modal-box input:focus {
+  border-color: rgba(102,126,234,0.5);
+  box-shadow: 0 0 0 3px rgba(102,126,234,0.1);
+}
+.modal-box .modal-btns {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+}
+.modal-box .modal-btns .btn { flex: 1; }
+
+/* Result overlay */
+#result-overlay .modal-box { padding: 2.5rem 2rem; }
+#result-overlay .result-icon { font-size: 3.5rem; margin-bottom: 0.5rem; }
+#result-overlay .result-title {
+  font-size: 1.5rem;
+  font-weight: 800;
+  margin-bottom: 0.5rem;
+}
+#result-overlay .result-title.win { color: #4ade80; }
+#result-overlay .result-title.lose { color: #f472b6; }
+#result-overlay .result-subtitle {
+  color: rgba(255,255,255,0.5);
+  font-size: 0.95rem;
+  margin-bottom: 0.25rem;
+  line-height: 1.6;
+}
+#result-overlay .result-subtitle .answer-text {
+  color: #e0e0ff;
+  font-weight: 700;
+  font-size: 1.2rem;
+}
+#result-overlay .result-score {
+  font-size: 0.85rem;
+  color: rgba(255,255,255,0.35);
+  margin-bottom: 1.2rem;
+}
+#result-overlay .result-btns { display: flex; gap: 10px; justify-content: center; }
+#result-overlay .result-btns .btn { flex: 1; }
+
+/* Animations */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@keyframes slideIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+.loading-pulse { animation: pulse 1.2s ease-in-out infinite; }
+.thinking-dots::after {
+  content: '';
+  display: inline-block;
+  width: 1.2em;
+  text-align: left;
+  animation: dotProgress 1.8s steps(4, end) infinite;
+}
+@keyframes dotProgress {
+  0% { content: ''; }
+  25% { content: '.'; }
+  50% { content: '..'; }
+  75% { content: '...'; }
+}
+
+/* Scrollable history auto-scroll */
+#history-area { overscroll-behavior: contain; }
+
+@media (max-width: 540px) {
+  header { padding: 1rem 0.75rem 0; }
+  h1 { font-size: 1.6rem; }
+  .count-box .value { font-size: 1rem; }
+  .count-box { padding: 3px 10px; }
+  .btn { font-size: 0.8rem; padding: 7px 14px; }
+  #question-input { font-size: 0.88rem; padding: 8px 12px; }
+}
+@media (max-width: 420px) {
+  .count-box .label { font-size: 0.55rem; }
+  .count-box .value { font-size: 0.9rem; }
+  .header-top { gap: 4px; }
+}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-top">
+    <h1>AI 20 問</h1>
+    <div style="display:flex;align-items:center;gap:8px;">
+      <div class="count-box">
+        <span class="label">問題</span>
+        <span class="value" id="question-count">0 / 20</span>
+      </div>
+      <button class="btn btn-secondary" id="newGameBtn" title="新遊戲">↻</button>
+    </div>
+  </div>
+  <div class="status-badge" id="statusBadge">🤔 按「新遊戲」開始</div>
+</header>
+
+<div id="game-container">
+  <div id="history-area">
+    <div class="history-empty" id="historyEmpty">
+      點選「新遊戲」開始<br>AI 會想一個東西，你來問問題猜！
+    </div>
+  </div>
+
+  <div id="input-area">
+    <input type="text" id="question-input" placeholder="輸入你的問題..." disabled>
+    <button class="btn btn-primary" id="askBtn" disabled>提問</button>
+  </div>
+
+  <div id="action-row">
+    <button class="btn btn-secondary" id="guessBtn" disabled>🔍 猜答案</button>
+    <button class="btn btn-secondary" id="hintBtn" disabled>💡 提示</button>
+  </div>
+</div>
+
+<footer>
+  <a href="../games/">← 返回遊戲大廳</a>
+</footer>
+
+<!-- Guess Modal -->
+<div class="modal-overlay" id="guessModal">
+  <div class="modal-box">
+    <h2>🔍 猜答案</h2>
+    <p>你覺得 AI 想的是什麼？</p>
+    <input type="text" id="guessInput" placeholder="輸入你的答案..." autocomplete="off">
+    <div class="modal-btns">
+      <button class="btn btn-secondary" id="guessCancelBtn">取消</button>
+      <button class="btn btn-success" id="guessSubmitBtn">送出猜測</button>
+    </div>
+  </div>
+</div>
+
+<!-- Result Overlay -->
+<div class="modal-overlay" id="resultOverlay">
+  <div class="modal-box">
+    <div class="result-icon" id="resultIcon">🎉</div>
+    <div class="result-title" id="resultTitle">你贏了！</div>
+    <div class="result-subtitle" id="resultSubtitle"></div>
+    <div class="result-score" id="resultScore"></div>
+    <div class="result-btns" id="resultBtns"></div>
+  </div>
+</div>
+
+<script>
+(function(){
+'use strict';
+
+const MAX_QUESTIONS = 20;
+const BACKEND_URL = '/api/game/questions';
+
+const CATEGORIES = [
+  { id: 'animal', label: '動物', icon: '🐾', questions: ['是動物嗎？', '是生物嗎？', '是活的嗎？', '是寵物嗎？'] },
+  { id: 'food', label: '食物', icon: '🍽️', questions: ['是食物嗎？', '可以吃嗎？', '是飲料嗎？'] },
+  { id: 'object', label: '物品', icon: '📦', questions: ['是物品嗎？', '是工具嗎？', '是日常用品嗎？'] },
+  { id: 'place', label: '地點', icon: '🌍', questions: ['是地點嗎？', '是一個地方嗎？', '是國家嗎？'] },
+  { id: 'person', label: '人物', icon: '👤', questions: ['是人物嗎？', '是真實人物嗎？', '是虛構人物嗎？'] }
+];
+
+const ITEMS = [
+  // 動物 (12)
+  { name: '鯨魚', cat: 'animal', traits: ['大型', '生活在海裡', '哺乳類', '肉食', '灰色', '有尾巴'], not: ['會飛', '生活在陸地', '草食', '小型', '寵物', '有腳', '魚類', '冷血'] },
+  { name: '老鷹', cat: 'animal', traits: ['會飛', '肉食', '有羽毛', '野生', '猛禽', '有翅膀'], not: ['生活在海裡', '草食', '寵物', '夜行性'] },
+  { name: '貓', cat: 'animal', traits: ['寵物', '小型', '哺乳類', '夜行性', '有毛', '肉食', '柔軟'], not: ['會飛', '生活在海裡', '大型', '草食'] },
+  { name: '狗', cat: 'animal', traits: ['寵物', '哺乳類', '忠誠', '會吠', '有毛', '肉食'], not: ['會飛', '生活在海裡', '爬蟲類', '草食'] },
+  { name: '大象', cat: 'animal', traits: ['大型', '生活在陸地', '草食', '哺乳類', '鼻子長', '有耳朵'], not: ['會飛', '肉食', '小型', '寵物'] },
+  { name: '企鵝', cat: 'animal', traits: ['不會飛', '生活在南極', '鳥類', '會游泳', '黑白', '有翅膀'], not: ['會飛', '生活在陸地', '生活在溫暖地方', '肉食'] },
+  { name: '蛇', cat: 'animal', traits: ['爬蟲類', '沒有腳', '肉食', '冷血', '細長'], not: ['會飛', '有毛', '哺乳類', '草食', '寵物', '有腳'] },
+  { name: '鯊魚', cat: 'animal', traits: ['生活在海裡', '肉食', '魚類', '冷血', '有牙齒', '大型'], not: ['會飛', '生活在陸地', '草食', '哺乳類', '有毛'] },
+  { name: '蝴蝶', cat: 'animal', traits: ['會飛', '昆蟲', '有翅膀', '小型', '彩色', '有觸角'], not: ['大型', '生活在海裡', '哺乳類', '肉食', '寵物'] },
+  { name: '長頸鹿', cat: 'animal', traits: ['大型', '生活在陸地', '草食', '脖子長', '哺乳類', '有斑點'], not: ['會飛', '肉食', '生活在海裡', '小型'] },
+  { name: '海豚', cat: 'animal', traits: ['生活在海裡', '哺乳類', '聰明', '會跳', '有尾巴', '肉食'], not: ['會飛', '生活在陸地', '草食', '魚類', '冷血'] },
+  { name: '熊貓', cat: 'animal', traits: ['生活在陸地', '草食', '黑白', '住在中國', '哺乳類', '胖'], not: ['會飛', '肉食', '生活在海裡', '大型掠食者'] },
+  { name: '獅子', cat: 'animal', traits: ['大型', '肉食', '生活在陸地', '哺乳類', '有鬃毛', '野生'], not: ['會飛', '草食', '寵物', '生活在海裡'] },
+  { name: '青蛙', cat: 'animal', traits: ['兩棲類', '會跳', '小型', '冷血', '生活在水中', '綠色'], not: ['會飛', '哺乳類', '有毛', '肉食', '大型'] },
+  { name: '鸚鵡', cat: 'animal', traits: ['會飛', '鳥類', '會說話', '彩色', '有羽毛', '寵物'], not: ['生活在海裡', '大型', '肉食', '哺乳類'] },
+  // 食物 (10)
+  { name: '披薩', cat: 'food', traits: ['義大利', '圓形', '熱食', '鹹', '有起司', '快餐'], not: ['甜', '冷食', '飲料', '水果'] },
+  { name: '西瓜', cat: 'food', traits: ['水果', '大型', '夏天', '甜', '多汁', '綠色外皮'], not: ['熱食', '鹹', '辣', '肉類'] },
+  { name: '壽司', cat: 'food', traits: ['日本', '冷食', '海鮮', '醋飯', '鹹'], not: ['熱食', '甜', '飲料', '水果'] },
+  { name: '冰淇淋', cat: 'food', traits: ['甜', '冷食', '甜點', '奶製品', '夏天'], not: ['鹹', '熱食', '辣', '飲料'] },
+  { name: '拉麵', cat: 'food', traits: ['日本', '熱食', '湯麵', '鹹', '有湯'], not: ['甜', '冷食', '水果', '飲料'] },
+  { name: '巧克力', cat: 'food', traits: ['甜', '零食', '甜點', '褐色', '來自可可'], not: ['鹹', '熱食', '冷食', '辣'] },
+  { name: '漢堡', cat: 'food', traits: ['美國', '熱食', '快餐', '鹹', '有肉', '圓形'], not: ['甜', '冷食', '飲料', '水果'] },
+  { name: '芒果', cat: 'food', traits: ['水果', '熱帶', '甜', '黃色', '多汁'], not: ['鹹', '熱食', '辣', '肉類'] },
+  { name: '珍珠奶茶', cat: 'food', traits: ['飲料', '甜', '台灣', '冷飲', '有珍珠'], not: ['熱食', '鹹', '辣', '固體食物'] },
+  { name: '臭豆腐', cat: 'food', traits: ['台灣', '熱食', '發酵', '臭味', '鹹', '小吃'], not: ['甜', '冷食', '飲料', '水果'] },
+  // 物品 (10)
+  { name: '手機', cat: 'object', traits: ['電子', '通訊', '隨身', '觸控', '可上網'], not: ['食物', '生物', '大型家具'] },
+  { name: '電腦', cat: 'object', traits: ['電子', '計算', '辦公', '有螢幕', '運算'], not: ['食物', '生物', '隨身'] },
+  { name: '書', cat: 'object', traits: ['紙本', '知識', '閱讀', '有文字', '印刷'], not: ['電子', '食物', '生物', '家具'] },
+  { name: '時鐘', cat: 'object', traits: ['時間', '圓形', '掛牆', '有指針', '計時'], not: ['電子', '食物', '生物', '可攜帶'] },
+  { name: '雨傘', cat: 'object', traits: ['防雨', '可折疊', '隨身', '有骨架'], not: ['電子', '食物', '生物', '家具'] },
+  { name: '鑰匙', cat: 'object', traits: ['金屬', '開門', '隨身', '小型', '成串'], not: ['電子', '食物', '大型', '生物'] },
+  { name: '眼鏡', cat: 'object', traits: ['視力', '戴在臉上', '透明', '光學', '有鏡片'], not: ['食物', '生物', '大型', '電子'] },
+  { name: '吉他', cat: 'object', traits: ['樂器', '弦樂', '音樂', '有弦', '木頭'], not: ['電子', '食物', '生物', '金屬'] },
+  { name: '冰箱', cat: 'object', traits: ['電子', '廚房', '冷藏', '大型', '家用'], not: ['隨身', '食物', '生物', '小型'] },
+  { name: '相機', cat: 'object', traits: ['電子', '拍照', '光學', '有鏡頭', '隨身'], not: ['食物', '生物', '大型', '樂器'] },
+  // 地點 (10)
+  { name: '東京', cat: 'place', traits: ['日本', '城市', '現代', '首都', '繁華', '大都市'], not: ['國家', '鄉村', '台灣'] },
+  { name: '巴黎', cat: 'place', traits: ['法國', '城市', '浪漫', '首都', '時尚', '大都市'], not: ['國家', '亞洲', '鄉村'] },
+  { name: '埃及', cat: 'place', traits: ['國家', '金字塔', '沙漠', '古文明', '非洲'], not: ['城市', '亞洲', '歐洲'] },
+  { name: '澳洲', cat: 'place', traits: ['國家', '島嶼', '袋鼠', '南半球', '大洋洲'], not: ['亞洲', '歐洲', '城市'] },
+  { name: '南極', cat: 'place', traits: ['大陸', '寒冷', '冰', '企鵝', '南極洲'], not: ['國家', '城市', '溫暖', '有人居住'] },
+  { name: '台北', cat: 'place', traits: ['台灣', '城市', '首都', '繁華', '夜市'], not: ['國家', '日本', '大陸'] },
+  { name: '馬爾地夫', cat: 'place', traits: ['島嶼', '度假', '海灘', '印度洋', '蜜月'], not: ['國家', '城市', '寒冷', '大陸'] },
+  { name: '喜馬拉雅山', cat: 'place', traits: ['山脈', '高山', '壯觀', '亞洲', '雪'], not: ['國家', '城市', '海洋', '島嶼'] },
+  { name: '紐約', cat: 'place', traits: ['美國', '城市', '現代', '大都會', '自由女神'], not: ['國家', '首都', '歐洲', '亞洲'] },
+  { name: '亞馬遜雨林', cat: 'place', traits: ['森林', '熱帶', '生物多樣性', '河流', '南美洲'], not: ['國家', '城市', '寒冷', '沙漠'] },
+  // 人物 (8)
+  { name: '愛因斯坦', cat: 'person', traits: ['科學家', '物理學', '天才', '歷史人物', '理論', '頭髮亂'], not: ['現代人物', '運動員', '亞洲人', '虛構'] },
+  { name: '李小龍', cat: 'person', traits: ['武術家', '演員', '傳奇', '中國人', '電影'], not: ['虛構', '科學家', '政治家', '現代在生'] },
+  { name: '孔子', cat: 'person', traits: ['思想家', '哲學家', '歷史人物', '中國人', '教育家'], not: ['現代人物', '運動員', '虛構', '科學家'] },
+  { name: '居禮夫人', cat: 'person', traits: ['科學家', '化學', '物理', '女性', '歷史人物', '諾貝爾獎'], not: ['虛構', '運動員', '現代人物'] },
+  { name: '莎士比亞', cat: 'person', traits: ['作家', '戲劇', '英國', '歷史人物', '文學'], not: ['現代人物', '科學家', '中國人', '運動員'] },
+  { name: '孫悟空', cat: 'person', traits: ['虛構', '神話', '西遊記', '中國', '會七十二變'], not: ['真實人物', '現代人物', '歷史人物', '科學家'] },
+  { name: '拿破崙', cat: 'person', traits: ['歷史人物', '軍事家', '法國', '皇帝', '矮'], not: ['現代人物', '科學家', '虛構', '亞洲人'] },
+  { name: '林書豪', cat: 'person', traits: ['運動員', '籃球', '台灣', '現代人物', 'NBA'], not: ['歷史人物', '虛構', '科學家', '演員'] }
+];
+
+const TRAIT_ALIASES = {
+  '很大': '大型', '巨大': '大型', '龐大': '大型', '大隻': '大型',
+  '很小': '小型', '迷你': '小型', '袖珍': '小型', '細小': '小型',
+  '會飛': '會飛', '飛行': '會飛', '能飛': '會飛', '有翅膀': '會飛',
+  '游泳': '會游泳', '會游': '會游泳', '能游': '會游泳',
+  '會跳': '會跳', '能跳': '會跳', '跳躍': '會跳',
+  '海': '生活在海裡', '海洋': '生活在海裡', '海裡': '生活在海裡', '水中': '生活在水中',
+  '水裡': '生活在水中', '水': '生活在水中',
+  '陸地': '生活在陸地', '陸上': '生活在陸地', '地上': '生活在陸地',
+  '吃肉': '肉食', '肉食': '肉食', '吃葷': '肉食',
+  '吃草': '草食', '草食': '草食', '吃素': '草食',
+  '寵物': '寵物', '家養': '寵物', '養在家': '寵物',
+  '野生': '野生', '野外': '野生',
+  '哺乳': '哺乳類', '哺乳動物': '哺乳類',
+  '爬蟲': '爬蟲類', '爬蟲動物': '爬蟲類',
+  '魚': '魚類', '魚類': '魚類',
+  '鳥': '鳥類', '鳥類': '鳥類',
+  '昆蟲': '昆蟲',
+  '冷血': '冷血', '變溫': '冷血',
+  '有毛': '有毛', '毛茸茸': '有毛',
+  '電子': '電子', '電器': '電子',
+  '金屬': '金屬',
+  '木頭': '木頭', '木製': '木頭',
+  '甜': '甜', '甜的': '甜',
+  '鹹': '鹹', '鹹的': '鹹',
+  '辣': '辣', '辣的': '辣',
+  '冷食': '冷食', '冷的': '冷食', '冰冷': '冷食',
+  '熱食': '熱食', '熱的': '熱食', '熱': '熱食',
+  '飲料': '飲料', '喝': '飲料',
+  '水果': '水果',
+  '國家': '國家',
+  '城市': '城市',
+  '首都': '首都',
+  '島嶼': '島嶼', '島': '島嶼',
+  '虛構': '虛構', '假的': '虛構', '幻想': '虛構',
+  '真實': '真實人物', '真人': '真實人物',
+  '科學家': '科學家',
+  '運動員': '運動員',
+  '演員': '演員',
+  '歌手': '歌手',
+  '歷史': '歷史人物', '古代': '歷史人物',
+  '現代': '現代人物', '現代人': '現代人物',
+  '中國': '中國', '中國人': '中國人',
+  '日本': '日本', '日本人': '日本',
+  '台灣': '台灣', '臺灣': '台灣',
+  '美國': '美國', '美國人': '美國',
+  '英國': '英國', '英國人': '英國',
+  '法國': '法國', '法國人': '法國',
+  '非洲': '非洲',
+  '亞洲': '亞洲',
+  '歐洲': '歐洲',
+  '南美洲': '南美洲',
+  '大型': '大型', '大': '大型',
+  '小型': '小型', '小': '小型', '細': '小型',
+  '會說話': '會說話', '說話': '會說話',
+  '會吠': '會吠', '叫': '會吠'
+};
+
+// Category-specific check terms
+const CATEGORY_CHECKS = [
+  { keywords: ['動物', '生物', '活', '寵物', '野獸'], cat: 'animal' },
+  { keywords: ['食物', '吃', '飲料', '喝', ' edible', '食材', '料理'], cat: 'food' },
+  { keywords: ['物品', '東西', '工具', '用品', '器具', '物件'], cat: 'object' },
+  { keywords: ['地點', '地方', '國家', '城市', '地區'], cat: 'place' },
+  { keywords: ['人物', '人', '名人', '歷史人物', '角色', '虛構人物'], cat: 'person' }
+];
+
+// DOM refs
+const historyArea = document.getElementById('history-area');
+const historyEmpty = document.getElementById('historyEmpty');
+const questionInput = document.getElementById('question-input');
+const askBtn = document.getElementById('askBtn');
+const newGameBtn = document.getElementById('newGameBtn');
+const guessBtn = document.getElementById('guessBtn');
+const hintBtn = document.getElementById('hintBtn');
+const questionCount = document.getElementById('question-count');
+const statusBadge = document.getElementById('statusBadge');
+const guessModal = document.getElementById('guessModal');
+const guessInput = document.getElementById('guessInput');
+const guessCancelBtn = document.getElementById('guessCancelBtn');
+const guessSubmitBtn = document.getElementById('guessSubmitBtn');
+const resultOverlay = document.getElementById('resultOverlay');
+const resultIcon = document.getElementById('resultIcon');
+const resultTitle = document.getElementById('resultTitle');
+const resultSubtitle = document.getElementById('resultSubtitle');
+const resultScore = document.getElementById('resultScore');
+const resultBtns = document.getElementById('resultBtns');
+
+let currentItem = null;
+let questions = [];
+let gameActive = false;
+let isAsking = false;
+let useBackend = true;
+let backendAvailable = null;
+
+function pickRandom(arr) { return arr[Math.floor(Math.random() * arr.length)]; }
+
+function getCategoryById(id) { return CATEGORIES.find(c => c.id === id); }
+
+function startNewGame() {
+  currentItem = pickRandom(ITEMS);
+  questions = [];
+  gameActive = true;
+  isAsking = false;
+  questionInput.disabled = false;
+  askBtn.disabled = false;
+  guessBtn.disabled = false;
+  hintBtn.disabled = false;
+  questionInput.value = '';
+  questionInput.focus();
+  updateCounter();
+  updateStatus();
+  renderHistory();
+  resultOverlay.classList.remove('show');
+  guessModal.classList.remove('show');
+  checkBackend();
+}
+
+function checkBackend() {
+  if (backendAvailable !== null) return;
+  fetch(BACKEND_URL, { method: 'HEAD', signal: AbortSignal.timeout(3000) })
+    .then(r => { backendAvailable = r.ok; useBackend = r.ok; updateModeBadge(); })
+    .catch(() => { backendAvailable = false; useBackend = false; updateModeBadge(); });
+}
+
+function updateModeBadge() {
+  const badge = document.querySelector('.mode-badge');
+  if (!badge) return;
+  if (useBackend) {
+    badge.textContent = 'AI';
+    badge.style.background = 'rgba(102,126,234,0.2)';
+    badge.style.borderColor = 'rgba(102,126,234,0.3)';
+    badge.style.color = '#b8b8ff';
+  } else {
+    badge.textContent = '離線';
+    badge.style.background = 'rgba(251,191,36,0.12)';
+    badge.style.borderColor = 'rgba(251,191,36,0.2)';
+    badge.style.color = '#fcd34d';
+  }
+}
+
+function updateStatus() {
+  if (!currentItem || !gameActive) {
+    statusBadge.textContent = '🤔 按「新遊戲」開始';
+    return;
+  }
+  const cat = getCategoryById(currentItem.cat);
+  if (!cat) { statusBadge.textContent = '🤔 我想好了一個東西！'; return; }
+  statusBadge.innerHTML = `<span class="category-icon">${cat.icon}</span> 我想的是一個${cat.label}`;
+}
+
+function updateCounter() {
+  questionCount.textContent = `${questions.length} / ${MAX_QUESTIONS}`;
+}
+
+function addQA(question, answer, hintLevel) {
+  questions.push({ question, answer, hintLevel, timestamp: Date.now() });
+  updateCounter();
+  renderHistory();
+  if (questions.length >= MAX_QUESTIONS) {
+    endGame(false);
+  }
+}
+
+function renderHistory() {
+  historyEmpty.style.display = questions.length === 0 ? 'flex' : 'none';
+  const existing = historyArea.querySelectorAll('.qa-entry');
+  for (const el of existing) el.remove();
+
+  for (let i = 0; i < questions.length; i++) {
+    const qa = questions[i];
+    const entry = document.createElement('div');
+    entry.className = 'qa-entry';
+
+    const qBubble = document.createElement('div');
+    qBubble.className = 'question-bubble';
+    qBubble.textContent = `Q${i + 1}: ${qa.question}`;
+    entry.appendChild(qBubble);
+
+    const aBubble = document.createElement('div');
+    const ansClass = qa.answer === '是' ? 'yes' : qa.answer === '否' ? 'no' : 'uncertain';
+    const ansText = qa.answer === '不確定' ? '🤷 不確定' : qa.answer === '是' ? '✅ 是' : '❌ 否';
+    aBubble.className = `answer-bubble ${ansClass}`;
+    let hintDots = '';
+    if (qa.hintLevel > 0) {
+      hintDots = ' <span class="hint-dots">' + '💡'.repeat(qa.hintLevel) + '</span>';
+    }
+    aBubble.innerHTML = `${ansText}${hintDots} <span class="qa-num">#${i + 1}</span>`;
+    entry.appendChild(aBubble);
+
+    historyArea.appendChild(entry);
+  }
+
+  historyArea.scrollTop = historyArea.scrollHeight;
+}
+
+let loadingInterval = null;
+function showLoading() {
+  const entry = document.createElement('div');
+  entry.className = 'qa-entry';
+  entry.id = 'loading-entry';
+  const qBubble = document.createElement('div');
+  qBubble.className = 'question-bubble';
+  qBubble.textContent = `Q${questions.length + 1}: ${questionInput.value}`;
+  entry.appendChild(qBubble);
+  const aBubble = document.createElement('div');
+  aBubble.className = 'answer-bubble uncertain';
+  aBubble.id = 'loading-bubble';
+  aBubble.textContent = '⏳ AI 思考中';
+  entry.appendChild(aBubble);
+  historyArea.appendChild(entry);
+  historyArea.scrollTop = historyArea.scrollHeight;
+  let dots = 0;
+  const bubble = document.getElementById('loading-bubble');
+  if (bubble) {
+    loadingInterval = setInterval(() => {
+      dots = (dots + 1) % 4;
+      bubble.textContent = '⏳ AI 思考中' + '.'.repeat(dots);
+    }, 400);
+  }
+}
+
+function removeLoading() {
+  if (loadingInterval) { clearInterval(loadingInterval); loadingInterval = null; }
+  const el = document.getElementById('loading-entry');
+  if (el) el.remove();
+}
+
+async function submitQuestion() {
+  const text = questionInput.value.trim();
+  if (!text || !gameActive || isAsking) return;
+  if (questions.length >= MAX_QUESTIONS) return;
+
+  isAsking = true;
+  askBtn.disabled = true;
+  questionInput.disabled = true;
+  showLoading();
+
+  let answer = '不確定';
+  let hintLevel = 0;
+
+  if (useBackend) {
+    try {
+      const res = await fetch(BACKEND_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ topic: currentItem.name, question: text }),
+        signal: AbortSignal.timeout(10000)
+      });
+      if (res.ok) {
+        const data = await res.json();
+        answer = data.answer || '不確定';
+        hintLevel = data.hint_level || 0;
+      } else {
+        useBackend = false;
+        updateModeBadge();
+        const result = getLocalAnswer(text);
+        answer = result.answer;
+        hintLevel = result.hintLevel;
+      }
+    } catch {
+      useBackend = false;
+      updateModeBadge();
+      const result = getLocalAnswer(text);
+      answer = result.answer;
+      hintLevel = result.hintLevel;
+    }
+  } else {
+    const result = getLocalAnswer(text);
+    answer = result.answer;
+    hintLevel = result.hintLevel;
+  }
+
+  removeLoading();
+  addQA(text, answer, hintLevel);
+
+  if (!gameActive) return;
+  questionInput.value = '';
+  questionInput.disabled = false;
+  askBtn.disabled = false;
+  isAsking = false;
+  questionInput.focus();
+}
+
+function getLocalAnswer(question) {
+  let q = question.replace(/[？?，,。.！!、；;：:\s]/g, '').toLowerCase();
+
+  // Category checks
+  for (const check of CATEGORY_CHECKS) {
+    for (const kw of check.keywords) {
+      if (q.includes(kw)) {
+        const isMatch = currentItem.cat === check.cat;
+        return { answer: isMatch ? '是' : '否', hintLevel: isMatch ? 1 : 2 };
+      }
+    }
+  }
+
+  // Direct name check
+  if (q.includes(currentItem.name) || currentItem.name.includes(q)) {
+    return { answer: '是', hintLevel: 3 };
+  }
+
+  // Pattern matching: "是XX嗎" "是不是XX"
+  let attr = null;
+  let m = q.match(/^(?:是|是不是)(.+?)(?:嗎|呢)?$/);
+  if (m) attr = m[1];
+  if (!attr) {
+    m = q.match(/^會(.+?)(?:嗎|呢)?$/);
+    if (m) attr = '會' + m[1];
+  }
+  if (!attr) {
+    m = q.match(/^有(.+?)(?:嗎|呢)?$/);
+    if (m) attr = '有' + m[1];
+  }
+  if (!attr) {
+    m = q.match(/^能(.+?)(?:嗎|呢)?$/);
+    if (m) attr = '會' + m[1];
+  }
+  if (!attr) {
+    m = q.match(/^可以(.+?)(?:嗎|呢)?$/);
+    if (m) attr = '會' + m[1];
+  }
+  if (!attr) {
+    m = q.match(/^會在(.+?)(?:嗎|呢)?$/);
+    if (m) attr = '生活在' + m[1];
+  }
+  if (!attr) {
+    m = q.match(/^住在(.+?)(?:嗎|呢)?$/);
+    if (m) attr = '生活在' + m[1];
+  }
+  if (!attr) {
+    m = q.match(/^生活在(.+?)(?:嗎|呢)?$/);
+    if (m) attr = '生活在' + m[1];
+  }
+  if (!attr) {
+    m = q.match(/^(.+)的(?:嗎|呢)?$/);
+    if (m) attr = m[1];
+  }
+
+  // Try matching extracted attribute
+  if (attr) {
+    // Check aliases
+    const aliasTarget = TRAIT_ALIASES[attr];
+    const checkAttr = aliasTarget || attr;
+
+    // Check direct category
+    for (const cat of CATEGORIES) {
+      if (attr.includes(cat.label) || cat.label.includes(attr)) {
+        const isMatch = currentItem.cat === cat.id;
+        return { answer: isMatch ? '是' : '否', hintLevel: isMatch ? 1 : 2 };
+      }
+    }
+
+    // Check traits (positive)
+    for (const t of currentItem.traits) {
+      if (t === checkAttr || t.includes(checkAttr) || checkAttr.includes(t) ||
+          (aliasTarget && (t === aliasTarget || t.includes(aliasTarget) || aliasTarget.includes(t)))) {
+        return { answer: '是', hintLevel: 2 };
+      }
+    }
+
+    // Check notTraits (negative)
+    for (const t of currentItem.not) {
+      if (t === checkAttr || t.includes(checkAttr) || checkAttr.includes(t) ||
+          (aliasTarget && (t === aliasTarget || t.includes(aliasTarget) || aliasTarget.includes(t)))) {
+        return { answer: '否', hintLevel: 2 };
+      }
+    }
+  }
+
+  // Keyword-based matching
+  const matchedTraits = [];
+  const matchedNotTraits = [];
+
+  for (const [keyword, trait] of Object.entries(TRAIT_ALIASES)) {
+    if (q.includes(keyword)) {
+      if (currentItem.traits.includes(trait)) matchedTraits.push(trait);
+      else if (currentItem.not.includes(trait)) matchedNotTraits.push(trait);
+    }
+  }
+
+  if (matchedTraits.length > 0) {
+    return { answer: '是', hintLevel: 1 + Math.min(matchedTraits.length, 2) };
+  }
+  if (matchedNotTraits.length > 0) {
+    return { answer: '否', hintLevel: 1 + Math.min(matchedNotTraits.length, 2) };
+  }
+
+  return { answer: '不確定', hintLevel: 0 };
+}
+
+function openGuessModal() {
+  if (!gameActive) return;
+  guessInput.value = '';
+  guessModal.classList.add('show');
+  setTimeout(() => guessInput.focus(), 100);
+}
+
+function submitGuess() {
+  const guess = guessInput.value.trim();
+  if (!guess || !currentItem) return;
+  guessModal.classList.remove('show');
+
+  const isCorrect = guess.includes(currentItem.name) || currentItem.name.includes(guess);
+  if (isCorrect) {
+    endGame(true);
+  } else {
+    const entry = document.createElement('div');
+    entry.className = 'qa-entry';
+    const qBubble = document.createElement('div');
+    qBubble.className = 'question-bubble';
+    qBubble.textContent = `🔍 猜測: ${guess}`;
+    entry.appendChild(qBubble);
+    const aBubble = document.createElement('div');
+    aBubble.className = 'answer-bubble no';
+    aBubble.innerHTML = '❌ 不對，再想想！';
+    entry.appendChild(aBubble);
+    historyArea.appendChild(entry);
+    historyArea.scrollTop = historyArea.scrollHeight;
+  }
+}
+
+function showHint() {
+  if (!gameActive || !currentItem || questions.length === 0) return;
+  const cat = getCategoryById(currentItem.cat);
+  const hints = [];
+
+  hints.push(`📂 類別：${cat ? cat.label : '未知'}${cat ? ' ' + cat.icon : ''}`);
+
+  const usedQuestions = questions.length;
+  const traitIdx = Math.min(Math.floor((usedQuestions - 1) / 3), currentItem.traits.length - 1);
+  if (usedQuestions >= 2 && traitIdx >= 0) {
+    hints.push(`🔹 特徵：它有「${currentItem.traits[traitIdx]}」的特性`);
+  }
+
+  const notIdx = Math.min(Math.floor((usedQuestions - 2) / 4), currentItem.not.length - 1);
+  if (usedQuestions >= 4 && notIdx >= 0) {
+    hints.push(`🔸 它不是「${currentItem.not[notIdx]}」`);
+  }
+
+  if (usedQuestions >= 7) {
+    const firstChar = currentItem.name[0];
+    hints.push(`💡 名稱第一個字是「${firstChar}」`);
+  }
+
+  if (usedQuestions >= 12) {
+    hints.push(`🔑 名稱有 ${currentItem.name.length} 個字`);
+  }
+
+  const hintText = hints.join('<br>');
+  const entry = document.createElement('div');
+  entry.className = 'qa-entry';
+  const qBubble = document.createElement('div');
+  qBubble.className = 'question-bubble';
+  qBubble.textContent = `💡 請求提示 (已問 ${usedQuestions} 題)`;
+  entry.appendChild(qBubble);
+  const aBubble = document.createElement('div');
+  aBubble.className = 'answer-bubble uncertain';
+  aBubble.innerHTML = hintText;
+  entry.appendChild(aBubble);
+  historyArea.appendChild(entry);
+  historyArea.scrollTop = historyArea.scrollHeight;
+}
+
+function endGame(won) {
+  gameActive = false;
+  questionInput.disabled = true;
+  askBtn.disabled = true;
+  guessBtn.disabled = true;
+  hintBtn.disabled = true;
+
+  setTimeout(() => {
+    resultIcon.textContent = won ? '🎉' : '😔';
+    resultTitle.textContent = won ? '你贏了！' : '遊戲結束';
+    resultTitle.className = `result-title ${won ? 'win' : 'lose'}`;
+
+    const cat = getCategoryById(currentItem.cat);
+    const catStr = cat ? `${cat.label}（${cat.icon}）` : '未知';
+
+    if (won) {
+      resultSubtitle.innerHTML = `答案是 <span class="answer-text">${currentItem.name}</span><br>你用了 ${questions.length} / ${MAX_QUESTIONS} 個問題！`;
+      const finalScore = Math.min(Math.round((1 - questions.length / MAX_QUESTIONS) * 100) + 50, 100);
+      resultScore.textContent = '得分：0 分';
+      const scoreEl = resultScore;
+      let currentScore = 0;
+      const step = Math.max(1, Math.floor(finalScore / 20));
+      const scoreInterval = setInterval(() => {
+        currentScore = Math.min(currentScore + step, finalScore);
+        const label = currentScore >= 90 ? '完美！' : currentScore >= 70 ? '很棒！' : currentScore >= 50 ? '不錯！' : '繼續加油！';
+        scoreEl.textContent = `得分：${currentScore} 分 — ${label}`;
+        if (currentScore >= finalScore) clearInterval(scoreInterval);
+      }, 40);
+    } else {
+      resultSubtitle.innerHTML = `答案是 <span class="answer-text">${currentItem.name}</span><br>類別：${catStr}`;
+      resultScore.textContent = `用了全部 ${MAX_QUESTIONS} 個問題，下次再挑戰！`;
+    }
+
+    resultBtns.innerHTML = `
+      <button class="btn btn-primary" id="playAgainBtn">🔄 再玩一次</button>
+      <button class="btn btn-secondary" id="resultBackBtn">← 返回</button>
+    `;
+    resultOverlay.classList.add('show');
+    document.getElementById('playAgainBtn').addEventListener('click', () => {
+      resultOverlay.classList.remove('show');
+      startNewGame();
+    });
+    document.getElementById('resultBackBtn').addEventListener('click', () => {
+      resultOverlay.classList.remove('show');
+    });
+  }, 600);
+}
+
+// Event binding
+askBtn.addEventListener('click', submitQuestion);
+questionInput.addEventListener('keydown', (e) => {
+  if (e.key === 'Enter') submitQuestion();
+});
+newGameBtn.addEventListener('click', startNewGame);
+guessBtn.addEventListener('click', openGuessModal);
+hintBtn.addEventListener('click', showHint);
+guessCancelBtn.addEventListener('click', () => guessModal.classList.remove('show'));
+guessSubmitBtn.addEventListener('click', submitGuess);
+guessInput.addEventListener('keydown', (e) => {
+  if (e.key === 'Enter') submitGuess();
+});
+
+// Close modals on Escape
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape') {
+    guessModal.classList.remove('show');
+    resultOverlay.classList.remove('show');
+    if (gameActive) questionInput.focus();
+  }
+});
+
+// Click outside modal to close
+guessModal.addEventListener('click', (e) => {
+  if (e.target === guessModal) guessModal.classList.remove('show');
+});
+
+// Prevent closing result overlay by clicking outside
+resultOverlay.addEventListener('click', (e) => {
+  if (e.target === resultOverlay) return;
+});
+
+// Init mode badge
+const badge = document.createElement('span');
+badge.className = 'mode-badge';
+document.querySelector('h1').appendChild(badge);
+updateModeBadge();
+
+// Auto start
+startNewGame();
+
+})();
+</script>
+</body>
+</html>
