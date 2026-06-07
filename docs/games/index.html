@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>遊戲大廳 — 翔川 Neo｜曜科技</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Noto Sans TC', sans-serif;
+  background: linear-gradient(135deg, #0f0f1a 0%, #1a1a2e 50%, #16213e 100%);
+  color: #e0e0e0;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 40px 20px;
+}
+.container { max-width: 900px; width: 100%; }
+header { text-align: center; margin-bottom: 48px; }
+header h1 {
+  font-size: 2.5rem;
+  background: linear-gradient(135deg, #f7971e, #ffd200);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  font-weight: 800;
+  letter-spacing: 2px;
+}
+header p { color: #8888aa; margin-top: 8px; font-size: 1.05rem; }
+.games-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 24px;
+}
+.game-card {
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 16px;
+  padding: 28px 24px;
+  text-decoration: none;
+  color: inherit;
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+.game-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0;
+  width: 100%; height: 3px;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+.game-card:hover {
+  transform: translateY(-6px);
+  border-color: rgba(255,255,255,0.2);
+  background: rgba(255,255,255,0.07);
+  box-shadow: 0 12px 40px rgba(0,0,0,0.4);
+}
+.game-card:hover::before { opacity: 1; }
+.game-card .icon {
+  font-size: 2.8rem;
+  margin-bottom: 16px;
+}
+.game-card h3 {
+  font-size: 1.3rem;
+  margin-bottom: 8px;
+  font-weight: 700;
+}
+.game-card p {
+  font-size: 0.9rem;
+  color: #9999bb;
+  line-height: 1.5;
+  flex-grow: 1;
+}
+.game-card .tag {
+  display: inline-block;
+  font-size: 0.75rem;
+  padding: 3px 10px;
+  border-radius: 20px;
+  margin-top: 14px;
+  align-self: flex-start;
+  background: rgba(255,255,255,0.06);
+  color: #aaaacc;
+  border: 1px solid rgba(255,255,255,0.08);
+}
+.card-2048::before { background: linear-gradient(90deg, #f2b179, #edc22e); }
+.card-snake::before { background: linear-gradient(90deg, #4ade80, #22d3ee); }
+.card-memory::before { background: linear-gradient(90deg, #a78bfa, #f472b6); }
+.card-tictactoe::before { background: linear-gradient(90deg, #60a5fa, #a78bfa); }
+.card-breakout::before { background: linear-gradient(90deg, #f472b6, #fb923c); }
+.card-flappy::before { background: linear-gradient(90deg, #facc15, #fb923c); }
+.footer-link {
+  margin-top: 48px;
+  text-align: center;
+}
+.footer-link a {
+  color: #6666aa;
+  text-decoration: none;
+  font-size: 0.9rem;
+  transition: color 0.2s;
+}
+.footer-link a:hover { color: #f7971e; }
+@media (max-width: 600px) {
+  body { padding: 24px 16px; }
+  header h1 { font-size: 1.8rem; }
+  .games-grid { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body>
+<div class="container">
+  <header>
+    <h1>🎮 遊戲大廳</h1>
+    <p>點選遊戲開始遊玩</p>
+  </header>
+  <div class="games-grid">
+    <a href="2048.html" class="game-card card-2048">
+      <div class="icon">🔢</div>
+      <h3>2048</h3>
+      <p>滑動合併方塊，挑戰 2048！經典數字益智遊戲，支援鍵盤方向鍵與觸控滑動。</p>
+      <span class="tag">方向鍵 / 觸控</span>
+    </a>
+    <a href="snake.html" class="game-card card-snake">
+      <div class="icon">🐍</div>
+      <h3>貪食蛇</h3>
+      <p>經典貪食蛇，吃食物長大，小心不要撞到自己！速度會隨分數提升。</p>
+      <span class="tag">方向鍵 / 滑動</span>
+    </a>
+    <a href="memory.html" class="game-card card-memory">
+      <div class="icon">🃏</div>
+      <h3>記憶翻牌</h3>
+      <p>翻開卡片，配對相同的 emoji。考驗你的記憶力，用最少步數完成！</p>
+      <span class="tag">點擊翻牌</span>
+    </a>
+    <a href="tictactoe.html" class="game-card card-tictactoe">
+      <div class="icon">⭕</div>
+      <h3>圈圈叉叉</h3>
+      <p>與 AI 對戰！採用 Minimax 演算法，AI 不敗 — 看你能不能逼和。</p>
+      <span class="tag">vs AI</span>
+    </a>
+    <a href="breakout.html" class="game-card card-breakout">
+      <div class="icon">🧱</div>
+      <h3>打磚塊</h3>
+      <p>移動反彈板，擊碎所有磚塊！6 種顏色磚塊、特效粒子、多層關卡。</p>
+      <span class="tag">滑鼠 / 觸控</span>
+    </a>
+    <a href="flappy.html" class="game-card card-flappy">
+      <div class="icon">🐤</div>
+      <h3>Flappy Bird</h3>
+      <p>點擊讓小鳥飛，穿越水管障礙。經典虐心小遊戲，挑戰你的最高分！</p>
+      <span class="tag">點擊 / 空白鍵</span>
+    </a>
+  </div>
+  <div class="footer-link">
+    <a href="/">← 返回首頁</a>
+  </div>
+</div>
+</body>
+</html>
