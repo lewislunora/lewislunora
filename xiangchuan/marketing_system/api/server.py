@@ -595,4 +595,9 @@ async def serve_guides(): return await _serve_sub("guides")
 async def serve_solopreneur(): return await _serve_sub("solopreneur")
 
 
+@app.get("/games")
+@app.get("/games/")
+async def serve_games(): return await _serve_sub("games")
+
+
 app.mount("/", StaticFiles(directory=str(DOCS_DIR), html=True), name="site")
