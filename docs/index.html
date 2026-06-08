@@ -10,10 +10,7 @@
 * { margin:0; padding:0; box-sizing:border-box; }
 body {
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
-  background: #0a0e27;
-  color: #fff;
-  min-height: 100vh;
-  overflow-x: hidden;
+  background: #0a0e27; color: #fff; min-height: 100vh; overflow-x: hidden;
 }
 .bg-glow {
   position: fixed; inset:0; pointer-events:none;
@@ -21,119 +18,99 @@ body {
               radial-gradient(ellipse at 80% 70%, rgba(123,104,238,0.08) 0%, transparent 50%);
 }
 .lang-select {
-  position: fixed; top: 1.5rem; right: 1.5rem; z-index: 10;
+  position: fixed; top: 1rem; right: 1rem; z-index: 10;
   background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.15);
-  color: #fff; padding: 0.4rem 0.8rem; border-radius: 6px;
-  font-size: 0.85rem; cursor: pointer; backdrop-filter: blur(4px);
+  color: #fff; padding: 0.3rem 0.7rem; border-radius: 6px;
+  font-size: 0.8rem; cursor: pointer; backdrop-filter: blur(4px);
 }
+/* Compact Hero */
 .hero {
-  text-align: center; padding: 5rem 2rem 3rem;
-  position: relative;
+  text-align: center; padding: 2.5rem 1.5rem 1rem; position: relative;
 }
 .hero-badge {
-  display: inline-block; font-size: 0.85rem;
-  background: rgba(0,212,255,0.1); border: 1px solid rgba(0,212,255,0.25);
-  padding: 0.4rem 1rem; border-radius: 20px; margin-bottom: 1.5rem;
+  display: inline-block; font-size: 0.75rem;
+  background: rgba(0,212,255,0.1); border: 1px solid rgba(0,212,255,0.2);
+  padding: 0.3rem 0.8rem; border-radius: 16px; margin-bottom: 0.8rem;
   color: #00d4ff;
 }
 .hero h1 {
-  font-size: 2.8rem; font-weight: 800; line-height: 1.2;
-  max-width: 700px; margin: 0 auto 1.2rem;
+  font-size: 1.8rem; font-weight: 800; line-height: 1.3;
+  max-width: 600px; margin: 0 auto 0.6rem;
 }
 .hero h1 span { background: linear-gradient(135deg, #00d4ff, #7b68ee); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
 .hero p {
-  color: rgba(255,255,255,0.55); font-size: 1.15rem; line-height: 1.7;
-  max-width: 580px; margin: 0 auto 2rem;
+  color: rgba(255,255,255,0.45); font-size: 0.9rem; line-height: 1.6;
+  max-width: 480px; margin: 0 auto 1rem;
 }
-.hero-actions { display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap; }
-.btn { display: inline-block; padding: 0.85rem 2rem; border-radius: 12px; font-weight: 600; font-size: 1rem; text-decoration: none; transition: all 0.3s; }
+.hero-actions { display: flex; gap: 0.6rem; justify-content: center; flex-wrap: wrap; }
+.btn { display: inline-block; padding: 0.6rem 1.5rem; border-radius: 10px; font-weight: 600; font-size: 0.85rem; text-decoration: none; transition: all 0.3s; }
 .btn-primary { background: linear-gradient(135deg, #00d4ff, #7b68ee); color: #fff; }
-.btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(0,212,255,0.3); }
-.btn-outline { border: 1px solid rgba(255,255,255,0.2); color: #fff; }
-.btn-outline:hover { border-color: rgba(0,212,255,0.5); transform: translateY(-2px); }
-.stats {
-  display: flex; gap: 2.5rem; justify-content: center; flex-wrap: wrap;
-  margin-top: 3rem; padding: 1.5rem 0;
+.btn-primary:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(0,212,255,0.3); }
+.btn-outline { border: 1px solid rgba(255,255,255,0.15); color: #fff; }
+.btn-outline:hover { border-color: rgba(0,212,255,0.4); }
+
+/* Stats bar */
+.stats-bar {
+  display: flex; gap: 1.5rem; justify-content: center; flex-wrap: wrap;
+  padding: 0.8rem 1rem; margin: 0.8rem auto 0; max-width: 500px;
 }
 .stat-item { text-align: center; }
-.stat-number { font-size: 1.8rem; font-weight: 700; background: linear-gradient(135deg, #00d4ff, #7b68ee); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-.stat-label { font-size: 0.85rem; color: rgba(255,255,255,0.4); margin-top: 0.2rem; }
+.stat-number { font-weight: 700; background: linear-gradient(135deg, #00d4ff, #7b68ee); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+.stat-label { font-size: 0.7rem; color: rgba(255,255,255,0.35); }
 
-/* Pricing Preview */
-.pricing-section {
-  text-align: center; padding: 1rem 2rem 2.5rem;
+/* Service Grid */
+.service-grid {
+  display: grid; gap: 0.6rem; padding: 0 1rem 1.5rem;
+  max-width: 720px; margin: 1rem auto;
 }
-.pricing-section h2 {
-  font-size: 1.8rem; font-weight: 700; margin-bottom: 0.6rem;
+.service-card {
+  display: flex; align-items: center; gap: 0.8rem;
+  background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.07);
+  border-radius: 12px; padding: 0.7rem 1rem;
+  text-decoration: none; color: #fff; transition: all 0.2s;
 }
-.pricing-section .sub { color: rgba(255,255,255,0.4); margin-bottom: 2rem; font-size: 1rem; }
-.pricing-grid { display: flex; gap: 1.2rem; justify-content: center; flex-wrap: wrap; max-width: 800px; margin: 0 auto; }
-.price-card {
-  background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08);
-  border-radius: 16px; padding: 1.8rem 1.5rem; width: 240px; text-align: center;
-  transition: all 0.3s;
-}
-.price-card:hover { transform: translateY(-3px); border-color: rgba(0,212,255,0.2); }
-.price-card.featured {
-  background: rgba(0,212,255,0.04); border-color: rgba(0,212,255,0.2);
-  position: relative;
-}
-.price-badge {
-  position: absolute; top: -0.7rem; left: 50%; transform: translateX(-50%);
-  background: linear-gradient(135deg, #00d4ff, #7b68ee);
-  font-size: 0.7rem; padding: 0.25rem 0.8rem; border-radius: 10px;
-  font-weight: 600; white-space: nowrap;
-}
-.price-name { font-size: 1.1rem; font-weight: 600; margin-bottom: 0.5rem; }
-.price-amount { font-size: 2rem; font-weight: 700; }
-.price-amount small { font-size: 0.85rem; font-weight: 400; color: rgba(255,255,255,0.35); }
-.price-usd { font-size: 0.75rem; color: rgba(255,255,255,0.25); margin-top: 0.1rem; }
-.price-desc { font-size: 0.85rem; color: rgba(255,255,255,0.4); margin: 0.5rem 0 1rem; }
-.price-cta { display: inline-block; margin-top: 1rem; font-weight: 600; font-size: 0.85rem; color: #00d4ff; text-decoration: none; }
+.service-card:hover { background: rgba(255,255,255,0.06); border-color: rgba(0,212,255,0.25); }
+.service-card .icon { font-size: 1.5rem; flex-shrink: 0; }
+.service-card .info { flex: 1; min-width: 0; }
+.service-card .info h3 { font-size: 0.85rem; font-weight: 600; }
+.service-card .info p { font-size: 0.72rem; color: rgba(255,255,255,0.4); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.service-card .arrow { font-size: 0.8rem; color: rgba(255,255,255,0.25); flex-shrink: 0; }
 
-/* Cards */
-.section-title {
-  text-align: center; font-size: 1.8rem; font-weight: 700; margin: 2rem 0 0.5rem;
+/* Capabilities as inline chips */
+.cap-section { text-align: center; padding: 0.5rem 1rem 0; }
+.cap-section .sub { font-size: 0.78rem; color: rgba(255,255,255,0.4); margin-bottom: 0.5rem; }
+.cap-chips { display: flex; gap: 0.4rem; justify-content: center; flex-wrap: wrap; }
+.cap-chip {
+  display: inline-flex; align-items: center; gap: 0.3rem;
+  background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 8px; padding: 0.35rem 0.7rem; font-size: 0.72rem; color: rgba(255,255,255,0.7);
 }
-.section-sub {
-  text-align: center; color: rgba(255,255,255,0.4); font-size: 1rem; margin-bottom: 2rem;
+
+/* Footer */
+.footer-area {
+  text-align: center; padding: 1.5rem 1rem;
+  border-top: 1px solid rgba(255,255,255,0.04);
 }
-.cards {
-  display: flex; gap: 1.2rem; flex-wrap: wrap; justify-content: center;
-  max-width: 800px; margin: 0 auto; padding: 0 2rem 3rem;
+.footer-area .coop { font-size: 0.78rem; color: rgba(255,255,255,0.35); margin-bottom: 0.6rem; }
+.footer-area .coop a { color: rgba(255,255,255,0.5); text-decoration: none; }
+.footer-area .coop a:hover { color: #00d4ff; }
+.footer-area .copy { font-size: 0.7rem; color: rgba(255,255,255,0.15); }
+.footer-area .copy a { color: rgba(255,255,255,0.25); text-decoration: none; }
+
+.cta-mini {
+  display: inline-block; margin: 0.5rem auto 0;
+  background: linear-gradient(135deg, rgba(0,212,255,0.12), rgba(123,104,238,0.12));
+  border: 1px solid rgba(0,212,255,0.15);
+  border-radius: 10px; padding: 0.5rem 1.2rem; font-size: 0.8rem; color: #00d4ff; text-decoration: none;
 }
-.card {
-  background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08);
-  border-radius: 20px; padding: 1.8rem 1.5rem; width: 360px;
-  text-decoration: none; color: #fff; transition: all 0.3s;
-  position: relative; overflow: hidden;
-}
-.card:hover { background: rgba(255,255,255,0.06); transform: translateY(-4px); border-color: rgba(0,212,255,0.3); }
-.card-icon { font-size: 2.5rem; margin-bottom: 1rem; }
-.card h3 { font-size: 1.3rem; margin-bottom: 0.5rem; }
-.card p { color: rgba(255,255,255,0.5); font-size: 0.9rem; line-height: 1.6; }
-.card .arrow {
-  display: inline-block; margin-top: 1.2rem;
-  background: linear-gradient(135deg, #00d4ff, #7b68ee);
-  padding: 0.5rem 1.5rem; border-radius: 10px;
-  font-weight: 600; font-size: 0.9rem;
-}
-.cta-section {
-  text-align: center; padding: 3rem 2rem;
-  background: linear-gradient(135deg, rgba(0,212,255,0.04), rgba(123,104,238,0.04));
-  border-top: 1px solid rgba(255,255,255,0.05);
-  border-bottom: 1px solid rgba(255,255,255,0.05);
-}
-.cta-section h2 { font-size: 1.8rem; font-weight: 700; margin-bottom: 0.8rem; }
-.cta-section p { color: rgba(255,255,255,0.45); margin-bottom: 1.5rem; font-size: 1rem; }
-.footer-text {
-  text-align: center; padding: 2rem; color: rgba(255,255,255,0.15); font-size: 0.8rem;
-}
-@media (max-width: 650px) {
-  .hero h1 { font-size: 2rem; }
-  .card, .price-card { width: 100%; max-width: 340px; }
-  .stats { gap: 1.5rem; }
-  .lang-select { top: 1rem; right: 1rem; }
+
+@media (max-width: 500px) {
+  .hero h1 { font-size: 1.4rem; }
+  .service-grid { gap: 0.5rem; }
+  .service-card { padding: 0.6rem 0.8rem; }
+  .service-card .info h3 { font-size: 0.8rem; }
+  .hero { padding: 2rem 1rem 0.5rem; }
+  .stats-bar { gap: 1rem; }
 }
 </style>
 </head>
@@ -146,155 +123,98 @@ body {
 </select>
 
 <section class="hero">
-  <div class="hero-badge" data-i18n="hero_badge">🚀 翔森科技創辦人 · 10+ 年技術背景 | DevOps · AI · 系統架構</div>
-  <h1 data-i18n="hero_title" data-i18n-html="true"><span>翔川 Neo｜曜科技</span><br>AI · K8s · 容器化 · 高可用<br>讓技術為你的生意服務</h1>
-  <p data-i18n="hero_desc">提供 AI 智慧系統整合、Kubernetes 容器化部署、高可用架構設計與雲端技術顧問服務。從 DevOps 到 AI 自動化，為你的企業打造穩定、可擴展的技術基礎。</p>
+  <div class="hero-badge" data-i18n="hero_badge">🚀 翔森科技創辦人 · 10+ 年 DevOps/AI/架構</div>
+  <h1 data-i18n="hero_title" data-i18n-html="true"><span>翔川 Neo｜曜科技</span><br>AI · K8s · 容器化 · 高可用</h1>
+  <p data-i18n="hero_desc">從 DevOps 到 AI 自動化，為你的企業打造穩定、可擴展的技術基礎</p>
   <div class="hero-actions">
-    <a href="#capabilities" class="btn btn-primary" data-i18n="hero_btn_cap">🔧 看我能做什麼</a>
-    <a href="product/" class="btn btn-outline" data-i18n="hero_btn_product">📊 AI 行銷系統</a>
+    <a href="product/" class="btn btn-primary" data-i18n="hero_btn_product">📊 AI 行銷系統</a>
+    <a href="product/#contact" class="btn btn-outline" data-i18n="hero_btn_contact">📩 免費諮詢</a>
   </div>
-  <div class="stats">
-    <div class="stat-item">
-      <div class="stat-number" i18n-ignore>10+</div>
-      <div class="stat-label" data-i18n="stat_exp">年技術經驗</div>
-    </div>
-    <div class="stat-item">
-      <div class="stat-number" i18n-ignore>20+</div>
-      <div class="stat-label" data-i18n="stat_proj">專案開發</div>
-    </div>
-    <div class="stat-item">
-      <div class="stat-number" i18n-ignore>5</div>
-      <div class="stat-label" data-i18n="stat_plat">跨平台整合</div>
-    </div>
-    <div class="stat-item">
-      <div class="stat-number" i18n-ignore>24/7</div>
-      <div class="stat-label" data-i18n="stat_247">自動化運行</div>
-    </div>
+  <div class="stats-bar">
+    <div class="stat-item"><div class="stat-number" i18n-ignore>10+</div><div class="stat-label" data-i18n="stat_exp">年經驗</div></div>
+    <div class="stat-item"><div class="stat-number" i18n-ignore>20+</div><div class="stat-label" data-i18n="stat_proj">專案</div></div>
+    <div class="stat-item"><div class="stat-number" i18n-ignore>5</div><div class="stat-label" data-i18n="stat_plat">平台</div></div>
+    <div class="stat-item"><div class="stat-number" i18n-ignore>24/7</div><div class="stat-label" data-i18n="stat_247">自動化</div></div>
   </div>
 </section>
 
-<section class="pricing-section" id="capabilities">
-  <h2 data-i18n="cap_title">專業能力</h2>
-  <p class="sub" data-i18n="cap_sub">創辦人 <strong>Lewis Lunora</strong> · 10+ 年 DevOps / 系統架構經驗，陪你從技術規劃到落地</p>
-  <div class="pricing-grid">
-    <div class="price-card featured">
-      <div class="price-badge" data-i18n="cap_badge_consult">最受歡迎</div>
-      <div class="price-name" data-i18n="cap_consult_name">💼 技術顧問</div>
-      <div class="price-desc" data-i18n="cap_consult_desc">系統架構設計、DevOps 導入、K8s 部署、技術決策諮詢。幫你建立可擴展的技術基礎。</div>
-      <ul class="price-features" style="list-style:none;margin:1rem 0;font-size:0.85rem;color:rgba(255,255,255,0.5);text-align:left;">
-        <li style="padding:0.4rem 0;">✓ 系統架構規劃</li>
-        <li style="padding:0.4rem 0;">✓ CI/CD 自動化部署</li>
-        <li style="padding:0.4rem 0;">✓ Kubernetes / Docker</li>
-        <li style="padding:0.4rem 0;">✓ GCP / 雲端架構</li>
-      </ul>
-      <a href="product/#contact" class="price-cta" data-i18n="cap_consult_cta">預約諮詢 →</a>
-    </div>
-    <div class="price-card">
-      <div class="price-name" data-i18n="cap_dev_name">🤖 AI 系統開發</div>
-      <div class="price-desc" data-i18n="cap_dev_desc">Telegram Bot、AI 客服、內容自動生成、資料分析工具。用 AI 自動化你的工作流程。</div>
-      <ul class="price-features" style="list-style:none;margin:1rem 0;font-size:0.85rem;color:rgba(255,255,255,0.5);text-align:left;">
-        <li style="padding:0.4rem 0;">✓ Telegram Bot 開發</li>
-        <li style="padding:0.4rem 0;">✓ LLM / AI 客服整合</li>
-        <li style="padding:0.4rem 0;">✓ 行銷內容自動生成</li>
-        <li style="padding:0.4rem 0;">✓ API / 系統串接</li>
-      </ul>
-      <a href="product/" class="price-cta" data-i18n="cap_dev_cta">了解更多 →</a>
-    </div>
-    <div class="price-card">
-      <div class="price-name" data-i18n="cap_mkt_name">📈 行銷自動化系統</div>
-      <div class="price-desc" data-i18n="cap_mkt_desc">AI 驅動的行銷平台：24 小時客服、多平台內容發布、數據分析。NT$890/月開始。</div>
-      <ul class="price-features" style="list-style:none;margin:1rem 0;font-size:0.85rem;color:rgba(255,255,255,0.5);text-align:left;">
-        <li style="padding:0.4rem 0;">✓ AI 智能客服 24/7</li>
-        <li style="padding:0.4rem 0;">✓ 自增長知識庫</li>
-        <li style="padding:0.4rem 0;">✓ 多平台內容發布</li>
-        <li style="padding:0.4rem 0;">✓ 數據分析優化</li>
-      </ul>
-      <a href="product/#pricing" class="price-cta" data-i18n="cap_mkt_cta">查看方案 →</a>
-    </div>
+<section class="cap-section">
+  <p class="sub" data-i18n="cap_sub">創辦人 <strong>Lewis Lunora</strong> · 10+ 年 DevOps / 系統架構</p>
+  <div class="cap-chips">
+    <span class="cap-chip">💼 系統架構</span>
+    <span class="cap-chip">⚙️ CI/CD</span>
+    <span class="cap-chip">☸️ Kubernetes</span>
+    <span class="cap-chip">☁️ GCP 雲端</span>
+    <span class="cap-chip">🤖 AI 客服</span>
+    <span class="cap-chip">📈 行銷自動化</span>
+    <span class="cap-chip">🔗 API 串接</span>
+    <span class="cap-chip">🐳 Docker</span>
+  </div>
+  <div style="display:flex;gap:0.4rem;justify-content:center;flex-wrap:wrap;margin-top:0.6rem;">
+    <a href="product/#contact" class="cta-mini" data-i18n="cap_consult_cta">💼 預約技術諮詢</a>
+    <a href="product/#pricing" class="cta-mini" data-i18n="cap_mkt_cta">📊 查看方案</a>
   </div>
 </section>
 
-<h2 class="section-title" data-i18n="service_title">探索更多服務</h2>
-<p class="section-sub" data-i18n="service_sub">點擊進入各項功能體驗</p>
-<div class="cards">
-  <a href="solopreneur/" class="card">
-    <div class="card-icon">🚀</div>
-    <h3>超級個體解決方案</h3>
-    <p>一人公司 AI 自動化系統<br>顧問諮詢 · 代理分潤</p>
-    <div class="arrow">了解更多 →</div>
+<div class="service-grid">
+  <a href="solopreneur/" class="service-card">
+    <div class="icon">🚀</div>
+    <div class="info"><h3>超級個體解決方案</h3><p>一人公司 AI 自動化系統</p></div>
+    <div class="arrow">→</div>
   </a>
-  <a href="product/" class="card">
-    <div class="card-icon">🛒</div>
-    <h3 data-i18n="card_product_title">商品介紹</h3>
-    <p data-i18n="card_product_desc">AI 客服方案、價格、即時展示、功能特色<br>了解我們能為你做什麼</p>
-    <div class="arrow" data-i18n="card_product_btn">查看更多 →</div>
+  <a href="product/" class="service-card">
+    <div class="icon">🛒</div>
+    <div class="info"><h3 data-i18n="card_product_title">商品介紹</h3><p data-i18n="card_product_desc">AI 方案、價格、功能特色</p></div>
+    <div class="arrow">→</div>
   </a>
-  <a href="flutter-app.html" class="card">
-    <div class="card-icon">📱</div>
-    <h3 data-i18n="card_app_title">品牌內容 App</h3>
-    <p data-i18n="card_app_desc">133 篇 AI 生成內容<br>品牌文章 · 攻略教學 · AI 短劇</p>
-    <div class="arrow" data-i18n="card_app_btn">開啟 App →</div>
+  <a href="flutter-app.html" class="service-card">
+    <div class="icon">📱</div>
+    <div class="info"><h3 data-i18n="card_app_title">品牌內容 App</h3><p data-i18n="card_app_desc">133 篇 AI 生成內容</p></div>
+    <div class="arrow">→</div>
   </a>
-  <a href="guides/" class="card">
-    <div class="card-icon">📚</div>
-    <h3>AI 品牌知識庫</h3>
-    <p>個人品牌策略 · 內容系統 ·<br>客戶獲取 · AI 自動化</p>
-    <div class="arrow">開始閱讀 →</div>
+  <a href="guides/" class="service-card">
+    <div class="icon">📚</div>
+    <div class="info"><h3>AI 品牌知識庫</h3><p>品牌策略 · 內容系統 · AI 自動化</p></div>
+    <div class="arrow">→</div>
   </a>
-  <a href="ai-character.html" class="card">
-    <div class="card-icon">🤖</div>
-    <h3 data-i18n="card_char_title">AI 虛擬助手</h3>
-    <p data-i18n="card_char_desc">互動式 AI 虛擬角色<br>即時對話 · 情感回應</p>
-    <div class="arrow" data-i18n="card_char_btn">開始體驗 →</div>
+  <a href="ai-character.html" class="service-card">
+    <div class="icon">🤖</div>
+    <div class="info"><h3 data-i18n="card_char_title">AI 虛擬助手</h3><p data-i18n="card_char_desc">互動式 AI 角色 · 即時對話</p></div>
+    <div class="arrow">→</div>
   </a>
-  <a href="ai-fate.html" class="card">
-    <div class="card-icon">🔮</div>
-    <h3 data-i18n="card_fate_title">AI 命理分析</h3>
-    <p data-i18n="card_fate_desc">AI 智慧八字分析<br>命名建議 · 運勢預測</p>
-    <div class="arrow" data-i18n="card_fate_btn">開始分析 →</div>
+  <a href="ai-fate.html" class="service-card">
+    <div class="icon">🔮</div>
+    <div class="info"><h3 data-i18n="card_fate_title">AI 命理分析</h3><p data-i18n="card_fate_desc">八字分析 · 命名建議</p></div>
+    <div class="arrow">→</div>
   </a>
-  <a href="games/" class="card">
-    <div class="card-icon">🎮</div>
-    <h3 data-i18n="card_game_title">遊戲大廳</h3>
-    <p data-i18n="card_game_desc">10 款互動遊戲<br>2048 · 貪食蛇 · 記憶翻牌 · 圈圈叉叉 · 打磚塊 · Flappy Bird<br>剪刀石頭布 · AI 20 問 · 體感接物 · 表情跑酷</p>
-    <div class="arrow" data-i18n="card_game_btn">開始玩 →</div>
+  <a href="games/" class="service-card">
+    <div class="icon">🎮</div>
+    <div class="info"><h3 data-i18n="card_game_title">遊戲大廳</h3><p data-i18n="card_game_desc">10 款互動遊戲</p></div>
+    <div class="arrow">→</div>
   </a>
-  <a href="student/" class="card">
-    <div class="card-icon">🎒</div>
-    <h3 data-i18n="card_student_title">學生賺分平台</h3>
-    <p data-i18n="card_student_desc">完成任務賺點數<br>兌換你想要的獎勵</p>
-    <div class="arrow" data-i18n="card_student_btn">開始賺點 →</div>
+  <a href="student/" class="service-card">
+    <div class="icon">🎒</div>
+    <div class="info"><h3 data-i18n="card_student_title">學生賺分平台</h3><p data-i18n="card_student_desc">任務賺點 · 兌換獎勵</p></div>
+    <div class="arrow">→</div>
   </a>
-  <a href="dashboard" class="card">
-    <div class="card-icon">⚙️</div>
-    <h3 data-i18n="card_dash_title">行銷自動化系統</h3>
-    <p data-i18n="card_dash_desc">AI 內容生成 · 排程發布 · 平台串接<br>後台管理 Dashboard</p>
-    <div class="arrow" data-i18n="card_dash_btn">進入後台 →</div>
+  <a href="dashboard" class="service-card">
+    <div class="icon">⚙️</div>
+    <div class="info"><h3 data-i18n="card_dash_title">行銷自動化系統</h3><p data-i18n="card_dash_desc">AI 內容生成 · 排程發布 · 後台</p></div>
+    <div class="arrow">→</div>
   </a>
 </div>
 
-<section class="cta-section">
-  <h2 data-i18n="cta_title">準備好讓 AI 幫你行銷了嗎？</h2>
-  <p data-i18n="cta_desc">免費諮詢，了解如何用最低成本導入 AI 行銷系統</p>
-  <a href="product/#contact" class="btn btn-primary" data-i18n="cta_btn">📩 立即預約諮詢</a>
-</section>
-
-<section class="cta-section" style="background:none;border:none;">
-  <h2 style="font-size:1.4rem;font-weight:600;" data-i18n="coop_title">🤝 合作邀約</h2>
-  <p style="color:rgba(255,255,255,0.45);margin-bottom:1.5rem;font-size:0.95rem;" data-i18n="coop_desc">
+<div class="footer-area">
+  <div class="coop" data-i18n="coop_desc">
     技術顧問 · 系統整合 · AI 自動化 · 專案合作<br>
-    直接聯絡創辦人 Lewis
-  </p>
-  <div style="display:flex;gap:1rem;justify-content:center;flex-wrap:wrap;">
-    <a href="https://t.me/lewislunora" class="btn btn-outline" style="display:inline-flex;align-items:center;gap:0.5rem;" data-i18n="coop_tg">✈️ Telegram：@lewislunora</a>
-    <a href="mailto:lewislunora@gmail.com" class="btn btn-outline" style="display:inline-flex;align-items:center;gap:0.5rem;" data-i18n="coop_email">📧 lewislunora@gmail.com</a>
+    <a href="https://t.me/lewislunora" data-i18n="coop_tg">✈️ Telegram：@lewislunora</a>
+    &nbsp;·&nbsp;
+    <a href="mailto:lewislunora@gmail.com" data-i18n="coop_email">📧 lewislunora@gmail.com</a>
   </div>
-</section>
-
-<div class="footer-text">
-  <a href="privacy.html" style="color:rgba(255,255,255,0.4);text-decoration:none;font-size:0.8rem;margin-right:1rem">隱私政策</a>
-  <a href="tos.html" style="color:rgba(255,255,255,0.4);text-decoration:none;font-size:0.8rem;margin-right:1rem">服務條款</a>
-  <span data-i18n="footer_copy">© 2026 翔川 Neo｜曜科技 |Ai_bot</span>
+  <div class="copy">
+    <a href="privacy.html">隱私政策</a> · <a href="tos.html">服務條款</a>
+    <span data-i18n="footer_copy">© 2026 翔川 Neo｜曜科技 |Ai_bot</span>
+  </div>
 </div>
 
 <div class="gsi-container" id="gsi-user-area"></div>
@@ -332,76 +252,45 @@ const LANG = {
     page_title: 'XiangChuan Neo｜YaoTech |Ai_bot — AI Customer Service & Marketing Automation',
     lang_zt: '繁體中文', lang_cn: '簡體中文', lang_en: 'English',
     hero_badge: '🚀 Founder @ XiangSen Tech · 10+ Yrs DevOps/AI/Architecture',
-    hero_title: '<span>XiangChuan Neo｜YaoTech</span><br>AI · K8s · Containers · HA<br>Turning Technology into Business Value',
-    hero_desc: 'AI system integration, Kubernetes containerized deployment, high-availability architecture, and cloud tech consulting. From DevOps to AI automation — building stable, scalable tech foundations for your business.',
-    hero_btn_cap: '🔧 See My Capabilities',
+    hero_title: '<span>XiangChuan Neo｜YaoTech</span><br>AI · K8s · Containers · HA',
+    hero_desc: 'From DevOps to AI automation — building stable, scalable tech foundations for your business.',
     hero_btn_product: '📊 AI Marketing System',
-    stat_exp: 'Years Experience', stat_proj: 'Projects Built', stat_plat: 'Platforms', stat_247: 'Auto 24/7',
-    cap_title: 'Professional Capabilities',
-    cap_sub: 'Founder <strong>Lewis Lunora</strong> · 10+ yrs DevOps/Architecture — from planning to launch',
-    cap_badge_consult: 'Most Popular',
-    cap_consult_name: '💼 Tech Consulting',
-    cap_consult_desc: 'System architecture, DevOps, K8s deployment, technology strategy. Build a scalable tech foundation.',
-    cap_consult_cta: 'Book a Consultation →',
-    cap_dev_name: '🤖 AI System Development',
-    cap_dev_desc: 'Telegram Bots, AI customer service, auto content generation, data analysis tools.',
-    cap_dev_cta: 'Learn More →',
-    cap_mkt_name: '📈 Marketing Automation',
-    cap_mkt_desc: 'AI-powered platform: 24/7 customer service, multi-platform publishing, analytics. From NT$890/mo.',
-    cap_mkt_cta: 'View Plans →',
-    service_title: 'Explore More Services',
-    service_sub: 'Click to experience each feature',
-    card_product_title: 'Product', card_product_desc: 'AI plans, pricing, live demo, features<br>See what we can do for you', card_product_btn: 'Learn More →',
-    card_app_title: 'Brand Content App', card_app_desc: '133 AI-generated contents<br>Articles · Guides · AI Dramas', card_app_btn: 'Open App →',
-    card_char_title: 'AI Virtual Character', card_char_desc: 'Interactive AI virtual character<br>Live chat · Emotional response', card_char_btn: 'Try Now →',
-    card_game_title: 'Game Hub', card_game_desc: '10 games<br>2048 · Snake · Memory · TicTacToe · Breakout · Flappy Bird<br>RPS · AI 20 Questions · Motion Catcher · Face Runner', card_game_btn: 'Play Now →',
-    card_student_title: 'Student Platform', card_student_desc: 'Earn points by completing tasks<br>Redeem rewards you want', card_student_btn: 'Start Earning →',
-    card_fate_title: 'AI Fortune Analysis', card_fate_desc: 'AI Chinese astrology<br>Name suggestions · Fortune prediction', card_fate_btn: 'Analyze →',
-    card_dash_title: 'Marketing Automation', card_dash_desc: 'AI content generation · Scheduling · Platform integration<br>Admin Dashboard', card_dash_btn: 'Open Dashboard →',
-    cta_title: 'Ready to let AI handle your marketing?',
-    cta_desc: 'Free consultation — learn how to deploy an AI marketing system at minimal cost',
-    cta_btn: '📩 Book Free Consultation',
-    coop_title: '🤝 Collaboration',
-    coop_desc: 'Tech consulting · System integration · AI automation · Project collaboration<br>Contact founder Lewis directly',
+    hero_btn_contact: '📩 Free Consultation',
+    stat_exp: 'Years', stat_proj: 'Projects', stat_plat: 'Platforms', stat_247: 'Auto 24/7',
+    cap_sub: 'Founder <strong>Lewis Lunora</strong> · 10+ yrs DevOps/Architecture',
+    cap_consult_cta: '💼 Book Tech Consult',
+    cap_mkt_cta: '📊 View Plans',
+    card_product_title: 'Product', card_product_desc: 'AI plans, pricing, features',
+    card_app_title: 'Brand Content App', card_app_desc: '133 AI-generated contents',
+    card_char_title: 'AI Virtual Character', card_char_desc: 'Interactive AI character · Live chat',
+    card_game_title: 'Game Hub', card_game_desc: '10 interactive games',
+    card_student_title: 'Student Platform', card_student_desc: 'Earn points · Redeem rewards',
+    card_fate_title: 'AI Fortune Analysis', card_fate_desc: 'Astrology · Name suggestions',
+    card_dash_title: 'Marketing Automation', card_dash_desc: 'AI content · Scheduling · Dashboard',
+    coop_desc: 'Tech consulting · System integration · AI automation · Collaboration<br>',
     coop_tg: '✈️ Telegram: @lewislunora',
     coop_email: '📧 lewislunora@gmail.com',
     footer_copy: '© 2026 XiangChuan Neo｜YaoTech |Ai_bot'
-
   },
   'zh-CN': {
     page_title: '翔川 Neo｜曜科技 |Ai_bot — AI 智能客服与营销自动化',
     lang_zt: '繁體中文', lang_cn: '簡體中文', lang_en: 'English',
-    hero_title: '<span>翔川 Neo｜曜科技</span><br>AI · K8s · 容器化 · 高可用<br>让技术为你的生意服务',
-    hero_desc: '提供 AI 智慧系统整合、Kubernetes 容器化部署、高可用架构设计与云端技术顾问服务。从 DevOps 到 AI 自动化，为你的企业打造稳定、可扩展的技术基础。',
-    hero_btn_cap: '🔧 看我能做什么',
+    hero_title: '<span>翔川 Neo｜曜科技</span><br>AI · K8s · 容器化 · 高可用',
+    hero_desc: '从 DevOps 到 AI 自动化，为你的企业打造稳定、可扩展的技术基础。',
     hero_btn_product: '📊 AI 营销系统',
-    stat_exp: '年技术经验', stat_proj: '专案开发', stat_plat: '跨平台整合', stat_247: '自动化运行',
-    cap_title: '专业能力',
-    cap_sub: '创始人 <strong>Lewis Lunora</strong> · 10+ 年 DevOps / 系统架构经验，陪你从技术规划到落地',
-    cap_badge_consult: '最受欢迎',
-    cap_consult_name: '💼 技术顾问',
-    cap_consult_desc: '系统架构设计、DevOps 导入、K8s 部署、技术决策咨询。帮你建立可扩展的技术基础。',
-    cap_consult_cta: '预约咨询 →',
-    cap_dev_name: '🤖 AI 系统开发',
-    cap_dev_desc: 'Telegram Bot、AI 客服、内容自动生成、数据分析工具。用 AI 自动化你的工作流程。',
-    cap_dev_cta: '了解更多 →',
-    cap_mkt_name: '📈 营销自动化系统',
-    cap_mkt_desc: 'AI 驱动的营销平台：24 小时客服、多平台内容发布、数据分析。NT$890/月开始。',
-    cap_mkt_cta: '查看方案 →',
-    service_title: '探索更多服务',
-    service_sub: '点击进入各项功能体验',
-    card_product_title: '商品介绍', card_product_desc: 'AI 客服方案、价格、即时展示、功能特色<br>了解我们能为你做什么', card_product_btn: '查看更多 →',
-    card_app_title: '品牌内容 App', card_app_desc: '133 篇 AI 生成内容<br>品牌文章 · 攻略教学 · AI 短剧', card_app_btn: '开启 App →',
-    card_char_title: 'AI 虚拟助手', card_char_desc: '互动式 AI 虚拟角色<br>即时对话 · 情感回应', card_char_btn: '开始体验 →',
-    card_game_title: '游戏大厅', card_game_desc: '10 款互动游戏<br>2048 · 贪食蛇 · 记忆翻牌 · 圈圈叉叉 · 打砖块 · Flappy Bird<br>剪刀石头布 · AI 20 问 · 体感接物 · 表情跑酷', card_game_btn: '开始玩 →',
-    card_student_title: '学生赚分平台', card_student_desc: '完成任务赚点数<br>兑换你想要的奖励', card_student_btn: '开始赚点 →',
-    card_fate_title: 'AI 命理分析', card_fate_desc: 'AI 智慧八字分析<br>命名建议 · 运势预测', card_fate_btn: '开始分析 →',
-    card_dash_title: '营销自动化系统', card_dash_desc: 'AI 内容生成 · 排程发布 · 平台串接<br>后台管理 Dashboard', card_dash_btn: '进入后台 →',
-    cta_title: '准备好让 AI 帮你营销了吗？',
-    cta_desc: '免费咨询，了解如何用最低成本导入 AI 营销系统',
-    cta_btn: '📩 立即预约咨询',
-    coop_title: '🤝 合作邀约',
-    coop_desc: '技术顾问 · 系统整合 · AI 自动化 · 项目合作<br>直接联系创办人 Lewis',
+    hero_btn_contact: '📩 免费咨询',
+    stat_exp: '年经验', stat_proj: '专案', stat_plat: '平台', stat_247: '自动化',
+    cap_sub: '创始人 <strong>Lewis Lunora</strong> · 10+ 年 DevOps / 系统架构',
+    cap_consult_cta: '💼 预约技术咨询',
+    cap_mkt_cta: '📊 查看方案',
+    card_product_title: '商品介绍', card_product_desc: 'AI 方案、价格、功能特色',
+    card_app_title: '品牌内容 App', card_app_desc: '133 篇 AI 生成内容',
+    card_char_title: 'AI 虚拟助手', card_char_desc: '互动式 AI 角色 · 即时对话',
+    card_game_title: '游戏大厅', card_game_desc: '10 款互动游戏',
+    card_student_title: '学生赚分平台', card_student_desc: '任务赚点 · 兑换奖励',
+    card_fate_title: 'AI 命理分析', card_fate_desc: '八字分析 · 命名建议',
+    card_dash_title: '营销自动化系统', card_dash_desc: 'AI 内容生成 · 排程发布 · 后台',
+    coop_desc: '技术顾问 · 系统整合 · AI 自动化 · 项目合作<br>',
     coop_tg: '✈️ Telegram：@lewislunora',
     coop_email: '📧 lewislunora@gmail.com',
     footer_copy: '© 2026 翔川 Neo｜曜科技 |Ai_bot'
