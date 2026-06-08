@@ -1,0 +1,722 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>管理後台 — 學生賺分平台</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Noto Sans TC', sans-serif;
+  background: linear-gradient(135deg, #0f0f1a 0%, #1a1a2e 50%, #16213e 100%);
+  color: #e0e0e0;
+  min-height: 100vh;
+}
+.container { max-width: 800px; margin: 0 auto; padding: 16px; }
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 20px;
+  background: rgba(255,255,255,0.03);
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+.header h1 { font-size: 1.1rem; font-weight: 700; color: #ccccee; display: flex; align-items: center; gap: 8px; }
+.header-right { display: flex; align-items: center; gap: 12px; }
+.admin-badge {
+  font-size: 0.75rem;
+  padding: 4px 10px;
+  border-radius: 8px;
+  background: rgba(247,151,30,0.15);
+  color: #f7971e;
+  border: 1px solid rgba(247,151,30,0.2);
+  font-weight: 600;
+}
+
+.tab-nav {
+  display: flex;
+  gap: 4px;
+  overflow-x: auto;
+  padding: 12px 0;
+  scrollbar-width: none;
+  -webkit-overflow-scrolling: touch;
+}
+.tab-nav::-webkit-scrollbar { display: none; }
+.tab-btn {
+  flex-shrink: 0;
+  padding: 10px 16px;
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 10px;
+  background: rgba(255,255,255,0.03);
+  color: #8888aa;
+  font-size: 0.82rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s;
+  white-space: nowrap;
+}
+.tab-btn.active { background: rgba(247,151,30,0.15); border-color: #f7971e; color: #f7971e; }
+.tab-panel { display: none; margin-top: 12px; }
+.tab-panel.active { display: block; }
+
+.card {
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 16px;
+  padding: 20px;
+  margin-bottom: 16px;
+}
+.card-title { font-size: 0.85rem; font-weight: 600; color: #8888aa; margin-bottom: 14px; display: flex; align-items: center; gap: 8px; justify-content: space-between; }
+.card-title .card-actions { display: flex; gap: 8px; }
+
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  gap: 12px;
+}
+.stat-box {
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 14px;
+  padding: 16px;
+  text-align: center;
+}
+.stat-box .stat-icon { font-size: 1.6rem; }
+.stat-box .stat-num { font-size: 1.8rem; font-weight: 800; margin: 6px 0; color: #fff; }
+.stat-box .stat-label { font-size: 0.75rem; color: #8888aa; }
+
+.table-wrap { overflow-x: auto; }
+table { width: 100%; border-collapse: collapse; font-size: 0.82rem; }
+th, td { padding: 10px 12px; text-align: left; border-bottom: 1px solid rgba(255,255,255,0.06); }
+th { color: #8888aa; font-weight: 600; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.5px; }
+td { color: #ccccee; }
+tr:hover td { background: rgba(255,255,255,0.02); }
+.status-dot {
+  display: inline-block;
+  width: 8px; height: 8px; border-radius: 50%;
+  margin-right: 6px;
+}
+.status-dot.pending { background: #fbbf24; }
+.status-dot.approved { background: #4ade80; }
+.status-dot.rejected { background: #f87171; }
+.btn-sm {
+  padding: 6px 12px;
+  border: none;
+  border-radius: 8px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.btn-sm.green { background: rgba(74,222,128,0.15); color: #4ade80; border: 1px solid rgba(74,222,128,0.2); }
+.btn-sm.green:hover { background: rgba(74,222,128,0.25); }
+.btn-sm.red { background: rgba(248,113,113,0.15); color: #f87171; border: 1px solid rgba(248,113,113,0.2); }
+.btn-sm.red:hover { background: rgba(248,113,113,0.25); }
+.btn-sm.blue { background: rgba(96,165,250,0.15); color: #60a5fa; border: 1px solid rgba(96,165,250,0.2); }
+.btn-sm.blue:hover { background: rgba(96,165,250,0.25); }
+.btn-sm.orange { background: rgba(247,151,30,0.15); color: #f7971e; border: 1px solid rgba(247,151,30,0.2); }
+.btn-sm.orange:hover { background: rgba(247,151,30,0.25); }
+.action-btns { display: flex; gap: 4px; flex-wrap: wrap; }
+
+.btn {
+  padding: 10px 20px;
+  border: none;
+  border-radius: 10px;
+  font-size: 0.85rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.3s;
+  background: linear-gradient(135deg, #f7971e, #ffd200);
+  color: #1a1a2e;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+.btn:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(247,151,30,0.3); }
+.btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; box-shadow: none; }
+.btn-outline { background: transparent; border: 1px solid rgba(255,255,255,0.1); color: #aaaacc; }
+.btn-outline:hover { background: rgba(255,255,255,0.06); box-shadow: none; transform: none; }
+.btn-danger { background: rgba(248,113,113,0.15); color: #f87171; border: 1px solid rgba(248,113,113,0.2); }
+.btn-danger:hover { background: rgba(248,113,113,0.25); box-shadow: none; transform: none; }
+.btn-sm .spinner {
+  display: inline-block;
+  width: 12px; height: 12px;
+  border: 2px solid rgba(255,255,255,0.2);
+  border-top-color: currentColor;
+  border-radius: 50%;
+  animation: spin 0.6s linear infinite;
+  margin-right: 4px;
+  vertical-align: middle;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+.form-group { margin-bottom: 14px; }
+.form-group label { display: block; font-size: 0.82rem; color: #aaaacc; margin-bottom: 6px; font-weight: 500; }
+.form-group input, .form-group textarea, .form-group select {
+  width: 100%;
+  padding: 10px 14px;
+  background: rgba(255,255,255,0.06);
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 10px;
+  color: #e0e0e0;
+  font-size: 0.9rem;
+  outline: none;
+}
+.form-group input:focus, .form-group textarea:focus { border-color: #f7971e; }
+.form-group textarea { resize: vertical; min-height: 60px; }
+.form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.form-actions { display: flex; gap: 8px; margin-top: 8px; }
+
+.modal-overlay {
+  display: none;
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(0,0,0,0.7);
+  z-index: 300;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  backdrop-filter: blur(4px);
+}
+.modal-overlay.open { display: flex; }
+.modal {
+  background: linear-gradient(135deg, #1a1a2e, #16213e);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 20px;
+  padding: 28px 24px;
+  max-width: 500px;
+  width: 100%;
+  max-height: 85vh;
+  overflow-y: auto;
+}
+.modal h2 { font-size: 1.1rem; font-weight: 700; margin-bottom: 16px; display: flex; align-items: center; gap: 8px; }
+
+.login-overlay {
+  display: flex;
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: linear-gradient(135deg, #0f0f1a 0%, #1a1a2e 50%, #16213e 100%);
+  z-index: 500;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+.login-overlay.hidden { display: none; }
+.login-box {
+  max-width: 380px;
+  width: 100%;
+  text-align: center;
+}
+.login-box h1 {
+  font-size: 1.8rem;
+  background: linear-gradient(135deg, #f7971e, #ffd200);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin-bottom: 24px;
+}
+
+.empty-state { text-align: center; padding: 40px 20px; color: #6666aa; font-size: 0.9rem; }
+.toast {
+  position: fixed;
+  top: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 12px 20px;
+  border-radius: 12px;
+  font-size: 0.85rem;
+  font-weight: 500;
+  z-index: 600;
+  animation: toastIn 0.3s ease;
+  max-width: 420px;
+  width: calc(100% - 40px);
+  text-align: center;
+}
+.toast.success { background: rgba(74,222,128,0.15); border: 1px solid rgba(74,222,128,0.3); color: #4ade80; }
+.toast.error { background: rgba(248,113,113,0.15); border: 1px solid rgba(248,113,113,0.3); color: #f87171; }
+@keyframes toastIn { from { opacity: 0; transform: translateX(-50%) translateY(-20px); } to { opacity: 1; transform: translateX(-50%) translateY(0); } }
+
+@media (max-width: 600px) {
+  .stats-grid { grid-template-columns: repeat(2, 1fr); }
+  .form-row { grid-template-columns: 1fr; }
+  .tab-btn { font-size: 0.75rem; padding: 8px 12px; }
+  table { font-size: 0.75rem; }
+  th, td { padding: 8px 6px; }
+}
+</style>
+</head>
+<body>
+<div class="login-overlay" id="loginOverlay">
+  <div class="login-box">
+    <h1>🔐 管理後台</h1>
+    <div class="card">
+      <div class="form-group">
+        <label>管理員金鑰</label>
+        <input type="password" id="adminKey" placeholder="請輸入管理員金鑰">
+      </div>
+      <button class="btn" onclick="adminLogin()" style="width:100%">登入</button>
+      <p style="color:#6666aa;font-size:0.8rem;margin-top:12px">僅限管理人員使用</p>
+    </div>
+  </div>
+</div>
+
+<div id="mainApp" style="display:none">
+<div class="header">
+  <h1>🔧 管理後台</h1>
+  <div class="header-right">
+    <span class="admin-badge">管理員</span>
+    <button class="btn-sm red" onclick="adminLogout()">登出</button>
+  </div>
+</div>
+
+<div class="container">
+  <div class="tab-nav" id="tabNav">
+    <button class="tab-btn active" data-tab="dashboard">📊 儀表板</button>
+    <button class="tab-btn" data-tab="tasks">✅ 任務</button>
+    <button class="tab-btn" data-tab="rewards">🎁 獎勵</button>
+    <button class="tab-btn" data-tab="submissions">📝 提交審核</button>
+    <button class="tab-btn" data-tab="students">👥 學生</button>
+    <button class="tab-btn" data-tab="redemptions">📦 兌換管理</button>
+  </div>
+
+  <div class="tab-panel active" id="panel-dashboard">
+    <div class="stats-grid" id="adminStats">
+      <div class="stat-box"><div class="stat-icon">👥</div><div class="stat-num" id="statStudents">-</div><div class="stat-label">學生總數</div></div>
+      <div class="stat-box"><div class="stat-icon">⭐</div><div class="stat-num" id="statTotalPoints">-</div><div class="stat-label">總發放點數</div></div>
+      <div class="stat-box"><div class="stat-icon">🎁</div><div class="stat-num" id="statRedemptions">-</div><div class="stat-label">兌換次數</div></div>
+      <div class="stat-box"><div class="stat-icon">📝</div><div class="stat-num" id="statPendingSubs">-</div><div class="stat-label">待審核</div></div>
+    </div>
+  </div>
+
+  <div class="tab-panel" id="panel-tasks">
+    <div class="card">
+      <div class="card-title"><span>📋 任務清單</span><div class="card-actions"><button class="btn-sm blue" onclick="openTaskForm()">＋ 新增任務</button></div></div>
+      <div class="table-wrap"><table id="tasksTable"><thead><tr><th>ID</th><th>標題</th><th>類別</th><th>點數</th><th>操作</th></tr></thead><tbody></tbody></table></div>
+    </div>
+  </div>
+
+  <div class="tab-panel" id="panel-rewards">
+    <div class="card">
+      <div class="card-title"><span>🎁 獎勵清單</span><div class="card-actions"><button class="btn-sm blue" onclick="openRewardForm()">＋ 新增獎勵</button></div></div>
+      <div class="table-wrap"><table id="rewardsTable"><thead><tr><th>ID</th><th>名稱</th><th>類別</th><th>點數</th><th>庫存</th><th>操作</th></tr></thead><tbody></tbody></table></div>
+    </div>
+  </div>
+
+  <div class="tab-panel" id="panel-submissions">
+    <div class="card">
+      <div class="card-title"><span>📝 提交審核</span></div>
+      <div class="table-wrap"><table id="submissionsTable"><thead><tr><th>ID</th><th>學生</th><th>任務</th><th>證明</th><th>狀態</th><th>操作</th></tr></thead><tbody></tbody></table></div>
+    </div>
+  </div>
+
+  <div class="tab-panel" id="panel-students">
+    <div class="card">
+      <div class="card-title"><span>👥 學生列表</span></div>
+      <div class="table-wrap"><table id="studentsTable"><thead><tr><th>ID</th><th>姓名</th><th>Email</th><th>年齡</th><th>點數</th></tr></thead><tbody></tbody></table></div>
+    </div>
+  </div>
+
+  <div class="tab-panel" id="panel-redemptions">
+    <div class="card">
+      <div class="card-title"><span>📦 兌換記錄</span></div>
+      <div class="table-wrap"><table id="redemptionsTable"><thead><tr><th>ID</th><th>學生</th><th>獎勵</th><th>點數</th><th>狀態</th><th>操作</th></tr></thead><tbody></tbody></table></div>
+    </div>
+  </div>
+</div>
+</div>
+
+<div class="modal-overlay" id="taskFormModal">
+  <div class="modal">
+    <h2 id="taskFormTitle">📝 新增任務</h2>
+    <form id="taskForm" onsubmit="saveTask(event)">
+      <input type="hidden" id="taskFormId">
+      <div class="form-group"><label>標題</label><input type="text" id="tfTitle" required></div>
+      <div class="form-group"><label>描述</label><textarea id="tfDesc" required></textarea></div>
+      <div class="form-row">
+        <div class="form-group"><label>點數獎勵</label><input type="number" id="tfPoints" required min="1"></div>
+        <div class="form-group"><label>類別</label><select id="tfCategory"><option value="ad">看廣告</option><option value="review">寫心得</option><option value="quiz">答題</option><option value="creative">創作內容</option><option value="daily">每日</option><option value="other">其他</option></select></div>
+      </div>
+      <div class="form-group"><label>圖示 (emoji)</label><input type="text" id="tfIcon" placeholder="📺"></div>
+      <div class="form-group"><label><input type="checkbox" id="tfAutoApprove"> 自動核准</label></div>
+      <div class="form-actions">
+        <button type="submit" class="btn">儲存</button>
+        <button type="button" class="btn btn-outline" onclick="closeModal('taskFormModal')">取消</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<div class="modal-overlay" id="rewardFormModal">
+  <div class="modal">
+    <h2 id="rewardFormTitle">🎁 新增獎勵</h2>
+    <form id="rewardForm" onsubmit="saveReward(event)">
+      <input type="hidden" id="rfId">
+      <div class="form-group"><label>名稱</label><input type="text" id="rfName" required></div>
+      <div class="form-group"><label>描述</label><textarea id="rfDesc" required></textarea></div>
+      <div class="form-row">
+        <div class="form-group"><label>所需點數</label><input type="number" id="rfPoints" required min="1"></div>
+        <div class="form-group"><label>類別</label><select id="rfCategory"><option value="virtual">虛擬商品</option><option value="gift">超商禮券</option><option value="point">點數卡</option><option value="physical">實體商品</option><option value="other">其他</option></select></div>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label>庫存 (留空 = 不限)</label><input type="number" id="rfStock" min="0"></div>
+        <div class="form-group"><label>圖示 (emoji)</label><input type="text" id="rfIcon" placeholder="🎮"></div>
+      </div>
+      <div class="form-group"><label>圖片 URL (選填)</label><input type="url" id="rfImageUrl"></div>
+      <div class="form-actions">
+        <button type="submit" class="btn">儲存</button>
+        <button type="button" class="btn btn-outline" onclick="closeModal('rewardFormModal')">取消</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<div class="modal-overlay" id="confirmModal">
+  <div class="modal" style="max-width:360px;text-align:center">
+    <h2 id="confirmTitle">⚠️ 確認</h2>
+    <p id="confirmMsg" style="color:#9999bb;margin-bottom:16px"></p>
+    <div class="form-actions" style="justify-content:center">
+      <button class="btn btn-outline" onclick="closeConfirm()">取消</button>
+      <button class="btn" id="confirmActionBtn">確認</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const API = '/api/student';
+let adminToken = null;
+let confirmCallback = null;
+
+function getAdminToken() { return localStorage.getItem('admin_token'); }
+function isLoggedIn() { return !!getAdminToken(); }
+
+function adminAuthHeaders() {
+  const t = getAdminToken();
+  return t ? { 'Authorization': `Bearer ${t}`, 'Content-Type': 'application/json' } : { 'Content-Type': 'application/json' };
+}
+
+function showToast(msg, type = 'success') {
+  const existing = document.querySelector('.toast');
+  if (existing) existing.remove();
+  const t = document.createElement('div');
+  t.className = `toast ${type}`; t.textContent = msg;
+  document.body.appendChild(t);
+  setTimeout(() => { t.style.opacity = '0'; t.style.transition = 'opacity 0.3s'; setTimeout(() => t.remove(), 300); }, 3000);
+}
+
+async function adminLogin() {
+  const key = document.getElementById('adminKey').value.trim();
+  if (!key) { showToast('請輸入管理員金鑰', 'error'); return; }
+  try {
+    const res = await fetch(`${API}/admin/login`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ admin_key: key })
+    });
+    const data = await res.json();
+    if (!res.ok) { showToast(data.error || '金鑰錯誤', 'error'); return; }
+    adminToken = data.token;
+    localStorage.setItem('admin_token', data.token);
+    document.getElementById('loginOverlay').classList.add('hidden');
+    document.getElementById('mainApp').style.display = 'block';
+    loadAll();
+  } catch(e) {
+    showToast('網路錯誤', 'error');
+  }
+}
+
+function adminLogout() {
+  localStorage.removeItem('admin_token');
+  window.location.reload();
+}
+
+function switchTab(tab) {
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.toggle('active', b.dataset.tab === tab));
+  document.querySelectorAll('.tab-panel').forEach(p => p.classList.toggle('active', p.id === `panel-${tab}`));
+}
+
+document.getElementById('tabNav').addEventListener('click', function(e) {
+  const btn = e.target.closest('.tab-btn');
+  if (!btn) return;
+  switchTab(btn.dataset.tab);
+});
+
+function openModal(id) { document.getElementById(id).classList.add('open'); }
+function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+function closeConfirm() { document.getElementById('confirmModal').classList.remove('open'); confirmCallback = null; }
+
+function showConfirm(title, msg, cb) {
+  document.getElementById('confirmTitle').textContent = title;
+  document.getElementById('confirmMsg').textContent = msg;
+  confirmCallback = cb;
+  document.getElementById('confirmModal').classList.add('open');
+}
+document.getElementById('confirmActionBtn').addEventListener('click', function() {
+  if (confirmCallback) confirmCallback();
+  closeConfirm();
+});
+
+async function apiFetch(path, opts = {}) {
+  const res = await fetch(`${API}${path}`, { ...opts, headers: { ...adminAuthHeaders(), ...opts.headers } });
+  if (res.status === 401) { showToast('管理員驗證失敗，請重新登入', 'error'); adminLogout(); return null; }
+  const data = await res.json();
+  if (!res.ok) { showToast(data.error || '請求失敗', 'error'); return null; }
+  return data;
+}
+
+async function loadAll() {
+  loadDashboard();
+  loadTasksTable();
+  loadRewardsTable();
+  loadSubmissions();
+  loadStudents();
+  loadRedemptionsTable();
+}
+
+async function loadDashboard() {
+  const data = await apiFetch('/admin/stats');
+  if (!data) return;
+  document.getElementById('statStudents').textContent = data.total_students ?? '-';
+  document.getElementById('statTotalPoints').textContent = data.total_points_issued ?? '-';
+  document.getElementById('statRedemptions').textContent = data.total_redemptions ?? '-';
+  document.getElementById('statPendingSubs').textContent = data.pending_submissions ?? '-';
+}
+
+async function loadTasksTable() {
+  const data = await apiFetch('/admin/tasks');
+  if (!data) return;
+  const tasks = data.tasks || data || [];
+  const tbody = document.querySelector('#tasksTable tbody');
+  if (tasks.length === 0) { tbody.innerHTML = '<tr><td colspan="5" class="empty-state">暫無任務</td></tr>'; return; }
+  tbody.innerHTML = tasks.map(t => `<tr>
+    <td>${t.id}</td>
+    <td>${t.title}</td>
+    <td>${t.category}</td>
+    <td>${t.points_reward}</td>
+    <td class="action-btns">
+      <button class="btn-sm orange" onclick="editTask('${t.id}')">✏️ 編輯</button>
+      <button class="btn-sm red" onclick="deleteTask('${t.id}')">🗑️</button>
+    </td>
+  </tr>`).join('');
+}
+
+function openTaskForm() {
+  document.getElementById('taskFormTitle').textContent = '📝 新增任務';
+  document.getElementById('taskFormId').value = '';
+  document.getElementById('taskForm').reset();
+  openModal('taskFormModal');
+}
+
+function editTask(id) {
+  apiFetch(`/admin/tasks/${id}`).then(data => {
+    if (!data) return;
+    const t = data.task || data;
+    document.getElementById('taskFormTitle').textContent = '✏️ 編輯任務';
+    document.getElementById('taskFormId').value = t.id;
+    document.getElementById('tfTitle').value = t.title || '';
+    document.getElementById('tfDesc').value = t.description || '';
+    document.getElementById('tfPoints').value = t.points_reward || '';
+    document.getElementById('tfCategory').value = t.category || 'other';
+    document.getElementById('tfIcon').value = t.icon || '';
+    document.getElementById('tfAutoApprove').checked = !!t.auto_approve;
+    openModal('taskFormModal');
+  });
+}
+
+async function saveTask(e) {
+  e.preventDefault();
+  const id = document.getElementById('taskFormId').value;
+  const body = {
+    title: document.getElementById('tfTitle').value,
+    description: document.getElementById('tfDesc').value,
+    points_reward: parseInt(document.getElementById('tfPoints').value),
+    category: document.getElementById('tfCategory').value,
+    icon: document.getElementById('tfIcon').value,
+    auto_approve: document.getElementById('tfAutoApprove').checked
+  };
+  const method = id ? 'PUT' : 'POST';
+  const url = id ? `/admin/tasks/${id}` : '/admin/tasks';
+  const res = await fetch(`${API}${url}`, { method, headers: adminAuthHeaders(), body: JSON.stringify(body) });
+  const data = await res.json();
+  if (!res.ok) { showToast(data.error || '儲存失敗', 'error'); return; }
+  showToast(id ? '任務已更新' : '任務已建立');
+  closeModal('taskFormModal');
+  loadTasksTable();
+}
+
+async function deleteTask(id) {
+  showConfirm('🗑️ 刪除任務', '確定要刪除此任務嗎？此操作不可回復。', async () => {
+    const data = await apiFetch(`/admin/tasks/${id}`, { method: 'DELETE' });
+    if (data) { showToast('任務已刪除'); loadTasksTable(); }
+  });
+}
+
+async function loadRewardsTable() {
+  const data = await apiFetch('/admin/rewards');
+  if (!data) return;
+  const rewards = data.rewards || data || [];
+  const tbody = document.querySelector('#rewardsTable tbody');
+  if (rewards.length === 0) { tbody.innerHTML = '<tr><td colspan="6" class="empty-state">暫無獎勵</td></tr>'; return; }
+  tbody.innerHTML = rewards.map(r => `<tr>
+    <td>${r.id}</td>
+    <td>${r.name}</td>
+    <td>${r.category}</td>
+    <td>${r.points_required}</td>
+    <td>${r.stock !== null && r.stock !== undefined ? r.stock : '∞'}</td>
+    <td class="action-btns">
+      <button class="btn-sm orange" onclick="editReward('${r.id}')">✏️ 編輯</button>
+      <button class="btn-sm red" onclick="deleteReward('${r.id}')">🗑️</button>
+    </td>
+  </tr>`).join('');
+}
+
+function openRewardForm() {
+  document.getElementById('rewardFormTitle').textContent = '🎁 新增獎勵';
+  document.getElementById('rfId').value = '';
+  document.getElementById('rewardForm').reset();
+  openModal('rewardFormModal');
+}
+
+function editReward(id) {
+  apiFetch(`/admin/rewards/${id}`).then(data => {
+    if (!data) return;
+    const r = data.reward || data;
+    document.getElementById('rewardFormTitle').textContent = '✏️ 編輯獎勵';
+    document.getElementById('rfId').value = r.id;
+    document.getElementById('rfName').value = r.name || '';
+    document.getElementById('rfDesc').value = r.description || '';
+    document.getElementById('rfPoints').value = r.points_required || '';
+    document.getElementById('rfCategory').value = r.category || 'virtual';
+    document.getElementById('rfStock').value = r.stock !== null && r.stock !== undefined ? r.stock : '';
+    document.getElementById('rfIcon').value = r.icon || '';
+    document.getElementById('rfImageUrl').value = r.image_url || '';
+    openModal('rewardFormModal');
+  });
+}
+
+async function saveReward(e) {
+  e.preventDefault();
+  const id = document.getElementById('rfId').value;
+  const stock = document.getElementById('rfStock').value;
+  const body = {
+    name: document.getElementById('rfName').value,
+    description: document.getElementById('rfDesc').value,
+    points_required: parseInt(document.getElementById('rfPoints').value),
+    category: document.getElementById('rfCategory').value,
+    stock: stock !== '' ? parseInt(stock) : null,
+    icon: document.getElementById('rfIcon').value,
+    image_url: document.getElementById('rfImageUrl').value || undefined
+  };
+  const method = id ? 'PUT' : 'POST';
+  const url = id ? `/admin/rewards/${id}` : '/admin/rewards';
+  const res = await fetch(`${API}${url}`, { method, headers: adminAuthHeaders(), body: JSON.stringify(body) });
+  const data = await res.json();
+  if (!res.ok) { showToast(data.error || '儲存失敗', 'error'); return; }
+  showToast(id ? '獎勵已更新' : '獎勵已建立');
+  closeModal('rewardFormModal');
+  loadRewardsTable();
+}
+
+async function deleteReward(id) {
+  showConfirm('🗑️ 刪除獎勵', '確定要刪除此獎勵嗎？', async () => {
+    const data = await apiFetch(`/admin/rewards/${id}`, { method: 'DELETE' });
+    if (data) { showToast('獎勵已刪除'); loadRewardsTable(); }
+  });
+}
+
+async function loadSubmissions() {
+  const data = await apiFetch('/admin/submissions');
+  if (!data) return;
+  const subs = data.submissions || data || [];
+  const tbody = document.querySelector('#submissionsTable tbody');
+  if (subs.length === 0) { tbody.innerHTML = '<tr><td colspan="6" class="empty-state">暫無提交</td></tr>'; return; }
+  tbody.innerHTML = subs.map(s => {
+    const statusClass = s.status === 'pending' ? 'pending' : (s.status === 'approved' ? 'approved' : 'rejected');
+    const statusText = s.status === 'pending' ? '待審核' : (s.status === 'approved' ? '已通過' : '已拒絕');
+    return `<tr>
+      <td>${s.id}</td>
+      <td>${s.student_name || s.student_id || '-'}</td>
+      <td>${s.task_title || s.task_id || '-'}</td>
+      <td style="max-width:120px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${s.proof_text || '-'}</td>
+      <td><span class="status-dot ${statusClass}"></span>${statusText}</td>
+      <td class="action-btns">
+        ${s.status === 'pending' ? `<button class="btn-sm green" onclick="approveSub('${s.id}')">✓ 通過</button><button class="btn-sm red" onclick="rejectSub('${s.id}')">✗ 拒絕</button>` : '-'}
+      </td>
+    </tr>`;
+  }).join('');
+}
+
+async function approveSub(id) {
+  showConfirm('✓ 通過審核', '確定通過此提交審核？', async () => {
+    const data = await apiFetch(`/admin/submissions/${id}/approve`, { method: 'POST' });
+    if (data) { showToast('已通過審核'); loadSubmissions(); loadDashboard(); }
+  });
+}
+
+async function rejectSub(id) {
+  showConfirm('✗ 拒絕', '確定拒絕此提交？', async () => {
+    const data = await apiFetch(`/admin/submissions/${id}/reject`, { method: 'POST' });
+    if (data) { showToast('已拒絕'); loadSubmissions(); }
+  });
+}
+
+async function loadStudents() {
+  const data = await apiFetch('/admin/students');
+  if (!data) return;
+  const students = data.students || data || [];
+  const tbody = document.querySelector('#studentsTable tbody');
+  if (students.length === 0) { tbody.innerHTML = '<tr><td colspan="5" class="empty-state">暫無學生</td></tr>'; return; }
+  tbody.innerHTML = students.map(s => `<tr>
+    <td>${s.id}</td>
+    <td>${s.name}</td>
+    <td>${s.email}</td>
+    <td>${s.age || '-'}</td>
+    <td>${s.points_balance || 0}</td>
+  </tr>`).join('');
+}
+
+async function loadRedemptionsTable() {
+  const data = await apiFetch('/admin/redemptions');
+  if (!data) return;
+  const reds = data.redemptions || data || [];
+  const tbody = document.querySelector('#redemptionsTable tbody');
+  if (reds.length === 0) { tbody.innerHTML = '<tr><td colspan="6" class="empty-state">暫無兌換記錄</td></tr>'; return; }
+  tbody.innerHTML = reds.map(r => {
+    const statusClass = r.status === 'fulfilled' ? 'approved' : (r.status === 'pending' ? 'pending' : 'rejected');
+    const statusText = r.status === 'fulfilled' ? '已發放' : (r.status === 'pending' ? '待處理' : '已取消');
+    return `<tr>
+      <td>${r.id}</td>
+      <td>${r.student_name || r.student_id || '-'}</td>
+      <td>${r.reward_name || r.reward_id || '-'}</td>
+      <td>${r.points_spent || 0}</td>
+      <td><span class="status-dot ${statusClass}"></span>${statusText}</td>
+      <td class="action-btns">
+        ${r.status === 'pending' ? `<button class="btn-sm green" onclick="fulfillRedemption('${r.id}')">✓ 發放</button>` : '-'}
+      </td>
+    </tr>`;
+  }).join('');
+}
+
+async function fulfillRedemption(id) {
+  showConfirm('📦 確認發放', '確定已發放此獎勵？', async () => {
+    const data = await apiFetch(`/admin/redemptions/${id}/fulfill`, { method: 'POST' });
+    if (data) { showToast('已標記為已發放'); loadRedemptionsTable(); loadDashboard(); }
+  });
+}
+
+(function init() {
+  if (isLoggedIn()) {
+    adminToken = getAdminToken();
+    document.getElementById('loginOverlay').classList.add('hidden');
+    document.getElementById('mainApp').style.display = 'block';
+    loadAll();
+  }
+})();
+</script>
+</body>
+</html>

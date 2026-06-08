@@ -11,6 +11,8 @@ from pydantic import BaseModel
 from typing import Optional
 
 from ..database import init_db, execute, fetch, fetch_one
+from student_platform.database import StudentDatabase
+from student_platform.routes import router as student_router
 from ..scheduler import ContentScheduler
 from ..ai.generator import AIContentGenerator
 from ..platforms.telegram_connector import TelegramConnector
@@ -32,6 +34,8 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+app.include_router(student_router)
 
 scheduler = ContentScheduler()
 ai_generator = AIContentGenerator()
@@ -101,6 +105,7 @@ class AccountCreate(BaseModel):
 @app.on_event("startup")
 def startup():
     init_db()
+    StudentDatabase.init_db()
     scheduler.start()
 
 
@@ -598,6 +603,31 @@ async def serve_solopreneur(): return await _serve_sub("solopreneur")
 @app.get("/games")
 @app.get("/games/")
 async def serve_games(): return await _serve_sub("games")
+
+
+@app.get("/student")
+@app.get("/student/")
+async def serve_student():
+    from fastapi.responses import FileResponse
+    path = DOCS_DIR / "student" / "index.html"
+    if path.exists():
+        return FileResponse(str(path))
+    return HTMLResponse("<h1>學生平台</h1><p>敬請期待</p>")
+
+def _make_student_route(page):
+    @app.get(f"/student/{page}")
+    @app.get(f"/student/{page}/")
+    async def _handler():
+        from fastapi.responses import FileResponse
+        p = DOCS_DIR / "student" / f"{page}.html"
+        if p.exists():
+            return FileResponse(str(p))
+        return HTMLResponse("<h1>頁面不存在</h1>")
+    _handler.__name__ = f"serve_student_{page}"
+    return _handler
+
+for _sp in ["dashboard", "tasks", "rewards", "history", "profile", "admin"]:
+    _make_student_route(_sp)
 
 
 class GameQuestion(BaseModel):

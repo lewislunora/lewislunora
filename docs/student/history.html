@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>交易記錄 — 學生賺分平台</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Noto Sans TC', sans-serif;
+  background: linear-gradient(135deg, #0f0f1a 0%, #1a1a2e 50%, #16213e 100%);
+  color: #e0e0e0;
+  min-height: 100vh;
+  padding-bottom: 80px;
+}
+.container { max-width: 480px; margin: 0 auto; padding: 0 16px; }
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 20px;
+  background: rgba(255,255,255,0.03);
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+.header h1 { font-size: 1.1rem; font-weight: 700; color: #ccccee; display: flex; align-items: center; gap: 8px; }
+.header-right { display: flex; align-items: center; gap: 12px; }
+.points-badge {
+  background: linear-gradient(135deg, #f7971e, #ffd200);
+  color: #1a1a2e;
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-weight: 700;
+  font-size: 0.85rem;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.summary-cards {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+  margin: 16px 0;
+}
+.summary-card {
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 14px;
+  padding: 14px 10px;
+  text-align: center;
+}
+.summary-card .sc-label { font-size: 0.7rem; color: #8888aa; }
+.summary-card .sc-value { font-size: 1.2rem; font-weight: 700; margin-top: 4px; }
+.summary-card .sc-value.earned { color: #4ade80; }
+.summary-card .sc-value.spent { color: #f87171; }
+.summary-card .sc-value.balance { background: linear-gradient(135deg, #f7971e, #ffd200); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+
+.filter-row {
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  padding: 8px 0;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+}
+.filter-row::-webkit-scrollbar { display: none; }
+.filter-chip {
+  flex-shrink: 0;
+  padding: 7px 14px;
+  border-radius: 20px;
+  border: 1px solid rgba(255,255,255,0.1);
+  background: rgba(255,255,255,0.04);
+  color: #8888aa;
+  font-size: 0.78rem;
+  cursor: pointer;
+  transition: all 0.3s;
+  white-space: nowrap;
+}
+.filter-chip.active { background: rgba(247,151,30,0.15); border-color: #f7971e; color: #f7971e; font-weight: 600; }
+
+.tx-list { list-style: none; margin-top: 8px; }
+.tx-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 16px;
+  background: rgba(255,255,255,0.03);
+  border: 1px solid rgba(255,255,255,0.06);
+  border-radius: 12px;
+  margin-bottom: 8px;
+  transition: all 0.3s;
+}
+.tx-item:hover { background: rgba(255,255,255,0.06); }
+.tx-icon { font-size: 1.4rem; width: 40px; text-align: center; flex-shrink: 0; }
+.tx-info { flex: 1; min-width: 0; }
+.tx-info .tx-desc { font-size: 0.9rem; font-weight: 500; }
+.tx-info .tx-date { font-size: 0.75rem; color: #6666aa; margin-top: 2px; }
+.tx-amount { font-size: 1rem; font-weight: 700; white-space: nowrap; }
+.tx-amount.earned { color: #4ade80; }
+.tx-amount.spent { color: #f87171; }
+.tx-balance { font-size: 0.75rem; color: #8888aa; text-align: right; }
+
+.load-more {
+  display: block;
+  width: 100%;
+  padding: 14px;
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 12px;
+  background: rgba(255,255,255,0.04);
+  color: #8888aa;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: all 0.3s;
+  text-align: center;
+  margin: 12px 0 20px;
+}
+.load-more:hover { background: rgba(255,255,255,0.08); color: #ccccee; }
+
+.bottom-nav {
+  position: fixed;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 100%;
+  max-width: 480px;
+  background: rgba(15,15,26,0.9);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border-top: 1px solid rgba(255,255,255,0.06);
+  display: flex;
+  justify-content: space-around;
+  padding: 8px 0;
+  padding-bottom: max(8px, env(safe-area-inset-bottom));
+  z-index: 200;
+}
+.nav-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  padding: 4px 12px;
+  text-decoration: none;
+  color: #6666aa;
+  font-size: 0.7rem;
+  transition: all 0.3s;
+  -webkit-tap-highlight-color: transparent;
+}
+.nav-item .nav-icon { font-size: 1.3rem; }
+.nav-item.active { color: #f7971e; }
+
+.empty-state { text-align: center; padding: 40px 20px; color: #6666aa; }
+.empty-state .empty-icon { font-size: 3rem; margin-bottom: 12px; display: block; }
+
+.skeleton { background: rgba(255,255,255,0.06); border-radius: 12px; animation: pulse 1.5s ease-in-out infinite; height: 64px; margin-bottom: 8px; }
+@keyframes pulse { 0%, 100% { opacity: 0.6; } 50% { opacity: 1; } }
+.hidden { display: none !important; }
+</style>
+</head>
+<body>
+<div class="header">
+  <h1>📊 交易記錄</h1>
+  <div class="header-right">
+    <div class="points-badge">⭐ <span id="headerPoints">0</span></div>
+  </div>
+</div>
+
+<div class="container">
+  <div class="summary-cards">
+    <div class="summary-card"><div class="sc-label">總獲得</div><div class="sc-value earned" id="totalEarned">0</div></div>
+    <div class="summary-card"><div class="sc-label">總花費</div><div class="sc-value spent" id="totalSpent">0</div></div>
+    <div class="summary-card"><div class="sc-label">目前點數</div><div class="sc-value balance" id="currentBalance">0</div></div>
+  </div>
+
+  <div class="filter-row" id="filterRow">
+    <button class="filter-chip active" data-filter="all">全部</button>
+    <button class="filter-chip" data-filter="earn">💵 獲得</button>
+    <button class="filter-chip" data-filter="redeem">🎁 兌換</button>
+    <button class="filter-chip" data-filter="adjust">⚙️ 管理調整</button>
+  </div>
+
+  <ul class="tx-list" id="txList">
+    <div class="skeleton"></div>
+    <div class="skeleton"></div>
+    <div class="skeleton"></div>
+  </ul>
+  <button class="load-more" id="loadMore" onclick="loadMore()" style="display:none">載入更多</button>
+</div>
+
+<nav class="bottom-nav">
+  <a href="dashboard.html" class="nav-item"><span class="nav-icon">🏠</span>首頁</a>
+  <a href="tasks.html" class="nav-item"><span class="nav-icon">✅</span>任務</a>
+  <a href="rewards.html" class="nav-item"><span class="nav-icon">🎁</span>兌換</a>
+  <a href="history.html" class="nav-item active"><span class="nav-icon">📊</span>記錄</a>
+  <a href="profile.html" class="nav-item"><span class="nav-icon">👤</span>個人</a>
+</nav>
+
+<script>
+const API = '/api/student';
+let allTxs = [];
+let displayCount = 20;
+let currentFilter = 'all';
+
+function getToken() { return localStorage.getItem('student_token'); }
+function authHeaders() {
+  const t = getToken();
+  if (!t) { window.location.href = 'index.html'; return {}; }
+  return { 'Authorization': `Bearer ${t}`, 'Content-Type': 'application/json' };
+}
+
+function handleLogout() {
+  localStorage.removeItem('student_token');
+  localStorage.removeItem('student_user');
+  window.location.href = 'index.html';
+}
+
+function formatDate(d) {
+  const date = new Date(d);
+  return `${date.getFullYear()}/${String(date.getMonth()+1).padStart(2,'0')}/${String(date.getDate()).padStart(2,'0')} ${String(date.getHours()).padStart(2,'0')}:${String(date.getMinutes()).padStart(2,'0')}`;
+}
+
+function getTxIcon(type) {
+  const map = { 'earn': '💵', 'redeem': '🎁', 'spend': '🛒', 'adjust': '⚙️', 'daily': '📅', 'bonus': '🎉', 'admin': '🔧' };
+  return map[type] || '💳';
+}
+
+function renderTx(tx) {
+  const amt = parseFloat(tx.amount);
+  return `<li class="tx-item">
+    <span class="tx-icon">${getTxIcon(tx.type)}</span>
+    <div class="tx-info">
+      <div class="tx-desc">${tx.description || ''}</div>
+      <div class="tx-date">${formatDate(tx.created_at)}</div>
+    </div>
+    <div style="text-align:right">
+      <div class="tx-amount ${amt > 0 ? 'earned' : 'spent'}">${amt > 0 ? '+' : ''}${amt}</div>
+      ${tx.balance_after !== undefined ? `<div class="tx-balance">餘額 ${tx.balance_after}</div>` : ''}
+    </div>
+  </li>`;
+}
+
+function renderFiltered() {
+  const filtered = currentFilter === 'all' ? allTxs : allTxs.filter(t => t.type === currentFilter);
+  const shown = filtered.slice(0, displayCount);
+  const list = document.getElementById('txList');
+  if (shown.length === 0) {
+    list.innerHTML = '<div class="empty-state"><span class="empty-icon">📭</span><p>暫無交易記錄</p></div>';
+  } else {
+    list.innerHTML = shown.map(renderTx).join('');
+  }
+  document.getElementById('loadMore').style.display = filtered.length > displayCount ? 'block' : 'none';
+}
+
+async function loadMore() {
+  displayCount += 20;
+  renderFiltered();
+}
+
+async function loadHistory() {
+  document.getElementById('txList').innerHTML = '<div class="skeleton"></div><div class="skeleton"></div><div class="skeleton"></div>';
+  displayCount = 20;
+  try {
+    const [pointsRes, txRes] = await Promise.all([
+      fetch(`${API}/points`, { headers: authHeaders() }),
+      fetch(`${API}/transactions`, { headers: authHeaders() })
+    ]);
+    if (pointsRes.status === 401 || txRes.status === 401) { handleLogout(); return; }
+    const points = await pointsRes.json();
+    const txData = await txRes.json();
+    document.getElementById('totalEarned').textContent = points.total_earned || 0;
+    document.getElementById('totalSpent').textContent = points.total_spent || 0;
+    document.getElementById('currentBalance').textContent = points.balance || 0;
+    document.getElementById('headerPoints').textContent = points.balance || 0;
+    allTxs = txData.transactions || [];
+    renderFiltered();
+  } catch(e) {
+    document.getElementById('txList').innerHTML = '<div class="empty-state"><span class="empty-icon">❌</span><p>載入失敗</p></div>';
+  }
+}
+
+document.getElementById('filterRow').addEventListener('click', function(e) {
+  const chip = e.target.closest('.filter-chip');
+  if (!chip) return;
+  document.querySelectorAll('.filter-chip').forEach(c => c.classList.remove('active'));
+  chip.classList.add('active');
+  currentFilter = chip.dataset.filter;
+  displayCount = 20;
+  renderFiltered();
+});
+
+(function init() {
+  if (!getToken()) { window.location.href = 'index.html'; return; }
+  loadHistory();
+})();
+</script>
+</body>
+</html>

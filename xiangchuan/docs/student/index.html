@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>學生賺分平台 — 翔川 Neo｜曜科技</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Noto Sans TC', sans-serif;
+  background: linear-gradient(135deg, #0f0f1a 0%, #1a1a2e 50%, #16213e 100%);
+  color: #e0e0e0;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+.container { max-width: 420px; width: 100%; }
+
+.hero { text-align: center; margin-bottom: 32px; }
+.hero .logo {
+  font-size: 3.5rem;
+  margin-bottom: 8px;
+  display: block;
+}
+.hero h1 {
+  font-size: 2rem;
+  background: linear-gradient(135deg, #f7971e, #ffd200);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  font-weight: 800;
+  letter-spacing: 2px;
+}
+.hero p { color: #8888aa; margin-top: 8px; font-size: 0.95rem; line-height: 1.5; }
+
+.card {
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 16px;
+  padding: 28px 24px;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+
+.tabs { display: flex; gap: 4px; margin-bottom: 24px; background: rgba(0,0,0,0.3); border-radius: 12px; padding: 4px; }
+.tab { flex: 1; text-align: center; padding: 10px; border: none; background: transparent; color: #8888aa; font-size: 0.95rem; font-weight: 600; cursor: pointer; border-radius: 10px; transition: all 0.3s; }
+.tab.active { background: rgba(255,255,255,0.1); color: #fff; }
+.tab:hover { color: #fff; }
+
+.form-group { margin-bottom: 16px; }
+.form-group label { display: block; font-size: 0.85rem; color: #aaaacc; margin-bottom: 6px; font-weight: 500; }
+.form-group input, .form-group select {
+  width: 100%;
+  padding: 12px 14px;
+  background: rgba(255,255,255,0.06);
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 10px;
+  color: #e0e0e0;
+  font-size: 0.95rem;
+  outline: none;
+  transition: border 0.3s;
+}
+.form-group input:focus { border-color: #f7971e; }
+.form-group input::placeholder { color: #6666aa; }
+.form-group .error { color: #f87171; font-size: 0.8rem; margin-top: 4px; display: none; }
+
+.btn {
+  width: 100%;
+  padding: 14px;
+  border: none;
+  border-radius: 12px;
+  font-size: 1rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.3s;
+  background: linear-gradient(135deg, #f7971e, #ffd200);
+  color: #1a1a2e;
+  position: relative;
+}
+.btn:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(247,151,30,0.3); }
+.btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; box-shadow: none; }
+.btn .spinner {
+  display: none;
+  width: 20px; height: 20px;
+  border: 3px solid rgba(26,26,46,0.2);
+  border-top-color: #1a1a2e;
+  border-radius: 50%;
+  animation: spin 0.6s linear infinite;
+  position: absolute;
+  top: 50%; left: 50%;
+  margin: -10px 0 0 -10px;
+}
+.btn.loading .spinner { display: block; }
+.btn.loading .btn-text { visibility: hidden; }
+
+@keyframes spin { to { transform: rotate(360deg); } }
+
+.notice {
+  background: rgba(247,151,30,0.1);
+  border: 1px solid rgba(247,151,30,0.2);
+  border-radius: 10px;
+  padding: 10px 14px;
+  font-size: 0.8rem;
+  color: #f7971e;
+  margin-bottom: 16px;
+  text-align: center;
+}
+
+.alert {
+  background: rgba(248,113,113,0.1);
+  border: 1px solid rgba(248,113,113,0.2);
+  border-radius: 10px;
+  padding: 10px 14px;
+  font-size: 0.85rem;
+  color: #f87171;
+  margin-bottom: 16px;
+  display: none;
+}
+
+.alt-action { text-align: center; margin-top: 16px; font-size: 0.85rem; color: #6666aa; }
+.alt-action a { color: #f7971e; text-decoration: none; font-weight: 600; }
+
+.form-row { display: flex; gap: 12px; }
+.form-row .form-group { flex: 1; }
+
+@media (max-width: 480px) {
+  .hero h1 { font-size: 1.6rem; }
+  .card { padding: 20px 16px; }
+  .form-row { flex-direction: column; gap: 0; }
+}
+</style>
+</head>
+<body>
+<div class="container">
+  <div class="hero">
+    <span class="logo">🏆</span>
+    <h1>學生賺分平台</h1>
+    <p>完成任務賺點數 · 兌換你想要的獎勵</p>
+  </div>
+  <div class="card">
+    <div class="tabs">
+      <button class="tab active" data-tab="login" onclick="switchTab('login')">登入</button>
+      <button class="tab" data-tab="register" onclick="switchTab('register')">註冊</button>
+    </div>
+
+    <div id="alert" class="alert"></div>
+
+    <form id="loginForm" onsubmit="handleLogin(event)">
+      <div class="form-group">
+        <label>電子郵件</label>
+        <input type="email" id="loginEmail" placeholder="student@example.com" required>
+      </div>
+      <div class="form-group">
+        <label>密碼</label>
+        <input type="password" id="loginPassword" placeholder="••••••••" required minlength="6">
+      </div>
+      <button type="submit" class="btn" id="loginBtn"><span class="btn-text">登入</span><span class="spinner"></span></button>
+      <div class="alt-action">還沒有帳號？ <a href="#" onclick="switchTab('register');return false">立即註冊</a></div>
+    </form>
+
+    <form id="registerForm" onsubmit="handleRegister(event)" style="display:none">
+      <div class="form-group">
+        <label>姓名</label>
+        <input type="text" id="regName" placeholder="王小明" required>
+      </div>
+      <div class="form-group">
+        <label>電子郵件</label>
+        <input type="email" id="regEmail" placeholder="student@example.com" required>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>密碼 (至少6碼)</label>
+          <input type="password" id="regPassword" placeholder="••••••••" required minlength="6">
+        </div>
+        <div class="form-group">
+          <label>確認密碼</label>
+          <input type="password" id="regConfirm" placeholder="••••••••" required minlength="6">
+        </div>
+      </div>
+      <div class="form-group">
+        <label>年齡 (需家長同意)</label>
+        <input type="number" id="regAge" placeholder="6-17 歲" min="6" max="17" required>
+      </div>
+      <div class="form-group">
+        <label>家長電子郵件</label>
+        <input type="email" id="regParentEmail" placeholder="parent@example.com" required>
+      </div>
+      <div class="form-group">
+        <label>家長姓名</label>
+        <input type="text" id="regParentName" placeholder="王大明">
+      </div>
+      <div class="notice">📋 需家長同意方可註冊。我們會發送同意確認信至家長信箱。</div>
+      <button type="submit" class="btn" id="registerBtn"><span class="btn-text">註冊</span><span class="spinner"></span></button>
+      <div class="alt-action">已有帳號？ <a href="#" onclick="switchTab('login');return false">立即登入</a></div>
+    </form>
+  </div>
+</div>
+
+<script>
+const API = '/api/student';
+
+function showAlert(msg, isError = true) {
+  const el = document.getElementById('alert');
+  el.textContent = msg;
+  el.style.display = 'block';
+  if (!isError) { el.style.background = 'rgba(74,222,128,0.1)'; el.style.borderColor = 'rgba(74,222,128,0.2)'; el.style.color = '#4ade80'; }
+  else { el.style.background = 'rgba(248,113,113,0.1)'; el.style.borderColor = 'rgba(248,113,113,0.2)'; el.style.color = '#f87171'; }
+  setTimeout(() => el.style.display = 'none', 5000);
+}
+
+function switchTab(tab) {
+  document.querySelectorAll('.tab').forEach(t => t.classList.toggle('active', t.dataset.tab === tab));
+  document.getElementById('loginForm').style.display = tab === 'login' ? 'block' : 'none';
+  document.getElementById('registerForm').style.display = tab === 'register' ? 'block' : 'none';
+  document.getElementById('alert').style.display = 'none';
+}
+
+async function handleLogin(e) {
+  e.preventDefault();
+  const btn = document.getElementById('loginBtn');
+  const email = document.getElementById('loginEmail').value.trim();
+  const password = document.getElementById('loginPassword').value;
+  if (!email) { showAlert('請輸入電子郵件'); return; }
+  if (!password || password.length < 6) { showAlert('密碼至少6碼'); return; }
+  btn.classList.add('loading'); btn.disabled = true;
+  try {
+    const res = await fetch(`${API}/auth/login`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email, password })
+    });
+    const data = await res.json();
+    if (!res.ok) { showAlert(data.error || data.message || '登入失敗'); return; }
+    localStorage.setItem('student_token', data.token);
+    localStorage.setItem('student_user', JSON.stringify(data.student));
+    window.location.href = 'dashboard.html';
+  } catch (err) {
+    showAlert('網路錯誤，請稍後再試');
+  } finally {
+    btn.classList.remove('loading'); btn.disabled = false;
+  }
+}
+
+async function handleRegister(e) {
+  e.preventDefault();
+  const btn = document.getElementById('registerBtn');
+  const name = document.getElementById('regName').value.trim();
+  const email = document.getElementById('regEmail').value.trim();
+  const password = document.getElementById('regPassword').value;
+  const confirm = document.getElementById('regConfirm').value;
+  const age = parseInt(document.getElementById('regAge').value);
+  const parentEmail = document.getElementById('regParentEmail').value.trim();
+  const parentName = document.getElementById('regParentName').value.trim();
+  if (!name) { showAlert('請輸入姓名'); return; }
+  if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { showAlert('請輸入有效的電子郵件'); return; }
+  if (password.length < 6) { showAlert('密碼至少6碼'); return; }
+  if (password !== confirm) { showAlert('兩次密碼輸入不一致'); return; }
+  if (isNaN(age) || age < 6 || age > 17) { showAlert('年齡需在6-17歲之間'); return; }
+  if (!parentEmail || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(parentEmail)) { showAlert('請輸入有效的家長電子郵件'); return; }
+  btn.classList.add('loading'); btn.disabled = true;
+  try {
+    const res = await fetch(`${API}/auth/register`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ name, email, password, age, parent_email: parentEmail, parent_name: parentName || undefined })
+    });
+    const data = await res.json();
+    if (!res.ok) { showAlert(data.error || data.message || '註冊失敗'); return; }
+    showAlert('註冊成功！請檢查家長信箱確認同意後登入', false);
+    switchTab('login');
+    document.getElementById('loginEmail').value = email;
+  } catch (err) {
+    showAlert('網路錯誤，請稍後再試');
+  } finally {
+    btn.classList.remove('loading'); btn.disabled = false;
+  }
+}
+
+(function checkAuth() {
+  if (localStorage.getItem('student_token')) { window.location.href = 'dashboard.html'; }
+})();
+</script>
+</body>
+</html>

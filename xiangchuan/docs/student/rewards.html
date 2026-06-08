@@ -1,0 +1,534 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>獎勵兌換所 — 學生賺分平台</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Noto Sans TC', sans-serif;
+  background: linear-gradient(135deg, #0f0f1a 0%, #1a1a2e 50%, #16213e 100%);
+  color: #e0e0e0;
+  min-height: 100vh;
+  padding-bottom: 80px;
+}
+.container { max-width: 480px; margin: 0 auto; padding: 0 16px; }
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 20px;
+  background: rgba(255,255,255,0.03);
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+.header h1 { font-size: 1.1rem; font-weight: 700; color: #ccccee; display: flex; align-items: center; gap: 8px; }
+.header-right { display: flex; align-items: center; gap: 12px; }
+.points-badge {
+  background: linear-gradient(135deg, #f7971e, #ffd200);
+  color: #1a1a2e;
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-weight: 700;
+  font-size: 0.85rem;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.filter-row {
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  padding: 12px 0;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+}
+.filter-row::-webkit-scrollbar { display: none; }
+.filter-chip {
+  flex-shrink: 0;
+  padding: 8px 16px;
+  border-radius: 20px;
+  border: 1px solid rgba(255,255,255,0.1);
+  background: rgba(255,255,255,0.04);
+  color: #8888aa;
+  font-size: 0.82rem;
+  cursor: pointer;
+  transition: all 0.3s;
+  white-space: nowrap;
+}
+.filter-chip.active { background: rgba(247,151,30,0.15); border-color: #f7971e; color: #f7971e; font-weight: 600; }
+
+.reward-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+.reward-card {
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 16px;
+  padding: 20px 16px;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.3s;
+  position: relative;
+  overflow: hidden;
+}
+.reward-card:hover { transform: translateY(-4px); background: rgba(255,255,255,0.07); border-color: rgba(255,255,255,0.15); box-shadow: 0 8px 30px rgba(0,0,0,0.3); }
+.reward-card .reward-icon { font-size: 2.8rem; margin-bottom: 10px; display: block; }
+.reward-card h4 { font-size: 0.9rem; font-weight: 600; margin-bottom: 4px; }
+.reward-card .reward-desc { font-size: 0.75rem; color: #8888aa; line-height: 1.4; margin-bottom: 8px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+.reward-card .reward-points {
+  font-size: 1.3rem;
+  font-weight: 800;
+  background: linear-gradient(135deg, #f7971e, #ffd200);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+.reward-card .reward-points small { font-size: 0.65rem; -webkit-text-fill-color: #6666aa; }
+.reward-card .stock-badge {
+  display: inline-block;
+  font-size: 0.65rem;
+  padding: 2px 8px;
+  border-radius: 6px;
+  margin-top: 6px;
+}
+.reward-card .stock-badge.low { background: rgba(248,113,113,0.15); color: #f87171; border: 1px solid rgba(248,113,113,0.2); }
+.reward-card .stock-badge.ok { background: rgba(74,222,128,0.15); color: #4ade80; border: 1px solid rgba(74,222,128,0.2); }
+.reward-card .redeem-btn {
+  display: block;
+  width: 100%;
+  margin-top: 10px;
+  padding: 8px;
+  border: none;
+  border-radius: 8px;
+  background: linear-gradient(135deg, #f7971e, #ffd200);
+  color: #1a1a2e;
+  font-weight: 700;
+  font-size: 0.82rem;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+.reward-card .redeem-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+.reward-card .redeem-btn:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 4px 16px rgba(247,151,30,0.3); }
+
+.section-title { font-size: 1rem; font-weight: 700; margin: 24px 0 12px; color: #ccccee; }
+
+.modal-overlay {
+  display: none;
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(0,0,0,0.7);
+  z-index: 300;
+  align-items: flex-end;
+  justify-content: center;
+  backdrop-filter: blur(4px);
+}
+.modal-overlay.open { display: flex; }
+.modal {
+  background: linear-gradient(135deg, #1a1a2e, #16213e);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 20px 20px 0 0;
+  padding: 28px 20px;
+  padding-bottom: max(20px, env(safe-area-inset-bottom));
+  max-width: 480px;
+  width: 100%;
+  max-height: 85vh;
+  overflow-y: auto;
+  animation: slideUp 0.3s ease;
+}
+@keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
+.modal-handle { width: 40px; height: 4px; background: rgba(255,255,255,0.15); border-radius: 2px; margin: 0 auto 16px; }
+.modal h2 { font-size: 1.2rem; font-weight: 700; margin-bottom: 8px; display: flex; align-items: center; gap: 10px; }
+.modal .modal-desc { color: #9999bb; font-size: 0.9rem; line-height: 1.5; margin-bottom: 16px; }
+.modal .modal-points {
+  background: linear-gradient(135deg, rgba(247,151,30,0.15), rgba(255,210,0,0.08));
+  border: 1px solid rgba(247,151,30,0.2);
+  border-radius: 10px;
+  padding: 10px 14px;
+  text-align: center;
+  color: #f7971e;
+  font-weight: 700;
+  font-size: 1rem;
+  margin-bottom: 16px;
+}
+.qty-selector { display: flex; align-items: center; justify-content: center; gap: 16px; margin-bottom: 16px; }
+.qty-selector button {
+  width: 40px; height: 40px;
+  border-radius: 50%;
+  border: 1px solid rgba(255,255,255,0.1);
+  background: rgba(255,255,255,0.06);
+  color: #fff;
+  font-size: 1.2rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+}
+.qty-selector button:hover { background: rgba(255,255,255,0.1); }
+.qty-selector .qty-value { font-size: 1.3rem; font-weight: 700; min-width: 30px; text-align: center; }
+
+.btn {
+  width: 100%;
+  padding: 14px;
+  border: none;
+  border-radius: 12px;
+  font-size: 1rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.3s;
+  background: linear-gradient(135deg, #f7971e, #ffd200);
+  color: #1a1a2e;
+  position: relative;
+}
+.btn:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(247,151,30,0.3); }
+.btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; box-shadow: none; }
+.btn .spinner { display: none; width: 20px; height: 20px; border: 3px solid rgba(26,26,46,0.2); border-top-color: #1a1a2e; border-radius: 50%; animation: spin 0.6s linear infinite; position: absolute; top: 50%; left: 50%; margin: -10px 0 0 -10px; }
+.btn.loading .spinner { display: block; }
+.btn.loading .btn-text { visibility: hidden; }
+.btn-secondary { background: rgba(255,255,255,0.06); color: #aaaacc; }
+.btn-secondary:hover { background: rgba(255,255,255,0.1); box-shadow: none; transform: none; }
+@keyframes spin { to { transform: rotate(360deg); } }
+
+.confirm-overlay {
+  display: none;
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(0,0,0,0.7);
+  z-index: 400;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+.confirm-overlay.open { display: flex; }
+.confirm-box {
+  background: linear-gradient(135deg, #1a1a2e, #16213e);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 20px;
+  padding: 28px 24px;
+  max-width: 360px;
+  width: 100%;
+  text-align: center;
+}
+.confirm-box h3 { font-size: 1.1rem; margin-bottom: 8px; }
+.confirm-box p { color: #9999bb; font-size: 0.9rem; margin-bottom: 20px; }
+.confirm-box .confirm-actions { display: flex; gap: 12px; }
+.confirm-box .confirm-actions .btn { flex: 1; }
+
+.toast {
+  position: fixed;
+  top: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 12px 20px;
+  border-radius: 12px;
+  font-size: 0.85rem;
+  font-weight: 500;
+  z-index: 500;
+  animation: toastIn 0.3s ease;
+  max-width: 420px;
+  width: calc(100% - 40px);
+  text-align: center;
+}
+.toast.success { background: rgba(74,222,128,0.15); border: 1px solid rgba(74,222,128,0.3); color: #4ade80; }
+.toast.error { background: rgba(248,113,113,0.15); border: 1px solid rgba(248,113,113,0.3); color: #f87171; }
+@keyframes toastIn { from { opacity: 0; transform: translateX(-50%) translateY(-20px); } to { opacity: 1; transform: translateX(-50%) translateY(0); } }
+
+.bottom-nav {
+  position: fixed;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 100%;
+  max-width: 480px;
+  background: rgba(15,15,26,0.9);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border-top: 1px solid rgba(255,255,255,0.06);
+  display: flex;
+  justify-content: space-around;
+  padding: 8px 0;
+  padding-bottom: max(8px, env(safe-area-inset-bottom));
+  z-index: 200;
+}
+.nav-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  padding: 4px 12px;
+  text-decoration: none;
+  color: #6666aa;
+  font-size: 0.7rem;
+  transition: all 0.3s;
+  -webkit-tap-highlight-color: transparent;
+}
+.nav-item .nav-icon { font-size: 1.3rem; }
+.nav-item.active { color: #f7971e; }
+
+.empty-state { text-align: center; padding: 40px 20px; color: #6666aa; }
+.empty-state .empty-icon { font-size: 3rem; margin-bottom: 12px; display: block; }
+.empty-state p { font-size: 0.9rem; }
+
+.skeleton { background: rgba(255,255,255,0.06); border-radius: 12px; animation: pulse 1.5s ease-in-out infinite; height: 160px; }
+@keyframes pulse { 0%, 100% { opacity: 0.6; } 50% { opacity: 1; } }
+.hidden { display: none !important; }
+</style>
+</head>
+<body>
+<div class="header">
+  <h1>🎁 獎勵兌換所</h1>
+  <div class="header-right">
+    <div class="points-badge">⭐ <span id="headerPoints">0</span></div>
+  </div>
+</div>
+
+<div class="container">
+  <div class="filter-row" id="filterRow">
+    <button class="filter-chip active" data-filter="all">全部</button>
+    <button class="filter-chip" data-filter="virtual">🎮 虛擬商品</button>
+    <button class="filter-chip" data-filter="gift">🎫 超商禮券</button>
+    <button class="filter-chip" data-filter="point">💳 點數卡</button>
+  </div>
+
+  <div class="section-title">🎯 兌換商品</div>
+  <div class="reward-grid" id="rewardGrid">
+    <div class="skeleton"></div>
+    <div class="skeleton"></div>
+  </div>
+
+  <div class="section-title">📋 已兌換記錄</div>
+  <div id="redemptionList"></div>
+</div>
+
+<nav class="bottom-nav">
+  <a href="dashboard.html" class="nav-item"><span class="nav-icon">🏠</span>首頁</a>
+  <a href="tasks.html" class="nav-item"><span class="nav-icon">✅</span>任務</a>
+  <a href="rewards.html" class="nav-item active"><span class="nav-icon">🎁</span>兌換</a>
+  <a href="history.html" class="nav-item"><span class="nav-icon">📊</span>記錄</a>
+  <a href="profile.html" class="nav-item"><span class="nav-icon">👤</span>個人</a>
+</nav>
+
+<div class="modal-overlay" id="rewardModal">
+  <div class="modal">
+    <div class="modal-handle"></div>
+    <h2 id="modalTitle"><span id="modalIcon">🎁</span> <span id="modalName"></span></h2>
+    <p class="modal-desc" id="modalDesc"></p>
+    <div class="modal-points" id="modalPoints"></div>
+    <div class="qty-selector">
+      <button onclick="changeQty(-1)">−</button>
+      <span class="qty-value" id="qtyValue">1</span>
+      <button onclick="changeQty(1)">+</button>
+    </div>
+    <p style="text-align:center;font-size:0.8rem;color:#6666aa;margin-bottom:16px">庫存: <span id="stockInfo">-</span></p>
+    <button class="btn" onclick="handleRedeem()"><span class="btn-text">確認兌換</span><span class="spinner"></span></button>
+    <button class="btn btn-secondary" onclick="closeModal()" style="margin-top:8px">取消</button>
+  </div>
+</div>
+
+<div class="confirm-overlay" id="confirmOverlay">
+  <div class="confirm-box">
+    <h3>⚠️ 確認兌換</h3>
+    <p id="confirmText">確定要花費 0 點兌換此獎勵嗎？</p>
+    <div class="confirm-actions">
+      <button class="btn btn-secondary" onclick="closeConfirm()">取消</button>
+      <button class="btn" id="confirmBtn" onclick="doRedeem()"><span class="btn-text">確定兌換</span><span class="spinner"></span></button>
+    </div>
+  </div>
+</div>
+
+<script>
+const API = '/api/student';
+let allRewards = [];
+let currentReward = null;
+let currentQty = 1;
+let currentFilter = 'all';
+
+function getToken() { return localStorage.getItem('student_token'); }
+function authHeaders() {
+  const t = getToken();
+  if (!t) { window.location.href = 'index.html'; return {}; }
+  return { 'Authorization': `Bearer ${t}`, 'Content-Type': 'application/json' };
+}
+
+function showToast(msg, type = 'success') {
+  const existing = document.querySelector('.toast');
+  if (existing) existing.remove();
+  const t = document.createElement('div');
+  t.className = `toast ${type}`; t.textContent = msg;
+  document.body.appendChild(t);
+  setTimeout(() => { t.style.opacity = '0'; t.style.transition = 'opacity 0.3s'; setTimeout(() => t.remove(), 300); }, 3000);
+}
+
+function handleLogout() {
+  localStorage.removeItem('student_token');
+  localStorage.removeItem('student_user');
+  window.location.href = 'index.html';
+}
+
+async function loadPoints() {
+  try {
+    const res = await fetch(`${API}/points`, { headers: authHeaders() });
+    if (res.status === 401) { handleLogout(); return; }
+    const data = await res.json();
+    document.getElementById('headerPoints').textContent = data.balance || 0;
+    return data.balance || 0;
+  } catch(e) { return 0; }
+}
+
+function categoryEmoji(cat) {
+  const map = { 'virtual': '🎮', 'gift': '🎫', 'point': '💳', 'physical': '📦', 'other': '🎁' };
+  return map[cat] || '🎁';
+}
+
+function renderRewards(rewards, balance) {
+  const filtered = currentFilter === 'all' ? rewards : rewards.filter(r => r.category === currentFilter);
+  const grid = document.getElementById('rewardGrid');
+  if (filtered.length === 0) {
+    grid.innerHTML = '<div class="empty-state" style="grid-column:1/-1"><span class="empty-icon">📭</span><p>暫無獎勵</p></div>';
+    return;
+  }
+  grid.innerHTML = filtered.map(r => {
+    const canAfford = (balance || 0) >= r.points_required;
+    const outOfStock = r.stock !== undefined && r.stock !== null && r.stock <= 0;
+    const stockClass = (r.stock !== undefined && r.stock !== null && r.stock <= 5 && r.stock > 0) ? 'low' : 'ok';
+    const stockText = r.stock !== undefined && r.stock !== null ? (r.stock <= 0 ? '已售完' : `剩 ${r.stock}`) : '';
+    return `<div class="reward-card" onclick="openReward('${r.id}')">
+      <span class="reward-icon">${r.image_url ? '<img src="'+r.image_url+'" style="width:48px;height:48px;object-fit:cover;border-radius:12px">' : (r.icon || categoryEmoji(r.category))}</span>
+      <h4>${r.name}</h4>
+      <div class="reward-desc">${r.description || ''}</div>
+      <div class="reward-points">${r.points_required}<small> 點</small></div>
+      ${stockText ? `<span class="stock-badge ${outOfStock ? 'low' : stockClass}">${stockText}</span>` : ''}
+      <button class="redeem-btn" ${(canAfford && !outOfStock) ? '' : 'disabled'}>${outOfStock ? '已售完' : (canAfford ? '兌換' : '點數不足')}</button>
+    </div>`;
+  }).join('');
+}
+
+async function loadRewards() {
+  document.getElementById('rewardGrid').innerHTML = '<div class="skeleton"></div><div class="skeleton"></div>';
+  const balance = await loadPoints();
+  try {
+    const res = await fetch(`${API}/rewards`, { headers: authHeaders() });
+    if (res.status === 401) { handleLogout(); return; }
+    const data = await res.json();
+    allRewards = data.rewards || [];
+    renderRewards(allRewards, balance);
+  } catch(e) {
+    document.getElementById('rewardGrid').innerHTML = '<div class="empty-state" style="grid-column:1/-1"><span class="empty-icon">❌</span><p>載入失敗</p></div>';
+  }
+}
+
+function openReward(id) {
+  const reward = allRewards.find(r => String(r.id) === String(id));
+  if (!reward) return;
+  currentReward = reward;
+  currentQty = 1;
+  document.getElementById('modalIcon').textContent = reward.image_url ? '🎁' : (reward.icon || categoryEmoji(reward.category));
+  document.getElementById('modalName').textContent = reward.name;
+  document.getElementById('modalDesc').textContent = reward.description || '';
+  document.getElementById('modalPoints').textContent = `${reward.points_required} 點 / 個`;
+  document.getElementById('qtyValue').textContent = '1';
+  const stockText = reward.stock !== undefined && reward.stock !== null ? (reward.stock <= 0 ? '已售完' : `${reward.stock} 個`) : '不限';
+  document.getElementById('stockInfo').textContent = stockText;
+  document.getElementById('rewardModal').classList.add('open');
+}
+
+function closeModal() { document.getElementById('rewardModal').classList.remove('open'); currentReward = null; }
+
+function changeQty(delta) {
+  if (!currentReward) return;
+  const max = (currentReward.stock !== undefined && currentReward.stock !== null) ? currentReward.stock : 99;
+  currentQty = Math.max(1, Math.min(max, currentQty + delta));
+  document.getElementById('qtyValue').textContent = currentQty;
+}
+
+function handleRedeem() {
+  if (!currentReward) return;
+  const total = currentReward.points_required * currentQty;
+  document.getElementById('confirmText').textContent = `確定要花費 ${total} 點兌換 ${currentQty} 個「${currentReward.name}」嗎？`;
+  closeModal();
+  document.getElementById('confirmOverlay').classList.add('open');
+}
+
+function closeConfirm() { document.getElementById('confirmOverlay').classList.remove('open'); }
+
+async function doRedeem() {
+  const btn = document.getElementById('confirmBtn');
+  btn.classList.add('loading'); btn.disabled = true;
+  try {
+    const res = await fetch(`${API}/rewards/${currentReward.id}/redeem`, {
+      method: 'POST',
+      headers: authHeaders(),
+      body: JSON.stringify({ quantity: currentQty })
+    });
+    const data = await res.json();
+    if (!res.ok) { showToast(data.error || '兌換失敗', 'error'); btn.classList.remove('loading'); btn.disabled = false; closeConfirm(); return; }
+    showToast(`🎉 兌換成功！獲得 ${currentQty} 個「${currentReward.name}」`);
+    closeConfirm();
+    loadRewards();
+    loadRedemptions();
+  } catch(e) {
+    showToast('網路錯誤', 'error');
+    btn.classList.remove('loading'); btn.disabled = false;
+    closeConfirm();
+  }
+}
+
+async function loadRedemptions() {
+  try {
+    const res = await fetch(`${API}/redemptions`, { headers: authHeaders() });
+    if (res.status === 401) return;
+    const data = await res.json();
+    const list = document.getElementById('redemptionList');
+    const reds = data.redemptions || [];
+    if (reds.length === 0) {
+      list.innerHTML = '<div class="empty-state"><span class="empty-icon">📭</span><p>尚未兌換任何獎勵</p></div>';
+      return;
+    }
+    list.innerHTML = reds.slice(0, 5).map(r => {
+      const statusColor = r.status === 'fulfilled' ? '#4ade80' : (r.status === 'pending' ? '#fbbf24' : '#f87171');
+      const statusText = r.status === 'fulfilled' ? '已發放' : (r.status === 'pending' ? '處理中' : '已取消');
+      return `<div style="display:flex;align-items:center;gap:12px;padding:12px 16px;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:12px;margin-bottom:8px">
+        <span style="font-size:1.4rem">🎁</span>
+        <div style="flex:1">
+          <div style="font-size:0.9rem;font-weight:500">${r.reward_name}</div>
+          <div style="font-size:0.75rem;color:#6666aa">${new Date(r.created_at).toLocaleDateString('zh-TW')}</div>
+        </div>
+        <span style="font-size:0.8rem;padding:3px 8px;border-radius:6px;background:rgba(74,222,128,0.1);color:${statusColor};border:1px solid rgba(74,222,128,0.2)">${statusText}</span>
+        <span style="color:#f87171;font-weight:700;font-size:0.85rem">-${r.points_spent}</span>
+      </div>`;
+    }).join('');
+  } catch(e) {}
+}
+
+document.getElementById('filterRow').addEventListener('click', async function(e) {
+  const chip = e.target.closest('.filter-chip');
+  if (!chip) return;
+  document.querySelectorAll('.filter-chip').forEach(c => c.classList.remove('active'));
+  chip.classList.add('active');
+  currentFilter = chip.dataset.filter;
+  const balance = await loadPoints();
+  renderRewards(allRewards, balance);
+});
+
+document.getElementById('rewardModal').addEventListener('click', function(e) {
+  if (e.target === this) closeModal();
+});
+
+(function init() {
+  if (!getToken()) { window.location.href = 'index.html'; return; }
+  loadRewards();
+  loadRedemptions();
+})();
+</script>
+</body>
+</html>
