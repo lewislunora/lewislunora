@@ -2,6 +2,7 @@
 """
 🤖 開發助理 Telegram Bot
 本地執行，透過 TG 遠端控制開發流程
+支援 AI 對話 proxy 到 Render API
 """
 
 import os, sys, subprocess, json, time, logging, shutil, signal
@@ -14,8 +15,8 @@ log = logging.getLogger("devbot")
 
 BOT_TOKEN = os.environ.get("TELEGRAM_BOT_TOKEN", "8653211794:AAG08xDDj0UDkX18TE60BQSVs-bwwVh8AH8")
 ALLOWED_USERS = os.environ.get("DEV_BOT_USERS", "626453598").split(",")
+RENDER_API = os.environ.get("RENDER_API_URL", "https://lewislunora.onrender.com")
 PROJECT_DIR = Path(__file__).parent.parent
-DOCS_DIR = PROJECT_DIR / "docs"
 XIANGCHUAN_DIR = PROJECT_DIR / "xiangchuan"
 API_URL = f"https://api.telegram.org/bot{BOT_TOKEN}"
 POLL_INTERVAL = 3
@@ -207,6 +208,34 @@ def cmd_whoami(chat_id):
     tg_send(chat_id, f"👤 {out} @ {host}")
 
 
+def cmd_webhook(chat_id, args=""):
+    action = args.strip().lower()
+    if action == "on":
+        url = f"{RENDER_API}/api/telegram/webhook"
+        r = requests.post(f"{API_URL}/setWebhook", json={"url": url}, timeout=10)
+        tg_send(chat_id, f"✅ Webhook 已設定 → Render\n{r.json()}")
+    elif action == "off":
+        r = requests.post(f"{API_URL}/deleteWebhook", timeout=10)
+        tg_send(chat_id, f"✅ Webhook 已關閉 (Polling 模式)\n{r.json()}")
+    else:
+        r = requests.get(f"{API_URL}/getWebhookInfo", timeout=10)
+        info = r.json().get("result", {})
+        tg_send_code(chat_id, json.dumps(info, indent=2, ensure_ascii=False))
+
+
+def handle_ai_chat(chat_id, text):
+    try:
+        r = requests.post(f"{RENDER_API}/api/telegram/webhook", json={
+            "message": {"chat": {"id": chat_id}, "text": text}
+        }, timeout=20)
+        if r.status_code == 200:
+            log.info(f"AI proxy OK: {text[:50]}")
+        else:
+            tg_send(chat_id, f"⚠️ AI proxy error: {r.status_code}")
+    except Exception as e:
+        tg_send(chat_id, f"⚠️ AI proxy failed: {e}")
+
+
 HANDLERS = {
     "/start": cmd_start, "/help": cmd_help,
     "/status": cmd_status, "/sites": cmd_sites,
@@ -230,6 +259,8 @@ def handle_message(chat_id, text):
         cmd_log(chat_id, "10" if not args else args)
     elif cmd in ("/deploy", "/push"):
         cmd_deploy(chat_id, args)
+    elif cmd in ("/webhook", "/wh"):
+        cmd_webhook(chat_id, args)
     elif cmd in ("/shell", "/bash", "/sh", "/run"):
         cmd_shell(chat_id, args)
     elif cmd in ("/serve", "/server", "/dev"):
@@ -237,7 +268,7 @@ def handle_message(chat_id, text):
     elif cmd in HANDLERS:
         HANDLERS[cmd](chat_id)
     else:
-        tg_send(chat_id, f"未知指令: {cmd}\n請輸入 /help 查看可用指令")
+        handle_ai_chat(chat_id, text)
 
 
 def main():
