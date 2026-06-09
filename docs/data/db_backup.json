@@ -347,7 +347,18 @@
       "updated_at": "2026-05-21 16:29:11"
     }
   ],
-  "kb_pending": [],
+  "kb_pending": [
+    {
+      "id": 1,
+      "question": "可以寫程式嗎?",
+      "language": "zh-TW",
+      "count": 1,
+      "ai_suggest": "",
+      "status": "pending",
+      "created_at": "2026-06-09 03:18:44",
+      "updated_at": "2026-06-09 03:18:44"
+    }
+  ],
   "contacts": [
     {
       "id": 1,
