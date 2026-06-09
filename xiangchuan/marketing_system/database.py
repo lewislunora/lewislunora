@@ -38,10 +38,14 @@ def _restore_from_backup():
         rows = data.get(table, [])
         if not rows:
             continue
-        conn.execute(f"DELETE FROM {table}")
-        if not rows:
+        try:
+            conn.execute(f"DELETE FROM {table}")
+        except sqlite3.OperationalError as e:
+            logger.warning(f"Skipping table {table} during restore: {e}")
             continue
-        cols = list(rows[0].keys())
+        cols = list(rows[0].keys()) if rows else []
+        if not cols:
+            continue
         placeholders = ",".join("?" for _ in cols)
         colnames = ",".join(f'"{c}"' for c in cols)
         for row in rows:
