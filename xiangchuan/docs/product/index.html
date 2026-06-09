@@ -3,9 +3,19 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>翔川 Neo｜曜科技 |Ai_bot - AI 智能客服與行銷自動化平台</title>
+<title data-i18n="page_title">翔川 Neo｜曜科技 |Ai_bot - AI 智能客服與行銷自動化平台</title>
+<script src="../auth-guard.js"></script>
+<link rel="stylesheet" href="../widget.css">
 <style>
 * { margin:0; padding:0; box-sizing:border-box; }
+:root {
+  --fs-hero: clamp(28px, 4vw + 12px, 52px);
+  --fs-lg: clamp(20px, 2vw + 12px, 30px);
+  --fs-base: clamp(17px, 1.2vw + 12px, 22px);
+  --fs-sm: clamp(15px, 0.9vw + 11px, 19px);
+  --fs-xs: clamp(14px, 0.7vw + 10px, 17px);
+}
+html { font-size: 16px; }
 body {
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
   background: #0a0e27;
@@ -13,41 +23,39 @@ body {
   overflow-x: hidden;
 }
 
-/* Nav */
 nav {
   position: fixed; top:0; left:0; right:0; z-index:100;
-  padding: 1rem 2rem;
+  padding: clamp(0.6rem, 2vw, 1rem) clamp(1rem, 3vw, 2rem);
   background: rgba(10,14,39,0.9);
   backdrop-filter: blur(20px);
   border-bottom: 1px solid rgba(255,255,255,0.05);
   display: flex; justify-content: space-between; align-items: center;
 }
 .nav-logo {
-  font-size: 1.2rem; font-weight: 700;
+  font-size: var(--fs-lg); font-weight: 700;
   background: linear-gradient(135deg, #00d4ff, #7b68ee);
   -webkit-background-clip: text; -webkit-text-fill-color: transparent;
 }
 .nav-links { display: flex; gap: 2rem; align-items: center; }
-.nav-links a { color: rgba(255,255,255,0.7); text-decoration: none; font-size: 0.9rem; transition: color 0.3s; }
+.nav-links a { color: rgba(255,255,255,0.7); text-decoration: none; font-size: var(--fs-sm); transition: color 0.3s; }
 .nav-links a:hover { color: #fff; }
 .nav-links .btn-nav {
   padding: 0.5rem 1.2rem; border-radius: 8px;
   background: linear-gradient(135deg, #00d4ff, #7b68ee);
-  color: #fff; font-weight: 600; font-size: 0.9rem;
+  color: #fff; font-weight: 600; font-size: var(--fs-sm);
   cursor: pointer; border: none; text-decoration: none;
 }
 .lang-select {
   background: rgba(255,255,255,0.1);
   border: 1px solid rgba(255,255,255,0.2);
   color: #fff; padding: 0.4rem 0.8rem; border-radius: 6px;
-  font-size: 0.85rem; cursor: pointer;
+  font-size: var(--fs-sm); cursor: pointer;
 }
 
-/* Hero */
 .hero {
   min-height: 100vh; display: flex; flex-direction: column;
   justify-content: center; align-items: center; text-align: center;
-  padding: 6rem 2rem 4rem;
+  padding: clamp(4rem, 8vw, 6rem) clamp(1rem, 3vw, 2rem) clamp(3rem, 5vw, 4rem);
   position: relative;
 }
 .hero::before {
@@ -60,22 +68,22 @@ nav {
   display: inline-block;
   background: rgba(0,212,255,0.15); border: 1px solid rgba(0,212,255,0.3);
   color: #00d4ff; padding: 0.4rem 1.2rem; border-radius: 20px;
-  font-size: 0.85rem; margin-bottom: 2rem;
+  font-size: var(--fs-sm); margin-bottom: 2rem;
 }
 .hero h1 {
-  font-size: 3.5rem; font-weight: 800; line-height: 1.2;
+  font-size: var(--fs-hero); font-weight: 800; line-height: 1.2;
   margin-bottom: 1.5rem; max-width: 800px;
 }
 .hero h1 span { background: linear-gradient(135deg, #00d4ff, #7b68ee); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
 .hero p {
-  font-size: 1.2rem; color: rgba(255,255,255,0.6);
+  font-size: var(--fs-base); color: rgba(255,255,255,0.6);
   max-width: 600px; margin-bottom: 2.5rem; line-height: 1.6;
 }
 .hero-actions { display: flex; gap: 1rem; flex-wrap: wrap; justify-content: center; }
 .btn-primary {
   padding: 1rem 2.5rem; border-radius: 12px;
   background: linear-gradient(135deg, #00d4ff, #7b68ee);
-  color: #fff; font-weight: 600; font-size: 1rem;
+  color: #fff; font-weight: 600; font-size: var(--fs-base);
   cursor: pointer; border: none; text-decoration: none;
   transition: all 0.3s; display: inline-flex; align-items: center; gap: 0.5rem;
 }
@@ -83,27 +91,24 @@ nav {
 .btn-outline {
   padding: 1rem 2.5rem; border-radius: 12px;
   background: transparent; border: 1px solid rgba(255,255,255,0.2);
-  color: #fff; font-weight: 600; font-size: 1rem;
+  color: #fff; font-weight: 600; font-size: var(--fs-base);
   cursor: pointer; text-decoration: none; transition: all 0.3s;
   display: inline-flex; align-items: center; gap: 0.5rem;
 }
 .btn-outline:hover { background: rgba(255,255,255,0.05); }
 
-/* Stats */
 .stats {
   display: flex; gap: 3rem; justify-content: center;
-  padding: 3rem; flex-wrap: wrap;
+  padding: clamp(1.5rem, 4vw, 3rem); flex-wrap: wrap;
 }
 .stat-item { text-align: center; }
-.stat-number { font-size: 2.5rem; font-weight: 700; background: linear-gradient(135deg, #00d4ff, #7b68ee); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-.stat-label { font-size: 0.9rem; color: rgba(255,255,255,0.5); margin-top: 0.3rem; }
+.stat-number { font-size: var(--fs-hero); font-weight: 700; background: linear-gradient(135deg, #00d4ff, #7b68ee); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+.stat-label { font-size: var(--fs-sm); color: rgba(255,255,255,0.5); margin-top: 0.3rem; }
 
-/* Section */
-.section { padding: 6rem 2rem; }
-.section-title { font-size: 2rem; font-weight: 700; text-align: center; margin-bottom: 1rem; }
-.section-sub { text-align: center; color: rgba(255,255,255,0.5); margin-bottom: 4rem; font-size: 1.1rem; }
+.section { padding: clamp(3rem, 5vw, 6rem) clamp(1rem, 3vw, 2rem); }
+.section-title { font-size: var(--fs-lg); font-weight: 700; text-align: center; margin-bottom: 1rem; }
+.section-sub { text-align: center; color: rgba(255,255,255,0.5); margin-bottom: 4rem; font-size: var(--fs-base); }
 
-/* Features Grid */
 .features-grid {
   display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
   gap: 1.5rem; max-width: 1100px; margin: 0 auto;
@@ -114,10 +119,9 @@ nav {
 }
 .feature-card:hover { background: rgba(255,255,255,0.06); transform: translateY(-3px); }
 .feature-icon { font-size: 2rem; margin-bottom: 1rem; }
-.feature-card h3 { font-size: 1.2rem; margin-bottom: 0.5rem; }
-.feature-card p { color: rgba(255,255,255,0.5); line-height: 1.6; font-size: 0.95rem; }
+.feature-card h3 { font-size: var(--fs-lg); margin-bottom: 0.5rem; }
+.feature-card p { color: rgba(255,255,255,0.5); line-height: 1.6; font-size: var(--fs-base); }
 
-/* Demo preview */
 .demo-section {
   background: linear-gradient(135deg, rgba(0,212,255,0.05), rgba(123,104,238,0.05));
   border: 1px solid rgba(255,255,255,0.06);
@@ -131,23 +135,80 @@ nav {
 .demo-header .tab {
   padding: 0.6rem 1.2rem; border-radius: 8px 8px 0 0;
   background: rgba(255,255,255,0.03); cursor: pointer;
-  font-size: 0.9rem; color: rgba(255,255,255,0.5); white-space: nowrap;
+  font-size: var(--fs-sm); color: rgba(255,255,255,0.5); white-space: nowrap;
   border: 1px solid transparent; border-bottom: none;
   transition: all 0.3s;
 }
 .demo-header .tab.active {
   background: rgba(255,255,255,0.08); color: #fff; border-color: rgba(255,255,255,0.1);
 }
-.demo-content {
-  padding: 0 2rem 2rem;
-}
+.demo-content { padding: 0 2rem 2rem; }
 .demo-content pre {
   background: rgba(0,0,0,0.3); padding: 1.5rem; border-radius: 12px;
-  font-size: 0.9rem; line-height: 1.7; color: rgba(255,255,255,0.8);
+  font-size: var(--fs-sm); line-height: 1.7; color: rgba(255,255,255,0.8);
   overflow-x: auto; white-space: pre-wrap;
 }
 
-/* Pricing */
+.chat-container {
+  background: rgba(0,0,0,0.25); border-radius: 12px;
+  height: 400px; display: flex; flex-direction: column;
+}
+.chat-messages {
+  flex: 1; overflow-y: auto; padding: 1.5rem;
+  display: flex; flex-direction: column; gap: 0.8rem;
+}
+.chat-msg {
+  max-width: 80%; padding: 0.8rem 1rem; border-radius: 12px;
+  line-height: 1.5; font-size: var(--fs-sm);
+  animation: fadeIn 0.3s ease;
+}
+@keyframes fadeIn { from { opacity:0; transform:translateY(8px); } to { opacity:1; transform:translateY(0); } }
+.chat-msg.ai {
+  align-self: flex-start;
+  background: rgba(123,104,238,0.15); border: 1px solid rgba(123,104,238,0.2);
+  color: rgba(255,255,255,0.9);
+}
+.chat-msg.user {
+  align-self: flex-end;
+  background: linear-gradient(135deg, #00d4ff, #7b68ee);
+  color: #fff;
+}
+.chat-msg.ai .msg-label {
+  font-size: var(--fs-xs); color: rgba(255,255,255,0.4); margin-bottom: 0.3rem;
+}
+.chat-msg .msg-text { line-height: 1.5; }
+.chat-msg .msg-time {
+  font-size: var(--fs-xs); color: rgba(255,255,255,0.3); margin-top: 0.3rem; text-align: right;
+}
+.chat-suggestions {
+  display: flex; gap: 0.5rem; padding: 0.5rem 1.5rem;
+  flex-wrap: wrap;
+}
+.chat-suggestions button {
+  padding: 0.4rem 1rem; border-radius: 20px;
+  background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1);
+  color: rgba(255,255,255,0.6); font-size: var(--fs-xs); cursor: pointer;
+  transition: all 0.2s; white-space: nowrap;
+}
+.chat-suggestions button:hover { background: rgba(0,212,255,0.15); border-color: #00d4ff; color: #fff; }
+.chat-input {
+  display: flex; gap: 0.5rem; padding: 1rem 1.5rem;
+  border-top: 1px solid rgba(255,255,255,0.05);
+}
+.chat-input input {
+  flex: 1; padding: 0.7rem 1rem; border-radius: 10px;
+  background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1);
+  color: #fff; font-size: var(--fs-sm); outline: none;
+}
+.chat-input input:focus { border-color: #00d4ff; }
+.chat-input input::placeholder { color: rgba(255,255,255,0.2); }
+.chat-input button {
+  padding: 0.7rem 1.2rem; border-radius: 10px;
+  background: linear-gradient(135deg, #00d4ff, #7b68ee);
+  color: #fff; border: none; cursor: pointer;
+  font-size: var(--fs-sm); white-space: nowrap;
+}
+
 .pricing-grid {
   display: flex; gap: 1.5rem; justify-content: center;
   flex-wrap: wrap; max-width: 1100px; margin: 0 auto;
@@ -162,382 +223,1200 @@ nav {
   box-shadow: 0 0 40px rgba(0,212,255,0.1);
   background: rgba(0,212,255,0.03);
 }
-.price-card.featured::before {
-  content: '最受欢迎'; position: absolute; top: -12px; left: 50%;
+.price-card.featured { position: relative; }
+.price-badge {
+  position: absolute; top: -12px; left: 50%;
   transform: translateX(-50%);
   background: linear-gradient(135deg, #00d4ff, #7b68ee);
   padding: 0.3rem 1.2rem; border-radius: 20px;
-  font-size: 0.8rem; font-weight: 600;
+  font-size: var(--fs-xs); font-weight: 600;
+  white-space: nowrap;
 }
-.price-name { font-size: 1.2rem; font-weight: 600; margin-bottom: 0.5rem; }
-.price-amount { font-size: 3rem; font-weight: 700; }
-.price-amount small { font-size: 1rem; font-weight: 400; color: rgba(255,255,255,0.4); }
-.price-desc { color: rgba(255,255,255,0.4); font-size: 0.9rem; margin: 1rem 0; }
+.price-name { font-size: var(--fs-lg); font-weight: 600; margin-bottom: 0.5rem; }
+.price-amount { font-size: var(--fs-hero); font-weight: 700; }
+.price-amount small { font-size: var(--fs-base); font-weight: 400; color: rgba(255,255,255,0.4); }
+.price-usd { font-size: var(--fs-xs); color: rgba(255,255,255,0.3); font-weight: 400; margin-top: 0.2rem; }
+.price-desc { color: rgba(255,255,255,0.4); font-size: var(--fs-sm); margin: 1rem 0; }
 .price-features { list-style: none; margin: 1.5rem 0; }
 .price-features li {
   padding: 0.6rem 0; border-bottom: 1px solid rgba(255,255,255,0.04);
-  font-size: 0.9rem; color: rgba(255,255,255,0.7);
+  font-size: var(--fs-sm); color: rgba(255,255,255,0.7);
 }
 .price-features li::before { content: '✓ '; color: #00d4ff; font-weight: 700; }
 .price-card .btn { width: 100%; text-align: center; justify-content: center; }
 
-/* Contact / CTA */
 .cta-section {
-  text-align: center; max-width: 600px; margin: 0 auto;
+  text-align: center; max-width: 640px; margin: 0 auto;
 }
-.cta-section h2 { font-size: 2.5rem; margin-bottom: 1rem; }
+.cta-section h2 { font-size: var(--fs-hero); margin-bottom: 1rem; }
 .cta-section p { color: rgba(255,255,255,0.5); margin-bottom: 2rem; line-height: 1.6; }
-.contact-form { display: flex; gap: 1rem; flex-wrap: wrap; justify-content: center; }
-.contact-form input {
-  flex: 1; min-width: 250px; padding: 1rem 1.2rem; border-radius: 12px;
-  background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1);
-  color: #fff; font-size: 1rem; outline: none;
+.contact-form { max-width: 480px; margin: 0 auto; text-align: left; }
+.form-row { display: flex; gap: 0.8rem; margin-bottom: 0.8rem; }
+.form-row > * { flex: 1; }
+.contact-form label {
+  display: block; font-size: var(--fs-sm); font-weight: 600;
+  color: rgba(255,255,255,0.6); margin-bottom: 0.3rem;
 }
-.contact-form input:focus { border-color: #00d4ff; }
-.contact-form input::placeholder { color: rgba(255,255,255,0.3); }
+.contact-form input,
+.contact-form select,
+.contact-form textarea {
+  width: 100%; padding: 0.85rem 1rem; border-radius: 10px;
+  background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1);
+  color: #fff; font-size: var(--fs-sm); outline: none; transition: border 0.3s;
+  font-family: inherit;
+}
+.contact-form select option { background: #1a1f3a; color: #fff; }
+.contact-form input:focus,
+.contact-form select:focus,
+.contact-form textarea:focus { border-color: #00d4ff; }
+.contact-form input::placeholder,
+.contact-form textarea::placeholder { color: rgba(255,255,255,0.25); }
+.contact-form textarea { resize: vertical; min-height: 80px; }
+.contact-form .btn-primary {
+  width: 100%; padding: 1rem; border: none; cursor: pointer;
+  font-size: var(--fs-base); font-weight: 600; border-radius: 12px;
+  background: linear-gradient(135deg, #00d4ff, #7b68ee); color: #fff;
+  transition: all 0.3s; margin-top: 0.5rem;
+}
+.contact-form .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(0,212,255,0.3); }
 
-/* Footer */
 footer {
   border-top: 1px solid rgba(255,255,255,0.05);
-  padding: 3rem 2rem;
+  padding: clamp(1.5rem, 3vw, 3rem) clamp(1rem, 3vw, 2rem);
   display: flex; justify-content: space-between; align-items: center;
   flex-wrap: wrap; gap: 1rem;
 }
 .footer-links { display: flex; gap: 2rem; }
-.footer-links a { color: rgba(255,255,255,0.4); text-decoration: none; font-size: 0.85rem; }
+.footer-links a { color: rgba(255,255,255,0.4); text-decoration: none; font-size: var(--fs-sm); }
 .footer-links a:hover { color: rgba(255,255,255,0.7); }
-.footer-copy { color: rgba(255,255,255,0.3); font-size: 0.85rem; }
+.footer-copy { color: rgba(255,255,255,0.3); font-size: var(--fs-sm); }
 
-/* Toast */
 .toast {
   position: fixed; bottom: 2rem; left: 50%; transform: translateX(-50%);
   background: rgba(0,212,255,0.9); color: #fff; padding: 1rem 2rem;
-  border-radius: 12px; font-size: 0.9rem;
+  border-radius: 12px; font-size: var(--fs-sm);
   opacity: 0; transition: opacity 0.5s; pointer-events: none;
 }
 .toast.show { opacity: 1; }
 
 @media (max-width: 768px) {
   .nav-links a:not(.btn-nav) { display: none; }
-  .hero h1 { font-size: 2rem; }
   .stats { gap: 1.5rem; }
-  .stat-number { font-size: 1.8rem; }
   .pricing-grid { flex-direction: column; align-items: center; }
   .price-card { width: 100%; max-width: 350px; }
-  .demo-content pre { font-size: 0.8rem; }
+  .chat-container { height: 350px; }
 }
 </style>
 </head>
 <body>
 
 <nav>
-  <div class="nav-logo">翔川 Neo｜曜科技 |Ai_bot</div>
+  <div class="nav-logo" data-i18n="nav_logo">翔川 Neo｜曜科技 |Ai_bot</div>
   <div class="nav-links">
-    <a href="#features">功能</a>
-    <a href="#demo">展示</a>
-    <a href="#pricing">價格</a>
-    <a href="#contact">聯絡</a>
+    <a href="#features" data-i18n="nav_features">功能</a>
+    <a href="#demo" data-i18n="nav_demo">展示</a>
+    <a href="#pricing" data-i18n="nav_pricing">價格</a>
+    <a href="#contact" data-i18n="nav_contact">聯絡</a>
+    <div id="gsi-user-area" style="display:inline-flex;align-items:center"></div>
     <select class="lang-select" onchange="switchLang(this.value)">
-      <option value="zh-TW">繁體中文</option>
-      <option value="zh-CN">簡體中文</option>
-      <option value="en">English</option>
+      <option value="zh-TW" data-i18n="lang_zt">繁體中文</option>
+      <option value="zh-CN" data-i18n="lang_cn">簡體中文</option>
+      <option value="en" data-i18n="lang_en">English</option>
+      <option value="ru" data-i18n="lang_ru">Русский</option>
     </select>
-    <a href="https://lewislunora.github.io/lewislunora/" target="_blank" class="btn-nav">內容展示</a>
+    <a href="flutter-app.html" target="_blank" class="btn-nav" data-i18n="nav_content">內容展示</a>
   </div>
 </nav>
 
 <section class="hero">
-  <div class="hero-badge">🚀 2026 AI 智慧行銷新時代</div>
-  <h1><span>AI 智能客服</span> + 行銷自動化<br>一週內上線</h1>
-  <p>串接 LLM 智能對話、自動產出行銷內容、知識庫自增長。從 Telegram Bot 到品牌 App，一站式 AI 行銷解決方案。</p>
+  <div class="hero-badge" data-i18n="hero_badge">🏆 台灣團隊 · 在地支援 · 全球部署</div>
+  <h1 data-i18n="hero_title" data-i18n-html="true"><span>AI 客服</span> 讓小預算也能有大格局<br>從 NT$890/月 開始</h1>
+  <p data-i18n="hero_desc">專為台灣中小企業設計的 AI 行銷解決方案。24 小時 AI 智能客服、自動內容生成、多平台分發 — 全部在一套系統內完成。不用百萬預算，就能擁有企業級 AI 行銷系統。</p>
   <div class="hero-actions">
-    <a href="#contact" class="btn-primary">📩 取得演示</a>
-    <a href="#demo" class="btn-outline">▶ 看看怎麼運作</a>
+    <a href="#contact" class="btn-primary" data-i18n="hero_btn_demo">📩 免費諮詢</a>
+    <a href="#demo" class="btn-outline" data-i18n="hero_btn_watch">▶ 觀看展示</a>
   </div>
   <div class="stats">
     <div class="stat-item">
       <div class="stat-number">133+</div>
-      <div class="stat-label">AI 生成內容</div>
+      <div class="stat-label" data-i18n="stat_content">AI 生成內容</div>
     </div>
     <div class="stat-item">
       <div class="stat-number">5</div>
-      <div class="stat-label">支援平台</div>
+      <div class="stat-label" data-i18n="stat_platform">支援平台</div>
     </div>
     <div class="stat-item">
-      <div class="stat-number">3</div>
-      <div class="stat-label">語言版本</div>
+      <div class="stat-number">4</div>
+      <div class="stat-label" data-i18n="stat_lang">語言版本</div>
     </div>
     <div class="stat-item">
       <div class="stat-number">24/7</div>
-      <div class="stat-label">自動運行</div>
+      <div class="stat-label" data-i18n="stat_247">自動運行</div>
     </div>
   </div>
 </section>
 
-<!-- Features -->
 <section class="section" id="features">
-  <h2 class="section-title">一站式 AI 行銷平台</h2>
-  <p class="section-sub">從內容生成到客戶互動，全部自動化</p>
+  <h2 class="section-title" data-i18n="features_title">一站式 AI 行銷平台</h2>
+  <p class="section-sub" data-i18n="features_sub">從內容生成到客戶互動，全部自動化</p>
   <div class="features-grid">
     <div class="feature-card">
       <div class="feature-icon">🤖</div>
-      <h3>AI 智能客服</h3>
-      <p>串接 Groq Llama 3 LLM，理解客戶問題並給出精準回覆。支援繁體中文、簡體中文、英文自動切換。</p>
+      <h3 data-i18n="feat_ai_title">AI 智能客服</h3>
+      <p data-i18n="feat_ai_desc">串接 Groq Llama 3 LLM，理解客戶問題並給出精準回覆。支援繁體中文、簡體中文、英文自動切換，知識庫越用越聰明。</p>
     </div>
     <div class="feature-card">
       <div class="feature-icon">📝</div>
-      <h3>自動內容生成</h3>
-      <p>一鍵產出部落格文章、社群貼文、行銷文案、電子報。16 種主題 × 5 個平台 × 3 種語言。</p>
+      <h3 data-i18n="feat_content_title">自動內容生成</h3>
+      <p data-i18n="feat_content_desc">一鍵產出部落格文章、社群貼文、行銷文案、電子報。16 種主題 × 5 個平台 × 3 種語言，全年無休自動產出。</p>
     </div>
     <div class="feature-card">
       <div class="feature-icon">📚</div>
-      <h3>知識庫自增長</h3>
-      <p>用戶反饋自動沉澱到知識庫，Bot 越用越聰明。支援 👍/👎 回饋機制，好的回答自動保存。</p>
+      <h3 data-i18n="feat_kb_title">知識庫自增長</h3>
+      <p data-i18n="feat_kb_desc">用戶反饋自動沉澱到知識庫，Bot 越用越聰明。支援 👍/👎 回饋機制，好的回答自動保存</p>
     </div>
     <div class="feature-card">
       <div class="feature-icon">🌐</div>
-      <h3>多平台分發</h3>
-      <p>Telegram Bot + Web App + Flutter 行動 App，一次產出多平台上架。支援 CI/CD 自動部署。</p>
+      <h3 data-i18n="feat_multi_title">多平台分發</h3>
+      <p data-i18n="feat_multi_desc">Telegram Bot + Web App + Flutter 行動 App，一次產出多平台上架。支援 CI/CD 自動部署。</p>
     </div>
     <div class="feature-card">
       <div class="feature-icon">🎬</div>
-      <h3>AI 短劇創作</h3>
-      <p>AI 自動生成劇本、分鏡描述、英文繪圖 Prompt。可直接搭配 MyEdit、Runway 生成影片素材。</p>
+      <h3 data-i18n="feat_drama_title">AI 短劇創作</h3>
+      <p data-i18n="feat_drama_desc">AI 自動生成劇本、分鏡描述、英文繪圖 Prompt。可直接搭配 MyEdit、Runway 生成影片素材。</p>
     </div>
     <div class="feature-card">
       <div class="feature-icon">📊</div>
-      <h3>數據驅動優化</h3>
-      <p>追蹤每篇內容的互動數據，AI 分析哪種內容成效好，自動調整生成策略。</p>
+      <h3 data-i18n="feat_data_title">數據驅動優化</h3>
+      <p data-i18n="feat_data_desc">追蹤每篇內容的互動數據，AI 分析哪種內容成效好，自動調整生成策略。</p>
     </div>
   </div>
 </section>
 
-<!-- Demo -->
 <section class="section" id="demo">
-  <h2 class="section-title">實際展示</h2>
-  <p class="section-sub">AI 自動生成的內容範例</p>
+  <h2 class="section-title" data-i18n="demo_title">實際展示</h2>
+  <p class="section-sub" data-i18n="demo_sub">AI 智能客服即時對話 · 自動內容生成</p>
   <div class="demo-section">
     <div class="demo-header">
-      <h3>📱 品牌 App → 內容展示</h3>
-      <div class="tabs">
-        <div class="tab active" onclick="showDemo('article', this)">品牌文章</div>
-        <div class="tab" onclick="showDemo('guide', this)">攻略教學</div>
-        <div class="tab" onclick="showDemo('drama', this)">AI 短劇</div>
+      <h3 data-i18n="demo_chat_title">🤖 AI 智能客服即時展示</h3>
+      <p style="color:rgba(255,255,255,0.4);font-size:var(--fs-sm);margin-top:0.5rem;" data-i18n="demo_chat_hint">點擊下方建議問題，或自行輸入，體驗 AI 客服回覆</p>
+      <div class="chat-container">
+        <div class="chat-messages" id="demoChatMessages">
+          <div class="chat-msg ai" id="welcome-msg">
+            <div class="msg-label" data-i18n="chat_ai_label">🤖 翔川 Neo｜曜科技 AI 客服</div>
+            <div class="msg-text" data-i18n="chat_welcome_html" data-i18n-html="true">你好！我是翔川 Neo｜曜科技 AI 智能客服 🤖<br><br>我可以幫助你了解我們的 AI 行銷解決方案。試試點擊上方的建議問題，或直接輸入你的問題！</div>
+            <div class="msg-time" id="welcome-time"></div>
+          </div>
+        </div>
+        <div class="chat-suggestions" id="demoChatSuggestions">
+          <button onclick="chatSend('我想了解你們的 AI 客服方案')" data-i18n="chat_suggest_1">AI 客服方案</button>
+          <button onclick="chatSend('你們支援哪些平台？')" data-i18n="chat_suggest_2">支援平台</button>
+          <button onclick="chatSend('行銷內容如何自動生成？')" data-i18n="chat_suggest_3">內容生成</button>
+          <button onclick="chatSend('How does the knowledge base work?')" data-i18n="chat_suggest_4">Knowledge Base</button>
+          <button onclick="chatSend('價格怎麼算？')" data-i18n="chat_suggest_5">價格方案</button>
+          <button onclick="chatSend('如何開始使用？')" data-i18n="chat_suggest_6">開始使用</button>
+        </div>
+        <div class="chat-input">
+          <input type="text" id="demoChatInput" data-i18n-placeholder="demo_chat_placeholder" placeholder="輸入你的問題..." onkeydown="if(event.key==='Enter') chatSend()">
+          <button onclick="chatSend()" data-i18n="demo_chat_send">發送</button>
+        </div>
       </div>
     </div>
-    <div class="demo-content">
-      <pre id="demo-text">載入中...</pre>
-    </div>
-    <div style="padding: 0 2rem 2rem; text-align: center;">
-      <a href="https://lewislunora.github.io/lewislunora/" target="_blank" class="btn-outline">📱 開啟完整品牌 App →</a>
+    <div style="padding: 0 2rem 2rem;">
+      <h3 style="margin-bottom:1rem;" data-i18n="demo_app_title">📱 品牌 App → 內容展示</h3>
+      <div class="tabs" style="display:flex;gap:0.5rem;margin-bottom:1rem;">
+        <div class="tab active" data-i18n="demo_tab_article" onclick="showDemo('article', this)">品牌文章</div>
+        <div class="tab" data-i18n="demo_tab_guide" onclick="showDemo('guide', this)">攻略教學</div>
+        <div class="tab" data-i18n="demo_tab_drama" onclick="showDemo('drama', this)">AI 短劇</div>
+      </div>
+      <div class="demo-content" style="padding:0;">
+        <pre id="demo-text">載入中...</pre>
+      </div>
+      <div style="text-align:center;margin-top:1.5rem;">
+        <a href="flutter-app.html" target="_blank" class="btn-outline" data-i18n="demo_app_btn">📱 開啟完整品牌 App →</a>
+      </div>
     </div>
   </div>
 </section>
 
-<!-- Pricing -->
 <section class="section" id="pricing">
-  <h2 class="section-title">簡單透明的價格</h2>
-  <p class="section-sub">從小團隊到大企業，找到適合你的方案</p>
+  <h2 class="section-title" data-i18n="pricing_title">簡單透明的價格</h2>
+  <p class="section-sub" data-i18n="pricing_sub">從個人到企業，找到適合你的方案</p>
   <div class="pricing-grid">
     <div class="price-card">
-      <div class="price-name">入門版</div>
-      <div class="price-amount">免費</div>
-      <div class="price-desc">適合個人測試體驗</div>
+      <div class="price-name" data-i18n="price_starter_name">入門版</div>
+      <div class="price-amount" i18n-ignore>免費 <small>Free</small></div>
+      <div class="price-desc" data-i18n="price_starter_desc">適合個人測試體驗</div>
       <ul class="price-features">
-        <li>AI 智能客服（50次/天）</li>
-        <li>10 條知識庫</li>
-        <li>基礎回覆模板</li>
-        <li>Telegram Bot</li>
+        <li data-i18n="price_starter_feat1">AI 智能客服（50次/天）</li>
+        <li data-i18n="price_starter_feat2">10 條知識庫</li>
+        <li data-i18n="price_starter_feat3">基礎回覆模板</li>
+        <li data-i18n="price_starter_feat4">Telegram Bot（@ailunora_bot）</li>
       </ul>
-      <button class="btn btn-outline" onclick="scrollToContact()">免費試用</button>
+      <button class="btn btn-outline" onclick="handleFreePlan()" data-i18n="price_starter_btn">了解詳情 →</button>
     </div>
     <div class="price-card featured">
-      <div class="price-name">專業版</div>
-      <div class="price-amount">$29 <small>/月</small></div>
-      <div class="price-desc">適合中小企業正式營運</div>
+      <div class="price-badge" data-i18n="price_pro_badge">最受歡迎</div>
+      <div class="price-name" data-i18n="price_pro_name">專業版</div>
+      <div class="price-amount" i18n-ignore>NT$890 <small>/月</small></div>
+      <div class="price-usd" i18n-ignore>≈ $29 USD</div>
+      <div class="price-desc" data-i18n="price_pro_desc">適合中小企業正式營運</div>
       <ul class="price-features">
-        <li>無限對話次數</li>
-        <li>500 條知識庫</li>
-        <li>LLM 驅動（Groq）</li>
-        <li>知識庫自增長</li>
-        <li>Web 管理後台</li>
-        <li>內容自動生成</li>
-        <li>多語言支援</li>
+        <li data-i18n="price_pro_feat1">無限對話次數</li>
+        <li data-i18n="price_pro_feat2">500 條知識庫</li>
+        <li data-i18n="price_pro_feat3">LLM 驅動（Groq）</li>
+        <li data-i18n="price_pro_feat4">知識庫自增長</li>
+        <li data-i18n="price_pro_feat5">Web 管理後台</li>
+        <li data-i18n="price_pro_feat6">內容自動生成</li>
+        <li data-i18n="price_pro_feat7">多語言支援</li>
       </ul>
-      <button class="btn btn-primary" onclick="scrollToContact()">立即開通</button>
+      <button class="btn btn-primary" onclick="scrollToContact('專業版')" data-i18n="price_pro_btn">立即開通</button>
     </div>
     <div class="price-card">
-      <div class="price-name">企業版</div>
-      <div class="price-amount">$199 <small>/月</small></div>
-      <div class="price-desc">適合大型組織客製需求</div>
+      <div class="price-name" data-i18n="price_enterprise_name">企業版</div>
+      <div class="price-amount" i18n-ignore>NT$5,990 <small>/月</small></div>
+      <div class="price-usd" i18n-ignore>≈ $199 USD</div>
+      <div class="price-desc" data-i18n="price_enterprise_desc">適合大型組織客製需求</div>
       <ul class="price-features">
-        <li>私有部署（k3s）</li>
-        <li>無限知識庫</li>
-        <li>客製模型微調</li>
-        <li>SLA 99.9%</li>
-        <li>專屬客戶成功</li>
-        <li>API 完整串接</li>
-        <li>品牌 App 客製</li>
+        <li data-i18n="price_enterprise_feat1">私有部署（k3s）</li>
+        <li data-i18n="price_enterprise_feat2">無限知識庫</li>
+        <li data-i18n="price_enterprise_feat3">客製模型微調</li>
+        <li data-i18n="price_enterprise_feat4">SLA 99.9%</li>
+        <li data-i18n="price_enterprise_feat5">專屬客戶成功</li>
+        <li data-i18n="price_enterprise_feat6">API 完整串接</li>
+        <li data-i18n="price_enterprise_feat7">品牌 App 客製</li>
       </ul>
-      <button class="btn btn-outline" onclick="scrollToContact()">聯絡我們</button>
+      <button class="btn btn-outline" onclick="scrollToContact('企業版')" data-i18n="price_enterprise_btn">聯絡我們</button>
     </div>
   </div>
 </section>
 
-<!-- Contact -->
 <section class="section" id="contact">
   <div class="cta-section">
-    <h2>準備好啟動你的 AI 行銷了嗎？</h2>
-    <p>留下 Email，我們會寄送完整產品介紹與免費試用連結。或直接搜尋 Telegram 頻道 https://t.me/+QgAyWlVyIxFjNmRl 立即體驗。</p>
-    <form class="contact-form" onsubmit="handleSubmit(event)">
-      <input type="email" placeholder="你的 Email 地址" required>
-      <button type="submit" class="btn-primary">📩 取得演示</button>
+    <h2 data-i18n="cta_title">準備好啟動你的 AI 行銷了嗎？</h2>
+    <p data-i18n="cta_desc">免費預約諮詢，30 分鐘了解如何用 AI 提升你的客戶服務與行銷效率</p>
+    <form class="contact-form" id="contactForm" onsubmit="return handleContact(event)">
+
+      <div class="form-row">
+        <div>
+          <label data-i18n="form_name_label">姓名 *</label>
+          <input type="text" name="姓名" required data-i18n-placeholder="form_name_ph" placeholder="請輸入姓名">
+        </div>
+        <div>
+          <label data-i18n="form_company_label">公司/店家</label>
+          <input type="text" name="公司" data-i18n-placeholder="form_company_ph" placeholder="公司或店名">
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div>
+          <label data-i18n="form_contact_label">Line ID / 手機 *</label>
+          <input type="text" name="聯絡方式" required data-i18n-placeholder="form_contact_ph" placeholder="Line ID 或手機號碼">
+        </div>
+        <div>
+          <label data-i18n="form_email_label">Email</label>
+          <input type="email" name="Email" data-i18n-placeholder="form_email_ph" placeholder="example@gmail.com">
+        </div>
+      </div>
+
+      <div style="margin-bottom:0.8rem">
+        <label data-i18n="form_industry_label">行業別</label>
+        <select name="行業別">
+          <option value="" data-i18n="form_industry_sel">請選擇...</option>
+          <option value="餐飲" data-i18n="form_ind_food">餐飲</option>
+          <option value="零售/電商" data-i18n="form_ind_retail">零售/電商</option>
+          <option value="診所/醫療" data-i18n="form_ind_clinic">診所/醫療</option>
+          <option value="房仲/不動產" data-i18n="form_ind_re">房仲/不動產</option>
+          <option value="教育/培訓" data-i18n="form_ind_edu">教育/培訓</option>
+          <option value="合作/夥伴" data-i18n="form_ind_partner">合作/夥伴</option>
+          <option value="其他" data-i18n="form_ind_other">其他</option>
+        </select>
+      </div>
+
+      <div style="margin-bottom:0.8rem">
+        <label data-i18n="form_msg_label">想了解的服務</label>
+        <textarea name="備註" data-i18n-placeholder="form_msg_ph" placeholder="例如：我想了解 AI 客服如何運作，我的店是..."></textarea>
+      </div>
+
+      <button type="submit" class="btn-primary" id="contactBtn" data-i18n="form_btn">📩 預約免費諮詢</button>
+      <div id="contactResult" style="margin-top:0.8rem;text-align:center;font-size:var(--fs-sm);display:none"></div>
     </form>
   </div>
 </section>
 
 <footer>
   <div class="footer-links">
-    <a href="#features">功能</a>
-    <a href="#pricing">價格</a>
-    <a href="#contact">聯絡</a>
-    <a href="https://lewislunora.github.io/lewislunora/" target="_blank">內容展示</a>
+    <a href="#features" data-i18n="footer_features">功能</a>
+    <a href="#pricing" data-i18n="footer_pricing">價格</a>
+    <a href="#contact" data-i18n="footer_contact">聯絡</a>
+    <a href="flutter-app.html" target="_blank" data-i18n="footer_content">內容展示</a>
   </div>
-  <div class="footer-copy">© 2026 翔川 Neo｜曜科技 |Ai_bot. All rights reserved.</div>
+  <div class="footer-links">
+    <a href="privacy.html" style="color:rgba(255,255,255,0.4);text-decoration:none;font-size:var(--fs-xs)">隱私政策</a>
+    <span style="color:rgba(255,255,255,0.2);margin:0 0.8rem">|</span>
+    <a href="tos.html" style="color:rgba(255,255,255,0.4);text-decoration:none;font-size:var(--fs-xs)">服務條款</a>
+  </div>
+  <div class="footer-copy" data-i18n="footer_copy">© 2026 翔川 Neo｜曜科技 |Ai_bot</div>
 </footer>
 
-<div class="toast" id="toast"></div>
-
 <script>
-const DEMOS = {
-  article: `---
-標題：個人品牌故事與定位
-平台：部落格
-語言：繁體中文
----
+let currentLang = 'zh-TW';
+const BASE_PATH = location.hostname.includes('github.io') ? '/lewislunora' : '';
+const base = document.createElement('base');
+base.href = (BASE_PATH || '') + '/';
+document.head.prepend(base);
 
-你是否曾經夢想過自己成為某個領域的專家？
-在 AI 時代，建立個人品牌不再需要大量時間和資源。
-透過 AI 工具，你可以：
-• 自動生成高品質內容
-• 維持穩定的發文頻率
-• 分析哪些內容最能引起共鳴
-
-我從零開始建立個人品牌的過程中，發現 AI 不只是工具，
-更是一個能夠 24/7 運作的內容夥伴。
-從品牌定位、內容策略到社群經營，AI 都能提供具體建議。
-
-今天就開始打造你的個人品牌吧！`,
-  guide: `---
-標題：2026 AI 工具全攻略
-類型：創業者必備工具指南
----
-
-10 大免費 AI 工具推薦：
-
-1. Groq - 超快速 LLM API，適合串接智能客服
-2. Flutter - 跨平台 App 開發框架
-3. MyEdit - AI 影片生成，每日免費點數
-4. Runway - 專業級 AI 影片製作
-5. GitHub Actions - CI/CD 自動化部署
-6. Flask - 輕量 Web 後台
-7. Telegram Bot API - 即時通訊整合
-8. Docker + k3s - 容器化部署
-9. GitHub Pages - 免費靜態網站託管
-10. Markdown - 內容格式標準
-
-組合以上工具，就能打造完整的 AI 行銷系統。`,
-  drama: `🎬 穿越成為古代網紅
-
-類型：搞笑穿越
-集數：6 集
-
-第 1 集：穿越的開始
-場景：現代上海網紅工作室
-
-[畫面描述]
-一群網紅正在直播，背景是時尚精品。
-主角林妝正在唱歌，突然一道白光...
-
-[對白]
-林妝：這次直播一定要更吸引人！
-老師：妳唱得太棒了！注意風格！
-林妝：我要用魅力征服全世界！
-
-[AI 繪圖 Prompt]
-Modern influencer studio in Shanghai,
-young female streamer singing,
-luxury background, neon lights,
-dynamic camera angle, cinematic lighting
-
-第 2 集：醒來在古代
-場景：古代皇宮寢宮
-...`
+const LANG = {
+  en: {
+    nav_logo: 'XiangChuan Neo｜YaoTech |Ai_bot',
+    page_title: 'XiangChuan Neo｜YaoTech |Ai_bot - AI Customer Service & Marketing Automation Platform',
+    nav_features: 'Features',
+    nav_demo: 'Demo',
+    nav_pricing: 'Pricing',
+    nav_contact: 'Contact',
+    nav_content: 'Content App',
+    hero_badge: '🏆 Taiwan Team · Local Support · Global Deploy',
+    hero_title: '<span>AI Customer Service</span> Enterprise Power,<br>Starting at $29/mo',
+    hero_desc: 'An AI marketing solution designed for SMBs. 24/7 AI customer service, auto content generation, multi-platform distribution — all in one system. Enterprise-grade AI without the enterprise price tag.',
+    hero_btn_demo: '📩 Free Consultation',
+    hero_btn_watch: '▶ Watch Demo',
+    stat_content: 'AI Contents',
+    stat_platform: 'Platforms',
+    stat_lang: 'Languages',
+    stat_247: 'Auto Operation',
+    features_title: 'All-in-One AI Marketing Platform',
+    features_sub: 'From content generation to customer interaction, fully automated',
+    feat_ai_title: 'AI Smart Customer Service',
+    feat_ai_desc: 'Integrated with Groq Llama 3 LLM, understands customer questions and gives precise answers. Supports automatic switching between Traditional Chinese, Simplified Chinese, and English.',
+    feat_content_title: 'Auto Content Generation',
+    feat_content_desc: 'One-click generation of blog posts, social media posts, marketing copy, newsletters. 16 topics × 5 platforms × 3 languages, automatic generation around the clock.',
+    feat_kb_title: 'Self-Growing Knowledge Base',
+    feat_kb_desc: 'User feedback automatically feeds into the knowledge base. The Bot gets smarter with use. Supports 👍/👎 feedback, good answers are auto-saved.',
+    feat_multi_title: 'Multi-Platform Distribution',
+    feat_multi_desc: 'Telegram Bot + Web App + Flutter Mobile App. Create once, publish everywhere. Supports CI/CD auto-deployment.',
+    feat_drama_title: 'AI Short Drama Creation',
+    feat_drama_desc: 'AI automatically generates scripts, storyboard descriptions, and English drawing prompts. Works with MyEdit, Runway for video generation.',
+    feat_data_title: 'Data-Driven Optimization',
+    feat_data_desc: 'Track interaction data for each content piece. AI analyzes which content performs best and adjusts generation strategy automatically.',
+    demo_title: 'Live Demo',
+    demo_sub: 'AI Smart Customer Service Live Chat · Auto Content Generation',
+    demo_chat_title: '🤖 AI Smart Customer Service Live Demo',
+    demo_chat_hint: 'Click suggested questions below, or type your own, to experience AI customer service replies',
+    demo_chat_placeholder: 'Type your question...',
+    demo_chat_send: 'Send',
+    demo_tab_article: 'Brand Articles',
+    demo_tab_guide: 'Guides',
+    demo_tab_drama: 'AI Drama',
+    demo_app_title: '📱 Brand App → Content Showcase',
+    demo_app_btn: '📱 Open Full Brand App →',
+    pricing_title: 'Simple & Transparent Pricing',
+    pricing_sub: 'From individuals to enterprises, find the plan that suits you',
+    price_starter_name: 'Starter',
+    price_starter_desc: 'For personal trial',
+    price_starter_feat1: 'AI Customer Service (50/day)',
+    price_starter_feat2: '10 Knowledge Base Entries',
+    price_starter_feat3: 'Basic Reply Templates',
+    price_starter_feat4: 'Telegram Bot (@ailunora_bot)',
+    price_starter_btn: 'Learn More →',
+    price_pro_name: 'Pro',
+    price_pro_badge: 'Most Popular',
+    price_pro_desc: 'For SMBs in production',
+    price_pro_feat1: 'Unlimited Conversations',
+    price_pro_feat2: '500 Knowledge Base Entries',
+    price_pro_feat3: 'LLM Powered (Groq)',
+    price_pro_feat4: 'Knowledge Base Self-Growth',
+    price_pro_feat5: 'Web Admin Dashboard',
+    price_pro_feat6: 'Auto Content Generation',
+    price_pro_feat7: 'Multi-Language Support',
+    price_pro_btn: 'Get Started',
+    price_enterprise_name: 'Enterprise',
+    price_enterprise_desc: 'For large organizations with custom needs',
+    price_enterprise_feat1: 'Private Deployment (k3s)',
+    price_enterprise_feat2: 'Unlimited Knowledge Base',
+    price_enterprise_feat3: 'Custom Model Fine-Tuning',
+    price_enterprise_feat4: 'SLA 99.9%',
+    price_enterprise_feat5: 'Dedicated Customer Success',
+    price_enterprise_feat6: 'Full API Integration',
+    price_enterprise_feat7: 'Custom Brand App',
+    price_enterprise_btn: 'Contact Us',
+    cta_title: 'Book a Free Consultation',
+    cta_desc: '30-min free consultation to learn how AI can boost your customer service and marketing efficiency.',
+    form_name_label: 'Name *',
+    form_name_ph: 'Your name',
+    form_company_label: 'Company',
+    form_company_ph: 'Company or store name',
+    form_contact_label: 'Line ID / Phone *',
+    form_contact_ph: 'Line ID or phone number',
+    form_email_label: 'Email',
+    form_email_ph: 'example@gmail.com',
+    form_industry_label: 'Industry',
+    form_industry_sel: 'Select...',
+    form_ind_food: 'Food & Beverage',
+    form_ind_retail: 'Retail / E-commerce',
+    form_ind_clinic: 'Clinic / Medical',
+    form_ind_re: 'Real Estate',
+    form_ind_edu: 'Education / Training',
+    form_ind_partner: 'Partner / Collaboration',
+    form_ind_other: 'Other',
+    form_msg_label: 'Message',
+    form_msg_ph: 'e.g. I want to learn about AI customer service for my store...',
+    form_btn: '📩 Book Free Consultation',
+    footer_features: 'Features',
+    footer_pricing: 'Pricing',
+    footer_contact: 'Contact',
+    footer_content: 'Content App',
+    footer_copy: '© 2026 XiangChuan Neo｜YaoTech |Ai_bot',
+    chat_suggest_1: 'AI Customer Service',
+    chat_suggest_2: 'Platform Support',
+    chat_suggest_3: 'Content Generation',
+    chat_suggest_4: 'Knowledge Base',
+    chat_suggest_5: 'Pricing Plans',
+    chat_suggest_6: 'Get Started',
+    chat_ai_label: '🤖 XiangChuan Neo｜YaoTech AI Bot',
+    chat_welcome: 'Hello! I am XiangChuan Neo｜YaoTech AI Customer Service 🤖\n\nI can help you learn about our AI marketing solutions. Try clicking the suggested questions above, or type your question!',
+    chat_welcome_html: 'Hello! I am XiangChuan Neo｜YaoTech AI Customer Service 🤖<br><br>I can help you learn about our AI marketing solutions. Try clicking the suggested questions above, or type your question!',
+    lang_zt: '繁體中文',
+    lang_cn: '簡體中文',
+    lang_en: 'English',
+    lang_ru: 'Русский'
+  },
+  'zh-CN': {
+    nav_logo: '翔川 Neo｜曜科技 |Ai_bot',
+    page_title: '翔川 Neo｜曜科技 |Ai_bot - AI 智能客服与营销自动化平台',
+    nav_features: '功能',
+    nav_demo: '展示',
+    nav_pricing: '价格',
+    nav_contact: '联系',
+    nav_content: '内容展示',
+    hero_badge: '🏆 台湾团队 · 在地支援 · 全球部署',
+    hero_title: '<span>AI 客服</span> 小预算也能有大格局<br>从 NT$890/月 开始',
+    hero_desc: '专为台湾中小企业设计的 AI 营销解决方案。24 小时 AI 智能客服、自动内容生成、多平台分发 — 全部在一套系统内完成。不用百万预算，就能拥有企业级 AI 营销系统。',
+    hero_btn_demo: '📩 免费咨询',
+    hero_btn_watch: '▶ 观看展示',
+    stat_content: 'AI 生成内容',
+    stat_platform: '支持平台',
+    stat_lang: '语言版本',
+    stat_247: '自动运行',
+    features_title: '一站式 AI 营销平台',
+    features_sub: '从内容生成到客户互动，全部自动化',
+    feat_ai_title: 'AI 智能客服',
+    feat_ai_desc: '串接 Groq Llama 3 LLM，理解客户问题并给出精准回复。支持繁体中文、简体中文、英文自动切换，知识库越用越聪明。',
+    feat_content_title: '自动内容生成',
+    feat_content_desc: '一键产出博客文章、社群贴文、营销文案、电子报。16 种主题 × 5 个平台 × 3 种语言，全年无休自动产出。',
+    feat_kb_title: '知识库自增长',
+    feat_kb_desc: '用户反馈自动沉淀到知识库，Bot 越用越聪明。支持 👍/👎 反馈机制，好的回答自动保存。',
+    feat_multi_title: '多平台分发',
+    feat_multi_desc: 'Telegram Bot + Web App + Flutter 移动 App，一次产出多平台上线。支持 CI/CD 自动部署。',
+    feat_drama_title: 'AI 短剧创作',
+    feat_drama_desc: 'AI 自动生成剧本、分镜描述、英文绘图 Prompt。可直接搭配 MyEdit、Runway 生成视频素材。',
+    feat_data_title: '数据驱动优化',
+    feat_data_desc: '追踪每篇内容的互动数据，AI 分析哪种内容成效好，自动调整生成策略。',
+    demo_title: '实际展示',
+    demo_sub: 'AI 智能客服即时对话 · 自动内容生成',
+    demo_chat_title: '🤖 AI 智能客服即时展示',
+    demo_chat_hint: '点击下方建议问题，或自行输入，体验 AI 客服回复',
+    demo_chat_placeholder: '输入你的问题...',
+    demo_chat_send: '发送',
+    demo_tab_article: '品牌文章',
+    demo_tab_guide: '攻略教学',
+    demo_tab_drama: 'AI 短剧',
+    demo_app_title: '📱 品牌 App → 内容展示',
+    demo_app_btn: '📱 开启完整品牌 App →',
+    pricing_title: '简单透明的价格',
+    pricing_sub: '从个人到企业，找到适合你的方案',
+    price_starter_name: '入门版',
+    price_starter_desc: '适合个人测试体验',
+    price_starter_feat1: 'AI 智能客服（50次/天）',
+    price_starter_feat2: '10 条知识库',
+    price_starter_feat3: '基础回复模板',
+    price_starter_feat4: 'Telegram Bot（@ailunora_bot）',
+    price_starter_btn: '了解详情 →',
+    price_pro_name: '专业版',
+    price_pro_badge: '最受欢迎',
+    price_pro_desc: '适合中小企业正式运营',
+    price_pro_feat1: '无限对话次数',
+    price_pro_feat2: '500 条知识库',
+    price_pro_feat3: 'LLM 驱动（Groq）',
+    price_pro_feat4: '知识库自增长',
+    price_pro_feat5: 'Web 管理后台',
+    price_pro_feat6: '内容自动生成',
+    price_pro_feat7: '多语言支持',
+    price_pro_btn: '立即开通',
+    price_enterprise_name: '企业版',
+    price_enterprise_desc: '适合大型组织定制需求',
+    price_enterprise_feat1: '私有部署（k3s）',
+    price_enterprise_feat2: '无限知识库',
+    price_enterprise_feat3: '定制模型微调',
+    price_enterprise_feat4: 'SLA 99.9%',
+    price_enterprise_feat5: '专属客户成功',
+    price_enterprise_feat6: 'API 完整串接',
+    price_enterprise_feat7: '品牌 App 定制',
+    price_enterprise_btn: '联系我们',
+    cta_title: '准备好让 AI 帮你营销了吗？',
+    cta_desc: '免费预约咨询，30 分钟了解如何用 AI 提升你的客户服务与营销效率。',
+    form_name_label: '姓名 *',
+    form_name_ph: '请输入姓名',
+    form_company_label: '公司/店家',
+    form_company_ph: '公司或店名',
+    form_contact_label: 'Line ID / 手机 *',
+    form_contact_ph: 'Line ID 或手机号码',
+    form_email_label: 'Email',
+    form_email_ph: 'example@gmail.com',
+    form_industry_label: '行业别',
+    form_industry_sel: '请选择...',
+    form_ind_food: '餐饮',
+    form_ind_retail: '零售/电商',
+    form_ind_clinic: '诊所/医疗',
+    form_ind_re: '房仲/不动产',
+    form_ind_edu: '教育/培训',
+    form_ind_partner: '合作/伙伴',
+    form_ind_other: '其他',
+    form_msg_label: '想了解的服务',
+    form_msg_ph: '例如：我想了解 AI 客服如何运作，我的店是...',
+    form_btn: '📩 预约免费咨询',
+    footer_features: '功能',
+    footer_pricing: '价格',
+    footer_contact: '联系',
+    footer_content: '内容展示',
+    footer_copy: '© 2026 翔川 Neo｜曜科技 |Ai_bot',
+    chat_suggest_1: 'AI 客服方案',
+    chat_suggest_2: '支持平台',
+    chat_suggest_3: '内容生成',
+    chat_suggest_4: 'Knowledge Base',
+    chat_suggest_5: '价格方案',
+    chat_suggest_6: '开始使用',
+    chat_ai_label: '🤖 翔川 Neo｜曜科技 AI 客服',
+    chat_welcome: '你好！我是翔川 Neo｜曜科技 AI 智能客服 🤖\n\n我可以帮助你了解我们的 AI 营销解决方案。试试点击上方的建议问题，或直接输入你的问题！',
+    chat_welcome_html: '你好！我是翔川 Neo｜曜科技 AI 智能客服 🤖<br><br>我可以帮助你了解我们的 AI 营销解决方案。试试点击上方的建议问题，或直接输入你的问题！',
+    lang_zt: '繁體中文',
+    lang_cn: '簡體中文',
+    lang_en: 'English',
+    lang_ru: 'Русский'
+  },
+  ru: {
+    nav_logo: 'XiangChuan Neo｜YaoTech |Ai_bot',
+    page_title: 'XiangChuan Neo｜YaoTech |Ai_bot - AI Обслуживание и Автоматизация Маркетинга',
+    nav_features: 'Функции',
+    nav_demo: 'Демо',
+    nav_pricing: 'Цены',
+    nav_contact: 'Контакты',
+    nav_content: 'Контент',
+    hero_badge: '🏆 Тайваньская команда · Локальная поддержка · Глобальное развёртывание',
+    hero_title: '<span>AI Сервис</span> Возможности уровня Enterprise,<br>от NT$5,990/мес',
+    hero_desc: 'AI-решение для маркетинга, созданное для малого и среднего бизнеса. 24/7 AI-поддержка, автогенерация контента, публикация на多个 платформах — всё в одной системе.',
+    hero_btn_demo: '📩 Бесплатная консультация',
+    hero_btn_watch: '▶ Смотреть демо',
+    stat_content: 'AI контент',
+    stat_platform: 'Платформы',
+    stat_lang: 'Языки',
+    stat_247: 'Авто 24/7',
+    features_title: 'Полная AI-платформа маркетинга',
+    features_sub: 'От создания контента до общения с клиентами — всё в автоматическом режиме',
+    feat_ai_title: 'AI Умное обслуживание',
+    feat_ai_desc: 'Интегрировано с Groq Llama 3 LLM, понимает вопросы и даёт точные ответы на китайском и английском.',
+    feat_content_title: 'Автогенерация контента',
+    feat_content_desc: 'Блоги, соцсети, рассылки —一键. 16 тем × 5 платформ × 3 языка, 24/7 автоматическая генерация.',
+    feat_kb_title: 'Растущая база знаний',
+    feat_kb_desc: 'Обратная связь пользователей автоматически пополняет базу знаний. 👍/👎 — лучшие ответы сохраняются.',
+    feat_multi_title: 'Мультиплатформенность',
+    feat_multi_desc: 'Telegram Bot + Web App + Flutter. Создаёте один раз — публикуете везде. CI/CD авторазвёртывание.',
+    feat_drama_title: 'AI Короткие драмы',
+    feat_drama_desc: 'AI пишет сценарии, раскадровки и промпты для MyEdit, Runway.',
+    feat_data_title: 'Оптимизация данными',
+    feat_data_desc: 'AI анализирует эффективность контента и автоматически корректирует стратегию.',
+    demo_title: 'Живое демо',
+    demo_sub: 'AI чат в реальном времени · Автоконтент',
+    demo_chat_title: '🤖 AI Умный чат — демо',
+    demo_chat_hint: 'Нажмите на вопрос или введите свой',
+    demo_chat_placeholder: 'Ваш вопрос...',
+    demo_chat_send: 'Отправить',
+    demo_tab_article: 'Статьи',
+    demo_tab_guide: 'Гайды',
+    demo_tab_drama: 'AI Драма',
+    demo_app_title: '📱 Бренд-приложение → Контент',
+    demo_app_btn: '📱 Открыть приложение →',
+    pricing_title: 'Простые и прозрачные цены',
+    pricing_sub: 'Найдите подходящий план',
+    price_starter_name: 'Стартовый',
+    price_starter_desc: 'Для личного теста',
+    price_starter_feat1: 'AI чат (50/день)',
+    price_starter_feat2: '10 записей базы знаний',
+    price_starter_feat3: 'Базовые шаблоны',
+    price_starter_feat4: 'Telegram Bot (@ailunora_bot)',
+    price_starter_btn: 'Узнать больше →',
+    price_pro_name: 'Про',
+    price_pro_badge: 'Популярное',
+    price_pro_desc: 'Для малого бизнеса',
+    price_pro_feat1: 'Безлимитные диалоги',
+    price_pro_feat2: '500 записей базы знаний',
+    price_pro_feat3: 'LLM (Groq)',
+    price_pro_feat4: 'Рост базы знаний',
+    price_pro_feat5: 'Веб-панель',
+    price_pro_feat6: 'Автоконтент',
+    price_pro_feat7: 'Мультиязычность',
+    price_pro_btn: 'Начать',
+    price_enterprise_name: 'Корпоративный',
+    price_enterprise_desc: 'Для крупных организаций',
+    price_enterprise_feat1: 'Частное развёртывание (k3s)',
+    price_enterprise_feat2: 'Безлимитная база знаний',
+    price_enterprise_feat3: 'Тонкая настройка модели',
+    price_enterprise_feat4: 'SLA 99.9%',
+    price_enterprise_feat5: 'Личный менеджер',
+    price_enterprise_feat6: 'Полный API',
+    price_enterprise_feat7: 'Кастомное приложение',
+    price_enterprise_btn: 'Связаться',
+    cta_title: 'Готовы к AI-маркетингу?',
+    cta_desc: 'Бесплатная 30-минутная консультация — узнайте, как AI улучшит ваш сервис и маркетинг.',
+    form_name_label: 'Имя *',
+    form_name_ph: 'Ваше имя',
+    form_company_label: 'Компания',
+    form_company_ph: 'Название компании',
+    form_contact_label: 'Line ID / Телефон *',
+    form_contact_ph: 'Line ID или телефон',
+    form_email_label: 'Email',
+    form_email_ph: 'example@gmail.com',
+    form_industry_label: 'Отрасль',
+    form_industry_sel: 'Выберите...',
+    form_ind_food: 'Рестораны',
+    form_ind_retail: 'Розница / E-commerce',
+    form_ind_clinic: 'Клиники / Медицина',
+    form_ind_re: 'Недвижимость',
+    form_ind_edu: 'Образование',
+    form_ind_partner: 'Партнерство',
+    form_ind_other: 'Другое',
+    form_msg_label: 'Сообщение',
+    form_msg_ph: 'Например: хочу узнать об AI-сервисе для моего магазина...',
+    form_btn: '📩 Записаться бесплатно',
+    footer_features: 'Функции',
+    footer_pricing: 'Цены',
+    footer_contact: 'Контакты',
+    footer_content: 'Контент',
+    footer_copy: '© 2026 XiangChuan Neo｜YaoTech |Ai_bot',
+    chat_suggest_1: 'AI Сервис',
+    chat_suggest_2: 'Платформы',
+    chat_suggest_3: 'Контент',
+    chat_suggest_4: 'База знаний',
+    chat_suggest_5: 'Цены',
+    chat_suggest_6: 'Начать',
+    chat_ai_label: '🤖 XiangChuan Neo｜YaoTech AI Бот',
+    chat_welcome: 'Здравствуйте! Я AI-помощник XiangChuan Neo 🤖\n\nЗадайте вопрос или нажмите на подсказки выше!',
+    chat_welcome_html: 'Здравствуйте! Я AI-помощник XiangChuan Neo 🤖<br><br>Задайте вопрос или нажмите на подсказки выше!',
+    lang_zt: '繁體中文',
+    lang_cn: '簡體中文',
+    lang_en: 'English',
+    lang_ru: 'Русский'
+  }
 };
 
-function showDemo(type, el) {
-  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-  el.classList.add('active');
-  const text = DEMOS[type] || '';
-  const pre = document.getElementById('demo-text');
-  pre.style.opacity = '0';
-  setTimeout(() => {
-    pre.textContent = text;
-    pre.style.opacity = '1';
-  }, 200);
-}
-
-// Initial load
-document.addEventListener('DOMContentLoaded', () => {
-  const pre = document.getElementById('demo-text');
-  pre.textContent = DEMOS.article;
-  pre.style.transition = 'opacity 0.3s';
-});
-
-function scrollToContact() {
-  document.getElementById('contact').scrollIntoView({ behavior: 'smooth' });
-}
-
-function handleSubmit(e) {
-  e.preventDefault();
-  const email = e.target.querySelector('input').value;
-  const toast = document.getElementById('toast');
-  toast.textContent = `📩 感謝 ${email}！我們會盡快與你聯絡`;
-  toast.classList.add('show');
-  setTimeout(() => toast.classList.remove('show'), 4000);
-  e.target.reset();
-
-  // Track conversion (Google Analytics ready)
-  if (typeof gtag !== 'undefined') {
-    gtag('event', 'conversion', { send_to: 'AW-xxxxx' });
-  }
-}
-
 function switchLang(val) {
-  if (val === 'en') {
-    document.querySelector('.hero h1').innerHTML = '<span>AI Customer Service</span> + Marketing Automation<br>Launch in One Week';
-    document.querySelector('.hero p').textContent = 'Integrate LLM smart conversations, auto-generate marketing content, knowledge base self-growth. From Telegram Bot to Brand App, one-stop AI marketing solution.';
-    document.querySelector('#features .section-title').textContent = 'All-in-One AI Marketing Platform';
-    document.querySelector('#features .section-sub').textContent = 'From content generation to customer interaction, fully automated';
-    document.querySelector('#pricing .section-title').textContent = 'Simple & Transparent Pricing';
-    document.querySelector('#contact h2').textContent = 'Ready to launch your AI marketing?';
-    document.querySelector('#contact p').textContent = 'Leave your email and we will send you the full product intro and free trial link.';
-    document.querySelector('.contact-form button').textContent = '📩 Get Demo';
-    document.querySelector('.hero-badge').textContent = '🚀 2026 AI Marketing New Era';
-  } else if (val === 'zh-CN') {
-    document.querySelector('.hero h1').innerHTML = '<span>AI 智能客服</span> + 营销自动化<br>一周内上线';
-    document.querySelector('.hero p').textContent = '串接 LLM 智能对话、自动产出营销内容、知识库自增长。从 Telegram Bot 到品牌 App，一站式 AI 营销解决方案。';
-    document.querySelector('#features .section-title').textContent = '一站式 AI 营销平台';
-    document.querySelector('#features .section-sub').textContent = '从内容生成到客户互动，全部自动化';
-    document.querySelector('#pricing .section-title').textContent = '简单透明的价格';
-    document.querySelector('#contact h2').textContent = '准备好启动你的 AI 营销了吗？';
-    document.querySelector('#contact p').textContent = '留下 Email，我们会寄送完整产品介绍与免费试用链接。';
-    document.querySelector('.contact-form button').textContent = '📩 取得演示';
-    document.querySelector('.hero-badge').textContent = '🚀 2026 AI 智慧营销新时代';
-  } else {
-    location.reload();
+  localStorage.setItem('lang', val);
+  if (val === 'zh-TW') { location.reload(); return; }
+  const t = LANG[val];
+  if (!t) return;
+  currentLang = val;
+  document.documentElement.lang = val;
+  document.querySelectorAll('[data-i18n]').forEach(el => {
+    const key = el.dataset.i18n;
+    if (t[key]) {
+      if (el.dataset.i18nHtml) {
+        el.innerHTML = t[key];
+      } else {
+        el.textContent = t[key];
+      }
+    }
+  });
+  document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
+    const key = el.dataset.i18nPlaceholder;
+    if (t[key]) el.placeholder = t[key];
+  });
+  const activeTab = document.querySelector('.tab.active');
+  if (activeTab) {
+    const types = {0:'article',1:'guide',2:'drama'};
+    const idx = Array.from(activeTab.parentNode.children).indexOf(activeTab);
+    showDemo(types[idx]||'article', activeTab);
   }
 }
+
+let chatHistory = [];
+
+function chatSend(msg) {
+  const input = document.getElementById('demoChatInput');
+  const text = msg || input.value.trim();
+  if (!text) return;
+  input.value = '';
+
+  demoAddChatMsg(text, 'user');
+
+  setTimeout(() => {
+    const reply = getBotReply(text);
+    demoAddChatMsg(reply, 'ai');
+  }, 600 + Math.random() * 400);
+}
+
+function demoAddChatMsg(text, role) {
+  var container = document.getElementById('demoChatMessages');
+  if (!container) return;
+  var div = document.createElement('div');
+  div.className = 'chat-msg ' + role;
+  var now = new Date();
+  var time = now.getHours().toString().padStart(2,'0') + ':' + now.getMinutes().toString().padStart(2,'0');
+  if (role === 'ai') {
+    var label = (LANG[currentLang] && LANG[currentLang].chat_ai_label) || '🤖 翔川 Neo｜曜科技 AI 客服';
+    div.innerHTML = '<div class="msg-label">' + label + '</div>' + text.replace(/\n/g, '<br>') + '<div class="msg-time">' + time + '</div>';
+  } else {
+    div.innerHTML = text.replace(/\n/g, '<br>') + '<div class="msg-time">' + time + '</div>';
+  }
+  container.appendChild(div);
+  container.scrollTop = container.scrollHeight;
+}
+
+const KB_KW = [
+  ['方案', '價格', '費用', '多少錢', 'pricing', 'plan', 'price', 'cost'],
+  ['功能', '能做什麼', 'features', 'capabilities'],
+  ['平台', '支援', 'platform', 'support', '整合'],
+  ['開始', '試用', '註冊', 'start', 'trial', 'begin', 'signup'],
+  ['客服', 'customer service', 'support'],
+  ['內容', 'content', '文章', '生成'],
+  ['知識庫', 'knowledge base', 'kb'],
+  ['品牌', 'brand', 'app', '應用'],
+  ['聯絡', 'contact', 'email', '電話', 'line'],
+  ['展示', 'demo', '演示'],
+  ['價格', '方案', '費用'],
+  ['ai', 'llm', 'groq', '人工智慧']
+];
+
+const KB_MSG = {
+  'zh-TW': [
+    '我們提供三種方案：\n\n① 入門版：免費，50次/天\n② 專業版：NT$890/月，無限次數\n③ 企業版：NT$5,990/月，私有部署\n\n詳細比較請看 👉 https://lewislunora.github.io/lewislunora/product/#pricing',
+    '主要功能包括：\n• AI 智能客服（24/7）\n• 自動內容生成（文章+社群）\n• 知識庫自增長\n• 多平台分發\n• 數據驅動優化\n• AI 短劇創作',
+    '目前已支援：Telegram、Line、Facebook、Instagram。使用 Playwright 自動化支援：Threads、Dcard、小紅書。更多平台持續新增中。',
+    '開始很簡單：\n1. 點擊「免費試用」按鈕\n2. 加入我們的 Telegram 頻道\n3. 設定你的知識庫\n4. AI 立即上線\n\n立即開始 👉 https://lewislunora.github.io/lewislunora/product/',
+    'AI 客服可以 24/7 自動回覆客戶問題。支援多語言、知識庫自增長、串接多平台。專業版每月只要 NT$890。',
+    '我們的自動內容生成系統可以產出：品牌文章、社群貼文、行銷文案、電子報、短劇劇本。支援中英雙語。',
+    '知識庫是 AI 客服的核心。好的回答會自動保存，不好的會被淘汰。支援 👍/👎 回饋機制，越用越聰明。',
+    '品牌 App 使用 Flutter 開發，同時支援 iOS、Android 和 Web。內容從 JSON 讀取，無需後端即可更新。',
+    '歡迎聯絡我們：\n📧 lewislunora@gmail.com\n✈️ Telegram 頻道：https://t.me/+QgAyWlVyIxFjNmRl\n🤖 客服機器人：@ailunora_bot',
+    '觀看即時展示 👉 直接在上方聊天室輸入問題，體驗 AI 客服回覆。或前往商品頁查看完整介紹。',
+    '專業版 NT$890/月 · 企業版 NT$5,990/月。14 天免費試用，無需信用卡。',
+    '系統使用 Groq Llama 3 LLM 驅動，支援智慧對話、內容生成、情感分析等功能。'
+  ],
+  en: [
+    'We offer 3 plans:\n① Starter: Free, 50 chats/day\n② Pro: $29/mo, unlimited\n③ Enterprise: $199/mo, private deployment\n\nSee details 👉 https://lewislunora.github.io/lewislunora/product/#pricing',
+    'Key features:\n• AI Customer Service (24/7)\n• Auto Content Generation\n• Self-Growing Knowledge Base\n• Multi-Platform Distribution\n• Data-Driven Optimization',
+    'Supported platforms: Telegram, Line, Facebook, Instagram. Browser automation: Threads, Dcard, Xiaohongshu.',
+    'Getting started:\n1. Click "Free Trial"\n2. Join our Telegram\n3. Set up your knowledge base\n4. AI goes live instantly',
+    'AI customer service works 24/7. Multi-language, self-growing KB, multi-platform. Pro plan starts at $29/mo.',
+    'Auto content system generates: blog posts, social posts, marketing copy, newsletters, drama scripts. Chinese + English.',
+    'The knowledge base is the core. Good answers auto-save, bad ones get淘汰. 👍/👎 feedback system.',
+    'Brand app built with Flutter. iOS + Android + Web. Content from JSON, no backend needed.',
+    'Contact us:\n📧 lewislunora@gmail.com\n✈️ Telegram: https://t.me/+QgAyWlVyIxFjNmRl\n🤖 Bot: @ailunora_bot',
+    'Live demo 👉 Try typing questions above to experience AI customer service.',
+    'Pro $29/mo · Enterprise $199/mo. 14-day free trial, no credit card.',
+    'Powered by Groq Llama 3 LLM. Smart conversations, content generation, sentiment analysis.'
+  ]
+};
+
+const DEMOS = {
+  'zh-TW': {
+    article: [
+      '翔川 Neo AI 行銷系統正式上線！',
+      '我們提供一站式的 AI 行銷解決方案。',
+      '',
+      '▎核心功能',
+      '• AI 智能客服 24/7 自動回覆',
+      '• 知識庫管理與自增長',
+      '• 多平台內容自動發布',
+      '• 數據分析與優化',
+      '',
+      '▎適用場景',
+      '中小企業、電商、餐飲、診所、',
+      '房仲、教育機構。',
+      '',
+      '立即預約免費諮詢，30 分鐘了解如何用 AI',
+      '提升你的客戶服務與行銷效率。',
+    ].join('\n'),
+    guide: [
+      '如何開始使用 AI 行銷系統？',
+      '',
+      '第一步：預約諮詢',
+      '點擊頁面下方的「預約免費諮詢」按鈕，',
+      '填寫基本資料，我們會主動聯繫你。',
+      '',
+      '第二步：設定知識庫',
+      '提供常見問題與回答，',
+      'AI 會自動學習你的業務知識。',
+      '',
+      '第三步：上線運行',
+      '串接 Telegram / LINE 等平台，',
+      'AI 客服立即開始服務。',
+      '',
+      '第四步：持續優化',
+      '查看 Dashboard 數據分析，',
+      '讓 AI 越用越聰明。',
+    ].join('\n'),
+    drama: [
+      '【AI 短劇：未來的客服】',
+      '',
+      '場景：深夜 2 點，客服專線響起...',
+      '',
+      '客戶：請問你們的服務怎麼收費？',
+      'AI：您好！我們提供三種方案：',
+      '入門版免費，專業版 NT$890/月，',
+      '企業版 NT$5,990/月。',
+      '',
+      '客戶：那...可以試用嗎？',
+      'AI：當然可以！14 天免費試用，',
+      '無需信用卡，點擊即可開始。',
+      '',
+      '客戶：太棒了！我現在就要試試！',
+      '',
+      '—— AI 客服，24 小時為您服務 ——',
+    ].join('\n'),
+  },
+  en: {
+    article: [
+      'XiangChuan Neo AI Marketing System Launch!',
+      'All-in-one AI marketing solution.',
+      '',
+      '▎Core Features',
+      '• 24/7 AI Customer Service',
+      '• Self-Growing Knowledge Base',
+      '• Multi-Platform Auto Publishing',
+      '• Data Analytics & Optimization',
+      '',
+      '▎Use Cases',
+      'SMBs, E-commerce, F&B, Clinic,',
+      'Real Estate, Education.',
+      '',
+      'Book a free 30-min consultation',
+      'to learn how AI can boost your business.',
+    ].join('\n'),
+    guide: [
+      'How to Get Started?',
+      '',
+      'Step 1: Book a Consultation',
+      'Fill in the contact form below,',
+      'we will reach out to you.',
+      '',
+      'Step 2: Set Up Knowledge Base',
+      'Provide FAQs and answers,',
+      'AI learns your business knowledge.',
+      '',
+      'Step 3: Go Live',
+      'Connect Telegram / LINE and more,',
+      'AI starts serving immediately.',
+      '',
+      'Step 4: Optimize',
+      'Check Dashboard analytics,',
+      'AI gets smarter over time.',
+    ].join('\n'),
+    drama: [
+      '[AI Short Drama: Future of Support]',
+      '',
+      'Scene: 2 AM, support call comes in...',
+      '',
+      'Customer: How much does your service cost?',
+      'AI: Hello! We offer 3 plans:',
+      'Starter Free, Pro $29/mo,',
+      'Enterprise $199/mo.',
+      '',
+      'Customer: Can I try it?',
+      'AI: Of course! 14-day free trial,',
+      'no credit card needed.',
+      '',
+      'Customer: Awesome! Let me try now!',
+      '',
+      '—— AI Support, 24/7 at your service ——',
+    ].join('\n'),
+  },
+  'zh-CN': {
+    article: [
+      '翔川 Neo AI 营销系统正式上线！',
+      '我们提供一站式的 AI 营销解决方案。',
+      '',
+      '▎核心功能',
+      '• AI 智能客服 24/7 自动回复',
+      '• 知识库管理与自增长',
+      '• 多平台内容自动发布',
+      '• 数据分析与优化',
+      '',
+      '▎适用场景',
+      '中小企业、电商、餐饮、诊所、',
+      '房仲、教育机构。',
+      '',
+      '立即预约免费咨询，30 分钟了解如何用 AI',
+      '提升你的客户服务与营销效率。',
+    ].join('\n'),
+    guide: [
+      '如何开始使用 AI 营销系统？',
+      '',
+      '第一步：预约咨询',
+      '点击页面下方的「预约免费咨询」按钮，',
+      '填写基本资料，我们会主动联系你。',
+      '',
+      '第二步：设定知识库',
+      '提供常见问题与回答，',
+      'AI 会自动学习你的业务知识。',
+      '',
+      '第三步：上线运行',
+      '串接 Telegram / LINE 等平台，',
+      'AI 客服立即开始服务。',
+      '',
+      '第四步：持续优化',
+      '查看 Dashboard 数据分析，',
+      '让 AI 越用越聪明。',
+    ].join('\n'),
+    drama: [
+      '【AI 短剧：未来的客服】',
+      '',
+      '场景：深夜 2 点，客服专线响起...',
+      '',
+      '客户：请问你们的服务怎么收费？',
+      'AI：您好！我们提供三种方案：',
+      '入门版免费，专业版 NT$890/月，',
+      '企业版 NT$5,990/月。',
+      '',
+      '客户：那...可以试用吗？',
+      'AI：当然可以！14 天免费试用，',
+      '无需信用卡，点击即可开始。',
+      '',
+      '客户：太棒了！我现在就要试试！',
+      '',
+      '—— AI 客服，24 小时为您服务 ——',
+    ].join('\n'),
+  },
+  ru: {
+    article: [
+      'Система AI-маркетинга XiangChuan Neo запущена!',
+      'Комплексное AI-решение для маркетинга.',
+      '',
+      '▎Основные функции',
+      '• AI-поддержка 24/7',
+      '• Растущая база знаний',
+      '• Автопубликация на несколько платформ',
+      '• Аналитика и оптимизация',
+      '',
+      '▎Для кого',
+      'Малый и средний бизнес,',
+      'E-commerce, Рестораны, Клиники,',
+      'Недвижимость, Образование.',
+    ].join('\n'),
+    guide: [
+      'Как начать?',
+      '',
+      'Шаг 1: Запишитесь на консультацию',
+      'Заполните форму ниже,',
+      'мы свяжемся с вами.',
+      '',
+      'Шаг 2: Настройте базу знаний',
+      'Добавьте вопросы и ответы,',
+      'AI изучит ваш бизнес.',
+      '',
+      'Шаг 3: Запуск',
+      'Подключите Telegram / LINE,',
+      'AI начнёт обслуживание.',
+      '',
+      'Шаг 4: Оптимизация',
+      'Анализируйте данные в Dashboard,',
+      'AI становится умнее.',
+    ].join('\n'),
+    drama: [
+      '[AI Короткая драма: Будущее поддержки]',
+      '',
+      'Ночь, 2 часа. Звонок в поддержку...',
+      '',
+      'Клиент: Сколько стоит ваш сервис?',
+      'AI: Здравствуйте! У нас 3 плана:',
+      'Стартовый бесплатно, Про $29/мес,',
+      'Корпоративный $199/мес.',
+      '',
+      'Клиент: Можно попробовать?',
+      'AI: Конечно! 14 дней бесплатно,',
+      'без кредитной карты.',
+      '',
+      'Клиент: Отлично! Начинаю!',
+      '',
+      '—— AI поддержка, 24/7 к вашим услугам ——',
+    ].join('\n'),
+  },
+};
+let currentDemo = 'article';
+
+function showDemo(type, tab) {
+  const lang = currentLang && DEMOS[currentLang] ? currentLang : 'zh-TW';
+  const pre = document.getElementById('demo-text');
+  if (DEMOS[lang] && DEMOS[lang][type]) {
+    pre.textContent = DEMOS[lang][type];
+  }
+  document.querySelectorAll('.tabs .tab').forEach(function(t) { t.classList.remove('active'); });
+  if (tab) tab.classList.add('active');
+  currentDemo = type;
+}
+
+function getBotReply(text) {
+  const lower = text.toLowerCase();
+  const lang = currentLang && KB_MSG[currentLang] ? currentLang : 'zh-TW';
+  const msgs = KB_MSG[lang];
+
+  for (let i = 0; i < KB_KW.length; i++) {
+    for (const kw of KB_KW[i]) {
+      if (lower.includes(kw)) return msgs[i];
+    }
+  }
+
+  if (lower.includes('how') || lower.includes('what') || lower.includes('can you')) {
+    return msgs[6];
+  }
+
+  const fallbacks = {
+    'zh-TW': [
+      '感謝您的提問！這個問題很好。建議您查看我們的 Telegram 頻道 https://t.me/+QgAyWlVyIxFjNmRl 獲取更多資訊，或留下 Email 我們會詳細回覆您！',
+      '您的問題我已經記錄下來了！我們有專業團隊可以為您解答。請加入 Telegram 頻道 https://t.me/+QgAyWlVyIxFjNmRl 與我們即時交流。',
+      '這是一個好問題！我們的功能涵蓋 AI 客服、內容生成、知識庫管理等。請問您想了解哪個面向的詳細資訊呢？'
+    ],
+    en: [
+      'Great question! Check out our Telegram channel https://t.me/+QgAyWlVyIxFjNmRl for more info, or leave your email and we will reply in detail!',
+      'Your question has been noted! Our team is ready to help. Join our Telegram https://t.me/+QgAyWlVyIxFjNmRl for instant chat.',
+      'Good question! We cover AI customer service, content generation, knowledge base management. Which area interests you?'
+    ],
+    'zh-CN': [
+      '感谢您的提问！这个问题很好。建议您查看我们的 Telegram 频道 https://t.me/+QgAyWlVyIxFjNmRl 获取更多信息，或留下 Email 我们会详细回复您！',
+      '您的问题我已经记录下来了！我们有专业团队可以为您解答。请加入 Telegram 频道 https://t.me/+QgAyWlVyIxFjNmRl 与我们即时交流。',
+      '这是一个好问题！我们的功能涵盖 AI 客服、内容生成、知识库管理等。请问您想了解哪个方面的详细信息呢？'
+    ],
+    ru: [
+      'Отличный вопрос! Заходите в наш Telegram https://t.me/+QgAyWlVyIxFjNmRl или оставьте email — мы ответим подробно!',
+      'Ваш вопрос записан! Наша команда готова помочь. Присоединяйтесь к Telegram https://t.me/+QgAyWlVyIxFjNmRl.',
+      'Хороший вопрос! Мы охватываем AI-сервис, генерацию контента, базу знаний. Какая тема вас интересует?'
+    ]
+  };
+  const fb = fallbacks[currentLang] || fallbacks['zh-TW'];
+  return fb[Math.floor(Math.random() * fb.length)];
+}
+
+function scrollToContact(plan) {
+  try {
+    var el = document.getElementById('contact');
+    if (el) {
+      el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      var msg = document.querySelector('textarea[name="\u5099\u8a3b"]');
+      if (msg && plan) {
+        var prefix = '[\u611f\u8208\u8da3\u65b9\u6848\uff1a' + plan + '] ';
+        if (msg.value.indexOf(prefix) !== 0) {
+          msg.value = prefix + msg.value.replace(/\[感興趣方案：.*?\]\s*/g, '');
+        }
+        setTimeout(function() { msg.focus(); }, 500);
+      }
+    }
+  } catch (e) {
+    console.warn('scrollToContact error:', e);
+  }
+}
+
+function handleFreePlan() {
+  var user = JSON.parse(localStorage.getItem('chat_user') || 'null');
+  if (user && user.sub) {
+    var el = document.getElementById('demo');
+    if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  } else {
+    if (typeof showLogin === 'function') {
+      showLogin();
+    }
+  }
+}
+
+async function handleContact(e) {
+  e.preventDefault();
+  const btn = document.getElementById('contactBtn');
+  const result = document.getElementById('contactResult');
+  const form = document.getElementById('contactForm');
+  const fd = new FormData(form);
+  const data = {};
+  fd.forEach((v, k) => { data[k] = v; });
+  btn.disabled = true;
+  btn.textContent = '送出中...';
+  result.style.display = 'none';
+  const apiUrl = location.hostname.includes('github.io')
+    ? 'https://lewislunora.onrender.com/api/contact'
+    : '/api/contact';
+  const ac = new AbortController();
+  const timer = setTimeout(() => ac.abort(), 10000);
+  try {
+    const res = await fetch(apiUrl, {
+      method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify(data), signal: ac.signal,
+    });
+    clearTimeout(timer);
+    const json = await res.json();
+    if (res.ok) {
+      result.textContent = '✅ 預約成功！我們會盡快與您聯繫。';
+      result.style.color = '#00d4ff';
+      form.reset();
+    } else {
+      result.textContent = '❌ ' + (json.message || '送出失敗，請重試');
+      result.style.color = '#ff6b6b';
+    }
+  } catch (err) {
+    result.textContent = err.name === 'AbortError' ? '❌ 伺服器無回應（逾時），您的資料已儲存在本地，我們會儘快聯繫您' : '❌ 網路錯誤，請稍後再試';
+    result.style.color = '#ff6b6b';
+    // save locally as fallback
+    try { const existing = JSON.parse(localStorage.getItem('pending_contacts')||'[]'); existing.push({...data, _ts:Date.now()}); localStorage.setItem('pending_contacts', JSON.stringify(existing)); } catch(_){}
+  }
+  result.style.display = 'block';
+  btn.disabled = false;
+  btn.textContent = '📩 預約免費諮詢';
+  return false;
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+  var pre = document.getElementById('demo-text');
+  var lang = localStorage.getItem('lang') || 'zh-TW';
+  if (DEMOS[lang] && DEMOS[lang].article) {
+    pre.textContent = DEMOS[lang].article;
+  } else {
+    pre.textContent = DEMOS['zh-TW'].article;
+  }
+  pre.style.transition = 'opacity 0.3s';
+
+  var now = new Date();
+  var wt = document.getElementById('welcome-time');
+  if (wt) {
+    wt.textContent = now.getHours().toString().padStart(2,'0') + ':' + now.getMinutes().toString().padStart(2,'0');
+  }
+
+  var savedLang = localStorage.getItem('lang');
+  if (savedLang && savedLang !== 'zh-TW') {
+    var sel = document.querySelector('.lang-select');
+    if (sel) { sel.value = savedLang; }
+    switchLang(savedLang);
+  }
+});
 </script>
+
+<button class="chat-bubble" onclick="toggleChat()" id="chatBubble" title="AI 客服聊天">💬</button>
+<div class="chat-panel" id="chatPanel">
+  <div class="chat-header">
+    <h3>🤖 AI 客服</h3>
+    <button class="chat-close" onclick="toggleChat()">✕</button>
+  </div>
+  <div class="chat-login-prompt" id="chatLoginPrompt">
+    <div style="font-size:3rem;opacity:0.2">💬</div>
+    <p>請先註冊/登入<br>即可開始與 AI 客服對話</p>
+    <button class="btn-login-local" onclick="showLogin()" style="margin-top:0.5rem">🔑 註冊/登入</button>
+  </div>
+  <div class="chat-messages" id="chatMessages" style="display:none"></div>
+  <div class="chat-suggestions" id="chatSuggestions" style="display:none">
+    <button onclick="suggestClick('方案與價格')">💰 方案與價格</button>
+    <button onclick="suggestClick('有哪些功能')">⚡ 功能介紹</button>
+    <button onclick="suggestClick('支援哪些平台')">🔗 支援平台</button>
+    <button onclick="suggestClick('如何開始')">🚀 如何開始</button>
+  </div>
+  <div class="chat-input-area" style="display:none">
+    <input id="chatInput" placeholder="輸入你的問題..." onkeydown="chatKeydown(event)">
+    <button class="chat-send" onclick="sendChat(document.getElementById('chatInput').value)">➤</button>
+  </div>
+</div>
+
+<script src="https://accounts.google.com/gsi/client" async defer></script>
+<script src="../widget.js"></script>
 </body>
 </html>
