@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>百家樂 — 翔川 Neo｜曜科技</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{
+  font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Noto Sans TC',sans-serif;
+  background:linear-gradient(135deg,#0f0f1a,#1a1a2e,#16213e);color:#e0e0e0;
+  min-height:100vh;display:flex;flex-direction:column;align-items:center;padding:20px
+}
+.game-container{max-width:520px;width:100%;text-align:center}
+h1{font-size:1.8rem;background:linear-gradient(135deg,#f7971e,#ffd200);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:4px}
+.sub{color:#8888aa;font-size:.85rem;margin-bottom:20px}
+.balance{display:flex;justify-content:space-between;align-items:center;background:rgba(255,255,255,.05);border-radius:12px;padding:12px 18px;margin-bottom:16px;border:1px solid rgba(255,255,255,.06)}
+.balance span{font-size:.9rem;color:#aaaacc}
+.balance .amount{color:#ffd700;font-size:1.2rem;font-weight:700}
+.reset-btn{background:none;border:1px solid rgba(255,255,255,.15);color:#8888aa;padding:6px 14px;border-radius:8px;cursor:pointer;font-size:.8rem;transition:.2s}
+.reset-btn:hover{background:rgba(255,255,255,.08);color:#fff}
+.table-area{background:rgba(0,50,0,.15);border:2px solid rgba(0,100,0,.3);border-radius:16px;padding:16px;margin-bottom:16px}
+.roadmap{display:flex;gap:3px;justify-content:center;flex-wrap:wrap;margin-bottom:10px;min-height:24px}
+.road-dot{width:20px;height:20px;border-radius:3px;font-size:.55rem;display:flex;align-items:center;justify-content:center;font-weight:700;color:#fff}
+.road-dot.b{background:#3498db}.road-dot.p{background:#e74c3c}.road-dot.t{background:#2ecc71}
+.cards-area{display:flex;justify-content:space-around;gap:10px;margin:12px 0}
+.hand-section{flex:1;text-align:center}
+.hand-section .label{font-size:.8rem;color:#8888aa;margin-bottom:6px;font-weight:600}
+.cards-row{display:flex;gap:4px;justify-content:center;min-height:80px}
+.hand-card{
+  width:56px;height:80px;border-radius:6px;display:flex;
+  flex-direction:column;align-items:center;justify-content:center;
+  background:linear-gradient(145deg,#1a1a2e,#2a2a4e);
+  border:1px solid rgba(255,255,255,.08);transition:transform .3s
+}
+.hand-card .r{font-size:1.1rem;font-weight:800;line-height:1}
+.hand-card .s{font-size:.9rem;line-height:1}
+.hand-card.red .r,.hand-card.red .s{color:#e74c3c}
+.hand-card.black .r,.hand-card.black .s{color:#ddd}
+.point-badge{
+  display:inline-block;background:rgba(255,255,255,.08);border-radius:50%;
+  width:28px;height:28px;line-height:28px;font-size:.85rem;font-weight:700;margin-top:4px
+}
+.point-badge.n8{background:rgba(231,76,60,.2);color:#e74c3c}
+.point-badge.n9{background:rgba(46,204,113,.2);color:#2ecc71}
+.result-box{text-align:center;min-height:30px;margin:8px 0}
+.result-box .win{color:#ffd700;font-size:1.1rem;font-weight:700}
+.result-box .lose{color:#e74c3c;font-size:.9rem}
+.bet-areas{display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;margin:8px 0}
+.bet-btn{padding:10px 6px;border-radius:10px;border:2px solid rgba(255,255,255,.1);
+  background:rgba(255,255,255,.04);color:#e0e0e0;cursor:pointer;transition:.2s;text-align:center}
+.bet-btn:not(.disabled):hover{border-color:rgba(255,255,255,.25);transform:translateY(-2px)}
+.bet-btn .bl{font-size:.75rem;color:#8888aa}
+.bet-btn .br{font-size:.6rem;color:#6666aa}
+.bet-btn .bc{font-size:.65rem;color:#555;margin-top:1px}
+.bet-btn.selected{border-color:#ffd700;background:rgba(255,215,0,.1)}
+.bet-btn.player.selected{border-color:#e74c3c;background:rgba(231,76,60,.1)}
+.bet-btn.banker.selected{border-color:#3498db;background:rgba(52,152,219,.1)}
+.bet-btn.tie.selected{border-color:#2ecc71;background:rgba(46,204,113,.1)}
+.chips-bar{display:flex;gap:6px;justify-content:center;margin:8px 0;flex-wrap:wrap}
+.chip{width:44px;height:44px;border-radius:50%;border:2px dashed rgba(255,215,0,.3);
+  background:rgba(255,215,0,.06);color:#ffd700;font-size:.75rem;font-weight:700;
+  display:flex;align-items:center;justify-content:center;cursor:pointer;transition:.2s}
+.chip:hover{border-color:#ffd700;background:rgba(255,215,0,.12);transform:scale(1.1)}
+.chip.active{border-style:solid;background:rgba(255,215,0,.2)}
+.actions{display:flex;gap:10px;margin:10px 0}
+.actions button{flex:1;padding:12px;border-radius:10px;border:none;font-size:1rem;font-weight:700;cursor:pointer;transition:.2s}
+.btn-deal{background:linear-gradient(135deg,#f7971e,#ffd200);color:#1a1a2e}
+.btn-deal:disabled{opacity:.4;cursor:not-allowed}
+.btn-clear{background:rgba(255,255,255,.06);color:#8888aa;border:1px solid rgba(255,255,255,.1)!important}
+.btn-clear:hover{background:rgba(255,255,255,.1)}
+.bet-info{display:flex;justify-content:space-between;font-size:.8rem;color:#8888aa;margin-top:6px}
+.bet-info .mb{color:#ffd700}
+.stats{display:flex;gap:16px;justify-content:center;font-size:.75rem;color:#8888aa;margin-top:8px}
+.stats span strong{color:#e0e0e0}
+.history{display:flex;gap:3px;justify-content:center;flex-wrap:wrap;margin-top:8px}
+.history-item{width:18px;height:18px;border-radius:2px;font-size:.5rem;display:flex;align-items:center;justify-content:center;font-weight:700;color:#fff}
+footer{margin-top:24px;text-align:center}
+footer a{color:#6666aa;text-decoration:none;font-size:.85rem;transition:color .2s}
+footer a:hover{color:#f7971e}
+@media(max-width:500px){
+  .hand-card{width:48px;height:68px}
+  .hand-card .r{font-size:.95rem}.hand-card .s{font-size:.75rem}
+  .bet-btn{padding:8px 4px;font-size:.8rem}
+  .chip{width:38px;height:38px;font-size:.65rem}
+}
+</style>
+</head>
+<body>
+<div class="game-container">
+  <h1>🃏 百家樂</h1>
+  <p class="sub">Baccarat — 源自 GFG 百家樂邏輯</p>
+  <div class="balance">
+    <span>💰 餘額</span>
+    <span class="amount" id="balance">50,000</span>
+    <button class="reset-btn" onclick="resetBalance()">⟳ 重置</button>
+  </div>
+  <div class="table-area">
+    <div class="roadmap" id="roadmap"></div>
+    <div class="cards-area">
+      <div class="hand-section">
+        <div class="label">👤 閑 (Player)</div>
+        <div class="cards-row" id="playerCards"></div>
+        <div class="point-badge" id="playerPoint">-</div>
+      </div>
+      <div class="hand-section">
+        <div class="label">🏦 莊 (Banker)</div>
+        <div class="cards-row" id="bankerCards"></div>
+        <div class="point-badge" id="bankerPoint">-</div>
+      </div>
+    </div>
+    <div class="result-box" id="result"></div>
+    <div class="bet-areas">
+      <button class="bet-btn player" data-area="0" onclick="selectArea(0)">
+        <div class="bl">👤 閑</div>
+        <div class="br">賠率 1:1</div>
+        <div class="bc" id="betPlay">0</div>
+      </button>
+      <button class="bet-btn banker" data-area="1" onclick="selectArea(1)">
+        <div class="bl">🏦 莊</div>
+        <div class="br">賠率 0.95:1</div>
+        <div class="bc" id="betBank">0</div>
+      </button>
+      <button class="bet-btn tie" data-area="2" onclick="selectArea(2)">
+        <div class="bl">⚖️ 和</div>
+        <div class="br">賠率 1:8</div>
+        <div class="bc" id="betTie">0</div>
+      </button>
+    </div>
+    <div class="chips-bar" id="chipsBar"></div>
+    <div class="actions">
+      <button class="btn-deal" id="btnDeal" onclick="deal()">發牌</button>
+      <button class="btn-clear" onclick="clearBets()">清除下注</button>
+    </div>
+    <div class="bet-info">
+      <span>下注: <span class="mb" id="totalBet">0</span></span>
+      <span>贏分: <span class="mb" id="lastWin">-</span></span>
+    </div>
+  </div>
+  <div class="stats">
+    <span>👤 閑: <strong id="statPlay">0</strong></span>
+    <span>🏦 莊: <strong id="statBank">0</strong></span>
+    <span>⚖️ 和: <strong id="statTie">0</strong></span>
+  </div>
+  <div class="history" id="history"></div>
+  <footer><a href="index.html">← 返回遊戲大廳</a></footer>
+</div>
+<script>
+const SUITS=['♦','♣','♥','♠'], RANK_STR=['A','2','3','4','5','6','7','8','9','10','J','Q','K']
+const CHIPS=[10,50,100,500,1000,5000], DECK_COUNT=8
+
+let balance=50000, bets=[0,0,0], selectedChip=100, selectedArea=-1
+let gameState='bet', history=[], stats={play:0,bank:0,tie:0}
+
+function createDeck(count){
+  let d=[]
+  for(let i=0;i<count;i++) for(let s=0;s<4;s++) for(let r=1;r<=13;r++) d.push({s,r})
+  return d
+}
+function shuffle(a){for(let i=a.length-1;i>0;i--){let j=Math.random()*(i+1)|0;[a[i],a[j]]=[a[j],a[i]]}return a}
+function format(n){return n.toLocaleString()}
+function cardPoint(r){return r>=10?0:r}
+function handPoint(cards){let p=0;for(let c of cards)p=(p+cardPoint(c.r))%10;return p}
+
+function updateBalance(){document.getElementById('balance').textContent=format(balance)}
+function renderChips(){
+  document.getElementById('chipsBar').innerHTML=CHIPS.map(c=>`<div class="chip ${selectedChip===c?'active':''}" onclick="selectChip(${c})">${c}</div>`).join('')
+}
+function selectChip(c){selectedChip=c;renderChips()}
+function selectArea(i){
+  if(gameState!=='bet')return
+  selectedArea=i
+  document.querySelectorAll('.bet-btn').forEach((b,j)=>b.classList.toggle('selected',j===i))
+}
+function updateBets(){
+  document.getElementById('betPlay').textContent=format(bets[0])
+  document.getElementById('betBank').textContent=format(bets[1])
+  document.getElementById('betTie').textContent=format(bets[2])
+  document.getElementById('totalBet').textContent=format(bets[0]+bets[1]+bets[2])
+}
+function updateStats(){
+  document.getElementById('statPlay').textContent=stats.play
+  document.getElementById('statBank').textContent=stats.bank
+  document.getElementById('statTie').textContent=stats.tie
+}
+
+document.querySelectorAll('.bet-btn').forEach(b=>b.addEventListener('click',function(){
+  if(gameState==='bet'){
+    const i=parseInt(this.dataset.area)
+    selectArea(i)
+    doBet()
+  }
+}))
+
+function doBet(){
+  if(selectedArea<0||balance<selectedChip)return
+  bets[selectedArea]+=selectedChip
+  balance-=selectedChip
+  updateBalance()
+  updateBets()
+}
+
+function clearBets(){
+  if(gameState!=='bet')return
+  const t=bets[0]+bets[1]+bets[2]
+  balance+=t;bets=[0,0,0];selectedArea=-1
+  document.querySelectorAll('.bet-btn').forEach(b=>b.classList.remove('selected'))
+  updateBalance();updateBets()
+}
+
+function cardHTML(c){
+  const s=SUITS[c.s], r=RANK_STR[c.r-1], red=c.s===0||c.s===2
+  return `<div class="hand-card ${red?'red':'black'}"><div class="r">${r}</div><div class="s">${s}</div></div>`
+}
+
+function shouldPlayerDraw(p,b){
+  if(p>=8||b>=8)return false
+  return p<=5
+}
+function shouldBankerDraw(b,p,pThird){
+  if(b>=7)return false
+  if(pThird===null)return b<=5
+  switch(b){
+    case 3: return pThird!==8
+    case 4: return![0,1,8,9].includes(pThird)
+    case 5: return![0,1,2,3,8,9].includes(pThird)
+    case 6: return![0,1,2,3,4,5,8,9].includes(pThird)
+    default: return b<=2
+  }
+}
+
+function deal(){
+  if(gameState!=='bet')return
+  const t=bets[0]+bets[1]+bets[2]
+  if(t===0){alert('請先下注！');return}
+  gameState='dealing'
+  document.getElementById('btnDeal').disabled=true
+  document.getElementById('result').innerHTML=''
+  
+  const deck=shuffle(createDeck(DECK_COUNT))
+  let idx=0
+  const pCards=[], bCards=[]
+  
+  pCards.push(deck[idx++]); bCards.push(deck[idx++])
+  pCards.push(deck[idx++]); bCards.push(deck[idx++])
+  
+  let pPoint=handPoint(pCards), bPoint=handPoint(bCards)
+  
+  if(pPoint<8&&bPoint<8){
+    let pThird=null
+    if(shouldPlayerDraw(pPoint,bPoint)){
+      pCards.push(deck[idx++])
+      pPoint=handPoint(pCards)
+      pThird=cardPoint(pCards[2].r)
+    }
+    if(shouldBankerDraw(bPoint,pPoint,pThird)){
+      bCards.push(deck[idx++])
+      bPoint=handPoint(bCards)
+    }
+  }
+  
+  const pEl=document.getElementById('playerCards'), bEl=document.getElementById('bankerCards')
+  const ppEl=document.getElementById('playerPoint'), bpEl=document.getElementById('bankerPoint')
+  
+  pEl.innerHTML=pCards.map(c=>cardHTML(c)).join('')
+  bEl.innerHTML=bCards.map(c=>cardHTML(c)).join('')
+  ppEl.textContent=pPoint; bpEl.textContent=bPoint
+  ppEl.className='point-badge'+(pPoint>=8?' n'+pPoint:'')
+  bpEl.className='point-badge'+(bPoint>=8?' n'+bPoint:'')
+  
+  let winner, winName
+  if(pPoint>bPoint){winner=0;winName='閑'}
+  else if(bPoint>pPoint){winner=1;winName='莊'}
+  else{winner=2;winName='和'}
+  
+  let winAmount=0
+  for(let i=0;i<3;i++){
+    if(bets[i]>0&&i===winner){
+      if(i===0)winAmount+=bets[i]*1
+      else if(i===1)winAmount+=bets[i]*0.95
+      else winAmount+=bets[i]*8
+    }
+  }
+  if(winner===2)balance+=t
+  
+  balance+=winAmount
+  const rEl=document.getElementById('result')
+  if(winner!==2)rEl.innerHTML=`<div class="win">🏆 ${winName} 贏！${winAmount>0?' +'+format(winAmount):''}</div>`
+  else rEl.innerHTML=`<div class="win">⚖️ 和局！退回注金</div>`
+  
+  stats[winner===0?'play':winner===1?'bank':'tie']++
+  history.push(winName)
+  updateBalance();updateStats()
+  
+  document.getElementById('lastWin').textContent=winAmount>0?format(Math.floor(winAmount)):'-'
+  
+  document.getElementById('history').innerHTML=history.slice(-40).map(r=>
+    `<div class="history-item" style="background:${r==='閑'?'#e74c3c':r==='莊'?'#3498db':'#2ecc71'}">${r}</div>`
+  ).join('')
+  document.getElementById('roadmap').innerHTML=history.slice(-40).map(r=>
+    `<div class="road-dot ${r==='閑'?'p':r==='莊'?'b':'t'}">${r}</div>`
+  ).join('')
+  
+  bets=[0,0,0];selectedArea=-1
+  document.querySelectorAll('.bet-btn').forEach(b=>b.classList.remove('selected'))
+  updateBets()
+  document.getElementById('btnDeal').disabled=false
+  gameState='bet'
+}
+
+function resetBalance(){
+  if(confirm('重置餘額至 50,000？')){
+    balance=50000;bets=[0,0,0];selectedArea=-1
+    document.querySelectorAll('.bet-btn').forEach(b=>b.classList.remove('selected'))
+    updateBalance();updateBets()
+  }
+}
+
+renderChips();updateBalance();updateBets();updateStats()
+</script>
+</body>
+</html>

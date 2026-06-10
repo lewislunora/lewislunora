@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>21 點 — 翔川 Neo｜曜科技</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{
+  font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Noto Sans TC',sans-serif;
+  background:linear-gradient(135deg,#0f0f1a,#1a1a2e,#16213e);color:#e0e0e0;
+  min-height:100vh;display:flex;flex-direction:column;align-items:center;padding:20px
+}
+.game-container{max-width:520px;width:100%;text-align:center}
+h1{font-size:1.8rem;background:linear-gradient(135deg,#f7971e,#ffd200);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:4px}
+.sub{color:#8888aa;font-size:.85rem;margin-bottom:20px}
+.balance{display:flex;justify-content:space-between;align-items:center;background:rgba(255,255,255,.05);border-radius:12px;padding:12px 18px;margin-bottom:16px;border:1px solid rgba(255,255,255,.06)}
+.balance span{font-size:.9rem;color:#aaaacc}
+.balance .amount{color:#ffd700;font-size:1.2rem;font-weight:700}
+.reset-btn{background:none;border:1px solid rgba(255,255,255,.15);color:#8888aa;padding:6px 14px;border-radius:8px;cursor:pointer;font-size:.8rem;transition:.2s}
+.reset-btn:hover{background:rgba(255,255,255,.08);color:#fff}
+.table-area{background:rgba(0,40,0,.15);border:2px solid rgba(0,80,0,.3);border-radius:16px;padding:16px;margin-bottom:16px}
+.hand-section{margin:8px 0}
+.hand-section .label{font-size:.85rem;color:#8888aa;margin-bottom:6px;font-weight:600}
+.hand-section .label .pt{color:#ffd700;font-weight:700}
+.cards-row{display:flex;gap:4px;justify-content:center;min-height:90px;flex-wrap:wrap}
+.hand-card{
+  width:60px;height:84px;border-radius:6px;display:flex;
+  flex-direction:column;align-items:center;justify-content:center;
+  background:linear-gradient(145deg,#1a1a2e,#2a2a4e);
+  border:1px solid rgba(255,255,255,.08);transition:transform .3s
+}
+.hand-card .r{font-size:1.2rem;font-weight:800;line-height:1}
+.hand-card .s{font-size:1rem;line-height:1}
+.hand-card.red .r,.hand-card.red .s{color:#e74c3c}
+.hand-card.black .r,.hand-card.black .s{color:#ddd}
+.divider{border:none;border-top:1px solid rgba(255,255,255,.06);margin:12px 0}
+.result-box{text-align:center;min-height:32px;margin:8px 0}
+.result-box .win{color:#ffd700;font-size:1.1rem;font-weight:700}
+.result-box .lose{color:#e74c3c;font-size:1rem}
+.result-box .push{color:#8888aa;font-size:1rem}
+.result-box .bj{color:#2ecc71;font-size:1.1rem;font-weight:700}
+.bet-bar{display:flex;gap:8px;justify-content:center;margin:10px 0}
+.bet-bar button{padding:8px 20px;border-radius:8px;border:none;font-size:.9rem;font-weight:700;cursor:pointer;transition:.2s}
+.bet-bar button.active{background:linear-gradient(135deg,#f7971e,#ffd200);color:#1a1a2e}
+.bet-bar button:not(.active){background:rgba(255,255,255,.06);color:#8888aa}
+.chips-bar{display:flex;gap:6px;justify-content:center;margin:8px 0;flex-wrap:wrap}
+.chip{width:44px;height:44px;border-radius:50%;border:2px dashed rgba(255,215,0,.3);
+  background:rgba(255,215,0,.06);color:#ffd700;font-size:.75rem;font-weight:700;
+  display:flex;align-items:center;justify-content:center;cursor:pointer;transition:.2s}
+.chip:hover{border-color:#ffd700;background:rgba(255,215,0,.12);transform:scale(1.1)}
+.chip.active{border-style:solid;background:rgba(255,215,0,.2)}
+.actions{display:flex;gap:8px;margin:10px 0}
+.actions button{flex:1;padding:10px;border-radius:8px;border:none;font-size:.9rem;font-weight:700;cursor:pointer;transition:.2s}
+.actions button:disabled{opacity:.3;cursor:not-allowed}
+.btn-hit{background:linear-gradient(135deg,#e74c3c,#c0392b);color:#fff}
+.btn-stand{background:linear-gradient(135deg,#3498db,#2980b9);color:#fff}
+.btn-double{background:linear-gradient(135deg,#f39c12,#e67e22);color:#fff}
+.btn-deal{background:linear-gradient(135deg,#2ecc71,#27ae60);color:#fff;padding:12px;font-size:1rem}
+.btn-deal:disabled{opacity:.3;cursor:not-allowed}
+.bet-info{display:flex;justify-content:space-between;font-size:.8rem;color:#8888aa;margin-top:6px}
+.bet-info .mb{color:#ffd700}
+.stats{display:flex;gap:16px;justify-content:center;font-size:.75rem;color:#8888aa;margin:8px 0}
+.stats span strong{color:#e0e0e0}
+footer{margin-top:24px;text-align:center}
+footer a{color:#6666aa;text-decoration:none;font-size:.85rem;transition:color .2s}
+footer a:hover{color:#f7971e}
+@media(max-width:500px){
+  .hand-card{width:50px;height:70px}
+  .hand-card .r{font-size:1rem}.hand-card .s{font-size:.8rem}
+  .actions button{font-size:.8rem;padding:8px}
+  .chip{width:38px;height:38px;font-size:.65rem}
+}
+</style>
+</head>
+<body>
+<div class="game-container">
+  <h1>🃏 21 點</h1>
+  <p class="sub">Blackjack — 經典撲克比點遊戲</p>
+  <div class="balance">
+    <span>💰 餘額</span>
+    <span class="amount" id="balance">10,000</span>
+    <button class="reset-btn" onclick="resetBalance()">⟳ 重置</button>
+  </div>
+  <div class="table-area">
+    <div class="hand-section">
+      <div class="label">🤵 莊家 <span class="pt" id="dealerPoint">-</span></div>
+      <div class="cards-row" id="dealerCards"></div>
+    </div>
+    <hr class="divider">
+    <div class="hand-section">
+      <div class="label">👤 玩家 <span class="pt" id="playerPoint">-</span></div>
+      <div class="cards-row" id="playerCards"></div>
+    </div>
+    <div class="result-box" id="result"></div>
+    <div id="betSection">
+      <div class="chips-bar" id="chipsBar"></div>
+      <div class="bet-bar" id="betBar"></div>
+      <div class="actions" id="dealSection">
+        <button class="btn-deal" id="btnDeal" onclick="deal()">下注發牌</button>
+      </div>
+      <div class="actions" id="gameActions" style="display:none">
+        <button class="btn-hit" id="btnHit" onclick="hit()">要牌</button>
+        <button class="btn-stand" id="btnStand" onclick="stand()">停牌</button>
+        <button class="btn-double" id="btnDouble" onclick="doubleDown()">加倍</button>
+      </div>
+    </div>
+    <div class="bet-info">
+      <span>下注: <span class="mb" id="currentBet">0</span></span>
+      <span>贏分: <span class="mb" id="lastWin">-</span></span>
+    </div>
+  </div>
+  <div class="stats">
+    <span>🏆 勝: <strong id="statW">0</strong></span>
+    <span>🤝 和: <strong id="statP">0</strong></span>
+    <span>💀 負: <strong id="statL">0</strong></span>
+  </div>
+  <footer><a href="index.html">← 返回遊戲大廳</a></footer>
+</div>
+<script>
+const SUITS=['♦','♣','♥','♠'], RANK_STR=['A','2','3','4','5','6','7','8','9','10','J','Q','K']
+const CHIPS=[10,50,100,500]
+
+let balance=10000, currentBet=0, selectedChip=50
+let state='bet' // bet, playing, dealer
+let deck=[], pCards=[], dCards=[], isDealerTurn=false
+let stats={w:0,p:0,l:0}
+
+function format(n){return n.toLocaleString()}
+
+function createDeck(){
+  let d=[]
+  for(let s=0;s<4;s++) for(let r=1;r<=13;r++) d.push({s,r})
+  return d
+}
+function shuffle(a){for(let i=a.length-1;i>0;i--){let j=Math.random()*(i+1)|0;[a[i],a[j]]=[a[j],a[i]]}return a}
+
+function cardValue(r){return r>10?10:r}
+function handScore(cards){
+  let s=0, aces=0
+  for(let c of cards){s+=cardValue(c.r);if(c.r===1)aces++}
+  while(s<=11&&aces>0){s+=10;aces--}
+  return s
+}
+function isBlackjack(cards){return cards.length===2&&handScore(cards)===21}
+
+function cardHTML(c,hidden){
+  if(hidden)return `<div class="hand-card" style="background:linear-gradient(135deg,#2c3e50,#3498db)"><div style="font-size:1.2rem;color:rgba(255,255,255,.3)">?</div></div>`
+  const s=SUITS[c.s], r=RANK_STR[c.r-1], red=c.s===0||c.s===2
+  return `<div class="hand-card ${red?'red':'black'}"><div class="r">${r}</div><div class="s">${s}</div></div>`
+}
+
+function renderCards(){
+  const pEl=document.getElementById('playerCards'), dEl=document.getElementById('dealerCards')
+  pEl.innerHTML=pCards.map(c=>cardHTML(c,false)).join('')
+  dEl.innerHTML=dCards.map((c,i)=>cardHTML(c,i===1&&!isDealerTurn)).join('')
+  document.getElementById('playerPoint').textContent=handScore(pCards)
+  document.getElementById('dealerPoint').textContent=isDealerTurn?handScore(dCards):dCards[0]?cardValue(dCards[0].r)+' + ?':'-'
+}
+
+function renderChips(){
+  document.getElementById('chipsBar').innerHTML=CHIPS.map(c=>`<div class="chip ${selectedChip===c?'active':''}" onclick="selectChip(${c})">${c}</div>`).join('')
+}
+function selectChip(c){selectedChip=c;renderChips()}
+
+function startNewRound(){
+  state='bet';isDealerTurn=false
+  pCards=[];dCards=[];currentBet=0
+  document.getElementById('result').innerHTML=''
+  document.getElementById('gameActions').style.display='none'
+  document.getElementById('dealSection').style.display='block'
+  document.getElementById('btnDeal').disabled=false
+  document.getElementById('betSection').style.opacity='1'
+  renderChips()
+  renderCards()
+  updateBet()
+  updateBalance()
+}
+
+function addBet(amount){
+  if(state!=='bet'||balance<amount)return
+  currentBet+=amount;balance-=amount
+  updateBalance();updateBet()
+}
+
+function updateBet(){document.getElementById('currentBet').textContent=format(currentBet)}
+function updateBalance(){document.getElementById('balance').textContent=format(balance)}
+function updateStats(){
+  document.getElementById('statW').textContent=stats.w
+  document.getElementById('statP').textContent=stats.p
+  document.getElementById('statL').textContent=stats.l
+}
+
+function deal(){
+  if(state!=='bet'||currentBet===0){alert('請先下注！');return}
+  state='playing'
+  deck=shuffle(createDeck())
+  deck=shuffle(deck)
+  pCards=[deck.pop(),deck.pop()]
+  dCards=[deck.pop(),deck.pop()]
+  
+  document.getElementById('dealSection').style.display='none'
+  document.getElementById('gameActions').style.display='flex'
+  document.getElementById('betSection').style.opacity='0.3'
+  
+  renderCards()
+  
+  const pScore=handScore(pCards)
+  
+  if(isBlackjack(pCards)&&isBlackjack(dCards)){
+    endGame('push','雙方 Blackjack！')
+    return
+  }
+  if(isBlackjack(pCards)){
+    endGame('player','🎉 Blackjack！');
+    return
+  }
+  if(isBlackjack(dCards)){
+    endGame('dealer','😵 莊家 Blackjack');
+    return
+  }
+  
+  document.getElementById('btnDouble').disabled=(pCards.length>2||currentBet>balance)
+}
+
+function hit(){
+  if(state!=='playing')return
+  pCards.push(deck.pop())
+  renderCards()
+  if(handScore(pCards)>21){
+    endGame('dealer','💥 爆了！')
+  }
+  document.getElementById('btnDouble').disabled=true
+}
+
+function stand(){
+  if(state!=='playing')return
+  dealerPlay()
+}
+
+function doubleDown(){
+  if(state!=='playing'||pCards.length>2)return
+  if(balance<currentBet){alert('餘額不足');return}
+  balance-=currentBet
+  currentBet*=2
+  updateBalance();updateBet()
+  pCards.push(deck.pop())
+  renderCards()
+  if(handScore(pCards)>21){endGame('dealer','💥 爆了！');return}
+  dealerPlay()
+}
+
+function dealerPlay(){
+  state='dealer';isDealerTurn=true
+  document.getElementById('gameActions').style.display='none'
+  renderCards()
+  
+  function drawDealer(){
+    const s=handScore(dCards)
+    if(s<17){
+      dCards.push(deck.pop())
+      renderCards()
+      setTimeout(drawDealer,500)
+    }else{
+      const pS=handScore(pCards), dS=handScore(dCards)
+      if(dS>21)endGame('player','🎉 莊家爆了！')
+      else if(pS>dS)endGame('player','🎉 玩家贏！')
+      else if(pS<dS)endGame('dealer','😵 莊家贏')
+      else endGame('push','🤝 平手')
+    }
+  }
+  setTimeout(drawDealer,400)
+}
+
+function endGame(result,msg){
+  state='done';isDealerTurn=true
+  renderCards()
+  document.getElementById('gameActions').style.display='none'
+  
+  const rEl=document.getElementById('result')
+  if(result==='player'){
+    const bj=pCards.length===2&&handScore(pCards)===21
+    const payout=bj?currentBet*1.5:currentBet
+    balance+=currentBet+payout
+    rEl.innerHTML=`<div class="win">${msg} +${format(payout)}</div>`
+    stats.w++
+  }else if(result==='dealer'){
+    rEl.innerHTML=`<div class="lose">${msg} -${format(currentBet)}</div>`
+    stats.l++
+  }else{
+    balance+=currentBet
+    rEl.innerHTML=`<div class="push">${msg}</div>`
+    stats.p++
+  }
+  updateBalance();updateStats()
+  document.getElementById('lastWin').textContent=result==='player'?format(currentBet):result==='dealer'?`-${format(currentBet)}`:'0'
+  
+  setTimeout(()=>{
+    document.getElementById('betSection').style.opacity='1'
+    startNewRound()
+  },1500)
+}
+
+function resetBalance(){
+  if(confirm('重置餘額至 10,000？')){
+    balance=10000;startNewRound()
+  }
+}
+
+renderChips();updateBalance();updateBet();updateStats()
+</script>
+</body>
+</html>
