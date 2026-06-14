@@ -1,0 +1,506 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ETF 投資預測與交易通知 — 翔川 Neo｜曜科技</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;scroll-behavior:smooth}
+:root{
+  --fs-hero:clamp(32px,5vw+16px,64px);
+  --fs-lg:clamp(24px,2.8vw+14px,38px);
+  --fs-base:clamp(18px,1.4vw+12px,26px);
+  --fs-sm:clamp(16px,1vw+12px,22px);
+  --fs-xs:clamp(14px,0.8vw+10px,18px)
+}
+html{font-size:16px}
+body{
+  font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',system-ui,sans-serif;
+  background:#0a0e27;color:#e8ecf4;min-height:100vh;overflow-x:hidden
+}
+a{color:inherit;text-decoration:none}
+nav{
+  position:fixed;top:0;left:0;right:0;z-index:100;
+  padding:clamp(.6rem,2vw,1rem) clamp(1rem,3vw,2rem);
+  background:rgba(10,14,39,.9);backdrop-filter:blur(20px);
+  border-bottom:1px solid rgba(255,255,255,.05);
+  display:flex;justify-content:space-between;align-items:center
+}
+.nav-brand{font-size:var(--fs-lg);font-weight:700;white-space:nowrap}
+.nav-brand span{background:linear-gradient(135deg,#00d4ff,#7b68ee);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.wrap{max-width:1100px;margin:0 auto;padding:0 clamp(1rem,3vw,2rem)}
+
+/* Hero */
+.hero{
+  min-height:80vh;display:flex;flex-direction:column;
+  justify-content:center;padding:clamp(4rem,8vw,6rem) 0 clamp(2rem,3vw,4rem);
+  position:relative
+}
+.hero::before{
+  content:'';position:absolute;top:0;left:0;right:0;bottom:0;
+  background:radial-gradient(circle at 20% 30%,rgba(0,212,255,.08) 0%,transparent 50%),
+              radial-gradient(circle at 80% 70%,rgba(123,104,238,.08) 0%,transparent 50%);
+  pointer-events:none
+}
+.hero-badge{
+  display:inline-block;width:fit-content;
+  background:rgba(0,212,255,.15);border:1px solid rgba(0,212,255,.3);
+  color:#00d4ff;padding:.4rem 1.2rem;border-radius:20px;
+  font-size:var(--fs-sm);margin-bottom:1.5rem
+}
+.hero h1{font-size:var(--fs-hero);font-weight:800;line-height:1.2;margin-bottom:1rem;max-width:700px;position:relative;z-index:1}
+.hero h1 span{background:linear-gradient(135deg,#00d4ff,#7b68ee);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.hero p{font-size:var(--fs-base);color:rgba(255,255,255,.4);max-width:600px;margin-bottom:2rem;line-height:1.6;position:relative;z-index:1}
+.hero-actions{display:flex;gap:1rem;flex-wrap:wrap;position:relative;z-index:1}
+
+/* Section */
+.section{padding:clamp(3rem,5vw,6rem) 0}
+.section-title{font-size:var(--fs-lg);font-weight:700;margin-bottom:.5rem}
+.section-sub{color:rgba(255,255,255,.35);font-size:var(--fs-sm);margin-bottom:2rem}
+
+/* Stock Cards */
+.stocks{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:1.2rem;margin-bottom:3rem}
+.stock-card{
+  background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.06);
+  border-radius:16px;padding:1.5rem;transition:all .3s;position:relative;overflow:hidden
+}
+.stock-card:hover{background:rgba(255,255,255,.06);border-color:rgba(0,212,255,.15);transform:translateY(-2px)}
+.stock-card .name{font-size:var(--fs-sm);color:rgba(255,255,255,.5);margin-bottom:.1rem;display:flex;justify-content:space-between;align-items:center}
+.stock-card .ticker{font-size:var(--fs-xs);color:rgba(255,255,255,.2)}
+.stock-card .price{font-size:clamp(28px,4vw,48px);font-weight:800;margin:.2rem 0}
+.stock-card .change{font-size:var(--fs-sm);display:flex;gap:1rem}
+.stock-card .change .up{color:#00d4a0}
+.stock-card .change .down{color:#ff6b6b}
+.stock-card .change .pct{background:rgba(0,212,160,.1);padding:.1rem .5rem;border-radius:6px}
+.stock-card .change .pct.down{background:rgba(255,107,107,.1)}
+.stock-card .signal{margin-top:.8rem;padding:.5rem .8rem;border-radius:8px;font-size:var(--fs-xs);font-weight:600;display:inline-flex;align-items:center;gap:6px}
+.signal-buy{background:rgba(0,212,160,.15);color:#00d4a0;border:1px solid rgba(0,212,160,.2)}
+.signal-sell{background:rgba(255,107,107,.15);color:#ff6b6b;border:1px solid rgba(255,107,107,.2)}
+.signal-hold{background:rgba(255,193,7,.1);color:#ffc107;border:1px solid rgba(255,193,7,.15)}
+
+/* Canvas chart */
+.chart-wrap{background:rgba(255,255,255,.02);border:1px solid rgba(255,255,255,.06);border-radius:16px;padding:1.5rem;margin-bottom:2rem}
+.chart-wrap h3{font-size:var(--fs-sm);margin-bottom:1rem}
+canvas{width:100%;height:300px;display:block;border-radius:8px}
+
+/* Indicators */
+.indicators{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:1rem;margin-bottom:2rem}
+.ind-card{background:rgba(255,255,255,.02);border:1px solid rgba(255,255,255,.06);border-radius:12px;padding:1rem;text-align:center}
+.ind-card .label{font-size:var(--fs-xs);color:rgba(255,255,255,.35);margin-bottom:.3rem}
+.ind-card .value{font-size:var(--fs-base);font-weight:700}
+.ind-card .sub{font-size:var(--fs-xs);color:rgba(255,255,255,.2);margin-top:.2rem}
+.ind-card .up{color:#00d4a0}
+.ind-card .down{color:#ff6b6b}
+.ind-card .neutral{color:#ffc107}
+
+/* Prediction Box */
+.pred-box{
+  background:linear-gradient(135deg,rgba(0,212,255,.05),rgba(123,104,238,.05));
+  border:1px solid rgba(255,255,255,.06);border-radius:16px;padding:1.5rem;margin-bottom:2rem
+}
+.pred-box h3{font-size:var(--fs-sm);margin-bottom:.5rem}
+.pred-box p{font-size:var(--fs-sm);color:rgba(255,255,255,.5);line-height:1.6}
+.pred-bar{display:flex;gap:.5rem;margin-top:.8rem;height:8px;border-radius:4px;overflow:hidden}
+.pred-bar .bull{background:linear-gradient(90deg,#00d4a0,#00d4ff);flex:0 0 55%}
+.pred-bar .bear{background:linear-gradient(90deg,#ff6b6b,#ff4444);flex:0 0 25%}
+.pred-bar .neutral{background:rgba(255,255,255,.15);flex:0 0 20%}
+.pred-legend{display:flex;gap:1.5rem;margin-top:.5rem;font-size:var(--fs-xs);color:rgba(255,255,255,.35)}
+
+/* Notification Setup */
+.notify-box{
+  background:rgba(255,255,255,.02);border:1px solid rgba(255,255,255,.06);
+  border-radius:16px;padding:2rem;margin-bottom:2rem
+}
+.notify-box h3{font-size:var(--fs-sm);margin-bottom:.5rem}
+.notify-box p{font-size:var(--fs-sm);color:rgba(255,255,255,.35);margin-bottom:1.5rem}
+.notify-form{display:flex;gap:.8rem;flex-wrap:wrap}
+.notify-form input{flex:1;min-width:200px;padding:.8rem 1rem;border-radius:10px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);color:#fff;font-size:var(--fs-sm);outline:none}
+.notify-form input:focus{border-color:#00d4ff}
+.notify-form button{padding:.8rem 2rem;border-radius:10px;background:linear-gradient(135deg,#00d4ff,#7b68ee);color:#fff;font-weight:600;font-size:var(--fs-sm);border:none;cursor:pointer;transition:all .3s}
+.notify-form button:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(0,212,255,.25)}
+
+/* Strategy */
+.strategy-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:1.2rem;margin-bottom:2rem}
+.strat-card{background:rgba(255,255,255,.02);border:1px solid rgba(255,255,255,.06);border-radius:14px;padding:1.5rem}
+.strat-card .icon{font-size:2rem;margin-bottom:.5rem}
+.strat-card h4{font-size:var(--fs-sm);font-weight:600;margin-bottom:.3rem}
+.strat-card p{font-size:var(--fs-sm);color:rgba(255,255,255,.35);line-height:1.5}
+.strat-card .rule{font-size:var(--fs-xs);color:rgba(0,212,255,.6);margin-top:.5rem;padding:.3rem .6rem;background:rgba(0,212,255,.06);border-radius:6px;display:inline-block}
+
+/* CTA */
+.cta-box{text-align:center;padding:clamp(2rem,4vw,4rem);background:linear-gradient(135deg,rgba(0,212,255,.03),rgba(123,104,238,.03));border:1px solid rgba(255,255,255,.04);border-radius:24px;margin-bottom:2rem}
+.cta-box h2{font-size:var(--fs-lg);margin-bottom:.5rem}
+.cta-box p{font-size:var(--fs-sm);color:rgba(255,255,255,.35);margin-bottom:1.5rem}
+.btn{display:inline-flex;align-items:center;gap:.5rem;padding:.8rem 2rem;border-radius:12px;font-weight:600;font-size:var(--fs-sm);transition:all .3s;cursor:pointer;border:none}
+.btn-primary{background:linear-gradient(135deg,#00d4ff,#7b68ee);color:#fff}
+.btn-primary:hover{transform:translateY(-2px);box-shadow:0 10px 30px rgba(0,212,255,.3)}
+.btn-outline{background:transparent;border:1px solid rgba(255,255,255,.2);color:#e8ecf4}
+.btn-outline:hover{background:rgba(255,255,255,.05)}
+
+/* Footer */
+footer{border-top:1px solid rgba(255,255,255,.05);padding:clamp(1.5rem,3vw,3rem) 0;margin-top:3rem}
+.footer-inner{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:1rem}
+.footer-links{display:flex;gap:1.5rem}
+.footer-links a{color:rgba(255,255,255,.2);font-size:var(--fs-xs);transition:color .2s}
+.footer-links a:hover{color:#00d4ff}
+.footer-copy{font-size:var(--fs-xs);color:rgba(255,255,255,.1);text-align:center;margin-top:1rem}
+
+/* Modal */
+.modal-overlay{position:fixed;inset:0;z-index:200;background:rgba(0,0,0,.6);display:none;align-items:center;justify-content:center}
+.modal-overlay.show{display:flex}
+.modal-box{background:#131837;border:1px solid rgba(255,255,255,.12);border-radius:20px;padding:2rem;max-width:440px;width:90vw;text-align:center}
+.modal-box h3{font-size:var(--fs-sm);margin-bottom:.5rem}
+.modal-box p{color:rgba(255,255,255,.35);margin-bottom:1rem}
+.modal-box .btn{margin-top:.5rem}
+
+.toast{position:fixed;bottom:2rem;left:50%;transform:translateX(-50%);background:rgba(0,212,255,.9);color:#fff;padding:.8rem 1.5rem;border-radius:12px;font-size:var(--fs-xs);opacity:0;transition:opacity .5s;pointer-events:none;z-index:300}
+.toast.show{opacity:1}
+
+@media(max-width:768px){.hero{min-height:auto;padding-top:5rem}}
+</style>
+</head>
+<body>
+<nav>
+  <div class="nav-brand"><span>翔川 Neo｜曜科技</span> |Ai_bot</div>
+</nav>
+
+<!-- Hero -->
+<section class="hero">
+  <div class="wrap">
+    <div class="hero-badge">📈 AI 智能分析 · 即時預測</div>
+    <h1>ETF 投資預測<br><span>交易訊號 &amp; 通知系統</span></h1>
+    <p>基於技術指標與市場數據，提供即時買賣訊號。訂閱通知，不錯過任何交易機會。</p>
+    <div class="hero-actions">
+      <button class="btn btn-primary" onclick="document.getElementById('subscribe').scrollIntoView({behavior:'smooth'})">🔔 訂閱交易通知</button>
+      <a href="product/#contact" class="btn btn-outline">💼 諮詢策略</a>
+    </div>
+  </div>
+</section>
+
+<div class="wrap">
+  <!-- Stock Cards -->
+  <section class="section" id="stocks">
+    <h2 class="section-title">📊 即時報價</h2>
+    <p class="section-sub">資料來源：Yahoo Finance · 自動更新</p>
+    <div class="stocks" id="stockCards"></div>
+  </section>
+
+  <!-- Chart -->
+  <section class="section" style="padding-top:0">
+    <h2 class="section-title">📈 0050 走勢圖</h2>
+    <p class="section-sub">近一個月價格變化 · 移動平均線</p>
+    <div class="chart-wrap">
+      <canvas id="priceChart"></canvas>
+    </div>
+  </section>
+
+  <!-- Technical Indicators -->
+  <section class="section" style="padding-top:0">
+    <h2 class="section-title">🔬 技術指標</h2>
+    <p class="section-sub">多空力道分析 · 趨勢判斷</p>
+    <div class="indicators" id="indicatorCards"></div>
+  </section>
+
+  <!-- Prediction -->
+  <section class="section" style="padding-top:0">
+    <div class="pred-box">
+      <h3>🎯 AI 趨勢預測</h3>
+      <p>綜合技術指標與市場情緒，未來一週趨勢預測：</p>
+      <div class="pred-bar">
+        <div class="bull" id="bullBar" style="flex:0 0 55%"></div>
+        <div class="neutral" id="neutralBar" style="flex:0 0 20%"></div>
+        <div class="bear" id="bearBar" style="flex:0 0 25%"></div>
+      </div>
+      <div class="pred-legend">
+        <span style="color:#00d4a0">● 看多 <span id="bullPct">55%</span></span>
+        <span style="color:rgba(255,255,255,.5)">● 中立 <span id="neutralPct">20%</span></span>
+        <span style="color:#ff6b6b">● 看空 <span id="bearPct">25%</span></span>
+      </div>
+    </div>
+  </section>
+
+  <!-- Trading Strategies -->
+  <section class="section" style="padding-top:0">
+    <h2 class="section-title">📋 交易策略</h2>
+    <p class="section-sub">讓買方和賣方都能適當獲利</p>
+    <div class="strategy-grid">
+      <div class="strat-card">
+        <div class="icon">🟢</div>
+        <h4>買方策略：定期定額 + 訊號加碼</h4>
+        <p>以 0050 為核心持股，每月固定投入。當 RSI < 35 且 MACD 黃金交叉時加碼 50%。</p>
+        <span class="rule">📌 年化報酬目標 12-18%</span>
+      </div>
+      <div class="strat-card">
+        <div class="icon">🔴</div>
+        <h4>賣方策略：保護性停利</h4>
+        <p>當持股獲利達 20% 以上，分批出場 1/3。RSI > 75 且價格跌破 5MA 時全數出清。</p>
+        <span class="rule">📌 保護獲利 · 控制回撤</span>
+      </div>
+      <div class="strat-card">
+        <div class="icon">🔄</div>
+        <h4>配對交易：0050 vs 2330</h4>
+        <p>台積電佔 0050 約 50% 權重。當兩者價差偏離 2 個標準差時進行配對交易。</p>
+        <span class="rule">📌 市場中性策略</span>
+      </div>
+      <div class="strat-card">
+        <div class="icon">⚡</div>
+        <h4>當沖訊號：盤中突破</h4>
+        <p>開盤前 30 分鐘突破前日高點且成交量放大 1.5 倍，跟進做多。跌破開盤價即停損。</p>
+        <span class="rule">📌 嚴守紀律 · 風險第一</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- Subscribe -->
+  <section class="section" id="subscribe" style="padding-top:0">
+    <div class="notify-box">
+      <h3>🔔 交易通知訂閱</h3>
+      <p>當買賣訊號產生時，即時透過 Telegram 或 Email 通知你</p>
+      <form class="notify-form" id="notifyForm" onsubmit="return subscribeNotify(event)">
+        <input type="text" id="notifyName" placeholder="你的稱呼" required>
+        <input type="email" id="notifyEmail" placeholder="Email（選填）">
+        <input type="text" id="notifyTelegram" placeholder="Telegram ID（選填）">
+        <button type="submit">🔔 訂閱免費通知</button>
+      </form>
+      <div id="subResult" style="margin-top:.8rem;font-size:var(--fs-xs);color:rgba(255,255,255,.35);display:none"></div>
+    </div>
+  </section>
+
+  <!-- CTA -->
+  <section class="section" style="padding-top:0">
+    <div class="cta-box">
+      <h2>準備好開始了嗎？</h2>
+      <p>加入我們的投資社群，獲取即時交易訊號與市場分析</p>
+      <a href="https://t.me/+QgAyWlVyIxFjNmRl" target="_blank" class="btn btn-primary">✈️ 加入 Telegram 頻道</a>
+    </div>
+  </section>
+</div>
+
+<!-- Footer -->
+<footer><div class="wrap">
+  <div class="footer-inner">
+    <div class="footer-copy" style="margin:0;text-align:left">© 2026 翔川 Neo｜曜科技 |Ai_bot · 投資警語：本頁面僅供參考，投資有賺有賠，請自行評估風險</div>
+    <div class="footer-links">
+      <a href="../">回首頁</a>
+      <a href="../product/">方案</a>
+      <a href="../privacy.html">隱私</a>
+    </div>
+  </div>
+</div></footer>
+
+<!-- Toast -->
+<div class="toast" id="toast"></div>
+<div class="modal-overlay" id="modal">
+  <div class="modal-box">
+    <h3>✅ 訂閱成功！</h3>
+    <p>當買賣訊號產生時，我們會即時通知你。</p>
+    <button class="btn btn-primary" onclick="document.getElementById('modal').classList.remove('show')">知道了</button>
+  </div>
+</div>
+
+<script>
+// ===== DEMO DATA (will be replaced by live fetch if available) =====
+const INITIAL_STOCKS = {
+  '0050.TW': { name:'元大台灣卓越50基金', ticker:'0050', price:101.95, change:54.38, pct:114.32, signal:'hold', signalText:'中立觀望' },
+  '2330.TW': { name:'台灣積體電路製造', ticker:'2330', price:2310.00, change:1285.00, pct:125.37, signal:'buy', signalText:'買入訊號' },
+  '006208.TW': { name:'富邦台灣采吉50基金', ticker:'006208', price:236.10, change:125.85, pct:114.15, signal:'hold', signalText:'中立觀望' },
+};
+
+const INDICATORS = [
+  { label:'RSI (14)', value:'58.2', sub:'中性偏多', cls:'up' },
+  { label:'MACD', value:'黃金交叉', sub:'DIF > 信號線', cls:'up' },
+  { label:'布林通道', value:'中軌上方', sub:'趨勢向上', cls:'up' },
+  { label:'KD (9,3)', value:'K62 D58', sub:'黃金交叉', cls:'up' },
+  { label:'移動平均', value:'5MA > 20MA', sub:'多頭排列', cls:'up' },
+  { label:'成交量', value:'1.2x 均值', sub:'量能溫和', cls:'neutral' },
+];
+
+// ===== Generate mock price data =====
+function generatePrices(base, days, volatility) {
+  const prices = [];
+  let p = base;
+  for (let i = days; i >= 0; i--) {
+    prices.push({ date:i, price:p });
+    p *= (1 + (Math.random() - 0.48) * volatility);
+  }
+  return prices;
+}
+
+const priceData = generatePrices(101.95, 30, 0.025);
+
+// ===== Render Stock Cards =====
+function renderStocks() {
+  const container = document.getElementById('stockCards');
+  container.innerHTML = Object.values(INITIAL_STOCKS).map(s => {
+    const isUp = s.change >= 0;
+    const sigClass = s.signal === 'buy' ? 'signal-buy' : s.signal === 'sell' ? 'signal-sell' : 'signal-hold';
+    return `<div class="stock-card">
+      <div class="name">${s.name} <span class="ticker">${s.ticker}</span></div>
+      <div class="price">$${s.price.toFixed(2)}</div>
+      <div class="change">
+        <span class="${isUp?'up':'down'}">${isUp?'+':''}$${s.change.toFixed(2)}</span>
+        <span class="pct ${isUp?'':'down'}">${isUp?'+':''}${s.pct.toFixed(2)}%</span>
+      </div>
+      <div class="signal ${sigClass}">${s.signal === 'buy' ? '🟢' : s.signal === 'sell' ? '🔴' : '⚪'} ${s.signalText}</div>
+    </div>`;
+  }).join('');
+}
+
+// ===== Render Indicators =====
+function renderIndicators() {
+  const container = document.getElementById('indicatorCards');
+  container.innerHTML = INDICATORS.map(i =>
+    `<div class="ind-card">
+      <div class="label">${i.label}</div>
+      <div class="value ${i.cls}">${i.value}</div>
+      <div class="sub">${i.sub}</div>
+    </div>`
+  ).join('');
+}
+
+// ===== Draw Chart =====
+function drawChart() {
+  const canvas = document.getElementById('priceChart');
+  const ctx = canvas.getContext('2d');
+  const dpr = window.devicePixelRatio || 1;
+  const rect = canvas.parentElement.getBoundingClientRect();
+  canvas.width = rect.width * dpr;
+  canvas.height = 300 * dpr;
+  canvas.style.width = rect.width + 'px';
+  canvas.style.height = '300px';
+  ctx.scale(dpr, dpr);
+  const W = rect.width, H = 300;
+
+  const prices = priceData.map(p => p.price);
+  const min = Math.min(...prices) * 0.98;
+  const max = Math.max(...prices) * 1.02;
+  const pad = { top:20, bottom:25, left:10, right:10 };
+  const chartW = W - pad.left - pad.right;
+  const chartH = H - pad.top - pad.bottom;
+
+  function xPos(i) { return pad.left + (i / (prices.length - 1)) * chartW; }
+  function yPos(v) { return pad.top + chartH - ((v - min) / (max - min)) * chartH; }
+
+  // Grid
+  ctx.strokeStyle = 'rgba(255,255,255,.04)';
+  ctx.lineWidth = 1;
+  for (let i = 0; i <= 4; i++) {
+    const y = pad.top + (i / 4) * chartH;
+    ctx.beginPath(); ctx.moveTo(pad.left, y); ctx.lineTo(W - pad.right, y); ctx.stroke();
+  }
+
+  // Fill area
+  const grad = ctx.createLinearGradient(0, pad.top, 0, H - pad.bottom);
+  grad.addColorStop(0, 'rgba(0,212,255,.15)');
+  grad.addColorStop(1, 'rgba(0,212,255,.01)');
+  ctx.beginPath();
+  prices.forEach((p, i) => { const x = xPos(i), y = yPos(p); i === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y); });
+  ctx.lineTo(xPos(prices.length - 1), H - pad.bottom);
+  ctx.lineTo(xPos(0), H - pad.bottom);
+  ctx.closePath();
+  ctx.fillStyle = grad;
+  ctx.fill();
+
+  // Line
+  ctx.beginPath();
+  prices.forEach((p, i) => { const x = xPos(i), y = yPos(p); i === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y); });
+  ctx.strokeStyle = '#00d4ff';
+  ctx.lineWidth = 2;
+  ctx.stroke();
+
+  // 5MA
+  const ma5 = prices.map((_, i) => {
+    if (i < 4) return null;
+    let sum = 0; for (let j = i - 4; j <= i; j++) sum += prices[j];
+    return sum / 5;
+  });
+  ctx.beginPath();
+  let started = false;
+  ma5.forEach((v, i) => {
+    if (v === null) { started = false; return; }
+    const x = xPos(i), y = yPos(v);
+    if (!started) { ctx.moveTo(x, y); started = true; } else ctx.lineTo(x, y);
+  });
+  ctx.strokeStyle = 'rgba(255,193,7,.5)';
+  ctx.lineWidth = 1.5;
+  ctx.stroke();
+
+  // Labels
+  ctx.fillStyle = 'rgba(255,255,255,.2)';
+  ctx.font = '11px sans-serif';
+  ctx.textAlign = 'center';
+  const labels = ['1週前','2週前','3週前','4週前'];
+  [0, Math.floor(prices.length/3), Math.floor(prices.length*2/3), prices.length-1].forEach((idx, i) => {
+    ctx.fillText(labels[i]||'', xPos(idx), H - 5);
+  });
+}
+
+// ===== Subscribe =====
+function subscribeNotify(e) {
+  e.preventDefault();
+  const name = document.getElementById('notifyName').value.trim();
+  const email = document.getElementById('notifyEmail').value.trim();
+  const tg = document.getElementById('notifyTelegram').value.trim();
+  if (!name) return false;
+
+  const subs = JSON.parse(localStorage.getItem('trade_subs') || '[]');
+  subs.push({ name, email, telegram:tg, ts:Date.now(), stocks:['0050','2330','006208'] });
+  localStorage.setItem('trade_subs', JSON.stringify(subs));
+
+  document.getElementById('notifyForm').reset();
+  document.getElementById('subResult').style.display = 'block';
+  document.getElementById('subResult').textContent = '✅ 訂閱成功！當買賣訊號產生時我們會通知你。';
+  document.getElementById('modal').classList.add('show');
+
+  // Save contact to render backend
+  const apiUrl = location.hostname.includes('github.io') ? 'https://lewislunora.onrender.com/api/contact' : '/api/contact';
+  fetch(apiUrl, {
+    method:'POST', headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({ 姓名:name, Email:email, 聯絡方式:tg||'', 備註:`[ETF交易通知訂閱] 關注：0050,2330,006208` })
+  }).catch(()=>{});
+  return false;
+}
+
+// ===== Try fetch real data =====
+async function fetchLiveData() {
+  const symbols = ['0050.TW','2330.TW','006208.TW'];
+  for (const sym of symbols) {
+    try {
+      const res = await fetch(
+        `https://query1.finance.yahoo.com/v8/finance/chart/${sym}?range=5d&interval=1d`,
+        { headers:{'User-Agent':'Mozilla/5.0'} }
+      );
+      if (!res.ok) continue;
+      const data = await res.json();
+      const quote = data?.chart?.result?.[0]?.meta;
+      if (!quote) continue;
+      const tk = sym.replace('.TW','');
+      if (INITIAL_STOCKS[sym]) {
+        INITIAL_STOCKS[sym].price = quote.regularMarketPrice || INITIAL_STOCKS[sym].price;
+        INITIAL_STOCKS[sym].change = quote.regularMarketPrice - quote.chartPreviousClose || INITIAL_STOCKS[sym].change;
+        INITIAL_STOCKS[sym].pct = (INITIAL_STOCKS[sym].change / quote.chartPreviousClose * 100) || INITIAL_STOCKS[sym].pct;
+      }
+    } catch(e) {}
+  }
+  renderStocks();
+}
+
+// ===== Toast =====
+function showToast(msg, color) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.style.background = color || 'rgba(0,212,255,.9)';
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 3000);
+}
+
+// ===== Init =====
+renderStocks();
+renderIndicators();
+drawChart();
+fetchLiveData();
+
+window.addEventListener('resize', drawChart);
+</script>
+</body>
+</html>
