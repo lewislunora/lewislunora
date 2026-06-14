@@ -172,7 +172,7 @@ footer{border-top:1px solid rgba(255,255,255,.05);padding:clamp(1.5rem,3vw,3rem)
     <p>基於技術指標與市場數據，提供即時買賣訊號。訂閱通知，不錯過任何交易機會。</p>
     <div class="hero-actions">
       <button class="btn btn-primary" onclick="document.getElementById('subscribe').scrollIntoView({behavior:'smooth'})">🔔 訂閱交易通知</button>
-      <a href="product/#contact" class="btn btn-outline">💼 諮詢策略</a>
+      <a href="../product/#contact" class="btn btn-outline">💼 諮詢策略</a>
     </div>
   </div>
 </section>
@@ -290,7 +290,7 @@ footer{border-top:1px solid rgba(255,255,255,.05);padding:clamp(1.5rem,3vw,3rem)
 
 <!-- Toast -->
 <div class="toast" id="toast"></div>
-<div class="modal-overlay" id="modal">
+<div class="modal-overlay" id="modal" onclick="if(event.target===this)this.classList.remove('show')">
   <div class="modal-box">
     <h3>✅ 訂閱成功！</h3>
     <p>當買賣訊號產生時，我們會即時通知你。</p>
