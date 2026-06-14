@@ -454,9 +454,10 @@ function subscribeNotify(e) {
 
   // Save contact to render backend
   const apiUrl = location.hostname.includes('github.io') ? 'https://lewislunora.onrender.com/api/contact' : '/api/contact';
+  const contactMethod = tg || email || name;
   fetch(apiUrl, {
     method:'POST', headers:{'Content-Type':'application/json'},
-    body:JSON.stringify({ 姓名:name, Email:email, 聯絡方式:tg||'', 備註:`[ETF交易通知訂閱] 關注：0050,2330,006208` })
+    body:JSON.stringify({ 姓名:name, Email:email, 聯絡方式:contactMethod, 備註:`[ETF交易通知訂閱] 關注：0050,2330,006208` })
   }).catch(()=>{});
   return false;
 }

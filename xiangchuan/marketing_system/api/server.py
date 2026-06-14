@@ -2,6 +2,7 @@ import os
 import json
 import hashlib
 import secrets
+import threading
 from datetime import datetime
 from fastapi import FastAPI, HTTPException, Request
 from fastapi.responses import HTMLResponse, JSONResponse
@@ -126,6 +127,16 @@ def status():
     }
 
 
+def _notify_contact(data: dict):
+    try:
+        if smtp_configured():
+            send_contact_email(data)
+        else:
+            send_telegram_notification(data)
+    except Exception as e:
+        import logging
+        logging.getLogger(__name__).error(f"Contact notification failed: {e}")
+
 @app.post("/api/contact")
 async def contact_form(request: Request):
     data = await request.json()
@@ -147,10 +158,7 @@ async def contact_form(request: Request):
             data.get("備註", ""),
         ],
     )
-    if smtp_configured():
-        send_contact_email(data)
-    else:
-        send_telegram_notification(data)
+    threading.Thread(target=_notify_contact, args=[data], daemon=True).start()
     return {"status": "ok", "id": cid}
 
 

@@ -51,7 +51,7 @@ def send_contact_email(data: dict) -> dict:
     msg.attach(MIMEText(body, "plain", "utf-8"))
 
     try:
-        with smtplib.SMTP(cfg["host"], cfg["port"]) as server:
+        with smtplib.SMTP(cfg["host"], cfg["port"], timeout=10) as server:
             server.starttls()
             server.login(cfg["user"], cfg["password"])
             server.send_message(msg)
