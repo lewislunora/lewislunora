@@ -357,6 +357,26 @@
       "status": "pending",
       "created_at": "2026-06-09 03:18:44",
       "updated_at": "2026-06-09 03:18:44"
+    },
+    {
+      "id": 2,
+      "question": "後台網址",
+      "language": "zh-TW",
+      "count": 1,
+      "ai_suggest": "",
+      "status": "pending",
+      "created_at": "2026-07-02 00:29:24",
+      "updated_at": "2026-07-02 00:29:24"
+    },
+    {
+      "id": 3,
+      "question": "推廣後台",
+      "language": "zh-TW",
+      "count": 1,
+      "ai_suggest": "",
+      "status": "pending",
+      "created_at": "2026-07-02 00:35:22",
+      "updated_at": "2026-07-02 00:35:22"
     }
   ],
   "contacts": [
