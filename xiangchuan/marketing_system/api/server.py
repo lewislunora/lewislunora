@@ -24,6 +24,7 @@ from ..platforms.browser_automation import ThreadsConnector, DcardConnector, Xia
 from ..config import PLATFORMS, DATA_DIR, DOCS_DIR, TELEGRAM_BOT_TOKEN
 from ..services.email_service import send_contact_email, is_configured as smtp_configured
 from ..services.notification_service import send_telegram_notification
+from ..services.openclaw_agent import start_agent as start_openclaw_agent
 from ..services.knowledge_base import get_kb_reply, save_unanswered, get_pending, auto_learn
 
 app = FastAPI(title="翔川 Neo｜曜科技 行銷自動化系統")
@@ -108,6 +109,7 @@ def startup():
     init_db()
     StudentDatabase.init_db()
     scheduler.start()
+    start_openclaw_agent()
 
 
 @app.on_event("shutdown")
@@ -125,6 +127,22 @@ def status():
         "scheduler": scheduler.get_status_summary(),
         "platforms": {k: v["enabled"] for k, v in PLATFORMS.items()},
     }
+
+
+@app.get("/api/openclaw")
+def openclaw_info():
+    import requests as http
+    info = {"bot_username": "ailunora_bot", "bot_link": "https://t.me/ailunora_bot"}
+    try:
+        r = http.get(f"https://api.telegram.org/bot{TELEGRAM_BOT_TOKEN}/getMe", timeout=5)
+        if r.ok:
+            d = r.json()
+            if d.get("ok") and d.get("result", {}).get("username"):
+                info["bot_username"] = d["result"]["username"]
+                info["bot_link"] = f"https://t.me/{d['result']['username']}"
+    except Exception:
+        pass
+    return {"status": "ok", "data": info}
 
 
 def _notify_contact(data: dict):
