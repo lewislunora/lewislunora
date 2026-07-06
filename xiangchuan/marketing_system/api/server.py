@@ -24,7 +24,7 @@ from ..platforms.browser_automation import ThreadsConnector, DcardConnector, Xia
 from ..config import PLATFORMS, DATA_DIR, DOCS_DIR, TELEGRAM_BOT_TOKEN
 from ..services.email_service import send_contact_email, is_configured as smtp_configured
 from ..services.notification_service import send_telegram_notification
-from ..services.openclaw_agent import start_agent as start_openclaw_agent
+from ..services.openclaw_agent import _handle_command as openclaw_handle, _is_authorized as openclaw_authorized
 from ..services.knowledge_base import get_kb_reply, save_unanswered, get_pending, auto_learn
 
 app = FastAPI(title="翔川 Neo｜曜科技 行銷自動化系統")
@@ -109,7 +109,13 @@ def startup():
     init_db()
     StudentDatabase.init_db()
     scheduler.start()
-    start_openclaw_agent()
+    try:
+        import requests as http
+        base = os.getenv("RENDER_EXTERNAL_URL", f"https://lewislunora.onrender.com")
+        webhook_url = f"{base}/api/telegram/webhook"
+        http.get(f"https://api.telegram.org/bot{TELEGRAM_BOT_TOKEN}/setWebhook?url={webhook_url}", timeout=10)
+    except Exception:
+        pass
 
 
 @app.on_event("shutdown")
@@ -440,7 +446,11 @@ async def telegram_webhook(request: Request):
         )
 
     if is_bot_command:
-        if text in ("/start", "/help"):
+        cmd_parts = text[1:].split(maxsplit=1)
+        cmd = cmd_parts[0].lower()
+        cmd_args = cmd_parts[1] if len(cmd_parts) > 1 else ""
+
+        if cmd in ("start", "help"):
             reply = (
                 "🤖 歡迎使用 @ailunora_bot！\n\n"
                 "你可以問我：\n"
@@ -449,8 +459,17 @@ async def telegram_webhook(request: Request):
                 "• 平台支援\n"
                 "• 如何開始\n"
                 "• 其他行銷相關問題\n\n"
+                "💡 *OpenClaw 指令*\n"
+                "• /靈感 [主題] — 產生內容靈感\n"
+                "• /部署 — 觸發網站部署\n"
+                "• /狀態 — 查看系統狀態\n\n"
                 "或在群組中 @ailunora_bot 你的問題"
             )
+        elif cmd in ("靈感", "idea", "部署", "deploy", "狀態", "status"):
+            if openclaw_authorized(cid):
+                reply = openclaw_handle(cid, cmd, cmd_args)
+            else:
+                reply = "⛔ 未授權的使用者。"
         else:
             return {"ok": True}
     elif not mentioned:
