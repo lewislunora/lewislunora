@@ -171,9 +171,33 @@ footer .wrap{display:flex;flex-wrap:wrap;gap:1rem;justify-content:space-between;
 .chat-bubble{position:fixed;bottom:1.5rem;right:1.5rem;z-index:99;width:56px;height:56px;border-radius:50%;background:linear-gradient(135deg,#00d4ff,#7b68ee);color:#fff;font-size:1.5rem;border:none;cursor:pointer;box-shadow:0 4px 20px rgba(0,212,255,.3);transition:transform .2s}
 .chat-bubble:hover{transform:scale(1.1)}
 
+@media(max-width:900px){
+  .nav-links{gap:1rem}
+  .nav-links a{font-size:var(--fs-xs)}
+  .hero h1{max-width:100%}
+}
 @media(max-width:768px){
-  .nav-links a:not(.btn-nav){display:none}
+  .nav-links{gap:.6rem}
+  .nav-links a{font-size:clamp(14px,3.5vw,18px)}
   .stat-number{font-size:clamp(24px,8vw,40px)}
+  .form-row{flex-direction:column;gap:.6rem}
+  .hero{min-height:auto;padding-top:5rem;padding-bottom:2rem}
+  .services-grid{grid-template-columns:1fr}
+  .stats{gap:1.5rem}
+  .stat-item{flex:1;min-width:120px}
+  .contact-form{max-width:100%}
+  .cta-section{padding:2rem 1rem}
+  footer .wrap{flex-direction:column;text-align:center}
+  .footer-links{justify-content:center}
+}
+@media(max-width:400px){
+  .nav-links a:not(.lang-select){display:none}
+  .hero-badge{font-size:var(--fs-sm);padding:.4rem 1rem}
+  .hero-actions{gap:.6rem}
+  .btn{padding:.7rem 1.2rem;font-size:var(--fs-sm);width:100%;justify-content:center}
+  .stats{gap:1rem}
+  .svc-card{padding:1.2rem}
+  .svc-card h3{font-size:var(--fs-base)}
 }
 </style>
 </head>
