@@ -304,8 +304,9 @@ footer {
   .nav-links{gap:1rem}
 }
 @media(max-width:768px){
-  .nav-links{gap:.6rem}
-  .nav-links a{font-size:clamp(14px,3.5vw,18px)}
+  .nav-links{gap:.6rem;overflow-x:auto;-webkit-overflow-scrolling:touch;-ms-overflow-style:none;scrollbar-width:none}
+  .nav-links::-webkit-scrollbar{display:none}
+  .nav-links a{font-size:clamp(14px,3.5vw,18px);white-space:nowrap}
   .hero{min-height:auto;padding-top:5rem;padding-bottom:2rem}
   .features-grid{grid-template-columns:1fr}
   .stats{gap:1.5rem}
@@ -318,8 +319,7 @@ footer {
   .demo-header .tabs{gap:.3rem}
   .demo-header .tab{font-size:var(--fs-xs);padding:.4rem .8rem}
 }
-@media(max-width:400px){
-  .nav-links a:not(.lang-select){display:none}
+@media(max-width:500px){
   .hero-actions{gap:.6rem}
   .btn-primary,.btn-outline{padding:.7rem 1.2rem;font-size:var(--fs-sm);width:100%;justify-content:center}
   .stats{gap:1rem}
