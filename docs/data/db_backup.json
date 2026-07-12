@@ -401,5 +401,24 @@
       "created_at": "2026-06-08 08:50:04"
     }
   ],
-  "users": []
+  "users": [],
+  "page_views": [
+    {
+      "id": 1,
+      "page": "/test",
+      "referrer": "https://test.com",
+      "user_agent": "curl/8.7.1",
+      "ip": "122.100.112.224",
+      "country": "Taiwan",
+      "visited_at": "2026-07-12 13:46:26"
+    }
+  ],
+  "geo_cache": [
+    {
+      "ip": "122.100.112.224",
+      "country": "Taiwan",
+      "city": "Yilan",
+      "cached_at": "2026-07-12 13:46:26"
+    }
+  ]
 }
