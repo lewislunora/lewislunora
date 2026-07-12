@@ -411,6 +411,15 @@
       "ip": "122.100.112.224",
       "country": "Taiwan",
       "visited_at": "2026-07-12 13:46:26"
+    },
+    {
+      "id": 2,
+      "page": "/",
+      "referrer": "",
+      "user_agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36",
+      "ip": "122.100.112.224",
+      "country": "Taiwan",
+      "visited_at": "2026-07-12 16:58:43"
     }
   ],
   "geo_cache": [
