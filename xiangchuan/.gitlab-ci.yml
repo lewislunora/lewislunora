@@ -1,0 +1,53 @@
+image: python:3.12-slim
+
+stages:
+  - lint
+  - format
+  - test
+
+cache:
+  paths:
+    - .cache/pip
+    - .venv/
+
+before_script:
+  - python -m venv .venv
+  - source .venv/bin/activate
+  - pip install --upgrade pip
+  - pip install flake8 black isort ruff pytest
+  - if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+  - if [ -f marketing_system/requirements.txt ]; then pip install -r marketing_system/requirements.txt; fi
+
+lint-flake8:
+  stage: lint
+  script:
+    - source .venv/bin/activate
+    - flake8 . --count --statistics --show-source
+
+lint-ruff:
+  stage: lint
+  script:
+    - source .venv/bin/activate
+    - ruff check .
+
+check-format-black:
+  stage: format
+  script:
+    - source .venv/bin/activate
+    - black --check --diff .
+
+check-format-isort:
+  stage: format
+  script:
+    - source .venv/bin/activate
+    - isort --check-only --diff .
+
+test-pytest:
+  stage: test
+  script:
+    - source .venv/bin/activate
+    - pytest marketing_system/tests/ -v --tb=short
+  artifacts:
+    when: always
+    reports:
+      junit: report.xml

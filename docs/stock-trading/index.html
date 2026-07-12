@@ -521,6 +521,16 @@ drawChart();
 fetchLiveData();
 
 window.addEventListener('resize', drawChart);
+
+// Analytics - track page view
+(function(){
+  const api = location.hostname.includes('.github.io') ? 'https://lewislunora.onrender.com/api/analytics/track' : '/api/analytics/track';
+  try {
+    const d = {page:location.pathname, ref:document.referrer, ts:Date.now()};
+    if (navigator.sendBeacon) { navigator.sendBeacon(api, JSON.stringify(d)); }
+    else { fetch(api, {method:'POST', body:JSON.stringify(d), headers:{'Content-Type':'application/json'}, keepalive:true}); }
+  } catch(e) {}
+})();
 </script>
 </body>
 </html>

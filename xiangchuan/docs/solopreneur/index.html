@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>超級個體解決方案 - AI 自動化系統 + 顧問服務</title>
+<style>
+* { margin:0; padding:0; box-sizing:border-box; }
+:root {
+  --fs-hero: clamp(28px, 4vw + 12px, 52px);
+  --fs-lg: clamp(20px, 2vw + 12px, 30px);
+  --fs-base: clamp(17px, 1.2vw + 12px, 22px);
+  --fs-sm: clamp(15px, 0.9vw + 11px, 19px);
+  --fs-xs: clamp(14px, 0.7vw + 10px, 17px);
+}
+html { font-size: 16px; }
+body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif; background: #0a0a0f; color: #e0e0e0; line-height: 1.6; }
+.section { padding: clamp(2rem, 4vw, 4rem) 1.5rem; }
+.container { max-width: 800px; margin: 0 auto; }
+h1 { font-size: var(--fs-hero); font-weight: 800; line-height: 1.2; margin-bottom: 1rem; }
+h1 .g { background: linear-gradient(135deg,#7b68ee,#00d4ff); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+h2 { font-size: var(--fs-lg); font-weight: 700; margin-bottom: 1.5rem; text-align: center; }
+h3 { font-size: var(--fs-base); font-weight: 600; margin-bottom: 0.5rem; }
+.sub { font-size: var(--fs-base); color: rgba(255,255,255,0.5); margin-bottom: 2rem; text-align: center; }
+.hero { text-align: center; padding: clamp(2.5rem, 6vw, 5rem) 1.5rem 3rem; background: radial-gradient(ellipse at top, rgba(123,104,238,0.08) 0%, transparent 60%); }
+.hero .stats { display: flex; justify-content: center; gap: 2rem; margin-top: 2rem; flex-wrap: wrap; }
+.hero .stats .item { text-align: center; }
+.hero .stats .num { font-size: var(--fs-lg); font-weight: 700; color: #7b68ee; }
+.hero .stats .label { font-size: var(--fs-xs); color: rgba(255,255,255,0.4); }
+.card { background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); border-radius: 14px; padding: 1.5rem; margin-bottom: 1.2rem; transition: 0.2s; }
+.card:hover { border-color: rgba(123,104,238,0.3); }
+.tag { display: inline-block; padding: 0.2rem 0.6rem; border-radius: 4px; font-size: var(--fs-xs); font-weight: 600; background: rgba(123,104,238,0.15); color: #7b68ee; margin-bottom: 0.5rem; }
+.card p { font-size: var(--fs-sm); color: rgba(255,255,255,0.55); }
+.pricing-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px,1fr)); gap: 1.2rem; margin: 2rem 0; }
+.price-card { background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); border-radius: 14px; padding: 2rem 1.5rem; text-align: center; }
+.price-card.featured { border-color: rgba(123,104,238,0.4); background: rgba(123,104,238,0.05); }
+.price-card .price { font-size: var(--fs-hero); font-weight: 800; color: #7b68ee; }
+.price-card .unit { font-size: var(--fs-sm); color: rgba(255,255,255,0.4); }
+.price-card ul { list-style: none; margin: 1rem 0; text-align: left; }
+.price-card ul li { padding: 0.3rem 0; font-size: var(--fs-sm); color: rgba(255,255,255,0.6); }
+.price-card ul li::before { content: "✓ "; color: #50c878; }
+.btn { display: inline-block; padding: 0.7rem 2rem; border-radius: 10px; font-size: var(--fs-base); font-weight: 600; text-decoration: none; background: linear-gradient(135deg,#7b68ee,#00d4ff); color: #fff; transition: 0.2s; }
+.btn:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(123,104,238,0.3); }
+.btn-outline { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.15); color: #fff; }
+.cta-box { text-align: center; padding: clamp(1.5rem, 3vw, 3rem) clamp(1rem, 3vw, 2rem); background: linear-gradient(135deg, rgba(123,104,238,0.1), rgba(0,212,255,0.05)); border: 1px solid rgba(123,104,238,0.2); border-radius: 16px; margin: 2rem 0; }
+.cta-box h3 { font-size: var(--fs-lg); }
+.cta-box p { color: rgba(255,255,255,0.5); margin-bottom: 1.5rem; }
+.form-group { margin-bottom: 1rem; }
+.form-group input, .form-group textarea, .form-group select { width: 100%; padding: 0.8rem 1rem; border-radius: 10px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); color: #fff; font-size: var(--fs-sm); outline: none; }
+.form-group input:focus, .form-group textarea:focus { border-color: #7b68ee; }
+.form-row { display: flex; gap: 1rem; }
+.form-row > * { flex: 1; }
+@media(max-width:600px){ .form-row { flex-direction: column; } }
+.footer { text-align: center; padding: 2rem; font-size: var(--fs-xs); color: rgba(255,255,255,0.2); }
+.result { margin-top: 1rem; text-align: center; font-size: var(--fs-sm); min-height: 2rem; }
+</style>
+</head>
+<body>
+
+<div class="hero">
+  <div class="container">
+    <h1><span class="g">超級個體</span> AI 解決方案</h1>
+    <p class="sub">一人公司、自由工作者、個人品牌經營者專屬<br>用 AI 自動化系統放大你的專業價值</p>
+    <div class="stats">
+      <div class="item"><div class="num">6</div><div class="label">AI 模組</div></div>
+      <div class="item"><div class="num">8+</div><div class="label">平台串接</div></div>
+      <div class="item"><div class="num">24/7</div><div class="label">自動運作</div></div>
+      <div class="item"><div class="num">30%</div><div class="label">佣金分潤方案</div></div>
+    </div>
+  </div>
+</div>
+
+<div class="section">
+  <div class="container">
+    <h2>為什麼超級個體需要 AI 系統？</h2>
+    <p style="text-align:center;color:rgba(255,255,255,0.5);margin-bottom:2rem">
+      一個人的資源是有限的，但 AI 可以 24 小時幫你工作。<br>
+      從內容產生、客戶獲取到服務交付，全部自動化。
+    </p>
+    <div class="card">
+      <div class="tag">內容自動化</div>
+      <h3>AI 內容生產線</h3>
+      <p>自動產生 FB、IG、Threads、Dcard、小紅書、Telegram 等多平台內容。排程發布，不用每天手動發文。</p>
+    </div>
+    <div class="card">
+      <div class="tag">客戶獲取</div>
+      <h3>AI 智慧客服 + 自動跟進</h3>
+      <p>24 小時自動回覆客戶問題，自動收集名單，Telegram 即時通知你。不錯過任何潛在客戶。</p>
+    </div>
+    <div class="card">
+      <div class="tag">顧問服務</div>
+      <h3>一對一顧問諮詢</h3>
+      <p>從系統建置、內容策略到自動化流程設計，協助你打造專屬的超級個體事業系統。</p>
+    </div>
+  </div>
+</div>
+
+<div class="section" style="background:rgba(255,255,255,0.01)">
+  <div class="container">
+    <h2>方案選擇</h2>
+    <div class="pricing-grid">
+      <div class="price-card">
+        <h3>AI 系統方案</h3>
+        <div class="price">NT$890</div>
+        <div class="unit">/月</div>
+        <ul>
+          <li>AI 內容產生器</li>
+          <li>5 平台串接</li>
+          <li>內容排程發布</li>
+          <li>知識庫管理</li>
+          <li>Telegram 客服</li>
+        </ul>
+        <a class="btn btn-outline" href="../product/">了解詳情</a>
+      </div>
+      <div class="price-card featured">
+        <h3>顧問方案</h3>
+        <div class="price">NT$5,990</div>
+        <div class="unit">/月</div>
+        <ul>
+          <li>AI 系統全功能</li>
+          <li>8+ 平台串接</li>
+          <li>一對一顧問諮詢</li>
+          <li>自訂 AI 工作流程</li>
+          <li>優先技術支援</li>
+        </ul>
+        <a class="btn" href="#consult">預約諮詢</a>
+      </div>
+      <div class="price-card">
+        <h3>代理分潤</h3>
+        <div class="price">30%</div>
+        <div class="unit">佣金</div>
+        <ul>
+          <li>零資金入場</li>
+          <li>不負擔輸贏</li>
+          <li>專屬推廣連結</li>
+          <li>AI 推廣文案產生</li>
+          <li>即時業績後台</li>
+        </ul>
+        <a class="btn btn-outline" href="../99u/">了解更多</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="section" id="consult">
+  <div class="container">
+    <div class="cta-box">
+      <h3>📩 預約免費顧問諮詢</h3>
+      <p>30 分鐘線上諮詢，了解如何用 AI 打造你的超級個體事業</p>
+      <form id="consultForm" onsubmit="return submitConsult(event)">
+        <div class="form-row">
+          <div class="form-group"><input type="text" id="cName" placeholder="你的姓名" required></div>
+          <div class="form-group"><input type="email" id="cEmail" placeholder="Email" required></div>
+        </div>
+        <div class="form-row">
+          <div class="form-group"><input type="text" id="cContact" placeholder="Line ID / Telegram / 手機" required></div>
+          <div class="form-group">
+            <select id="cType">
+              <option value="">我想了解...</option>
+              <option value="AI 系統方案">AI 系統方案</option>
+              <option value="顧問諮詢">顧問諮詢</option>
+              <option value="代理分潤">代理分潤</option>
+              <option value="其他">其他</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-group"><textarea id="cMsg" placeholder="描述你的需求或問題..." rows="3"></textarea></div>
+        <button type="submit" class="btn" id="consultBtn">📩 預約免費諮詢</button>
+      </form>
+      <div class="result" id="consultResult"></div>
+    </div>
+  </div>
+</div>
+
+<div class="section">
+  <div class="container">
+    <h2>免費學習資源</h2>
+    <p style="text-align:center;color:rgba(255,255,255,0.5);margin-bottom:1.5rem">先從免費指南開始，了解超級個體的 AI 系統思維</p>
+    <div style="display:flex;gap:1rem;justify-content:center;flex-wrap:wrap">
+      <a class="btn btn-outline" href="../guides/solopreneur-ai-system.html">超級個體 AI 系統指南</a>
+      <a class="btn btn-outline" href="../guides/ai-consulting-framework.html">AI 顧問服務框架</a>
+      <a class="btn btn-outline" href="../guides/">📚 全部指南</a>
+      <a class="btn btn-outline" href="../ai-brand/">📥 免費指南套裝</a>
+    </div>
+  </div>
+</div>
+
+<div class="footer">© 翔川 Neo｜曜科技</div>
+
+<script>
+async function submitConsult(e) {
+  e.preventDefault();
+  const btn = document.getElementById('consultBtn');
+  const result = document.getElementById('consultResult');
+  const data = {
+    姓名: document.getElementById('cName').value.trim(),
+    Email: document.getElementById('cEmail').value.trim(),
+    聯絡方式: document.getElementById('cContact').value.trim(),
+    行業別: document.getElementById('cType').value || '超級個體',
+    備註: document.getElementById('cMsg').value.trim() || '超級個體顧問諮詢'
+  };
+  if (!data.姓名 || !data.Email || !data.聯絡方式) {
+    result.textContent = '請填寫姓名、Email 和聯絡方式'; result.style.color = '#ff6b6b'; return;
+  }
+  btn.disabled = true; btn.textContent = '送出中...';
+  const apiUrl = location.hostname.includes('github.io') ? 'https://lewislunora.onrender.com/api/contact' : '/api/contact';
+  try {
+    const res = await fetch(apiUrl, { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify(data) });
+    const json = await res.json();
+    if (res.ok) {
+      result.innerHTML = '✅ 預約成功！我們會盡快與您聯繫。'; result.style.color = '#00d4ff';
+      document.getElementById('consultForm').reset();
+    } else {
+      result.textContent = '❌ ' + (json.message || '送出失敗'); result.style.color = '#ff6b6b';
+    }
+  } catch(err) {
+    result.textContent = '❌ 網路錯誤'; result.style.color = '#ff6b6b';
+  }
+  btn.disabled = false; btn.textContent = '📩 預約免費諮詢';
+}
+</script>
+</body>
+</html>

@@ -1440,5 +1440,15 @@ document.addEventListener('DOMContentLoaded', function() {
 
 <script src="https://accounts.google.com/gsi/client" async defer></script>
 <script src="../widget.js"></script>
+<script>
+(function(){
+  var api = location.hostname.includes('github.io') ? 'https://lewislunora.onrender.com/api/analytics/track' : '/api/analytics/track';
+  try {
+    var d = {page:location.pathname, ref:document.referrer, ts:Date.now()};
+    if (navigator.sendBeacon) { navigator.sendBeacon(api, JSON.stringify(d)); }
+    else { fetch(api, {method:'POST', body:JSON.stringify(d), headers:{'Content-Type':'application/json'}, keepalive:true}); }
+  } catch(e) {}
+})();
+</script>
 </body>
 </html>

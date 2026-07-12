@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI 品牌知識庫 - 指南與教學</title>
+<style>
+* { margin:0; padding:0; box-sizing:border-box; }
+:root {
+  --fs-hero: clamp(28px, 4vw + 12px, 52px);
+  --fs-lg: clamp(20px, 2vw + 12px, 30px);
+  --fs-base: clamp(17px, 1.2vw + 12px, 22px);
+  --fs-sm: clamp(15px, 0.9vw + 11px, 19px);
+  --fs-xs: clamp(14px, 0.7vw + 10px, 17px);
+}
+html { font-size: 16px; }
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
+  background: #0a0a0f; color: #e0e0e0; line-height: 1.6;
+}
+.header {
+  text-align: center; padding: clamp(2.5rem, 5vw, 4rem) 1.5rem 2rem;
+  background: radial-gradient(ellipse at top, rgba(123,104,238,0.08) 0%, transparent 60%);
+}
+.header h1 { font-size: var(--fs-hero); font-weight: 800; background: linear-gradient(135deg,#7b68ee,#00d4ff); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+.header p { color: rgba(255,255,255,0.5); margin-top: 0.5rem; }
+.container { max-width: 900px; margin: 0 auto; padding: 0 1.5rem; }
+.guide-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.2rem; padding: 2rem 0; }
+.guide-card {
+  background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 14px; padding: 1.5rem; cursor: pointer;
+  transition: all 0.2s; text-decoration: none; color: inherit; display: block;
+}
+.guide-card:hover { border-color: rgba(123,104,238,0.3); transform: translateY(-2px); }
+.guide-card .tag {
+  display: inline-block; padding: 0.15rem 0.5rem; border-radius: 4px;
+  font-size: var(--fs-xs); font-weight: 600; margin-bottom: 0.5rem;
+  background: rgba(123,104,238,0.15); color: #7b68ee;
+}
+.guide-card h3 { font-size: var(--fs-base); margin-bottom: 0.4rem; }
+.guide-card p { font-size: var(--fs-sm); color: rgba(255,255,255,0.5); }
+.guide-card .meta { font-size: var(--fs-xs); color: rgba(255,255,255,0.2); margin-top: 0.8rem; }
+.cta-banner {
+  text-align: center; padding: 2.5rem; margin: 2rem 0;
+  background: linear-gradient(135deg, rgba(123,104,238,0.1), rgba(0,212,255,0.05));
+  border: 1px solid rgba(123,104,238,0.2); border-radius: 16px;
+}
+.cta-banner h3 { font-size: var(--fs-lg); margin-bottom: 0.5rem; }
+.cta-banner p { color: rgba(255,255,255,0.5); margin-bottom: 1rem; font-size: var(--fs-sm); }
+.btn {
+  display: inline-block; padding: 0.7rem 2rem; border-radius: 10px;
+  font-size: var(--fs-base); font-weight: 600; text-decoration: none;
+  background: linear-gradient(135deg, #7b68ee, #00d4ff); color: #fff;
+  transition: all 0.2s;
+}
+.btn:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(123,104,238,0.3); }
+.footer { text-align: center; padding: 2rem; font-size: var(--fs-xs); color: rgba(255,255,255,0.2); }
+</style>
+</head>
+<body>
+<div class="header">
+  <h1>📚 AI 品牌知識庫</h1>
+  <p>免費指南與教學，幫助你用 AI 建立個人品牌、超級個體事業與自動化系統</p>
+  <p style="margin-top:0.8rem"><a href="../solopreneur/" style="color:#7b68ee;font-size:var(--fs-sm)">🔥 超級個體解決方案 →</a></p>
+</div>
+<div class="container">
+  <div class="guide-grid">
+    <a class="guide-card" href="ai-personal-brand-positioning.html">
+      <div class="tag">品牌定位</div>
+      <h3>AI 時代個人品牌定位策略</h3>
+      <p>找到你的獨特價值主張，建立系統化的內容策略</p>
+      <div class="meta">約 10 分鐘閱讀</div>
+    </a>
+    <a class="guide-card" href="ai-content-system.html">
+      <div class="tag">內容系統</div>
+      <h3>AI 內容系統建立指南</h3>
+      <p>用 AI 建立內容生產線，持續產出高品質內容</p>
+      <div class="meta">約 10 分鐘閱讀</div>
+    </a>
+    <a class="guide-card" href="ai-customer-system.html">
+      <div class="tag">客戶獲取</div>
+      <h3>AI 驅動的客戶獲取系統</h3>
+      <p>自動化精準行銷，提升轉換率</p>
+      <div class="meta">約 8 分鐘閱讀</div>
+    </a>
+    <a class="guide-card" href="knowledge-to-product.html">
+      <div class="tag">產品化</div>
+      <h3>將知識技能轉化為數位產品</h3>
+      <p>用 AI 加速知識產品化流程</p>
+      <div class="meta">約 10 分鐘閱讀</div>
+    </a>
+    <a class="guide-card" href="ai-automation-funnel.html">
+      <div class="tag">銷售漏斗</div>
+      <h3>AI 自動化銷售漏斗</h3>
+      <p>從流量到變現的完整流程</p>
+      <div class="meta">約 10 分鐘閱讀</div>
+    </a>
+    <a class="guide-card" href="solopreneur-ai-system.html">
+      <div class="tag">超級個體</div>
+      <h3>超級個體 AI 系統建立指南</h3>
+      <p>一人公司必備的自動化工具，從內容到客戶完全自動化</p>
+      <div class="meta">約 10 分鐘閱讀</div>
+    </a>
+    <a class="guide-card" href="ai-consulting-framework.html">
+      <div class="tag">顧問服務</div>
+      <h3>AI 顧問服務框架</h3>
+      <p>如何用 AI 放大你的專業價值，擴大服務規模</p>
+      <div class="meta">約 8 分鐘閱讀</div>
+    </a>
+    <a class="guide-card" href="no-face-personal-brand.html">
+      <div class="tag">不露臉</div>
+      <h3>不露臉個人品牌建立完全指南</h3>
+      <p>不用露臉或錄影片，用 AI 打造影響力</p>
+      <div class="meta">約 8 分鐘閱讀</div>
+    </a>
+  </div>
+
+  <div class="cta-banner">
+    <h3>📥 免費下載完整指南套裝</h3>
+    <p>8 篇完整指南 + 50 組 AI 提示詞模板，一次獲得</p>
+    <a class="btn" href="../ai-brand/">免費領取</a>
+  </div>
+</div>
+<div class="footer">© 翔川 Neo｜曜科技</div>
+</body>
+</html>

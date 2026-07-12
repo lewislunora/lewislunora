@@ -14,6 +14,7 @@ _commit_lock = threading.Lock()
 DB_TABLES = [
     "accounts", "contents", "schedules", "analytics",
     "ai_templates", "kb_entries", "kb_pending", "contacts", "users",
+    "page_views", "geo_cache",
 ]
 
 
@@ -167,6 +168,23 @@ def init_db():
             comments INTEGER DEFAULT 0,
             recorded_at TEXT DEFAULT (datetime('now')),
             FOREIGN KEY (content_id) REFERENCES contents(id)
+        );
+
+        CREATE TABLE IF NOT EXISTS page_views (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            page TEXT NOT NULL,
+            referrer TEXT DEFAULT '',
+            user_agent TEXT DEFAULT '',
+            ip TEXT DEFAULT '',
+            country TEXT DEFAULT '',
+            visited_at TEXT DEFAULT (datetime('now'))
+        );
+
+        CREATE TABLE IF NOT EXISTS geo_cache (
+            ip TEXT PRIMARY KEY,
+            country TEXT DEFAULT '',
+            city TEXT DEFAULT '',
+            cached_at TEXT DEFAULT (datetime('now'))
         );
 
         CREATE TABLE IF NOT EXISTS ai_templates (

@@ -26,6 +26,7 @@ from ..services.email_service import send_contact_email, is_configured as smtp_c
 from ..services.notification_service import send_telegram_notification
 from ..services.openclaw_agent import _handle_command as openclaw_handle, _is_authorized as openclaw_authorized
 from ..services.knowledge_base import get_kb_reply, save_unanswered, get_pending, auto_learn
+from ..services.analytics import track_async, summary as analytics_summary
 
 app = FastAPI(title="翔川 Neo｜曜科技 行銷自動化系統")
 
@@ -149,6 +150,23 @@ def openclaw_info():
     except Exception:
         pass
     return {"status": "ok", "data": info}
+
+
+@app.post("/api/analytics/track")
+async def analytics_track(request: Request):
+    body = await request.json()
+    page = body.get("page", "/")
+    ref = body.get("ref", "")
+    ua = request.headers.get("user-agent", "")
+    ip = request.headers.get("x-forwarded-for", request.client.host if request.client else "") or ""
+    ip = ip.split(",")[0].strip()
+    track_async(page, ref, ua, ip)
+    return {"ok": True}
+
+
+@app.get("/api/analytics/summary")
+def analytics_summary_endpoint(since: int = 24):
+    return analytics_summary(since_hours=since)
 
 
 def _notify_contact(data: dict):
