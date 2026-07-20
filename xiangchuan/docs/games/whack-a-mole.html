@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>打地鼠 — 挑戰你的朋友！</title>
+<meta name="description" content="經典打地鼠遊戲！30 秒內打到最多地鼠，挑戰最高分！">
+<meta property="og:title" content="🔨 打地鼠 — 來挑戰我的分數！">
+<meta property="og:description" content="30 秒打地鼠，看看你能打幾隻！">
+<meta property="og:image" content="https://lewislunora.github.io/lewislunora/assets/og-game.png">
+<meta property="og:type" content="website">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#0a0e27;color:#e8ecf4;min-height:100vh;display:flex;flex-direction:column;align-items:center;overflow:hidden;touch-action:manipulation;user-select:none}
+.wrap{display:flex;flex-direction:column;align-items:center;padding:16px;max-width:450px;width:100%;margin-top:env(safe-area-inset-top)}
+.header{display:flex;justify-content:space-between;align-items:center;width:100%;padding:4px 0;margin-bottom:8px}
+h1{font-size:clamp(20px,5vw,28px);font-weight:800;background:linear-gradient(135deg,#f59e0b,#ef4444);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.stats{display:flex;gap:10px;font-size:13px}
+.stats span{background:rgba(255,255,255,.05);padding:4px 12px;border-radius:8px;color:rgba(255,255,255,.4)}
+.stats strong{color:#fff}
+.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;width:100%;max-width:360px;margin:8px 0}
+.hole{position:relative;aspect-ratio:1;background:rgba(255,255,255,.04);border-radius:50%;border:2px solid rgba(255,255,255,.06);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:clamp(28px,8vw,44px);transition:all .1s;overflow:hidden;touch-action:manipulation}
+.hole.active{background:rgba(255,255,255,.08);border-color:rgba(245,158,11,.3);cursor:pointer}
+.hole.active:active{transform:scale(.85)}
+.hole .mole{display:none;font-size:clamp(32px,9vw,48px);animation:pop .2s ease-out}
+.hole.active .mole{display:block}
+.mole-hit{background:rgba(239,68,68,.2)!important;border-color:#ef4444!important}
+@keyframes pop{0%{transform:translateY(20px) scale(.5);opacity:0}100%{transform:translateY(0) scale(1);opacity:1}}
+.timer-bar{width:100%;max-width:360px;height:4px;background:rgba(255,255,255,.06);border-radius:2px;margin-bottom:8px;overflow:hidden}
+.timer-fill{height:100%;background:linear-gradient(90deg,#f59e0b,#ef4444);border-radius:2px;transition:width 1s linear;width:100%}
+#overlay{display:none;position:fixed;inset:0;background:rgba(10,14,39,.85);backdrop-filter:blur(8px);flex-direction:column;align-items:center;justify-content:center;z-index:10;gap:12px}
+#overlay.show{display:flex}
+#overlay h2{font-size:clamp(22px,5vw,30px)}
+#overlay p{font-size:14px;color:rgba(255,255,255,.5)}
+#overlay .btns{display:flex;gap:8px;margin-top:4px}
+.btn{padding:10px 24px;border-radius:10px;border:none;font-weight:700;font-size:14px;cursor:pointer;transition:all .2s;font-family:inherit}
+.btn-primary{background:linear-gradient(135deg,#00d4ff,#7b68ee);color:#fff}
+.btn-share{padding:10px 20px;border-radius:10px;border:1px solid rgba(0,212,255,.2);background:rgba(0,212,255,.12);color:#00d4ff;font-weight:600;font-size:13px;cursor:pointer;transition:all .2s;font-family:inherit}
+.btn-share:hover{background:rgba(0,212,255,.2)}
+.back-link{margin-top:12px;font-size:13px;color:rgba(255,255,255,.25);text-decoration:none}
+.back-link:hover{color:rgba(255,255,255,.5)}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="header">
+    <h1>🔨 打地鼠</h1>
+    <div class="stats">
+      <span>🎯 <strong id="score">0</strong></span>
+      <span>⏱ <strong id="timer">30</strong>s</span>
+    </div>
+  </div>
+  <div class="timer-bar"><div class="timer-fill" id="timerFill"></div></div>
+  <div class="grid" id="grid"></div>
+  <a href="../games/" class="back-link">← 返回遊戲大廳</a>
+</div>
+<div id="overlay">
+  <h2 id="oTitle">⏰ 時間到！</h2>
+  <p id="oMsg">你打了 0 隻地鼠</p>
+  <div class="btns">
+    <button class="btn btn-primary" onclick="startGame()">🔄 再玩一次</button>
+    <button class="btn-share" onclick="shareScore()">📤 分享分數</button>
+  </div>
+</div>
+<script>
+const DURATION=30;let score=0,timeLeft=DURATION,running=false,spawnInt,timerInt,highScore=0;
+const grid=document.getElementById('grid');
+const scoreEl=document.getElementById('score');
+const timerEl=document.getElementById('timer');
+const timerFill=document.getElementById('timerFill');
+const overlay=document.getElementById('overlay');
+const oTitle=document.getElementById('oTitle');
+const oMsg=document.getElementById('oMsg');
+
+highScore=parseInt(localStorage.getItem('whackHigh')||'0');
+
+for(let i=0;i<9;i++){
+  const hole=document.createElement('div');
+  hole.className='hole';
+  hole.dataset.i=i;
+  hole.innerHTML='<span class="mole">🐹</span>';
+  hole.addEventListener('click',()=>whack(i));
+  hole.addEventListener('touchstart',(e)=>{e.preventDefault();whack(i)},{passive:false});
+  grid.appendChild(hole);
+}
+
+function startGame(){
+  score=0;timeLeft=DURATION;running=true;
+  scoreEl.textContent='0';timerEl.textContent=DURATION;
+  timerFill.style.width='100%';
+  overlay.classList.remove('show');overlay.style.display='none';
+  document.querySelectorAll('.hole').forEach(h=>{h.classList.remove('active','mole-hit')});
+  clearInterval(spawnInt);clearInterval(timerInt);
+  spawnInt=setInterval(spawnMole,800);
+  timerInt=setInterval(()=>{
+    timeLeft--;timerEl.textContent=timeLeft;
+    timerFill.style.width=(timeLeft/DURATION*100)+'%';
+    if(timeLeft<=0)endGame();
+  },1000);
+  setTimeout(spawnMole,200);
+}
+function spawnMole(){
+  if(!running)return;
+  const holes=document.querySelectorAll('.hole');
+  const inactive=[...holes].filter(h=>!h.classList.contains('active'));
+  if(inactive.length<2)return;
+  const count=Math.min(2,Math.floor(inactive.length/3));
+  for(let i=0;i<count;i++){
+    const idx=Math.floor(Math.random()*inactive.length);
+    inactive[idx].classList.add('active');
+    setTimeout(()=>{if(running)inactive[idx].classList.remove('active')},1000+Math.random()*500);
+    inactive.splice(idx,1);
+  }
+}
+function whack(i){
+  if(!running)return;
+  const hole=document.querySelectorAll('.hole')[i];
+  if(!hole.classList.contains('active'))return;
+  score++;scoreEl.textContent=score;
+  hole.classList.remove('active');
+  hole.classList.add('mole-hit');
+  setTimeout(()=>hole.classList.remove('mole-hit'),200);
+}
+function endGame(){
+  running=false;
+  clearInterval(spawnInt);clearInterval(timerInt);
+  if(score>highScore){highScore=score;localStorage.setItem('whackHigh',highScore.toString())}
+  overlay.style.display='flex';overlay.classList.add('show');
+  oTitle.textContent='⏰ 時間到！';
+  oMsg.textContent=`你打了 ${score} 隻地鼠${score>=highScore?' 🎉 新紀錄！':''}`;
+}
+window.shareScore=function(){
+  const msg=`🔨 打地鼠 30 秒打了 ${score} 隻${score>=20?' 我是快手王！':'！你能比我多嗎？'}`;
+  if(navigator.share)navigator.share({title:'打地鼠挑戰',text:msg,url:location.href});
+  else shareToLine(location.href);
+}
+startGame();
+</script>
+<script src="../share.js"></script>
+</body>
+</html>
