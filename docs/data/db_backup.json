@@ -456,6 +456,33 @@
       "ip": "122.100.112.224",
       "country": "Taiwan",
       "visited_at": "2026-07-20 13:51:50"
+    },
+    {
+      "id": 7,
+      "page": "/lewislunora/",
+      "referrer": "",
+      "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36",
+      "ip": "52.34.76.65",
+      "country": "United States",
+      "visited_at": "2026-07-20 18:12:16"
+    },
+    {
+      "id": 8,
+      "page": "/lewislunora/",
+      "referrer": "",
+      "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36",
+      "ip": "54.70.53.60",
+      "country": "United States",
+      "visited_at": "2026-07-20 18:12:17"
+    },
+    {
+      "id": 9,
+      "page": "/",
+      "referrer": "",
+      "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36",
+      "ip": "54.70.53.60",
+      "country": "United States",
+      "visited_at": "2026-07-20 18:12:18"
     }
   ],
   "geo_cache": [
@@ -464,6 +491,18 @@
       "country": "Taiwan",
       "city": "Yilan",
       "cached_at": "2026-07-12 13:46:26"
+    },
+    {
+      "ip": "52.34.76.65",
+      "country": "United States",
+      "city": "Portland",
+      "cached_at": "2026-07-20 18:12:16"
+    },
+    {
+      "ip": "54.70.53.60",
+      "country": "United States",
+      "city": "Portland",
+      "cached_at": "2026-07-20 18:12:17"
     }
   ]
 }
