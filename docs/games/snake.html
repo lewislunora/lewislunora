@@ -3,7 +3,12 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-<title>貪食蛇</title>
+<title>蛇 Snake — 挑戰你的朋友！</title>
+<meta name="description" content="經典貪食蛇遊戲，吃食物長大，挑戰最高分！">
+<meta property="og:title" content="🐍 貪食蛇 — 來挑戰我的分數！">
+<meta property="og:description" content="經典貪食蛇遊戲，吃食物長大，挑戰最高分！">
+<meta property="og:image" content="https://lewislunora.github.io/lewislunora/assets/og-game.png">
+<meta property="og:type" content="website">
 <style>
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 body {
@@ -177,6 +182,15 @@ footer a {
 }
 footer a:hover { color: rgba(255, 255, 255, 0.7); }
 footer a::before { content: "← "; }
+.btn-share {
+  background: rgba(0,212,255,0.12);
+  border: 1px solid rgba(0,212,255,0.2);
+  color: #00d4ff;
+  font-size: .85rem;
+  padding: 10px 18px;
+  cursor: pointer; border-radius: 10px; font-weight: 600; transition: all .2s; font-family: inherit;
+}
+.btn-share:hover { background: rgba(0,212,255,0.2); }
 </style>
 </head>
 <body>
@@ -193,6 +207,7 @@ footer a::before { content: "← "; }
     <div class="game-overlay" id="overlay">
       <div class="big-text" id="overlayTitle">GAME OVER</div>
       <div class="sub-text" id="overlaySub">按「重新開始」再來一局</div>
+      <button class="btn-share" onclick="shareScore()">📤 分享分數</button>
     </div>
   </div>
   <div class="controls">
@@ -517,7 +532,14 @@ footer a::before { content: "← "; }
     touchStartX = null;
     touchStartY = null;
   }, { passive: true });
+  window.shareScore = function() {
+    const msg = `🐍 我在貪食蛇得了 ${score} 分！最高 ${highScore} 分。來挑戰我！`;
+    const url = location.href;
+    if (navigator.share) { navigator.share({ title: '🐍 貪食蛇 — 來挑戰我的分數！', text: msg, url }); }
+    else { shareToLine(url); }
+  };
 })();
 </script>
+<script src="../share.js"></script>
 </body>
 </html>

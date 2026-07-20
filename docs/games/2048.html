@@ -4,7 +4,12 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
 <meta name="apple-mobile-web-app-capable" content="yes">
-<title>2048</title>
+<title>2048 — 挑戰你的朋友！</title>
+<meta name="description" content="經典 2048 數字合併益智遊戲。滑動合併方塊，挑戰 2048 高分！">
+<meta property="og:title" content="🔢 2048 — 來挑戰我的分數！">
+<meta property="og:description" content="經典數字合併遊戲，滑動合併到 2048！">
+<meta property="og:image" content="https://lewislunora.github.io/lewislunora/assets/og-game.png">
+<meta property="og:type" content="website">
 <style>
 *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
 
@@ -139,6 +144,17 @@ h1 {
 
 .btn-secondary:hover {
   background: rgba(255,255,255,0.15);
+}
+
+.btn-share {
+  background: rgba(0,212,255,0.12);
+  border: 1px solid rgba(0,212,255,0.2);
+  color: #00d4ff;
+  font-size: .85rem;
+  padding: 10px 18px;
+}
+.btn-share:hover {
+  background: rgba(0,212,255,0.2);
 }
 
 #game-container {
@@ -688,13 +704,15 @@ footer a:hover {
         this.overlaySubtitle.innerHTML = '分數：' + this.score + '，太厲害了！<br>最佳紀錄：' + this.bestScore;
         this.overlayBtns.innerHTML =
           '<button class="btn btn-primary" onclick="g.keepGoing()">繼續遊戲</button>' +
-          '<button class="btn btn-secondary" onclick="g.restart()">重新開始</button>';
+          '<button class="btn btn-secondary" onclick="g.restart()">重新開始</button>' +
+          '<button class="btn btn-share" onclick="shareScore()">📤 分享分數</button>';
       } else {
         this.overlayTitle.className = 'title lose';
         this.overlayTitle.textContent = '遊戲結束';
         this.overlaySubtitle.innerHTML = '最終分數：' + this.score + '<br>最佳紀錄：' + this.bestScore;
         this.overlayBtns.innerHTML =
-          '<button class="btn btn-primary" onclick="g.restart()">重新開始</button>';
+          '<button class="btn btn-primary" onclick="g.restart()">重新開始</button>' +
+          '<button class="btn btn-share" onclick="shareScore()">📤 分享分數</button>';
       }
     }
 
@@ -750,7 +768,18 @@ footer a:hover {
 
   const g = new Game();
   window.g = g;
+
+  function shareScore() {
+    const msg = `🔢 我在 2048 得了 ${g.score} 分！最佳 ${g.bestScore} 分。來挑戰我！`;
+    const url = location.href;
+    if (navigator.share) {
+      navigator.share({ title: '2048 挑戰', text: msg, url });
+    } else {
+      shareToLine(url);
+    }
+  }
 })();
 </script>
+<script src="../share.js"></script>
 </body>
 </html>

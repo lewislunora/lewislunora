@@ -3,7 +3,12 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-<title>Flappy Bird</title>
+<title>Flappy Bird — 挑戰你的朋友！</title>
+<meta name="description" content="經典 Flappy Bird，穿越水管挑戰最高分！">
+<meta property="og:title" content="🐤 Flappy Bird — 來挑戰我的分數！">
+<meta property="og:description" content="經典 Flappy Bird，穿越水管挑戰最高分！">
+<meta property="og:image" content="https://lewislunora.github.io/lewislunora/assets/og-game.png">
+<meta property="og:type" content="website">
 <style>
   *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
 
@@ -63,6 +68,15 @@
 
   .footer a:hover { color: rgba(255,255,255,0.95); }
   .footer a::before { content: "← "; }
+  .btn-share {
+    background: rgba(0,212,255,0.12);
+    border: 1px solid rgba(0,212,255,0.2);
+    color: #00d4ff;
+    font-size: .85rem;
+    padding: 10px 18px;
+    cursor: pointer; border-radius: 10px; font-weight: 600; transition: all .2s; font-family: inherit;
+  }
+  .btn-share:hover { background: rgba(0,212,255,0.2); }
 </style>
 </head>
 <body>
@@ -72,6 +86,9 @@
 </div>
 
 <div class="footer"><a href="../games/">返回遊戲大廳</a></div>
+<div id="shareWrap" style="display:none; position:fixed; bottom:60px; left:50%; transform:translateX(-50%); z-index:50;">
+  <button class="btn-share" onclick="shareScore()">📤 分享分數</button>
+</div>
 
 <script>
 (function() {
@@ -182,6 +199,7 @@
   function restart() {
     reset();
     state = 'ready';
+    document.getElementById('shareWrap').style.display = 'none';
   }
 
   function addPipe() {
@@ -269,6 +287,7 @@
       bestScore = score;
       localStorage.setItem('flappy_best', bestScore.toString());
     }
+    document.getElementById('shareWrap').style.display = 'block';
   }
 
   function drawBackground() {
@@ -536,7 +555,14 @@
       handleInput(e);
     }
   });
+  window.shareScore = function() {
+    const msg = `🐤 Flappy Bird 我得了 ${score} 分！最高 ${bestScore} 分。來挑戰我！`;
+    const url = location.href;
+    if (navigator.share) { navigator.share({ title: '🐤 Flappy Bird — 來挑戰我的分數！', text: msg, url }); }
+    else { shareToLine(url); }
+  };
 })();
 </script>
+<script src="../share.js"></script>
 </body>
 </html>
