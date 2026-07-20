@@ -4,6 +4,13 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title data-i18n="page_title">翔川 Neo｜曜科技 |Ai_bot - AI 智能客服與行銷自動化平台</title>
+<meta name="description" content="NT$890/月 起！台灣團隊打造的 AI 行銷系統。24 小時 AI 智能客服、自動內容生成、多平台分發。免費諮詢。">
+<meta property="og:title" content="翔川 Neo｜曜科技 — AI 客服 · 行銷自動化平台">
+<meta property="og:description" content="NT$890/月 起，專為台灣中小企業設計的 AI 行銷解決方案。AI 智能客服、自動化行銷、多平台發布。">
+<meta property="og:image" content="https://lewislunora.github.io/lewislunora/assets/og-image.png">
+<meta property="og:url" content="https://lewislunora.onrender.com/product/">
+<meta property="og:type" content="website">
+<meta name="twitter:card" content="summary_large_image">
 <script src="../auth-guard.js"></script>
 <link rel="stylesheet" href="../widget.css">
 <style>
@@ -244,6 +251,13 @@ nav {
 }
 .price-features li::before { content: '✓ '; color: #00d4ff; font-weight: 700; }
 .price-card .btn { width: 100%; text-align: center; justify-content: center; }
+.btn-share-plan {
+  width:100%;margin-top:.5rem;padding:.4rem;border-radius:8px;
+  background:transparent;border:1px solid rgba(255,255,255,.08);
+  color:rgba(255,255,255,.3);font-size:var(--fs-xs);cursor:pointer;
+  transition:all .2s;font-family:inherit
+}
+.btn-share-plan:hover{background:rgba(0,212,255,.08);border-color:rgba(0,212,255,.2);color:#00d4ff}
 
 .cta-section {
   text-align: center; max-width: 640px; margin: 0 auto;
@@ -476,6 +490,7 @@ footer {
         <li data-i18n="price_starter_feat4">Telegram Bot（@ailunora_bot）</li>
       </ul>
       <button class="btn btn-outline" onclick="handleFreePlan()" data-i18n="price_starter_btn">了解詳情 →</button>
+      <button class="btn-share-plan" onclick="shareToLine(location.href+'#pricing')" title="分享此方案">💬 分享</button>
     </div>
     <div class="price-card featured">
       <div class="price-badge" data-i18n="price_pro_badge">最受歡迎</div>
@@ -493,6 +508,7 @@ footer {
         <li data-i18n="price_pro_feat7">多語言支援</li>
       </ul>
       <button class="btn btn-primary" onclick="scrollToContact('專業版')" data-i18n="price_pro_btn">立即開通</button>
+      <button class="btn-share-plan" onclick="shareToLine(location.href+'#pricing')" title="分享此方案">💬 分享</button>
     </div>
     <div class="price-card">
       <div class="price-name" data-i18n="price_enterprise_name">企業版</div>
@@ -509,6 +525,7 @@ footer {
         <li data-i18n="price_enterprise_feat7">品牌 App 客製</li>
       </ul>
       <button class="btn btn-outline" onclick="scrollToContact('企業版')" data-i18n="price_enterprise_btn">聯絡我們</button>
+      <button class="btn-share-plan" onclick="shareToLine(location.href+'#pricing')" title="分享此方案">💬 分享</button>
     </div>
   </div>
 </section>
@@ -563,8 +580,11 @@ footer {
       <button type="submit" class="btn-primary" id="contactBtn" data-i18n="form_btn">📩 預約免費諮詢</button>
       <div id="contactResult" style="margin-top:0.8rem;text-align:center;font-size:var(--fs-sm);display:none"></div>
     </form>
+    <!-- Share CTA -->
+    <div id="shareCTABanner" style="margin-top:2rem"></div>
   </div>
 </section>
+<script>document.addEventListener('DOMContentLoaded',()=>{renderShareCTA('shareCTABanner','把這個方案分享給需要的朋友 🚀')})</script>
 
 <footer>
   <div class="footer-links">
@@ -1440,6 +1460,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
 <script src="https://accounts.google.com/gsi/client" async defer></script>
 <script src="../widget.js"></script>
+<script src="../share.js"></script>
 <script>
 (function(){
   var api = location.hostname.includes('github.io') ? 'https://lewislunora.onrender.com/api/analytics/track' : '/api/analytics/track';
