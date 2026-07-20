@@ -5,6 +5,15 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>翔川 Neo｜曜科技 — AI 自動化 · 超級個體解決方案</title>
+<meta name="description" content="每天省下 4 小時！專為超級個體與一人公司設計的 AI 自動化解決方案。AI 智能客服、行銷自動化、24/7 不間斷運作。">
+<meta property="og:title" content="翔川 Neo｜曜科技 — AI 自動化 · 超級個體解決方案">
+<meta property="og:description" content="每天省下 4 小時！用 AI 打造 24/7 自動化賺錢系統。一人公司的終極自動化大腦。">
+<meta property="og:image" content="https://lewislunora.github.io/lewislunora/assets/og-image.png">
+<meta property="og:url" content="https://lewislunora.onrender.com/">
+<meta property="og:type" content="website">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="翔川 Neo｜曜科技 — AI 自動化">
+<meta name="twitter:description" content="每天省下 4 小時！專為一人公司設計的 AI 自動化系統">
 <link rel="stylesheet" href="widget.css">
 <style>
 *{margin:0;padding:0;box-sizing:border-box;scroll-behavior:smooth}
@@ -371,6 +380,12 @@ footer .wrap{display:flex;flex-wrap:wrap;gap:1rem;justify-content:space-between;
   </div>
 </section>
 
+<!-- ═══ Share CTA ═══ -->
+<section class="section" style="padding:1rem 1rem 0">
+  <div class="wrap" id="shareCTABanner"></div>
+</section>
+<script>document.addEventListener('DOMContentLoaded',()=>{renderShareCTA('shareCTABanner')})</script>
+
 <!-- ═══ CTA Form ═══ -->
 <section class="section" id="contact">
   <div class="wrap">
@@ -440,6 +455,7 @@ footer .wrap{display:flex;flex-wrap:wrap;gap:1rem;justify-content:space-between;
 </div>
 
 <script src="https://accounts.google.com/gsi/client" async defer></script>
+<script src="share.js"></script>
 <script src="widget.js"></script>
 <script>
 let currentLang='zh-TW';
