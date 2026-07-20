@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>Pong 桌球 — 挑戰你的朋友！</title>
+<meta name="description" content="經典 Pong 桌球遊戲，與 AI 對戰，先得 5 分者勝！">
+<meta property="og:title" content="🏓 Pong 桌球 — 來挑戰 AI！">
+<meta property="og:description" content="經典 Pong 桌球 vs AI，先得 5 分者勝！">
+<meta property="og:image" content="https://lewislunora.github.io/lewislunora/assets/og-game.png">
+<meta property="og:type" content="website">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#0a0e27;color:#e8ecf4;min-height:100vh;display:flex;flex-direction:column;align-items:center;overflow:hidden;touch-action:none;user-select:none}
+.wrap{display:flex;flex-direction:column;align-items:center;padding:16px;max-width:560px;width:100%;margin-top:env(safe-area-inset-top)}
+.header{display:flex;justify-content:space-between;align-items:center;width:100%;padding:4px 0;margin-bottom:6px}
+h1{font-size:clamp(20px,5vw,28px);font-weight:800;background:linear-gradient(135deg,#22c55e,#00d4ff);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.scoreboard{display:flex;gap:20px;font-size:clamp(18px,4vw,24px);font-weight:700}
+.scoreboard .you{color:#00d4ff}.scoreboard .ai{color:#ef4444}
+canvas{display:block;width:100%;max-width:500px;aspect-ratio:4/3;border-radius:12px;background:rgba(255,255,255,.02);border:1px solid rgba(255,255,255,.06);touch-action:none}
+#overlay{display:none;position:absolute;inset:0;background:rgba(10,14,39,.85);backdrop-filter:blur(8px);flex-direction:column;align-items:center;justify-content:center;border-radius:12px;z-index:10;gap:12px}
+#overlay.show{display:flex}
+#overlay h2{font-size:clamp(24px,5vw,32px)}
+#overlay p{font-size:14px;color:rgba(255,255,255,.5)}
+#overlay .btns{display:flex;gap:8px;margin-top:4px}
+.btn{padding:10px 24px;border-radius:10px;border:none;font-weight:700;font-size:14px;cursor:pointer;transition:all .2s;font-family:inherit}
+.btn-primary{background:linear-gradient(135deg,#00d4ff,#7b68ee);color:#fff}
+.btn-primary:hover{transform:translateY(-2px)}
+.btn-share{padding:10px 20px;border-radius:10px;border:1px solid rgba(0,212,255,.2);background:rgba(0,212,255,.12);color:#00d4ff;font-weight:600;font-size:13px;cursor:pointer;transition:all .2s;font-family:inherit}
+.btn-share:hover{background:rgba(0,212,255,.2)}
+#gameContainer{position:relative;width:100%;max-width:500px}
+.back-link{margin-top:10px;font-size:13px;color:rgba(255,255,255,.25);text-decoration:none}
+.back-link:hover{color:rgba(255,255,255,.5)}
+.hint{font-size:12px;color:rgba(255,255,255,.15);margin-top:6px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="header">
+    <h1>🏓 Pong</h1>
+    <div class="scoreboard">
+      <span class="you" id="playerScore">0</span>
+      <span style="color:rgba(255,255,255,.15)">:</span>
+      <span class="ai" id="aiScore">0</span>
+    </div>
+  </div>
+  <div id="gameContainer">
+    <canvas id="gameCanvas" width="400" height="300"></canvas>
+    <div id="overlay">
+      <h2 id="oTitle">⏸ 暫停</h2>
+      <p id="oMsg">點擊開始</p>
+      <div class="btns">
+        <button class="btn btn-primary" id="actionBtn" onclick="startGame()">▶ 開始</button>
+        <button class="btn-share" id="shareBtn" onclick="shareScore()" style="display:none">📤 分享分數</button>
+      </div>
+    </div>
+  </div>
+  <p class="hint">滑鼠移動 / 手指滑動 控制球拍</p>
+  <a href="../games/" class="back-link">← 返回遊戲大廳</a>
+</div>
+<script>
+const canvas=document.getElementById('gameCanvas'),ctx=canvas.getContext('2d');
+const cw=400,ch=300;
+let playerY,aiY,paddleH=50,paddleW=8,ballX,ballY,ballVx,ballVy,ballSize=6;
+let playerScore=0,aiScore=0,running=false,animId;
+const WIN_SCORE=5;
+
+function init(){
+  playerY=ch/2-paddleH/2;aiY=ch/2-paddleH/2;
+  resetBall();
+  playerScore=0;aiScore=0;
+  document.getElementById('playerScore').textContent='0';
+  document.getElementById('aiScore').textContent='0';
+  document.getElementById('overlay').style.display='flex';
+  document.getElementById('overlay').classList.add('show');
+  document.getElementById('oTitle').textContent='🏓 Pong';
+  document.getElementById('oMsg').textContent='先得 5 分者勝！';
+  document.getElementById('actionBtn').textContent='▶ 開始';
+  document.getElementById('shareBtn').style.display='none';
+  running=false;
+  draw();
+}
+function resetBall(){
+  ballX=cw/2;ballY=ch/2;
+  const angle=(Math.random()-.5)*.8;
+  const speed=3;
+  ballVx=(Math.random()>.5?1:-1)*speed*Math.cos(angle);
+  ballVy=speed*Math.sin(angle);
+}
+function startGame(){
+  document.getElementById('overlay').classList.remove('show');
+  document.getElementById('overlay').style.display='none';
+  running=true;resetBall();
+  if(animId)cancelAnimationFrame(animId);
+  loop();
+}
+function loop(){
+  if(!running)return;
+  update();
+  draw();
+  animId=requestAnimationFrame(loop);
+}
+function update(){
+  ballX+=ballVx;ballY+=ballVy;
+  if(ballY<=0||ballY>=ch){ballVy*=-1;ballY=Math.max(0,Math.min(ch,ballY))}
+  // Player paddle
+  if(ballVx<0&&ballX-ballSize<=paddleW&&ballY>=playerY&&ballY<=playerY+paddleH){
+    ballVx*=-1.05;ballX=paddleW+ballSize;
+    const hit=(ballY-playerY)/paddleH-.5;ballVy+=hit*.5;
+  }
+  // AI paddle
+  const aiSpeed=2.5,aiCenter=aiY+paddleH/2;
+  if(ballY>aiCenter+8)aiY=Math.min(ch-paddleH,aiY+aiSpeed);
+  else if(ballY<aiCenter-8)aiY=Math.max(0,aiY-aiSpeed);
+  if(ballVx>0&&ballX+ballSize>=cw-paddleW&&ballY>=aiY&&ballY<=aiY+paddleH){
+    ballVx*=-1.05;ballX=cw-paddleW-ballSize;
+    const hit=(ballY-aiY)/paddleH-.5;ballVy+=hit*.5;
+  }
+  // Score
+  if(ballX<0){aiScore++;document.getElementById('aiScore').textContent=aiScore;checkWin();resetBall()}
+  if(ballX>cw){playerScore++;document.getElementById('playerScore').textContent=playerScore;checkWin();resetBall()}
+  const maxSpeed=7;
+  if(Math.abs(ballVx)>maxSpeed){ballVx=Math.sign(ballVx)*maxSpeed}
+  if(Math.abs(ballVy)>maxSpeed){ballVy=Math.sign(ballVy)*maxSpeed}
+}
+function checkWin(){
+  if(playerScore>=WIN_SCORE||aiScore>=WIN_SCORE){
+    running=false;
+    document.getElementById('overlay').style.display='flex';
+    document.getElementById('overlay').classList.add('show');
+    if(playerScore>=WIN_SCORE){
+      document.getElementById('oTitle').textContent='🎉 你贏了！';
+      document.getElementById('oMsg').textContent=`${playerScore} : ${aiScore} 擊敗 AI！`;
+    }else{
+      document.getElementById('oTitle').textContent='🤖 AI 贏了';
+      document.getElementById('oMsg').textContent=`${aiScore} : ${playerScore} 再試一次！`;
+    }
+    document.getElementById('actionBtn').textContent='🔄 再玩一次';
+    document.getElementById('shareBtn').style.display='inline-block';
+  }
+}
+function draw(){
+  ctx.fillStyle='rgba(255,255,255,.02)';ctx.fillRect(0,0,cw,ch);
+  // Center line
+  ctx.strokeStyle='rgba(255,255,255,.06)';ctx.setLineDash([6,6]);ctx.beginPath();ctx.moveTo(cw/2,0);ctx.lineTo(cw/2,ch);ctx.stroke();ctx.setLineDash([]);
+  // Paddles
+  ctx.fillStyle='#00d4ff';ctx.fillRect(0,playerY,paddleW,paddleH);
+  ctx.fillStyle='#ef4444';ctx.fillRect(cw-paddleW,aiY,paddleW,paddleH);
+  // Ball
+  ctx.fillStyle='#fff';ctx.beginPath();ctx.arc(ballX,ballY,ballSize,0,Math.PI*2);ctx.fill();
+}
+window.shareScore=function(){
+  const msg=playerScore>=WIN_SCORE?`🏓 Pong 我以 ${playerScore}:${aiScore} 擊敗 AI！來挑戰我！`:`🏓 Pong 我 ${playerScore}:${aiScore} 輸給 AI，你來試試！`;
+  if(navigator.share)navigator.share({title:'Pong 挑戰',text:msg,url:location.href});
+  else shareToLine(location.href);
+}
+canvas.addEventListener('mousemove',e=>{const rect=canvas.getBoundingClientRect();const y=(e.clientY-rect.top)/rect.height*ch;if(running)playerY=Math.max(0,Math.min(ch-paddleH,y-paddleH/2))});
+canvas.addEventListener('touchmove',e=>{e.preventDefault();const rect=canvas.getBoundingClientRect();const y=(e.touches[0].clientY-rect.top)/rect.height*ch;if(running)playerY=Math.max(0,Math.min(ch-paddleH,y-paddleH/2))},{passive:false});
+init();
+</script>
+<script src="../share.js"></script>
+</body>
+</html>

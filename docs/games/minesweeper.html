@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>踩地雷 — 挑戰你的朋友！</title>
+<meta name="description" content="經典踩地雷 Minesweeper！找出所有地雷，挑戰最快完成時間！">
+<meta property="og:title" content="💣 踩地雷 Minesweeper — 來挑戰我的時間！">
+<meta property="og:description" content="經典踩地雷，找出所有地雷不爆炸，挑戰最快完成時間！">
+<meta property="og:image" content="https://lewislunora.github.io/lewislunora/assets/og-game.png">
+<meta property="og:type" content="website">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#0a0e27;color:#e8ecf4;min-height:100vh;display:flex;flex-direction:column;align-items:center;overflow-x:hidden;touch-action:manipulation;user-select:none}
+.wrap{display:flex;flex-direction:column;align-items:center;padding:16px;max-width:500px;width:100%;margin-top:env(safe-area-inset-top)}
+.header{display:flex;justify-content:space-between;align-items:center;width:100%;padding:8px 4px;margin-bottom:8px}
+h1{font-size:clamp(20px,5vw,28px);font-weight:800;background:linear-gradient(135deg,#f59e0b,#ef4444);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.stats{display:flex;gap:12px;font-size:13px}
+.stats span{background:rgba(255,255,255,.05);padding:4px 12px;border-radius:8px;color:rgba(255,255,255,.4)}
+.stats strong{color:#fff}
+.diff-bar{display:flex;gap:6px;margin-bottom:8px}
+.diff-bar button{padding:5px 14px;border-radius:8px;border:1px solid rgba(255,255,255,.1);background:rgba(255,255,255,.05);color:rgba(255,255,255,.5);font-size:12px;cursor:pointer;transition:all .2s;font-family:inherit}
+.diff-bar button.active{border-color:#00d4ff;background:rgba(0,212,255,.15);color:#00d4ff;font-weight:600}
+.diff-bar button:hover{border-color:rgba(0,212,255,.3)}
+#grid{display:inline-grid;gap:2px;background:rgba(255,255,255,.06);border-radius:8px;padding:4px;touch-action:manipulation}
+.cell{width:clamp(28px,7vw,36px);height:clamp(28px,7vw,36px);border-radius:4px;background:rgba(255,255,255,.08);display:flex;align-items:center;justify-content:center;font-size:clamp(13px,3vw,16px);font-weight:700;cursor:pointer;transition:all .1s;touch-action:manipulation}
+.cell:hover{background:rgba(255,255,255,.14)}
+.cell.revealed{background:rgba(255,255,255,.03);cursor:default}
+.cell.flag{background:rgba(239,68,68,.15)}
+.cell.mine{background:rgba(239,68,68,.25)}
+.cell.n1{color:#00d4ff}.cell.n2{color:#22c55e}.cell.n3{color:#ef4444}.cell.n4{color:#a855f7}.cell.n5{color:#f59e0b}.cell.n6{color:#06b6d4}.cell.n7{color:#ec4899}.cell.n8{color:#64748b}
+#overlay{display:none;position:fixed;inset:0;background:rgba(10,14,39,.85);backdrop-filter:blur(8px);flex-direction:column;align-items:center;justify-content:center;z-index:10;gap:12px}
+#overlay.show{display:flex}
+#overlay h2{font-size:clamp(22px,5vw,30px)}
+#overlay p{font-size:14px;color:rgba(255,255,255,.5)}
+#overlay .btns{display:flex;gap:8px;margin-top:4px}
+.btn{padding:10px 24px;border-radius:10px;border:none;font-weight:700;font-size:14px;cursor:pointer;transition:all .2s;font-family:inherit}
+.btn-primary{background:linear-gradient(135deg,#00d4ff,#7b68ee);color:#fff}
+.btn-primary:hover{transform:translateY(-2px)}
+.btn-share{padding:10px 20px;border-radius:10px;border:1px solid rgba(0,212,255,.2);background:rgba(0,212,255,.12);color:#00d4ff;font-weight:600;font-size:13px;cursor:pointer;transition:all .2s;font-family:inherit}
+.btn-share:hover{background:rgba(0,212,255,.2)}
+.back-link{margin-top:12px;font-size:13px;color:rgba(255,255,255,.25);text-decoration:none}
+.back-link:hover{color:rgba(255,255,255,.5)}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="header">
+    <h1>💣 踩地雷</h1>
+    <div class="stats">
+      <span>⏱ <strong id="timer">0</strong>s</span>
+      <span>🚩 <strong id="flags">0</strong></span>
+    </div>
+  </div>
+  <div class="diff-bar">
+    <button data-d="0" onclick="setDiff(0)">初級 9×9</button>
+    <button data-d="1" class="active" onclick="setDiff(1)">中級 12×12</button>
+    <button data-d="2" onclick="setDiff(2)">高級 16×16</button>
+  </div>
+  <div id="grid"></div>
+  <a href="../games/" class="back-link">← 返回遊戲大廳</a>
+</div>
+<div id="overlay">
+  <h2 id="oTitle">💥 爆炸！</h2>
+  <p id="oMsg">踩到地雷了</p>
+  <div class="btns">
+    <button class="btn btn-primary" onclick="startGame()">🔄 再玩一次</button>
+    <button class="btn-share" onclick="shareScore()">📤 分享成績</button>
+  </div>
+</div>
+<script>
+const DIFFS=[{rows:9,cols:9,mines:10},{rows:12,cols:12,mines:30},{rows:16,cols:16,mines:60}];
+let diff=1,grid=[],revealed=[],flagged=[],mines=[],rows,cols,mineCount,gameOver,won,time=0,timerInt;
+function setDiff(d){diff=d;document.querySelectorAll('.diff-bar button').forEach((b,i)=>b.classList.toggle('active',i===d));startGame()}
+function startGame(){
+  const d=DIFFS[diff];rows=d.rows;cols=d.cols;mineCount=d.mines;
+  gameOver=false;won=false;time=0;
+  document.getElementById('timer').textContent='0';
+  document.getElementById('flags').textContent='0';
+  document.getElementById('overlay').classList.remove('show');
+  document.getElementById('overlay').style.display='none';
+  clearInterval(timerInt);
+  grid=Array.from({length:rows},()=>Array(cols).fill(0));
+  revealed=Array.from({length:rows},()=>Array(cols).fill(false));
+  flagged=Array.from({length:rows},()=>Array(cols).fill(false));
+  mines=Array.from({length:rows},()=>Array(cols).fill(false));
+  let placed=0;
+  while(placed<mineCount){const r=Math.floor(Math.random()*rows),c=Math.floor(Math.random()*cols);if(!mines[r][c]){mines[r][c]=true;placed++}}
+  for(let r=0;r<rows;r++)for(let c=0;c<cols;c++){let cnt=0;for(let dr=-1;dr<=1;dr++)for(let dc=-1;dc<=1;dc++){const nr=r+dr,nc=c+dc;if(nr>=0&&nr<rows&&nc>=0&&nc<cols&&mines[nr][nc])cnt++}grid[r][c]=cnt}
+  render();
+}
+function render(){
+  const g=document.getElementById('grid');
+  g.style.gridTemplateColumns=`repeat(${cols},1fr)`;
+  g.innerHTML='';
+  for(let r=0;r<rows;r++)for(let c=0;c<cols;c++){
+    const div=document.createElement('div');
+    div.className='cell';
+    div.dataset.r=r;div.dataset.c=c;
+    if(revealed[r][c]){
+      div.classList.add('revealed');
+      if(mines[r][c]){div.textContent='💣';div.classList.add('mine')}
+      else if(grid[r][c]>0){div.textContent=grid[r][c];div.classList.add('n'+grid[r][c])}
+    }else if(flagged[r][c]){div.textContent='🚩';div.classList.add('flag')}
+    div.addEventListener('click',()=>handleClick(+div.dataset.r,+div.dataset.c));
+    div.addEventListener('contextmenu',e=>{e.preventDefault();handleFlag(+div.dataset.r,+div.dataset.c)});
+    g.appendChild(div);
+  }
+}
+function handleClick(r,c){
+  if(gameOver||revealed[r][c]||flagged[r][c])return;
+  if(!timerInt){timerInt=setInterval(()=>{time++;document.getElementById('timer').textContent=time},1000)}
+  if(mines[r][c]){gameOver=true;clearInterval(timerInt);revealAll();render();document.getElementById('overlay').style.display='flex';document.getElementById('overlay').classList.add('show');document.getElementById('oTitle').textContent='💥 爆炸！';document.getElementById('oMsg').textContent=`踩到地雷了 · 用時 ${time} 秒`;return}
+  reveal(r,c);
+  checkWin();
+}
+function reveal(r,c){
+  if(r<0||r>=rows||c<0||c>=cols||revealed[r][c]||flagged[r][c])return;
+  revealed[r][c]=true;
+  if(grid[r][c]===0)for(let dr=-1;dr<=1;dr++)for(let dc=-1;dc<=1;dc++)reveal(r+dr,c+dc);
+  render();
+}
+function checkWin(){
+  let total=0;
+  for(let r=0;r<rows;r++)for(let c=0;c<cols;c++)if(revealed[r][c])total++;
+  if(total+mineCount===rows*cols){won=true;clearInterval(timerInt);gameOver=true;document.getElementById('overlay').style.display='flex';document.getElementById('overlay').classList.add('show');document.getElementById('oTitle').textContent='🎉 過關！';document.getElementById('oMsg').textContent=`用時 ${time} 秒 · ${mineCount} 顆地雷全數排除`;render();}
+}
+function revealAll(){for(let r=0;r<rows;r++)for(let c=0;c<cols;c++)revealed[r][c]=true;render()}
+function handleFlag(r,c){if(gameOver||revealed[r][c])return;flagged[r][c]=!flagged[r][c];document.getElementById('flags').textContent=flagged.flat().filter(Boolean).length;render()}
+window.shareScore=function(){
+  const d=DIFFS[diff];
+  const diffName=['初級','中級','高級'][diff];
+  const msg=won?`💣 踩地雷 ${diffName} ${d.rows}×${d.cols} 過關！用時 ${time} 秒，排除 ${mineCount} 顆地雷。來挑戰我！`:`💣 踩地雷 ${diffName} 爆炸了😅 用時 ${time} 秒。你來試試！`;
+  if(navigator.share)navigator.share({title:'踩地雷挑戰',text:msg,url:location.href});
+  else shareToLine(location.href);
+}
+startGame();
+</script>
+<script src="../share.js"></script>
+</body>
+</html>

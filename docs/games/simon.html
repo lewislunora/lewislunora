@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>Simon 記憶挑戰 — 挑戰你的朋友！</title>
+<meta name="description" content="Simon Says 記憶顏色序列遊戲！考驗你的短期記憶力，看看能過幾關！">
+<meta property="og:title" content="🎵 Simon 記憶挑戰 — 來挑戰我的紀錄！">
+<meta property="og:description" content="記憶顏色序列，考驗你的短期記憶力！">
+<meta property="og:image" content="https://lewislunora.github.io/lewislunora/assets/og-game.png">
+<meta property="og:type" content="website">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#0a0e27;color:#e8ecf4;min-height:100vh;display:flex;flex-direction:column;align-items:center;overflow:hidden;touch-action:manipulation;user-select:none}
+.wrap{display:flex;flex-direction:column;align-items:center;padding:16px;max-width:420px;width:100%;margin-top:env(safe-area-inset-top)}
+.header{display:flex;justify-content:space-between;align-items:center;width:100%;padding:4px 0;margin-bottom:12px}
+h1{font-size:clamp(20px,5vw,28px);font-weight:800;background:linear-gradient(135deg,#a855f7,#ec4899);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.stats{display:flex;gap:12px;font-size:13px}
+.stats span{background:rgba(255,255,255,.05);padding:4px 12px;border-radius:8px;color:rgba(255,255,255,.4)}
+.stats strong{color:#fff}
+.game-circle{position:relative;width:clamp(260px,70vw,340px);height:clamp(260px,70vw,340px);border-radius:50%;background:rgba(255,255,255,.03);border:2px solid rgba(255,255,255,.06);overflow:hidden}
+.quad{position:absolute;width:50%;height:50%;cursor:pointer;transition:filter .1s;touch-action:manipulation}
+.quad:active{filter:brightness(1.6)!important}
+.q0{top:0;left:0;background:#ef4444;border-radius:100%0 0 0}
+.q1{top:0;left:50%;background:#22c55e;border-radius:0 100%0 0}
+.q2{top:50%;left:0;background:#f59e0b;border-radius:0 0 0 100%}
+.q3{top:50%;left:50%;background:#3b82f6;border-radius:0 0 100% 0}
+.quad.lit{filter:brightness(1.8)!important}
+.center-circle{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:80px;height:80px;border-radius:50%;background:#0a0e27;z-index:2;display:flex;flex-direction:column;align-items:center;justify-content:center;border:2px solid rgba(255,255,255,.06)}
+.center-circle .level{font-size:clamp(20px,5vw,28px);font-weight:800}
+.center-circle .lbl{font-size:11px;color:rgba(255,255,255,.3)}
+.status{font-size:14px;color:rgba(255,255,255,.3);margin-top:12px;height:20px}
+.start-btn{margin-top:12px;padding:10px 28px;border-radius:10px;border:none;background:linear-gradient(135deg,#a855f7,#ec4899);color:#fff;font-weight:700;font-size:15px;cursor:pointer;transition:all .2s;font-family:inherit}
+.start-btn:hover{transform:translateY(-2px)}
+#overlay{display:none;position:fixed;inset:0;background:rgba(10,14,39,.85);backdrop-filter:blur(8px);flex-direction:column;align-items:center;justify-content:center;z-index:10;gap:12px}
+#overlay.show{display:flex}
+#overlay h2{font-size:clamp(22px,5vw,30px)}
+#overlay p{font-size:14px;color:rgba(255,255,255,.5)}
+#overlay .btns{display:flex;gap:8px;margin-top:4px}
+.btn{padding:10px 24px;border-radius:10px;border:none;font-weight:700;font-size:14px;cursor:pointer;transition:all .2s;font-family:inherit}
+.btn-primary{background:linear-gradient(135deg,#00d4ff,#7b68ee);color:#fff}
+.btn-share{padding:10px 20px;border-radius:10px;border:1px solid rgba(0,212,255,.2);background:rgba(0,212,255,.12);color:#00d4ff;font-weight:600;font-size:13px;cursor:pointer;transition:all .2s;font-family:inherit}
+.btn-share:hover{background:rgba(0,212,255,.2)}
+.back-link{margin-top:12px;font-size:13px;color:rgba(255,255,255,.25);text-decoration:none}
+.back-link:hover{color:rgba(255,255,255,.5)}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="header">
+    <h1>🎵 Simon</h1>
+    <div class="stats">
+      <span>🏆 最高 <strong id="highScore">0</strong></span>
+    </div>
+  </div>
+  <div class="game-circle" id="gameCircle">
+    <div class="quad q0" data-i="0"></div>
+    <div class="quad q1" data-i="1"></div>
+    <div class="quad q2" data-i="2"></div>
+    <div class="quad q3" data-i="3"></div>
+    <div class="center-circle">
+      <div class="level" id="levelDisplay">-</div>
+      <div class="lbl">關卡</div>
+    </div>
+  </div>
+  <div class="status" id="status">按下開始</div>
+  <button class="start-btn" id="startBtn" onclick="startGame()">▶ 開始遊戲</button>
+  <a href="../games/" class="back-link">← 返回遊戲大廳</a>
+</div>
+<div id="overlay">
+  <h2 id="oTitle">🎵 遊戲結束</h2>
+  <p id="oMsg">關卡 0</p>
+  <div class="btns">
+    <button class="btn btn-primary" onclick="startGame()">🔄 再玩一次</button>
+    <button class="btn-share" onclick="shareScore()">📤 分享成績</button>
+  </div>
+</div>
+<script>
+const COLORS=['#ef4444','#22c55e','#f59e0b','#3b82f6'];
+let sequence=[],playerStep=0,playing=false,acceptInput=false,level=0,highScore=0;
+const quads=document.querySelectorAll('.quad');
+const levelDisplay=document.getElementById('levelDisplay');
+const statusEl=document.getElementById('status');
+const highScoreEl=document.getElementById('highScore');
+const overlay=document.getElementById('overlay');
+const oTitle=document.getElementById('oTitle');
+const oMsg=document.getElementById('oMsg');
+
+highScore=parseInt(localStorage.getItem('simonHigh')||'0');
+highScoreEl.textContent=highScore;
+
+function startGame(){
+  sequence=[];playerStep=0;level=0;playing=true;acceptInput=false;
+  overlay.classList.remove('show');overlay.style.display='none';
+  document.getElementById('startBtn').style.display='none';
+  statusEl.textContent='觀看序列⋯';
+  nextRound();
+}
+function nextRound(){
+  level++;playerStep=0;acceptInput=false;
+  levelDisplay.textContent=level;
+  statusEl.textContent='觀看序列⋯';
+  sequence.push(Math.floor(Math.random()*4));
+  playSequence();
+}
+function playSequence(){
+  let i=0;acceptInput=false;
+  const interval=setInterval(()=>{
+    if(i>=sequence.length){clearInterval(interval);statusEl.textContent='換你了！';acceptInput=true;return}
+    flashQuad(sequence[i]);
+    i++;
+  },600);
+}
+function flashQuad(i){
+  quads[i].classList.add('lit');
+  setTimeout(()=>quads[i].classList.remove('lit'),300);
+}
+quads.forEach((q,idx)=>q.addEventListener('click',()=>{
+  if(!playing||!acceptInput)return;
+  flashQuad(idx);
+  if(sequence[playerStep]!==idx){gameOver();return}
+  playerStep++;
+  if(playerStep>=sequence.length){
+    statusEl.textContent='✅ 正確！';
+    acceptInput=false;
+    if(level>highScore){highScore=level;localStorage.setItem('simonHigh',highScore.toString());highScoreEl.textContent=highScore}
+    setTimeout(nextRound,800);
+  }
+}));
+function gameOver(){
+  playing=false;acceptInput=false;
+  overlay.style.display='flex';overlay.classList.add('show');
+  oTitle.textContent='🎵 遊戲結束';
+  oMsg.textContent=`關卡 ${level} · 最高紀錄 ${highScore}`;
+  document.getElementById('startBtn').style.display='inline-block';
+  document.getElementById('startBtn').textContent='🔄 再玩一次';
+  statusEl.textContent='點擊再玩一次';
+}
+window.shareScore=function(){
+  const msg=`🎵 Simon 記憶挑戰 — 我過了 ${level} 關！你能超過我嗎？`;
+  if(navigator.share)navigator.share({title:'Simon 記憶挑戰',text:msg,url:location.href});
+  else shareToLine(location.href);
+}
+</script>
+<script src="../share.js"></script>
+</body>
+</html>

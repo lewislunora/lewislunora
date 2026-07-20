@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>Tetris — 挑戰你的朋友！</title>
+<meta name="description" content="經典俄羅斯方塊 Tetris！旋轉排列方塊，消除滿行挑戰最高分！">
+<meta property="og:title" content="🧊 Tetris 俄羅斯方塊 — 來挑戰我的分數！">
+<meta property="og:description" content="經典俄羅斯方塊，消除滿行挑戰最高分！">
+<meta property="og:image" content="https://lewislunora.github.io/lewislunora/assets/og-game.png">
+<meta property="og:type" content="website">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#0a0e27;color:#e8ecf4;min-height:100vh;display:flex;flex-direction:column;align-items:center;overflow:hidden;touch-action:none;user-select:none}
+.wrap{display:flex;flex-direction:column;align-items:center;padding:16px;max-width:500px;width:100%;margin-top:env(safe-area-inset-top)}
+.header{display:flex;justify-content:space-between;align-items:center;width:100%;padding:8px 4px;margin-bottom:8px}
+h1{font-size:clamp(20px,5vw,28px);font-weight:800;background:linear-gradient(135deg,#00d4ff,#7b68ee);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.score-box{display:flex;gap:16px;font-size:14px;background:rgba(255,255,255,.05);padding:6px 14px;border-radius:10px}
+.score-box span{color:rgba(255,255,255,.4)}
+.score-box strong{color:#fff;min-width:40px;display:inline-block;text-align:right}
+canvas{display:block;border-radius:12px;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.06);touch-action:none}
+#gameCanvas{width:100%;max-width:300px;aspect-ratio:1/2}
+#nextCanvas{width:80px;height:80px;margin-left:auto;background:rgba(255,255,255,.03);border-radius:8px;border:1px solid rgba(255,255,255,.06)}
+.game-area{display:flex;gap:12px;align-items:flex-start;width:100%;max-width:400px}
+.sidebar{display:flex;flex-direction:column;gap:8px;padding-top:4px}
+.sidebar .label{font-size:11px;color:rgba(255,255,255,.3);text-align:center}
+.controls{padding:12px;display:flex;flex-wrap:wrap;justify-content:center;gap:6px;margin-top:8px}
+.controls button{width:56px;height:48px;border-radius:10px;border:1px solid rgba(255,255,255,.1);background:rgba(255,255,255,.05);color:#fff;font-size:20px;cursor:pointer;transition:all .15s;touch-action:none}
+.controls button:active{background:rgba(0,212,255,.2);transform:scale(.92)}
+#overlay{display:none;position:absolute;inset:0;background:rgba(10,14,39,.85);backdrop-filter:blur(8px);flex-direction:column;align-items:center;justify-content:center;border-radius:12px;z-index:10;gap:12px}
+#overlay.show{display:flex}
+#overlay h2{font-size:clamp(22px,5vw,30px)}
+#overlay p{font-size:15px;color:rgba(255,255,255,.5)}
+#overlay .btns{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin-top:4px}
+.btn-restart{padding:10px 24px;border-radius:10px;border:none;background:linear-gradient(135deg,#00d4ff,#7b68ee);color:#fff;font-weight:700;font-size:15px;cursor:pointer;transition:all .2s;font-family:inherit}
+.btn-restart:hover{transform:translateY(-2px)}
+.btn-share{padding:10px 20px;border-radius:10px;border:1px solid rgba(0,212,255,.2);background:rgba(0,212,255,.12);color:#00d4ff;font-weight:600;font-size:14px;cursor:pointer;transition:all .2s;font-family:inherit}
+.btn-share:hover{background:rgba(0,212,255,.2)}
+.back-link{margin-top:12px;font-size:13px;color:rgba(255,255,255,.25);text-decoration:none}
+.back-link:hover{color:rgba(255,255,255,.5)}
+#gameContainer{position:relative;width:100%;max-width:400px}
+@media(max-width:420px){.controls button{width:48px;height:42px;font-size:16px}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="header">
+    <h1>🧊 Tetris</h1>
+    <div class="score-box">
+      <span>分數 <strong id="score">0</strong></span>
+      <span>行數 <strong id="lines">0</strong></span>
+    </div>
+  </div>
+  <div id="gameContainer">
+    <div class="game-area">
+      <canvas id="gameCanvas" width="200" height="400"></canvas>
+      <div class="sidebar">
+        <div class="label">NEXT</div>
+        <canvas id="nextCanvas" width="80" height="80"></canvas>
+      </div>
+    </div>
+    <div id="overlay">
+      <h2 id="overlayTitle">遊戲結束</h2>
+      <p id="overlayScore">分數：0</p>
+      <div class="btns">
+        <button class="btn-restart" onclick="restart()">🔄 重新開始</button>
+        <button class="btn-share" onclick="shareScore()">📤 分享分數</button>
+      </div>
+    </div>
+  </div>
+  <div class="controls">
+    <button onclick="move(-1)">◀</button>
+    <button onclick="rotatePiece()">🔄</button>
+    <button onclick="move(1)">▶</button>
+    <button onclick="drop()">⬇</button>
+  </div>
+  <a href="../games/" class="back-link">← 返回遊戲大廳</a>
+</div>
+<script>
+const COLS=10,ROWS=20,BLOCK=20;
+const canvas=document.getElementById('gameCanvas'),ctx=canvas.getContext('2d');
+const nextCanvas=document.getElementById('nextCanvas'),nctx=nextCanvas.getContext('2d');
+const scoreEl=document.getElementById('score'),linesEl=document.getElementById('lines');
+const overlay=document.getElementById('overlay'),overlayTitle=document.getElementById('overlayTitle'),overlayScore=document.getElementById('overlayScore');
+
+const SHAPES=[[[1,1,1,1]],[[1,1],[1,1]],[[1,0],[1,1],[0,1]],[[0,1],[1,1],[1,0]],[[1,0],[1,1],[1,0]],[[1,1,0],[0,1,1]],[[0,1,1],[1,1,0]]];
+const COLORS=['#00d4ff','#f59e0b','#ef4444','#22c55e','#a855f7','#ec4899','#f97316'];
+let board,score,lines,totalLines,gameOver,gameInterval;
+let piece={shape:[],x:0,y:0,color:''},nextShape,nextColor;
+
+function init(){
+  board=Array.from({length:ROWS},()=>Array(COLS).fill(0));
+  score=0;lines=0;totalLines=0;gameOver=false;
+  scoreEl.textContent='0';linesEl.textContent='0';
+  overlay.classList.remove('show');overlay.style.display='none';
+  generateNext();spawnPiece();
+  if(gameInterval)clearInterval(gameInterval);
+  gameInterval=setInterval(()=>{if(!gameOver)drop()},500);
+  draw();
+}
+function randomPiece(){const i=Math.floor(Math.random()*SHAPES.length);return{shape:SHAPES[i].map(r=>[...r]),color:COLORS[i]}}
+function generateNext(){const p=randomPiece();nextShape=p.shape;nextColor=p.color}
+function spawnPiece(){
+  if(!nextShape){generateNext()}
+  piece={shape:nextShape.map(r=>[...r]),x:Math.floor((COLS-nextShape[0].length)/2),y:0,color:nextColor};
+  generateNext();
+  if(collision(piece.shape,piece.x,piece.y)){gameOver=true;showOverlay();}
+  draw();
+}
+function collision(shape,px,py){
+  for(let r=0;r<shape.length;r++)for(let c=0;c<shape[r].length;c++)
+    if(shape[r][c]&&(px+c<0||px+c>=COLS||py+r>=ROWS||(py+r>=0&&board[py+r][px+c])))return true;
+  return false;
+}
+function move(dx){
+  if(gameOver)return;
+  if(!collision(piece.shape,piece.x+dx,piece.y)){piece.x+=dx;draw()}
+}
+function rotatePiece(){
+  if(gameOver)return;
+  const rotated=piece.shape[0].map((_,i)=>piece.shape.map(r=>r[i]).reverse());
+  if(!collision(rotated,piece.x,piece.y))piece.shape=rotated;
+  draw();
+}
+function drop(){
+  if(gameOver)return;
+  if(!collision(piece.shape,piece.x,piece.y+1)){piece.y++;draw();return}
+  lockPiece();
+}
+function lockPiece(){
+  for(let r=0;r<piece.shape.length;r++)for(let c=0;c<piece.shape[r].length;c++)
+    if(piece.shape[r][c]&&piece.y+r>=0)board[piece.y+r][piece.x+c]=piece.color;
+  clearLines();spawnPiece();draw();
+}
+function clearLines(){
+  let cleared=0;
+  for(let r=ROWS-1;r>=0;r--){
+    if(board[r].every(c=>c!==0)){
+      board.splice(r,1);board.unshift(Array(COLS).fill(0));cleared++;r++;
+    }
+  }
+  if(cleared){
+    const pts=[0,100,300,500,800];score+=pts[Math.min(cleared,4)];totalLines+=cleared;
+    scoreEl.textContent=score;linesEl.textContent=totalLines;
+  }
+}
+function showOverlay(){
+  overlay.style.display='flex';overlay.classList.add('show');
+  overlayTitle.textContent='遊戲結束';
+  overlayScore.textContent=`最終分數：${score} · 消除 ${totalLines} 行`;
+}
+window.shareScore=function(){
+  const msg=`🧊 我在 Tetris 得了 ${score} 分！消除 ${totalLines} 行。來挑戰我！`;
+  if(navigator.share)navigator.share({title:'Tetris 挑戰',text:msg,url:location.href});
+  else shareToLine(location.href);
+}
+function restart(){init()}
+function draw(){
+  ctx.fillStyle='rgba(255,255,255,.03)';ctx.fillRect(0,0,200,400);
+  for(let r=0;r<ROWS;r++)for(let c=0;c<COLS;c++){
+    if(board[r][c]){ctx.fillStyle=board[r][c];ctx.fillRect(c*BLOCK,r*BLOCK,BLOCK-1,BLOCK-1);}
+  }
+  for(let r=0;r<piece.shape.length;r++)for(let c=0;c<piece.shape[r].length;c++){
+    if(piece.shape[r][c]){ctx.fillStyle=piece.color;ctx.fillRect((piece.x+c)*BLOCK,(piece.y+r)*BLOCK,BLOCK-1,BLOCK-1);}
+  }
+  nctx.fillStyle='rgba(255,255,255,.03)';nctx.fillRect(0,0,80,80);
+  if(nextShape)for(let r=0;r<nextShape.length;r++)for(let c=0;c<nextShape[r].length;c++)
+    if(nextShape[r][c]){nctx.fillStyle=nextColor;nctx.fillRect(c*20+20,r*20+20,18,18);}
+}
+document.addEventListener('keydown',e=>{
+  if(e.key==='ArrowLeft')move(-1);
+  else if(e.key==='ArrowRight')move(1);
+  else if(e.key==='ArrowDown')drop();
+  else if(e.key==='ArrowUp'){rotatePiece();e.preventDefault()}
+  else if(e.key===' '){e.preventDefault();while(!gameOver&&!collision(piece.shape,piece.x,piece.y+1))piece.y++;lockPiece();draw()}
+});
+let tx=0;canvas.addEventListener('touchstart',e=>{tx=e.touches[0].clientX;},{passive:true});
+canvas.addEventListener('touchend',e=>{
+  const dx=e.changedTouches[0].clientX-tx;
+  if(Math.abs(dx)>30)move(dx>0?1:-1);
+  else rotatePiece();
+},{passive:true});
+init();
+</script>
+<script src="../share.js"></script>
+</body>
+</html>

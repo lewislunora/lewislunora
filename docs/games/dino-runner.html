@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>Dino 跑酷 — 挑戰你的朋友！</title>
+<meta name="description" content="Dino 恐龍跑酷！跳躍閃避障礙物，挑戰最遠距離！">
+<meta property="og:title" content="🦕 Dino 跑酷 — 來挑戰我的距離！">
+<meta property="og:description" content="經典恐龍跑酷遊戲，跳躍閃避障礙物，挑戰最高分！">
+<meta property="og:image" content="https://lewislunora.github.io/lewislunora/assets/og-game.png">
+<meta property="og:type" content="website">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#0a0e27;color:#e8ecf4;min-height:100vh;display:flex;flex-direction:column;align-items:center;overflow:hidden;touch-action:manipulation;user-select:none}
+.wrap{display:flex;flex-direction:column;align-items:center;padding:12px;max-width:500px;width:100%;margin-top:env(safe-area-inset-top)}
+.header{display:flex;justify-content:space-between;align-items:center;width:100%;padding:4px 0;margin-bottom:4px}
+h1{font-size:clamp(18px,4vw,24px);font-weight:800;background:linear-gradient(135deg,#22c55e,#f59e0b);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.stats{display:flex;gap:10px;font-size:13px}
+.stats span{background:rgba(255,255,255,.05);padding:3px 10px;border-radius:8px;color:rgba(255,255,255,.4)}
+.stats strong{color:#fff}
+canvas{display:block;width:100%;max-width:480px;aspect-ratio:8/3;border-radius:12px;background:rgba(255,255,255,.02);border:1px solid rgba(255,255,255,.06);touch-action:none;cursor:pointer}
+#overlay{display:none;position:absolute;inset:0;background:rgba(10,14,39,.85);backdrop-filter:blur(8px);flex-direction:column;align-items:center;justify-content:center;border-radius:12px;z-index:10;gap:8px}
+#overlay.show{display:flex}
+#overlay h2{font-size:clamp(20px,4vw,26px)}
+#overlay p{font-size:13px;color:rgba(255,255,255,.5)}
+#overlay .btns{display:flex;gap:6px;margin-top:2px}
+.btn{padding:8px 20px;border-radius:8px;border:none;font-weight:700;font-size:13px;cursor:pointer;transition:all .2s;font-family:inherit}
+.btn-primary{background:linear-gradient(135deg,#00d4ff,#7b68ee);color:#fff}
+.btn-share{padding:8px 16px;border-radius:8px;border:1px solid rgba(0,212,255,.2);background:rgba(0,212,255,.12);color:#00d4ff;font-weight:600;font-size:12px;cursor:pointer;transition:all .2s;font-family:inherit}
+.btn-share:hover{background:rgba(0,212,255,.2)}
+#gameContainer{position:relative;width:100%;max-width:480px}
+.back-link{margin-top:8px;font-size:12px;color:rgba(255,255,255,.2);text-decoration:none}
+.back-link:hover{color:rgba(255,255,255,.4)}
+.hint{font-size:11px;color:rgba(255,255,255,.12);margin-top:4px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="header">
+    <h1>🦕 Dino 跑酷</h1>
+    <div class="stats">
+      <span>📏 <strong id="score">0</strong></span>
+      <span>🏆 <strong id="bestEl">0</strong></span>
+    </div>
+  </div>
+  <div id="gameContainer">
+    <canvas id="canvas" width="800" height="300"></canvas>
+    <div id="overlay">
+      <h2 id="oTitle">🦕 撞到了！</h2>
+      <p id="oMsg">距離：0</p>
+      <div class="btns">
+        <button class="btn btn-primary" onclick="restart()">🔄 再玩一次</button>
+        <button class="btn-share" onclick="shareScore()">📤 分享分數</button>
+      </div>
+    </div>
+  </div>
+  <p class="hint">點擊 / 空白鍵 / 向上滑 跳躍</p>
+  <a href="../games/" class="back-link">← 返回遊戲大廳</a>
+</div>
+<script>
+const canvas=document.getElementById('canvas'),ctx=canvas.getContext('2d');
+const cw=800,ch=300;
+const scoreEl=document.getElementById('score'),bestEl=document.getElementById('bestEl');
+const overlay=document.getElementById('overlay'),oTitle=document.getElementById('oTitle'),oMsg=document.getElementById('oMsg');
+let groundY=250,score=0,best=0,running=false,gameOver=false,animId;
+let dino={x:80,y:groundY-40,w:30,h:40,vy:0,jumping:false};
+let obstacles=[],groundX=0,baseSpeed=6,speed;
+
+best=parseInt(localStorage.getItem('dinoBest')||'0');bestEl.textContent=best;
+
+function restart(){
+  score=0;speed=baseSpeed;gameOver=false;running=true;
+  dino.y=groundY-40;dino.vy=0;dino.jumping=false;
+  obstacles=[];groundX=0;
+  scoreEl.textContent='0';
+  overlay.classList.remove('show');overlay.style.display='none';
+  if(animId)cancelAnimationFrame(animId);
+  loop();
+}
+function jump(){
+  if(!running||gameOver)return;
+  if(!dino.jumping||dino.y>=groundY-40-5){
+    dino.vy=-10;dino.jumping=true;
+  }
+}
+function update(){
+  if(gameOver||!running)return;
+  score++;scoreEl.textContent=score;
+  speed=baseSpeed+Math.floor(score/500);
+  // Ground scroll
+  groundX=(groundX-speed)%40;
+  // Dino physics
+  dino.vy+=.6;dino.y+=dino.vy;
+  if(dino.y>=groundY-40){dino.y=groundY-40;dino.vy=0;dino.jumping=false}
+  // Obstacles
+  if(obstacles.length===0||obstacles[obstacles.length-1].x<cw-400){
+    if(Math.random()<.02){
+      const type=Math.random()<.5?'cactus':'bird';
+      obstacles.push({x:cw,y:type==='cactus'?groundY-40:groundY-70,w:type==='cactus'?20:30,h:type==='cactus'?40:20,type});
+    }
+  }
+  for(let i=obstacles.length-1;i>=0;i--){
+    obstacles[i].x-=speed;
+    if(obstacles[i].x+obstacles[i].w<0){obstacles.splice(i,1);continue}
+    // Collision
+    const o=obstacles[i];
+    if(dino.x+dino.w>o.x&&dino.x<o.x+o.w&&dino.y+dino.h>o.y&&dino.y<o.y+o.h){
+      endGame();return;
+    }
+  }
+}
+function endGame(){
+  gameOver=true;running=false;
+  if(score>best){best=score;localStorage.setItem('dinoBest',best.toString());bestEl.textContent=best}
+  overlay.style.display='flex';overlay.classList.add('show');
+  oTitle.textContent='🦕 撞到了！';
+  oMsg.textContent=`距離：${score}${score>=best?' 🎉 新紀錄！':''}`;
+}
+function draw(){
+  ctx.fillStyle='rgba(255,255,255,.02)';ctx.fillRect(0,0,cw,ch);
+  // Ground
+  ctx.strokeStyle='rgba(255,255,255,.06)';ctx.lineWidth=2;
+  ctx.beginPath();ctx.moveTo(0,groundY);ctx.lineTo(cw,groundY);ctx.stroke();
+  for(let x=groundX;x<cw;x+=40){
+    ctx.fillStyle='rgba(255,255,255,.08)';ctx.fillRect(x,groundY+2,20,2);
+  }
+  // Score digits
+  ctx.fillStyle='rgba(255,255,255,.1)';ctx.font='14px monospace';ctx.fillText(String(score).padStart(5,'0'),cw-80,25);
+  // Dino
+  ctx.fillStyle='#22c55e';
+  ctx.fillRect(dino.x,dino.y,dino.w,dino.h);
+  ctx.fillStyle='#fff';ctx.fillRect(dino.x+20,dino.y+8,4,4);ctx.fillRect(dino.x+20,dino.y+18,4,4);
+  // Obstacles
+  obstacles.forEach(o=>{
+    if(o.type==='cactus'){
+      ctx.fillStyle='#22c55e';
+      ctx.fillRect(o.x+5,o.y-10,8,50);
+      ctx.fillRect(o.x,o.y-5,6,20);ctx.fillRect(o.x+12,o.y-5,6,20);
+    }else{
+      ctx.fillStyle='#f59e0b';
+      ctx.fillRect(o.x,o.y,o.w,o.h);
+      ctx.fillRect(o.x+5,o.y-5,o.w-10,5);ctx.fillRect(o.x+5,o.y+o.h,o.w-10,5);
+    }
+  });
+}
+function loop(){
+  update();draw();
+  if(!gameOver)animId=requestAnimationFrame(loop);
+  else draw();
+}
+window.shareScore=function(){
+  const msg=`🦕 Dino 跑酷跑了 ${score} 單位${score>500?' 我超會跑！':'！來挑戰我吧！'}`;
+  if(navigator.share)navigator.share({title:'Dino 跑酷挑戰',text:msg,url:location.href});
+  else shareToLine(location.href);
+}
+canvas.addEventListener('click',jump);
+document.addEventListener('keydown',e=>{if(e.key===' '||e.key==='ArrowUp'){e.preventDefault();jump()}});
+canvas.addEventListener('touchstart',(e)=>{e.preventDefault();jump()},{passive:false});
+restart();
+</script>
+<script src="../share.js"></script>
+</body>
+</html>
