@@ -438,6 +438,24 @@
       "ip": "122.100.112.224",
       "country": "Taiwan",
       "visited_at": "2026-07-16 16:14:39"
+    },
+    {
+      "id": 5,
+      "page": "/",
+      "referrer": "",
+      "user_agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36",
+      "ip": "122.100.112.224",
+      "country": "Taiwan",
+      "visited_at": "2026-07-20 13:37:06"
+    },
+    {
+      "id": 6,
+      "page": "/",
+      "referrer": "",
+      "user_agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36",
+      "ip": "122.100.112.224",
+      "country": "Taiwan",
+      "visited_at": "2026-07-20 13:51:50"
     }
   ],
   "geo_cache": [
