@@ -4,26 +4,25 @@
 <script src="auth-guard.js"></script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>翔川 Neo｜曜科技 — AI 自動化 · 超級個體解決方案</title>
-<meta name="description" content="每天省下 4 小時！專為超級個體與一人公司設計的 AI 自動化解決方案。AI 智能客服、行銷自動化、24/7 不間斷運作。">
-<meta property="og:title" content="翔川 Neo｜曜科技 — AI 自動化 · 超級個體解決方案">
-<meta property="og:description" content="每天省下 4 小時！用 AI 打造 24/7 自動化賺錢系統。一人公司的終極自動化大腦。">
+<title>翔川 Neo｜AI 自動化幫一人公司每天省 4 小時</title>
+<meta name="description" content="專為一人公司與超級個體設計的 AI 自動化解決方案。AI 智能客服 24/7 秒回、行銷自動化一鍵發文、技術架構穩定不當機。免費預約 30 分鐘 AI 盤點。">
+<link rel="canonical" href="https://lewislunora.onrender.com/">
+<meta property="og:title" content="翔川 Neo｜AI 自動化幫一人公司每天省 4 小時">
+<meta property="og:description" content="專為一人公司設計的 AI 自動化系統。AI 客服 + 行銷自動化 + 技術架構，讓你專注賺錢。">
 <meta property="og:image" content="https://lewislunora.github.io/lewislunora/assets/og-image.png">
 <meta property="og:url" content="https://lewislunora.onrender.com/">
 <meta property="og:type" content="website">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="翔川 Neo｜曜科技 — AI 自動化">
-<meta name="twitter:description" content="每天省下 4 小時！專為一人公司設計的 AI 自動化系統">
 <link rel="stylesheet" href="widget.css">
 <style>
 *{margin:0;padding:0;box-sizing:border-box;scroll-behavior:smooth}
 :root{
-  --fs-mega:clamp(38px,6vw + 12px,82px);
-  --fs-hero:clamp(30px,5vw + 10px,60px);
-  --fs-lg:clamp(22px,3vw + 8px,38px);
-  --fs-base:clamp(16px,1.5vw + 8px,21px);
-  --fs-sm:clamp(14px,1.2vw + 7px,18px);
-  --fs-xs:clamp(12px,0.9vw + 5px,15px);
+  --fs-mega:clamp(36px,5.5vw + 10px,76px);
+  --fs-hero:clamp(28px,4.5vw + 10px,56px);
+  --fs-lg:clamp(22px,3vw + 8px,36px);
+  --fs-base:clamp(16px,1.4vw + 8px,20px);
+  --fs-sm:clamp(14px,1.1vw + 7px,17px);
+  --fs-xs:clamp(12px,0.9vw + 5px,14px);
   --glass-bg:rgba(255,255,255,.035);
   --glass-border:rgba(255,255,255,.07);
   --glass-hover:rgba(255,255,255,.07);
@@ -42,47 +41,67 @@ body{
 }
 a{color:inherit;text-decoration:none}
 @media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}html{scroll-behavior:auto}.cursor{display:none}body{cursor:auto}}
-@media(prefers-contrast:high){:root{--glass-bg:rgba(255,255,255,.06);--glass-border:rgba(255,255,255,.12)}body{color:#fff}.hero p,.section-sub,.pain-card p,.svc-card p,.footer-info,.footer-links a,.footer-copy{color:rgba(255,255,255,.7)!important}}
+@media(prefers-contrast:high){:root{--glass-bg:rgba(255,255,255,.06);--glass-border:rgba(255,255,255,.12)}body{color:#fff}}
 @media(prefers-color-scheme:light){
   :root{--glass-bg:rgba(255,255,255,.5);--glass-border:rgba(0,0,0,.06);--glass-hover:rgba(255,255,255,.7);--glow-blue:rgba(8,145,178,.08);--glow-purple:rgba(99,102,241,.08)}
-  body{background:#f4f6fa;color:#1a1a2e}#particle-canvas{opacity:.4}.hero-glow{background:radial-gradient(circle,rgba(8,145,178,.06) 0%,transparent 60%)}
-  .bento-stat:first-child .bento-stat-num{-webkit-text-fill-color:#1a1a2e!important}
+  body{background:#f4f6fa;color:#1a1a2e}#particle-canvas{opacity:.4}
+  .hero-glow{background:radial-gradient(circle,rgba(8,145,178,.06) 0%,transparent 60%)}
+  .nav-brand{color:rgba(26,26,46,.5)}.nav-links a{color:rgba(26,26,46,.45)}.nav-links a:hover{color:#1a1a2e}
+  .nav-links a::after{background:#1a1a2e}
+  .lang-select{background:rgba(0,0,0,.03);border-color:rgba(0,0,0,.06);color:rgba(26,26,46,.45)}
+  .hero h1 .line1{background:linear-gradient(135deg,#1a1a2e 0%,rgba(26,26,46,.3) 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+  .hero p,.section-sub,.pain-card p,.svc-card p,.founder-info p,.cta-form-wrap .desc{color:rgba(26,26,46,.45)!important}
+  .pain-card .sol{color:#00a3cc!important}
+  .bento-stat,.pain-bento .pain-card,.svcs-bento .svc-card,.svc-tech-card,.founder-section,.cta-form-wrap,.result-card,.process-step,.faq-item{background:rgba(255,255,255,.5);border-color:rgba(0,0,0,.04);backdrop-filter:none}
+  .pain-bento .pain-card:hover,.svcs-bento .svc-card:hover,.svc-tech-card:hover,.result-card:hover{background:rgba(255,255,255,.75)}
+  .pain-card h3,.svc-card h3,.founder-info h3,.result-card h3,.faq-q{color:#1a1a2e}
+  .founder-info .title{color:rgba(26,26,46,.25)}
+  .founder-chips .chip{background:rgba(0,0,0,.02);border-color:rgba(0,0,0,.04);color:rgba(26,26,46,.4)}
+  .contact-form label{color:rgba(26,26,46,.3)}
+  .contact-form input,.contact-form select{background:rgba(255,255,255,.6);border-color:rgba(0,0,0,.05);color:#1a1a2e;backdrop-filter:none}
+  .contact-form input::placeholder{color:rgba(26,26,46,.15)}
+  .contact-form select option{background:#fff;color:#1a1a2e}
+  footer{border-color:rgba(0,0,0,.025);background:rgba(255,255,255,.5);backdrop-filter:none}
+  .footer-info,.footer-links a,.footer-copy{color:rgba(26,26,46,.18)!important}
+  .footer-labs-title{color:rgba(26,26,46,.3)!important}
+  .footer-labs a{color:rgba(26,26,46,.25)!important}
+  .btn-outline{border-color:rgba(0,0,0,.06);color:rgba(26,26,46,.4)}
+  .btn-outline:hover{background:rgba(0,0,0,.02);border-color:rgba(0,212,255,.3);color:#1a1a2e}
+  .faq-a{color:rgba(26,26,46,.4)!important}
 }
-@media(prefers-color-scheme:light){.cursor{display:none}}
 @media(max-width:768px){
-  :root{--fs-mega:clamp(28px,7vw,44px);--fs-hero:clamp(22px,5vw,36px);--fs-lg:clamp(18px,4vw,28px);--fs-base:clamp(14px,3.5vw,17px)}
+  :root{--fs-mega:clamp(28px,7vw,44px);--fs-hero:clamp(22px,5.5vw,36px);--fs-lg:clamp(18px,4vw,28px);--fs-base:clamp(15px,3.5vw,18px)}
 }
-
 /* Custom cursor */
 .cursor{position:fixed;width:10px;height:10px;border-radius:50%;background:#00d4ff;pointer-events:none;z-index:9999;mix-blend-mode:difference;transform:translate(-50%,-50%);transition:width .3s,height .3s,background .3s}
 .cursor.hover{width:28px;height:28px;background:#7b68ee}
 @media(hover:none){body{cursor:auto}.cursor{display:none}}
 
 /* Scroll reveal */
-.reveal{opacity:0;transform:translateY(24px);transition:opacity .6s cubic-bezier(.22,1,.36,1),transform .6s cubic-bezier(.22,1,.36,1)}
+.reveal{opacity:0;transform:translateY(20px);transition:opacity .5s cubic-bezier(.22,1,.36,1),transform .5s cubic-bezier(.22,1,.36,1)}
 .reveal.visible{opacity:1;transform:translateY(0)}
 
-/* Nav - glassmorphism */
+/* Nav */
 nav{
   position:fixed;top:0;left:0;right:0;z-index:100;
   padding:clamp(.5rem,1.5vw,.8rem) clamp(1rem,3vw,2rem);
-  background:rgba(10,14,39,.6);backdrop-filter:blur(32px) saturate(1.4);
+  background:rgba(10,14,39,.65);backdrop-filter:blur(32px) saturate(1.4);
   -webkit-backdrop-filter:blur(32px) saturate(1.4);
   border-bottom:1px solid rgba(255,255,255,.04);
   display:flex;justify-content:space-between;align-items:center
 }
-.nav-brand{font-size:14px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:rgba(255,255,255,.6)}
+.nav-brand{font-size:14px;font-weight:700;letter-spacing:1px;color:rgba(255,255,255,.6)}
 .nav-brand em{font-style:normal;background:linear-gradient(135deg,#00d4ff,#7b68ee);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
 .nav-links{display:flex;gap:1.5rem;align-items:center}
 .nav-links a{color:rgba(255,255,255,.5);font-size:13px;transition:color .3s;letter-spacing:.5px;position:relative}
-.nav-links a::after{content:'';position:absolute;bottom:-3px;left:0;width:0;height:1px;background:#00d4ff;transition:width .3s}
+.nav-links a::after{content:'';position:absolute;bottom:-3px;left:0;width:0;height:1.5px;background:#00d4ff;transition:width .3s}
 .nav-links a:hover{color:#fff}
 .nav-links a:hover::after{width:100%}
 .lang-select{background:var(--glass-bg);border:1px solid var(--glass-border);color:rgba(255,255,255,.5);padding:.3rem .6rem;border-radius:var(--radius-sm);font-size:12px;cursor:pointer}
 
-/* Hero — bento glass */
+/* Hero — conversion focused */
 .hero{
-  min-height:75vh;display:flex;flex-direction:column;
+  min-height:70vh;display:flex;flex-direction:column;
   justify-content:center;align-items:center;text-align:center;
   padding:clamp(4rem,6vw,5rem) clamp(1rem,3vw,2rem) clamp(1.5rem,3vw,2rem);
   position:relative;overflow:hidden
@@ -90,34 +109,33 @@ nav{
 .hero-glow{
   position:absolute;top:40%;left:50%;transform:translate(-50%,-50%);
   width:80vw;height:80vw;border-radius:50%;
-  background:radial-gradient(circle,rgba(0,212,255,.06) 0%,rgba(123,104,238,.03) 40%,transparent 65%);
-  pointer-events:none
+  background:radial-gradient(circle,rgba(0,212,255,.08) 0%,rgba(123,104,238,.04) 40%,transparent 65%);
+  pointer-events:none;animation:mesh-shift 12s ease-in-out infinite;background-size:200% 200%
 }
-.hero-label{
+@keyframes mesh-shift{0%{background-position:0% 50%}50%{background-position:100% 50%}100%{background-position:0% 50%}}
+.hero::after{
+  content:'';position:absolute;top:20%;right:10%;width:180px;height:180px;border-radius:50%;
+  background:radial-gradient(circle,rgba(123,104,238,.08),transparent 70%);
+  pointer-events:none;animation:float-orb 8s ease-in-out infinite
+}
+@keyframes float-orb{0%,100%{transform:translate(0,0) scale(1)}33%{transform:translate(15px,-20px) scale(1.05)}66%{transform:translate(-10px,12px) scale(.97)}}
+.hero-badge{
   font-size:13px;letter-spacing:2px;text-transform:uppercase;
   color:rgba(255,255,255,.35);margin-bottom:1.5rem;
   padding:.4rem 1.2rem;border:1px solid rgba(255,255,255,.08);
   border-radius:100px;background:var(--glass-bg);backdrop-filter:blur(8px)
 }
 .hero h1{
-  font-size:var(--fs-mega);font-weight:800;line-height:1.05;
-  margin-bottom:.8rem;letter-spacing:-1px;max-width:92vw
+  font-size:var(--fs-mega);font-weight:800;line-height:1.08;
+  margin-bottom:.8rem;letter-spacing:-1px;max-width:90vw
 }
-.hero h1 .line1{
-  display:block;
-  background:linear-gradient(135deg,#e8ecf4 0%,rgba(232,236,244,.4) 100%);
-  -webkit-background-clip:text;-webkit-text-fill-color:transparent
-}
-.hero h1 .line2{
-  display:block;
-  background:linear-gradient(135deg,#00d4ff,#7b68ee);
-  -webkit-background-clip:text;-webkit-text-fill-color:transparent
-}
-.hero p{font-size:var(--fs-sm);color:rgba(255,255,255,.3);max-width:520px;margin:0 auto 2rem;line-height:1.7}
+.hero h1 .line1{display:block;background:linear-gradient(135deg,#e8ecf4 0%,rgba(232,236,244,.4) 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.hero h1 .line2{display:block;background:linear-gradient(135deg,#00d4ff,#7b68ee);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.hero p{font-size:var(--fs-sm);color:rgba(255,255,255,.4);max-width:560px;margin:0 auto 2rem;line-height:1.7}
 .hero-actions{display:flex;gap:.8rem;flex-wrap:wrap;justify-content:center}
 .btn{
   display:inline-flex;align-items:center;gap:.5rem;
-  padding:.8rem 2rem;border-radius:var(--radius-sm);
+  padding:.85rem 2rem;border-radius:var(--radius-sm);
   font-weight:600;font-size:14px;transition:all .3s;cursor:pointer;border:none;letter-spacing:.3px
 }
 .btn-primary{background:linear-gradient(135deg,#00d4ff,#7b68ee);color:#fff;box-shadow:0 4px 20px rgba(0,212,255,.15)}
@@ -125,17 +143,10 @@ nav{
 .btn-outline{background:var(--glass-bg);border:1px solid var(--glass-border);color:rgba(255,255,255,.5);backdrop-filter:blur(8px)}
 .btn-outline:hover{background:var(--glass-hover);border-color:rgba(0,212,255,.25);color:#fff}
 
-/* Bento stats — glass cards */
-.bento-stats{
-  display:grid;grid-template-columns:repeat(3,1fr);
-  gap:.5rem;max-width:360px;margin:1.8rem auto 0
-}
-.bento-stat{
-  background:var(--glass-bg);border:1px solid var(--glass-border);
-  border-radius:var(--radius-sm);padding:.6rem .8rem;text-align:center;
-  transition:all .3s;backdrop-filter:blur(8px)
-}
-.bento-stat:hover{background:var(--glass-hover);border-color:rgba(0,212,255,.12);transform:translateY(-3px)}
+/* Bento stats */
+.bento-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:.5rem;max-width:380px;margin:1.8rem auto 0}
+.bento-stat{background:var(--glass-bg);border:1px solid var(--glass-border);border-radius:var(--radius-sm);padding:.6rem .8rem;text-align:center;transition:all .3s;backdrop-filter:blur(8px)}
+.bento-stat:hover{background:var(--glass-hover);border-color:rgba(0,212,255,.12);transform:translateY(-2px)}
 .bento-stat-num{font-size:var(--fs-lg);font-weight:700;background:linear-gradient(135deg,#00d4ff,#7b68ee);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
 .bento-stat-label{font-size:11px;color:rgba(255,255,255,.35);margin-top:2px;letter-spacing:.8px;text-transform:uppercase}
 .bento-stat:first-child{grid-column:1/-1;display:flex;align-items:center;justify-content:center;gap:.4rem;padding:.5rem .8rem}
@@ -146,201 +157,127 @@ nav{
 .wrap{max-width:1100px;margin:0 auto}
 .section-label{font-size:12px;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,.25);margin-bottom:.6rem;text-align:center}
 .section-title{font-size:var(--fs-lg);font-weight:700;text-align:center;margin-bottom:.6rem;line-height:1.2}
-.section-sub{text-align:center;color:rgba(255,255,255,.3);margin-bottom:2rem;font-size:var(--fs-sm);max-width:540px;margin-left:auto;margin-right:auto}
+.section-sub{text-align:center;color:rgba(255,255,255,.35);margin-bottom:2rem;font-size:var(--fs-sm);max-width:560px;margin-left:auto;margin-right:auto}
 
-/* Pain → bento glass grid */
-.pain-bento{
-  display:grid;grid-template-columns:1fr 1fr;gap:.7rem;
-  max-width:720px;margin:0 auto
-}
-.pain-bento .pain-card{
-  background:var(--glass-bg);border:1px solid var(--glass-border);
-  border-radius:var(--radius-md);padding:1.4rem 1.6rem;
-  transition:all .4s;position:relative;overflow:hidden;
-  backdrop-filter:blur(10px)
-}
-.pain-bento .pain-card::before{
-  content:'';position:absolute;top:0;left:0;right:0;height:2px;
-  background:linear-gradient(90deg,transparent,#00d4ff,transparent);
-  opacity:0;transition:opacity .4s
-}
+/* Pain → bento glass */
+.pain-bento{display:grid;grid-template-columns:1fr 1fr;gap:.7rem;max-width:740px;margin:0 auto}
+.pain-bento .pain-card{background:var(--glass-bg);border:1px solid var(--glass-border);border-radius:var(--radius-md);padding:1.5rem 1.6rem;transition:all .4s;position:relative;overflow:hidden;backdrop-filter:blur(10px);display:flex;flex-direction:column}
+.pain-bento .pain-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,#00d4ff,transparent);opacity:0;transition:opacity .4s}
 .pain-bento .pain-card:hover::before{opacity:1}
-.pain-bento .pain-card:hover{background:var(--glass-hover);border-color:rgba(0,212,255,.15);transform:translateY(-4px);box-shadow:0 8px 30px rgba(0,212,255,.06)}
+.pain-bento .pain-card:hover{background:var(--glass-hover);border-color:rgba(0,212,255,.15);transform:translateY(-3px);box-shadow:0 8px 30px rgba(0,212,255,.06)}
 .pain-bento .pain-card:first-child{grid-column:1/-1}
-.pain-icon{font-size:1.3rem;margin-bottom:.6rem;display:block}
+.pain-icon{font-size:1.4rem;margin-bottom:.6rem;display:block}
 .pain-card h3{font-size:var(--fs-base);font-weight:600;margin-bottom:.3rem;color:#e8ecf4}
-.pain-card p{font-size:var(--fs-sm);color:rgba(255,255,255,.35);line-height:1.6}
+.pain-card p{font-size:var(--fs-sm);color:rgba(255,255,255,.4);line-height:1.6}
 .pain-card .sol{display:inline-block;margin-top:.5rem;color:#00d4ff;font-size:var(--fs-xs);font-weight:500}
 
-/* Services → bento glass grid */
-.svcs-bento{
-  display:grid;grid-template-columns:1.4fr .6fr;gap:.7rem;
-  max-width:900px;margin:0 auto .7rem
-}
-.svcs-bento .svc-card{
-  background:var(--glass-bg);border:1px solid var(--glass-border);
-  border-radius:var(--radius-md);padding:1.6rem;transition:all .4s;
-  position:relative;overflow:hidden;display:flex;flex-direction:column;
-  backdrop-filter:blur(10px)
-}
-.svcs-bento .svc-card::before{
-  content:'';position:absolute;top:0;left:0;right:0;height:2px;
-  background:linear-gradient(90deg,transparent,#7b68ee,transparent);
-  opacity:0;transition:opacity .4s
-}
+/* Solutions → bento glass */
+.svcs-bento{display:grid;grid-template-columns:1.4fr .6fr;gap:.7rem;max-width:900px;margin:0 auto}
+.svcs-bento .svc-card{background:var(--glass-bg);border:1px solid var(--glass-border);border-radius:var(--radius-md);padding:1.6rem;transition:all .4s;position:relative;overflow:hidden;display:flex;flex-direction:column;backdrop-filter:blur(10px)}
+.svcs-bento .svc-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,#7b68ee,transparent);opacity:0;transition:opacity .4s}
 .svcs-bento .svc-card:hover::before{opacity:1}
-.svcs-bento .svc-card:hover{background:var(--glass-hover);border-color:rgba(123,104,238,.15);transform:translateY(-4px);box-shadow:0 8px 30px rgba(123,104,238,.06)}
+.svcs-bento .svc-card:hover{background:var(--glass-hover);border-color:rgba(123,104,238,.15);transform:translateY(-3px);box-shadow:0 8px 30px rgba(123,104,238,.06)}
 .svcs-bento .svc-card.featured{grid-column:1/2;grid-row:1/3;background:linear-gradient(135deg,rgba(0,212,255,.04),rgba(123,104,238,.04));border-color:rgba(123,104,238,.08)}
 .svc-card h3{font-size:var(--fs-base);font-weight:600;margin-bottom:.4rem}
-.svc-card .svc-icon{font-size:1.4rem;margin-bottom:.6rem;display:block}
-.svc-card p{font-size:var(--fs-sm);color:rgba(255,255,255,.35);line-height:1.5;flex-grow:1}
+.svc-card .svc-icon{font-size:1.5rem;margin-bottom:.6rem;display:block}
+.svc-card p{font-size:var(--fs-sm);color:rgba(255,255,255,.4);line-height:1.5;flex-grow:1}
 .svc-card .svc-meta{font-size:11px;color:rgba(255,255,255,.28);margin-top:.6rem;letter-spacing:.8px;text-transform:uppercase}
 
-/* Tech mini cards — glass */
-.svcs-tech-grid{
-  display:grid;grid-template-columns:repeat(6,1fr);gap:.5rem;
-  max-width:900px;margin:0 auto
-}
-.svc-tech-card{
-  display:flex;flex-direction:column;align-items:center;gap:.2rem;
-  padding:.7rem .4rem;background:var(--glass-bg);border:1px solid var(--glass-border);
-  border-radius:var(--radius-sm);transition:all .3s;backdrop-filter:blur(6px)
-}
-.svc-tech-card:hover{background:var(--glass-hover);border-color:rgba(0,212,255,.1);transform:translateY(-3px)}
-.svc-tech-card .svc-tech-icon{font-size:1.1rem}
-.svc-tech-card span{font-size:11px;color:rgba(255,255,255,.45);text-align:center;line-height:1.3}
+/* Results — concrete metrics */
+.results-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:.7rem;max-width:800px;margin:0 auto}
+.result-card{background:var(--glass-bg);border:1px solid var(--glass-border);border-radius:var(--radius-md);padding:1.5rem;text-align:center;transition:all .3s;backdrop-filter:blur(8px)}
+.result-card:hover{background:var(--glass-hover);transform:translateY(-3px)}
+.result-num{font-size:var(--fs-hero);font-weight:800;background:linear-gradient(135deg,#00d4ff,#7b68ee);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:.3rem}
+.result-label{font-size:var(--fs-xs);color:rgba(255,255,255,.3);letter-spacing:.5px}
 
-/* Founder — organic glass card */
+/* Founder */
 .founder-wrap{position:relative;max-width:740px;margin:0 auto}
-.founder-wrap::before{
-  content:'';position:absolute;top:-2rem;left:-2rem;right:-2rem;bottom:-2rem;
-  background:radial-gradient(ellipse at 30% 50%,var(--glow-blue),transparent 60%);
-  pointer-events:none
-}
-.founder-section{
-  background:var(--glass-bg);border:1px solid var(--glass-border);
-  border-radius:var(--radius-lg);padding:clamp(1.5rem,3vw,3rem);
-  display:grid;grid-template-columns:auto 1fr;gap:1.8rem;align-items:start;
-  position:relative;backdrop-filter:blur(16px);box-shadow:0 4px 30px rgba(0,0,0,.1)
-}
-.founder-avatar{
-  width:84px;height:84px;border-radius:22px;
-  background:linear-gradient(135deg,#00d4ff,#7b68ee);
-  display:flex;align-items:center;justify-content:center;
-  font-size:2.2rem;font-weight:700;color:#fff;flex-shrink:0;
-  transform:rotate(-5deg);transition:transform .4s cubic-bezier(.34,1.56,.64,1);
-  box-shadow:0 8px 25px rgba(0,212,255,.15)
-}
+.founder-wrap::before{content:'';position:absolute;top:-2rem;left:-2rem;right:-2rem;bottom:-2rem;background:radial-gradient(ellipse at 30% 50%,var(--glow-blue),transparent 60%);pointer-events:none}
+.founder-section{background:var(--glass-bg);border:1px solid var(--glass-border);border-radius:var(--radius-lg);padding:clamp(1.5rem,3vw,2.5rem);display:grid;grid-template-columns:auto 1fr;gap:1.8rem;align-items:start;position:relative;backdrop-filter:blur(16px);box-shadow:0 4px 30px rgba(0,0,0,.1)}
+.founder-avatar{width:80px;height:80px;border-radius:20px;background:linear-gradient(135deg,#00d4ff,#7b68ee);display:flex;align-items:center;justify-content:center;font-size:2rem;font-weight:700;color:#fff;flex-shrink:0;transform:rotate(-4deg);transition:transform .4s cubic-bezier(.34,1.56,.64,1);box-shadow:0 8px 25px rgba(0,212,255,.15)}
 .founder-avatar:hover{transform:rotate(0deg) scale(1.08)}
 .founder-info h3{font-size:var(--fs-base);font-weight:700;margin-bottom:.3rem}
 .founder-info .title{font-size:var(--fs-xs);color:rgba(255,255,255,.25);margin-bottom:.6rem;letter-spacing:.5px}
-.founder-info p{font-size:var(--fs-sm);color:rgba(255,255,255,.35);line-height:1.7;margin-bottom:.8rem}
+.founder-info p{font-size:var(--fs-sm);color:rgba(255,255,255,.4);line-height:1.7;margin-bottom:.8rem}
 .founder-chips{display:flex;gap:.35rem;flex-wrap:wrap}
-.founder-chips .chip{
-  display:inline-flex;align-items:center;gap:3px;
-  background:var(--glass-bg);border:1px solid var(--glass-border);
-  border-radius:6px;padding:.3rem .8rem;
-  font-size:12px;color:rgba(255,255,255,.45);letter-spacing:.3px;
-  backdrop-filter:blur(4px);transition:all .2s
-}
+.founder-chips .chip{display:inline-flex;align-items:center;gap:3px;background:var(--glass-bg);border:1px solid var(--glass-border);border-radius:6px;padding:.3rem .8rem;font-size:12px;color:rgba(255,255,255,.4);letter-spacing:.3px;backdrop-filter:blur(4px);transition:all .2s}
 .founder-chips .chip:hover{background:var(--glass-hover);border-color:rgba(0,212,255,.12);color:#fff}
 
-/* CTA — glass card */
-.cta-form-wrap{
-  max-width:480px;margin:0 auto;
-  background:var(--glass-bg);border:1px solid var(--glass-border);
-  border-radius:var(--radius-lg);padding:clamp(1.8rem,3vw,3rem) clamp(1.2rem,2.5vw,2.5rem);
-  text-align:center;backdrop-filter:blur(16px);box-shadow:0 4px 30px rgba(0,0,0,.08)
-}
+/* Process — 3 steps */
+.process-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:.7rem;max-width:800px;margin:0 auto}
+.process-step{background:var(--glass-bg);border:1px solid var(--glass-border);border-radius:var(--radius-md);padding:1.5rem;text-align:center;backdrop-filter:blur(8px);transition:all .3s}
+.process-step:hover{background:var(--glass-hover);transform:translateY(-3px)}
+.process-num{font-size:var(--fs-lg);font-weight:800;background:linear-gradient(135deg,#00d4ff,#7b68ee);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:.4rem}
+.process-step h3{font-size:var(--fs-base);font-weight:600;margin-bottom:.3rem}
+.process-step p{font-size:var(--fs-xs);color:rgba(255,255,255,.35);line-height:1.5}
+
+/* FAQ */
+.faq-list{max-width:680px;margin:0 auto}
+.faq-item{background:var(--glass-bg);border:1px solid var(--glass-border);border-radius:var(--radius-md);margin-bottom:.5rem;overflow:hidden;backdrop-filter:blur(8px);transition:all .3s}
+.faq-item:hover{background:var(--glass-hover)}
+.faq-q{padding:1rem 1.4rem;font-size:var(--fs-base);font-weight:600;cursor:pointer;display:flex;justify-content:space-between;align-items:center}
+.faq-q::after{content:'＋';font-size:18px;color:rgba(255,255,255,.2);transition:transform .3s}
+.faq-item.open .faq-q::after{transform:rotate(45deg)}
+.faq-a{max-height:0;overflow:hidden;transition:max-height .3s ease,padding .3s;padding:0 1.4rem;font-size:var(--fs-sm);color:rgba(255,255,255,.4);line-height:1.6}
+.faq-item.open .faq-a{max-height:200px;padding:0 1.4rem 1rem}
+
+/* CTA */
+.cta-form-wrap{max-width:500px;margin:0 auto;background:var(--glass-bg);border:1px solid var(--glass-border);border-radius:var(--radius-lg);padding:clamp(1.8rem,3vw,2.5rem) clamp(1.2rem,2.5vw,2.5rem);text-align:center;backdrop-filter:blur(16px);box-shadow:0 4px 30px rgba(0,0,0,.08)}
 .cta-form-wrap h2{font-size:var(--fs-lg);font-weight:700;margin-bottom:.4rem}
-.cta-form-wrap .desc{font-size:var(--fs-sm);color:rgba(255,255,255,.3);margin-bottom:1.8rem}
+.cta-form-wrap .desc{font-size:var(--fs-sm);color:rgba(255,255,255,.35);margin-bottom:1.8rem}
 .contact-form{text-align:left}
 .contact-form label{display:block;font-size:12px;font-weight:600;color:rgba(255,255,255,.4);margin-bottom:.3rem;letter-spacing:.8px;text-transform:uppercase}
-.contact-form input,.contact-form select{
-  width:100%;padding:.6rem .8rem;border-radius:var(--radius-sm);
-  background:var(--glass-bg);border:1px solid var(--glass-border);
-  color:inherit;font-size:var(--fs-sm);outline:none;transition:border .3s,background .3s;font-family:inherit;
-  margin-bottom:.6rem
-}
+.contact-form input,.contact-form select{width:100%;padding:.65rem .85rem;border-radius:var(--radius-sm);background:var(--glass-bg);border:1px solid var(--glass-border);color:inherit;font-size:var(--fs-sm);outline:none;transition:border .3s,background .3s;font-family:inherit;margin-bottom:.6rem}
 .contact-form select option{background:#1a1f3a;color:#fff}
 .contact-form input:focus,.contact-form select:focus{border-color:#00d4ff;background:var(--glass-hover)}
-.contact-form input::placeholder{color:rgba(255,255,255,.12)}
+.contact-form input::placeholder{color:rgba(255,255,255,.15)}
 .contact-form .btn{width:100%;justify-content:center;margin-top:.3rem}
 .contact-result{margin-top:.6rem;text-align:center;font-size:var(--fs-sm);display:none}
 
 /* Footer */
-footer{
-  border-top:1px solid rgba(255,255,255,.025);
-  padding:clamp(1.5rem,2.5vw,2.5rem) clamp(1rem,3vw,2rem);
-  background:var(--glass-bg);backdrop-filter:blur(12px)
-}
-footer .wrap{display:flex;flex-wrap:wrap;gap:.8rem;justify-content:space-between;align-items:center;width:100%}
-.footer-info{font-size:var(--fs-xs);color:rgba(255,255,255,.18);line-height:1.6}
-.footer-info a{color:rgba(255,255,255,.2);transition:color .2s}
+footer{border-top:1px solid rgba(255,255,255,.03);padding:clamp(1.5rem,2.5vw,2.5rem) clamp(1rem,3vw,2rem);background:var(--glass-bg);backdrop-filter:blur(12px)}
+footer .wrap{display:flex;flex-wrap:wrap;gap:.8rem;justify-content:space-between;align-items:start;width:100%}
+.footer-main{flex:1;min-width:200px}
+.footer-info{font-size:var(--fs-xs);color:rgba(255,255,255,.2);line-height:1.6}
+.footer-info a{color:rgba(255,255,255,.25);transition:color .2s}
 .footer-info a:hover{color:#00d4ff}
 .footer-links{display:flex;gap:1rem}
 .footer-links a{color:rgba(255,255,255,.25);font-size:12px;transition:color .2s;letter-spacing:.5px}
 .footer-links a:hover{color:#00d4ff}
-.footer-copy{width:100%;font-size:11px;color:rgba(255,255,255,.12);text-align:center;margin-top:.8rem;letter-spacing:.5px}
+.footer-labs{min-width:180px;text-align:right}
+.footer-labs-title{font-size:10px;letter-spacing:1.5px;text-transform:uppercase;color:rgba(255,255,255,.2);margin-bottom:.4rem}
+.footer-labs a{display:block;font-size:11px;color:rgba(255,255,255,.18);padding:.15rem 0;transition:color .2s}
+.footer-labs a:hover{color:#00d4ff}
+.footer-copy{width:100%;font-size:11px;color:rgba(255,255,255,.1);text-align:center;margin-top:.8rem;letter-spacing:.5px}
 
-/* Chat — glass */
-.chat-bubble{position:fixed;bottom:1.2rem;right:1.2rem;z-index:99;width:46px;height:46px;border-radius:50%;background:linear-gradient(135deg,#00d4ff,#7b68ee);color:#fff;font-size:1.2rem;border:none;cursor:pointer;box-shadow:0 4px 25px rgba(0,212,255,.25);transition:transform .2s;backdrop-filter:blur(8px)}
-.chat-bubble:hover{transform:scale(1.12)}
+/* Chat */
+.chat-bubble{position:fixed;bottom:1.2rem;right:1.2rem;z-index:99;width:48px;height:48px;border-radius:50%;background:linear-gradient(135deg,#00d4ff,#7b68ee);color:#fff;font-size:1.3rem;border:none;cursor:pointer;box-shadow:0 4px 25px rgba(0,212,255,.25);transition:transform .2s;backdrop-filter:blur(8px)}
+.chat-bubble:hover{transform:scale(1.1)}
 .toast{position:fixed;bottom:1.5rem;left:50%;transform:translateX(-50%);background:rgba(0,212,255,.8);color:#fff;padding:.6rem 1.4rem;border-radius:var(--radius-sm);font-size:var(--fs-sm);opacity:0;transition:opacity .5s;pointer-events:none;z-index:200}
 .toast.show{opacity:1}
 
-/* Light mode */
-@media(prefers-color-scheme:light){
-  body{background:#f5f5f0;color:#1a1a2e;cursor:auto}
-  .cursor{display:none}
-  nav{background:rgba(245,245,240,.9)}
-  .nav-brand{color:rgba(26,26,46,.3)}
-  .nav-links a{color:rgba(26,26,46,.45)}
-  .nav-links a:hover{color:#1a1a2e}
-  .nav-links a::after{background:#1a1a2e}
-  .lang-select{background:rgba(0,0,0,.03);border-color:rgba(0,0,0,.06);color:rgba(26,26,46,.45)}
-  .nav-brand{color:rgba(26,26,46,.5)}
-  .hero h1 .line1{background:linear-gradient(135deg,#1a1a2e 0%,rgba(26,26,46,.3) 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
-  .hero p,.section-sub,.pain-card p,.svc-card p,.founder-info p,.cta-form-wrap .desc,.pain-card .sol{color:rgba(26,26,46,.4)!important}
-  .pain-card .sol{color:#00a3cc!important}
-  .bento-stat,.pain-bento .pain-card,.svcs-bento .svc-card,.svc-tech-card,.founder-section,.cta-form-wrap,footer{background:rgba(255,255,255,.5);border-color:rgba(0,0,0,.04);backdrop-filter:none}
-  .pain-bento .pain-card:hover,.svcs-bento .svc-card:hover,.svc-tech-card:hover{background:rgba(255,255,255,.75)}
-  .pain-card h3,.svc-card h3,.founder-info h3{color:#1a1a2e}
-  .founder-info .title{color:rgba(26,26,46,.25)}
-  .founder-chips .chip{background:rgba(0,0,0,.02);border-color:rgba(0,0,0,.04);color:rgba(26,26,46,.35)}
-  .contact-form label{color:rgba(26,26,46,.25)}
-  .contact-form input,.contact-form select{background:rgba(255,255,255,.6);border-color:rgba(0,0,0,.05);color:#1a1a2e;backdrop-filter:none}
-  .contact-form input::placeholder{color:rgba(26,26,46,.15)}
-  .contact-form select option{background:#fff;color:#1a1a2e}
-  footer{border-color:rgba(0,0,0,.025)}
-  .footer-info,.footer-links a,.footer-copy{color:rgba(26,26,46,.15)!important}
-  .btn-outline{border-color:rgba(0,0,0,.06);color:rgba(26,26,46,.4)}
-  .btn-outline:hover{background:rgba(0,0,0,.02);border-color:rgba(0,212,255,.3);color:#1a1a2e}
-}
-
 /* Responsive */
-@media(max-width:900px){.hero h1{font-size:clamp(40px,9vw,70px)}.pain-bento{grid-template-columns:1fr}.pain-bento .pain-card:first-child{grid-column:auto}}
+@media(max-width:900px){.hero h1{font-size:clamp(36px,8vw,60px)}.pain-bento{grid-template-columns:1fr}.pain-bento .pain-card:first-child{grid-column:auto}.results-grid,.process-grid{grid-template-columns:1fr 1fr}.result-card:first-child{grid-column:1/-1}}
 @media(max-width:768px){
-  :root{--fs-mega:clamp(30px,7vw,48px);--fs-hero:clamp(24px,5.5vw,40px);--fs-lg:clamp(19px,4vw,30px);--fs-base:clamp(15px,3.5vw,18px)}
-  .hero{min-height:auto;padding-top:4.5rem;padding-bottom:2.5rem}
+  .hero{min-height:auto;padding-top:4.5rem;padding-bottom:2rem}
   .svcs-bento{grid-template-columns:1fr}
   .svcs-bento .svc-card.featured{grid-column:auto;grid-row:auto}
-  .svcs-tech-grid{grid-template-columns:repeat(3,1fr)}
   .founder-section{grid-template-columns:1fr;text-align:center;justify-items:center}
   .founder-avatar{margin:0 auto}
   .founder-chips{justify-content:center}
   .nav-links{gap:.3rem;overflow-x:auto;-webkit-overflow-scrolling:touch;-ms-overflow-style:none;scrollbar-width:none;padding-bottom:3px}
   .nav-links::-webkit-scrollbar{display:none}
   .nav-links a{font-size:11px;white-space:nowrap;letter-spacing:.5px}
-  .bento-stats{grid-template-columns:1fr 1fr;max-width:280px}
+  .bento-stats{grid-template-columns:1fr 1fr;max-width:260px}
   .bento-stat:first-child{grid-column:1/-1}
 }
 @media(max-width:500px){
-  .hero-actions{gap:.6rem}
-  .btn{padding:.6rem 1.2rem;width:100%;justify-content:center;font-size:13px}
-  .svcs-tech-grid{grid-template-columns:repeat(2,1fr)}
-  .pain-bento .pain-card{padding:1rem}
-  .svcs-bento .svc-card{padding:1rem}
+  .hero-actions{gap:.6rem;flex-direction:column}
+  .btn{padding:.65rem 1.2rem;width:100%;justify-content:center;font-size:13px}
+  .results-grid,.process-grid{grid-template-columns:1fr}
+  .result-card:first-child{grid-column:auto}
+  .footer-labs{text-align:left;min-width:auto;width:100%}
+  .footer-wrap{flex-direction:column}
 }
 </style>
 </head>
@@ -348,144 +285,131 @@ footer .wrap{display:flex;flex-wrap:wrap;gap:.8rem;justify-content:space-between
 <div class="cursor" id="cursor"></div>
 
 <nav>
-  <div class="nav-brand"><span>翔川 Neo｜曜科技</span> |Ai_bot</div>
+  <div class="nav-brand"><em>翔川 Neo</em></div>
   <div class="nav-links">
-    <a href="solopreneur/">超級個體</a>
-    <a href="product/">AI 方案</a>
-    <a href="guides/">知識庫</a>
-    <a href="community/">社群</a>
-    <a href="games/">遊戲</a>
-    <a href="student/">學生</a>
-    <a href="stock-trading/">📈 ETF</a>
+    <a href="product/">方案</a>
+    <a href="guides/">知識</a>
+    <a href="#about">關於我</a>
+    <a href="#contact" style="color:#00d4ff;font-weight:600">預約諮詢</a>
     <select class="lang-select" onchange="switchLang(this.value)">
-      <option value="zh-TW">繁</option>
-      <option value="zh-CN">简</option>
+      <option value="zh-TW">繁中</option>
       <option value="en">EN</option>
     </select>
   </div>
 </nav>
 
-<!-- ═══ Hero ═══ -->
+<!-- Hero -->
 <section class="hero">
   <div class="hero-glow"></div>
-  <div class="hero-label" data-i18n="hero_label">AI 自動化 · 超級個體解決方案</div>
-  <h1><span class="line1" data-i18n="hero_l1">每天省下 4 小時</span><span class="line2" data-i18n="hero_l2">用 AI 打造 24/7 自動化賺錢系統</span></h1>
-  <p data-i18n="hero_desc">專為「超級個體」與「一人公司」設計。從 AI 智能客服到自動化行銷，幫你把繁瑣庶務交給系統，專注在真正賺錢的核心業務。</p>
+  <div class="hero-badge">AI 自動化 · 一人公司專屬</div>
+  <h1><span class="line1">每天幫你省下 4 小時</span><span class="line2">的 AI 自動化系統</span></h1>
+  <p>從 AI 智能客服到行銷自動化，幫你把重複庶務交給系統，專注在真正賺錢的核心業務。已協助多位超級個體打造 24/7 自動化賺錢引擎。</p>
   <div class="hero-actions">
-    <a href="#contact" class="btn btn-primary" data-i18n="hero_btn">📩 30 分鐘免費 AI 健檢</a>
-    <a href="solopreneur/" class="btn btn-outline" data-i18n="hero_btn2">👉 觀看解決方案</a>
+    <a href="#contact" class="btn btn-primary">📩 免費預約 30 分鐘 AI 盤點</a>
+    <a href="product/" class="btn btn-outline">=view 解決方案</a>
   </div>
   <div class="bento-stats">
-    <div class="bento-stat"><span class="bento-stat-num">✨ 133+ AI 模組實戰運用</span></div>
-    <div class="bento-stat"><div class="bento-stat-num">4</div><div class="bento-stat-label">語言</div></div>
-    <div class="bento-stat"><div class="bento-stat-num">24/7</div><div class="bento-stat-label">全自動</div></div>
-    <div class="bento-stat"><div class="bento-stat-num">∞</div><div class="bento-stat-label">無限可能</div></div>
+    <div class="bento-stat"><span class="bento-stat-num">已協助多位 solopreneur 建置 AI 系統</span></div>
+    <div class="bento-stat"><div class="bento-stat-num">4 hr</div><div class="bento-stat-label">每日省時</div></div>
+    <div class="bento-stat"><div class="bento-stat-num">24/7</div><div class="bento-stat-label">全自動運行</div></div>
   </div>
 </section>
 
-<!-- ═══ Pain Points ═══ -->
+<!-- Pain Points -->
 <section class="section" id="pain">
   <div class="wrap">
-    <div class="section-label" data-i18n="pain_label">瓶頸分析</div>
-    <h2 class="section-title" data-i18n="pain_title">你是否也面臨這些一人公司的瓶頸？</h2>
+    <div class="section-label">你是否也遇到這些瓶頸？</div>
+    <h2 class="section-title">一人公司的三大時間殺手</h2>
     <div class="pain-bento">
-      <div class="pain-card reveal" data-i18n="pain_1">
+      <div class="pain-card reveal">
         <span class="pain-icon">💬</span>
-        <h3 data-i18n="pain_1_title">每天被客戶私訊淹沒？</h3>
-        <p data-i18n="pain_1_desc">我們用 AI 虛擬助手幫你秒回，24 小時不休息，絕不漏單。從 FAQ 到訂單查詢，全自動應對。</p>
-        <span class="sol" data-i18n="pain_1_sol">→ AI 智能客服解決方案</span>
+        <h3>客服回不完，漏單不斷？</h3>
+        <p>凌晨三點還有客戶在問問題，你睡了就漏單，不睡就崩潰。AI 客服 24/7 秒回，從不休息。</p>
+        <span class="sol">→ AI 智能客服解決方案</span>
       </div>
-      <div class="pain-card reveal" data-i18n="pain_2">
+      <div class="pain-card reveal">
         <span class="pain-icon">📝</span>
-        <h3 data-i18n="pain_2_title">想做內容行銷卻沒時間發文？</h3>
-        <p data-i18n="pain_2_desc">AI 行銷自動化系統幫你一鍵生成社群貼文、排程發布。從靈感到上線，原本 3 小時的工作只需 15 分鐘。</p>
-        <span class="sol" data-i18n="pain_2_sol">→ 行銷自動化系統</span>
+        <h3>想做內容行銷卻沒時間？</h3>
+        <p>知道要發文但每天被庶務淹沒，三天打魚兩天曬網。AI 幫你一鍵生成、自動排程發布。</p>
+        <span class="sol">→ 行銷自動化系統</span>
       </div>
-      <div class="pain-card reveal" data-i18n="pain_3">
+      <div class="pain-card reveal">
         <span class="pain-icon">🔧</span>
-        <h3 data-i18n="pain_3_title">系統架構不穩，常常當機？</h3>
-        <p data-i18n="pain_3_desc">10+ 年資深 DevOps 專家 Lewis Lunora，用 Kubernetes、高可用架構為你的生意撐腰。穩定，就是賺錢的基礎。</p>
-        <span class="sol" data-i18n="pain_3_sol">→ 技術架構顧問服務</span>
+        <h3>系統不穩，常常當機？</h3>
+        <p>網站慢、系統掛、資料丟，你不是在修 bug 就是在怕 bug。10+ 年 DevOps 專家幫你搞定。</p>
+        <span class="sol">→ 技術架構顧問服務</span>
       </div>
     </div>
   </div>
 </section>
 
-<!-- ═══ Services ═══ -->
+<!-- Solutions -->
 <section class="section" id="services">
   <div class="wrap">
-    <div class="section-label" data-i18n="svc_label">解決方案</div>
-    <h2 class="section-title" data-i18n="svc_title">從顧問到系統，全面啟動你的 AI 數位轉型</h2>
-    <p class="section-sub" data-i18n="svc_sub">為超級個體與中小企業量身打造，讓技術成為你最好的員工</p>
-
+    <div class="section-label">解決方案</div>
+    <h2 class="section-title">從 AI 客服到行銷自動化，一次到位</h2>
+    <p class="section-sub">不賣你用不到的功能，只給你真正省時間的系統</p>
     <div class="svcs-bento">
-      <a href="solopreneur/" class="svc-card featured reveal" data-i18n="svc_1">
+      <a href="product/" class="svc-card featured reveal">
         <span class="svc-icon">🚀</span>
-        <h3 data-i18n="svc_1_title">超級個體解決方案</h3>
-        <p data-i18n="svc_1_desc">一人公司的終極自動化大腦。AI 排程、客服、行銷、數據分析全部整合，你只需要專注決策與創作。</p>
+        <h3>AI 全自動營運系統</h3>
+        <p>一人公司的終極自動化大腦。AI 排程、客服、行銷、數據分析全部整合，你只需要專注決策與創作。</p>
         <span class="svc-meta">核心方案</span>
       </a>
-      <a href="product/" class="svc-card reveal" data-i18n="svc_2">
+      <a href="product/" class="svc-card reveal">
         <span class="svc-icon">⚙️</span>
-        <h3 data-i18n="svc_2_title">行銷自動化系統</h3>
-        <p data-i18n="svc_2_desc">AI 內容生成與多平台排程發布。一篇貼文 → 自動轉換四國語言 → 排程發布。</p>
+        <h3>行銷自動化</h3>
+        <p>一篇貼文 → 自動轉四國語言 → 排程發布到 FB、IG、LINE、官網。</p>
         <span class="svc-meta">核心方案</span>
       </a>
-      <a href="ai-character.html" class="svc-card reveal" data-i18n="svc_3">
+      <a href="product/" class="svc-card reveal">
         <span class="svc-icon">🤖</span>
-        <h3 data-i18n="svc_3_title">AI 虛擬助手與客服</h3>
-        <p data-i18n="svc_3_desc">專屬知識庫的 24 小時線上接待員。串接官網、LINE、Telegram，即時回應。</p>
+        <h3>AI 客服虛擬助手</h3>
+        <p>專屬知識庫的 24 小時線上接待員，串接官網、LINE、Telegram。</p>
         <span class="svc-meta">核心方案</span>
-      </a>
-    </div>
-
-    <div class="section-label" style="margin-top:1.5rem" data-i18n="tech_label">技術生態系</div>
-    <div class="svcs-tech-grid">
-      <a href="games/" class="svc-tech-card reveal">
-        <span class="svc-tech-icon">🧩</span>
-        <span>20 款互動遊戲</span>
-      </a>
-      <a href="ai-fate.html" class="svc-tech-card reveal">
-        <span class="svc-tech-icon">🔮</span>
-        <span>AI 命理分析</span>
-      </a>
-      <a href="stock-trading/" class="svc-tech-card reveal">
-        <span class="svc-tech-icon">📊</span>
-        <span>ETF 投資預測</span>
-      </a>
-      <a href="https://t.me/ailunora_bot" class="svc-tech-card reveal" target="_blank">
-        <span class="svc-tech-icon">🛠️</span>
-        <span>Telegram AI Bot</span>
-      </a>
-      <a href="guides/" class="svc-tech-card reveal">
-        <span class="svc-tech-icon">📚</span>
-        <span>品牌知識庫</span>
-      </a>
-      <a href="student/" class="svc-tech-card reveal">
-        <span class="svc-tech-icon">🎒</span>
-        <span>學生賺分平台</span>
       </a>
     </div>
   </div>
 </section>
 
-<!-- ═══ Founder ═══ -->
+<!-- Results -->
+<section class="section">
+  <div class="wrap">
+    <div class="section-label">實際成果</div>
+    <h2 class="section-title">導入 AI 自動化後的改變</h2>
+    <div class="results-grid">
+      <div class="result-card reveal">
+        <div class="result-num">4 hr+</div>
+        <div class="result-label">每天省下的時間</div>
+      </div>
+      <div class="result-card reveal">
+        <div class="result-num">&lt;3 sec</div>
+        <div class="result-label">AI 客服平均回覆時間</div>
+      </div>
+      <div class="result-card reveal">
+        <div class="result-num">4 國</div>
+        <div class="result-label">支援語言數</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Founder -->
 <section class="section" id="about">
   <div class="wrap">
-    <div class="section-label" data-i18n="founder_label">創辦人</div>
+    <div class="section-label">關於我</div>
     <div class="founder-wrap reveal">
       <div class="founder-section">
         <div class="founder-avatar">L</div>
         <div class="founder-info">
-          <h3 data-i18n="founder_title">你的技術強大後盾 — Lewis Lunora</h3>
-          <div class="title" data-i18n="founder_role">創辦人 · 首席架構師</div>
-          <p data-i18n="founder_desc">10+ 年 DevOps、Kubernetes、GCP 雲端架構與 AI 系統整合經驗。我不只懂技術，更懂如何把複雜的技術轉化為一人公司與中小企業的變現工具。</p>
+          <h3>Lewis Lunora — 你的技術後盾</h3>
+          <div class="title">創辦人 · 首席架構師</div>
+          <p>10+ 年 DevOps、Kubernetes、GCP 雲端架構與 AI 系統整合經驗。我不只懂技術，更懂如何把複雜的技術轉化為一人公司的變現工具。</p>
           <div class="founder-chips">
             <span class="chip">☸️ Kubernetes</span>
             <span class="chip">🐳 Docker</span>
             <span class="chip">☁️ GCP</span>
             <span class="chip">⚙️ CI/CD</span>
-            <span class="chip">🔗 API</span>
             <span class="chip">🤖 AI 整合</span>
           </div>
         </div>
@@ -494,33 +418,76 @@ footer .wrap{display:flex;flex-wrap:wrap;gap:.8rem;justify-content:space-between
   </div>
 </section>
 
-<!-- ═══ Share CTA ═══ -->
-<section class="section" style="padding:1rem 1rem 0">
-  <div class="wrap" id="shareCTABanner"></div>
+<!-- Process -->
+<section class="section">
+  <div class="wrap">
+    <div class="section-label">合作流程</div>
+    <h2 class="section-title">三步啟動你的 AI 自動化</h2>
+    <div class="process-grid">
+      <div class="process-step reveal">
+        <div class="process-num">01</div>
+        <h3>免費 AI 盤點</h3>
+        <p>30 分鐘線上諮詢，了解你的業務痛點，評估哪些環節適合導入 AI 自動化。</p>
+      </div>
+      <div class="process-step reveal">
+        <div class="process-num">02</div>
+        <h3>客製化藍圖</h3>
+        <p>根據你的需求，設計專屬的自動化系統架構與執行計畫，明確交付範圍。</p>
+      </div>
+      <div class="process-step reveal">
+        <div class="process-num">03</div>
+        <h3>上線運行</h3>
+        <p>系統建置完成、測試通過後正式上線，持續優化確保穩定運行。</p>
+      </div>
+    </div>
+  </div>
 </section>
 
-<!-- ═══ CTA Form ═══ -->
+<!-- FAQ -->
+<section class="section">
+  <div class="wrap">
+    <div class="section-label">常見問題</div>
+    <h2 class="section-title">你可能想問</h2>
+    <div class="faq-list">
+      <div class="faq-item reveal">
+        <div class="faq-q" onclick="this.parentElement.classList.toggle('open')">導入 AI 自動化需要多少預算？</div>
+        <div class="faq-a">每位客戶的需求不同，我們先透過免費 30 分鐘諮詢了解你的狀況，再提供客製化方案與報價。從小規模開始，逐步擴大也是可行的策略。</div>
+      </div>
+      <div class="faq-item reveal">
+        <div class="faq-q" onclick="this.parentElement.classList.toggle('open')">我完全不懂技術，可以導入嗎？</div>
+        <div class="faq-a">完全可以。我們的服務就是幫你處理所有技術問題，你只需要告訴我你的業務需求，剩下的交給我們。</div>
+      </div>
+      <div class="faq-item reveal">
+        <div class="faq-q" onclick="this.parentElement.classList.toggle('open')">導入後系統出問題怎麼辦？</div>
+        <div class="faq-a">我們提供技術支援與維護服務，確保系統穩定運行。所有系統都建立在高可用架構上，最大限度避免當機風險。</div>
+      </div>
+      <div class="faq-item reveal">
+        <div class="faq-q" onclick="this.parentElement.classList.toggle('open')">需要多久才能看到效果？</div>
+        <div class="faq-a">視系統複雜度而定，簡單的 AI 客服通常 1-2 週可以上線；完整的自動化系統約需 4-8 週。上線後立即開始節省時間。</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
 <section class="section" id="contact">
   <div class="wrap">
-    <div class="cta-form-wrap">
-      <h2 data-i18n="cta_title">準備好啟動你的 AI 自動化獲利了嗎？</h2>
-      <p class="desc" data-i18n="cta_desc">免費預約 30 分鐘線上諮詢，我們將為你的品牌客製化一套自動化藍圖。</p>
+    <div class="cta-form-wrap reveal">
+      <h2>準備好讓 AI 幫你工作了嗎？</h2>
+      <p class="desc">免費預約 30 分鐘線上諮詢，我們將為你評估最適合的 AI 自動化方案。</p>
       <form class="contact-form" id="contactForm" onsubmit="return handleContact(event)">
-        <label for="f_name" data-i18n="form_name">你的名字/暱稱 *</label>
+        <label for="f_name">你的名字/暱稱 *</label>
         <input type="text" id="f_name" name="姓名" required placeholder="例如：小明">
-
-        <label for="f_contact" data-i18n="form_contact">Line ID 或 手機號碼 *</label>
+        <label for="f_contact">Line ID 或 手機號碼 *</label>
         <input type="text" id="f_contact" name="聯絡方式" required placeholder="方便即時聯絡">
-
-        <label for="f_need" data-i18n="form_need">目前最想解決的瓶頸</label>
+        <label for="f_need">目前最想解決的問題</label>
         <select id="f_need" name="需求">
           <option value="客服回覆太慢">客服回覆太慢</option>
           <option value="想自動化發文">想自動化發文</option>
           <option value="想建置品牌網站">想建置品牌網站</option>
           <option value="其他">其他</option>
         </select>
-
-        <button type="submit" class="btn btn-primary" id="contactBtn" data-i18n="form_btn">📩 發送申請，預約免費技術諮詢</button>
+        <button type="submit" class="btn btn-primary" id="contactBtn">📩 立即預約免費諮詢</button>
         <div class="contact-result" id="contactResult"></div>
       </form>
     </div>
@@ -529,43 +496,45 @@ footer .wrap{display:flex;flex-wrap:wrap;gap:.8rem;justify-content:space-between
 
 <section class="section reveal" data-feed></section>
 
-<!-- ═══ Footer ═══ -->
+<!-- Footer -->
 <footer>
   <div class="wrap">
-      <div class="footer-info" data-i18n="footer_desc">
-       技術顧問 · 系統整合 · AI 自動化 · 專案合作<br>
-      <a href="https://t.me/lewislunora">✈️ Telegram：@lewislunora</a>
-      &nbsp;·&nbsp;
-      <a href="mailto:lewislunora@gmail.com">📧 lewislunora@gmail.com</a>
+    <div class="footer-main">
+      <div class="footer-info">
+        技術顧問 · 系統整合 · AI 自動化 · 專案合作<br>
+        <a href="https://t.me/lewislunora">✈️ Telegram</a> · <a href="mailto:lewislunora@gmail.com">📧 Email</a>
+      </div>
+      <div class="footer-links" style="margin-top:.6rem">
+        <a href="privacy.html">隱私政策</a>
+        <a href="tos.html">服務條款</a>
+        <a href="admin/analytics.html">流量分析</a>
+      </div>
     </div>
-    <div class="footer-links">
-      <a href="privacy.html">隱私</a>
-      <a href="tos.html">條款</a>
-      <a href="admin/analytics.html">📊 流量</a>
+    <div class="footer-labs">
+      <div class="footer-labs-title">Labs</div>
+      <a href="games/">20 款互動遊戲</a>
+      <a href="stock-trading/">ETF 投資預測</a>
+      <a href="student/">學生賺分平台</a>
+      <a href="community/">社群討論</a>
     </div>
-    <div class="footer-copy">© 2026 翔川 Neo｜曜科技 |Ai_bot</div>
+    <div class="footer-copy">© 2026 翔川 Neo｜曜科技</div>
   </div>
   <div class="footer-counter" id="visitCounter"></div>
 </footer>
+
 <script>
 (function(){
   var el=document.getElementById('visitCounter');
   if(!el)return;
   var api=location.hostname.includes('github.io')?'https://lewislunora.onrender.com/api/analytics/summary?since=24':'/api/analytics/summary?since=24';
   fetch(api).then(function(r){return r.json()}).then(function(d){
-    el.innerHTML='<span>👁️</span> 今日 '+d.total+' 次瀏覽 · 累計 '+d.total_all+' 次';
-    el.style.cssText='text-align:center;padding:.5rem 1rem .8rem;font-size:13px;color:rgba(255,255,255,.2);letter-spacing:.3px;border-top:1px solid rgba(255,255,255,.02)';
-    el.querySelector('span').style.cssText='display:inline-block;margin-right:4px';
+    el.innerHTML='今日 '+d.total+' 次瀏覽 · 累計 '+d.total_all+' 次';
+    el.style.cssText='text-align:center;padding:.5rem 1rem .8rem;font-size:12px;color:rgba(255,255,255,.15);letter-spacing:.3px;border-top:1px solid rgba(255,255,255,.02)';
   }).catch(function(){
-    el.innerHTML='<span>👁️</span> 瀏覽統計';
-    el.style.cssText='text-align:center;padding:.5rem 1rem .8rem;font-size:13px;color:rgba(255,255,255,.12);letter-spacing:.3px;border-top:1px solid rgba(255,255,255,.02)';
+    el.innerHTML='';
   });
 })();
 </script>
-<style>
-.footer-counter{opacity:0;animation:counter-fade .8s ease-out .5s forwards}
-@keyframes counter-fade{to{opacity:1}}
-</style>
 
 <div class="gsi-container" id="gsi-user-area"></div>
 
@@ -581,7 +550,6 @@ footer .wrap{display:flex;flex-wrap:wrap;gap:.8rem;justify-content:space-between
   <div class="chat-suggestions" id="chatSuggestions" style="display:none">
     <button onclick="suggestClick('方案與價格')">💰 方案與價格</button>
     <button onclick="suggestClick('有哪些功能')">⚡ 功能介紹</button>
-    <button onclick="suggestClick('支援哪些平台')">🔗 支援平台</button>
     <button onclick="suggestClick('如何開始')">🚀 如何開始</button>
   </div>
   <div class="chat-input-area" style="display:none">
@@ -596,9 +564,9 @@ footer .wrap{display:flex;flex-wrap:wrap;gap:.8rem;justify-content:space-between
 <script src="js/feed.js"></script>
 <script src="js/features.js"></script>
 <script>
-/* Cross-platform auto-detection + adaptive layout */
+/* Cross-platform auto-detection */
 (function(){
-  var w=window,d=document,e=d.documentElement,g=d.querySelector('meta[name=viewport]');
+  var d=document,e=d.documentElement;
   function getDevice(){
     var ua=navigator.userAgent||'',w=window.innerWidth||e.clientWidth;
     if(/iPad|Tablet/i.test(ua)||(w>=768&&w<=1024&&('ontouchstart' in window)))return 'tablet';
@@ -608,216 +576,133 @@ footer .wrap{display:flex;flex-wrap:wrap;gap:.8rem;justify-content:space-between
   var dev=getDevice();
   d.documentElement.setAttribute('data-device',dev);
   d.body.setAttribute('data-device',dev);
-  if(dev==='mobile'){d.documentElement.style.setProperty('--fs-mega','clamp(28px,8vw,42px)');d.documentElement.style.setProperty('--fs-hero','clamp(22px,6vw,34px)');d.documentElement.style.setProperty('--fs-lg','clamp(18px,4.5vw,26px)');}
-  if(dev==='tablet'){d.documentElement.style.setProperty('--fs-mega','clamp(32px,6vw,56px)');d.documentElement.style.setProperty('--fs-lg','clamp(20px,3.5vw,32px)');}
-  var badge=d.createElement('div');
-  badge.className='device-badge';
-  var icons={desktop:'💻',tablet:'📱',mobile:'📲'};
-  var labels={desktop:'Desktop',tablet:'Tablet',mobile:'Mobile'};
-  badge.innerHTML=icons[dev]+' '+labels[dev];
-  badge.style.cssText='position:fixed;bottom:1.2rem;left:1.2rem;z-index:98;background:rgba(10,14,39,.7);backdrop-filter:blur(12px);border:1px solid rgba(255,255,255,.08);border-radius:20px;padding:.3rem .8rem;font-size:11px;color:rgba(255,255,255,.35);letter-spacing:.3px;pointer-events:none;transition:opacity .3s;opacity:0;animation:badge-in .5s ease-out 1s forwards';
-  d.body.appendChild(badge);
-  setTimeout(function(){badge.style.opacity='0';setTimeout(function(){badge.remove()},500)},5000);
-  var style=d.createElement('style');
-  style.textContent='@keyframes badge-in{to{opacity:1}}';
-  d.head.appendChild(style);
+  if(dev==='mobile'){d.documentElement.style.setProperty('--fs-mega','clamp(26px,8vw,40px)');d.documentElement.style.setProperty('--fs-lg','clamp(17px,4.5vw,25px)');}
+  if(dev==='tablet'){d.documentElement.style.setProperty('--fs-mega','clamp(30px,6vw,52px)');d.documentElement.style.setProperty('--fs-lg','clamp(19px,3.5vw,30px)');}
   window.addEventListener('resize',function(){
     var nd=getDevice();
     if(nd!==dev){d.documentElement.setAttribute('data-device',nd);d.body.setAttribute('data-device',nd);dev=nd;}
   });
 })();
 </script>
-<style>
-/* 2026 mesh gradient animation on hero */
-@keyframes mesh-shift{
-  0%{background-position:0% 50%}
-  50%{background-position:100% 50%}
-  100%{background-position:0% 50%}
-}
-.hero-glow{
-  animation:mesh-shift 12s ease-in-out infinite;
-  background-size:200% 200%!important;
-}
-/* Floating orbs — 2026 immersive */
-@keyframes float-orb{
-  0%,100%{transform:translate(0,0) scale(1)}
-  33%{transform:translate(15px,-20px) scale(1.05)}
-  66%{transform:translate(-10px,12px) scale(.97)}
-}
-.hero::after{
-  content:'';position:absolute;top:20%;right:10%;width:180px;height:180px;border-radius:50%;
-  background:radial-gradient(circle,rgba(123,104,238,.08),transparent 70%);
-  pointer-events:none;animation:float-orb 8s ease-in-out infinite
-}
-/* Device-specific layout */
-[data-device="mobile"] nav{padding:.4rem .8rem}
-[data-device="mobile"] .nav-brand{font-size:12px}
-[data-device="mobile"] .nav-links a{font-size:10px;gap:.2rem}
-[data-device="mobile"] .hero{padding-top:4rem}
-[data-device="mobile"] .bento-stats{max-width:240px}
-[data-device="mobile"] .footer-counter{font-size:10px!important}
-[data-device="tablet"] .svcs-bento{grid-template-columns:1fr 1fr}
-[data-device="tablet"] .svcs-bento .svc-card.featured{grid-column:1/-1;grid-row:auto}
-[data-device="tablet"] .svcs-tech-grid{grid-template-columns:repeat(4,1fr)}
-</style>
 <script>
 /* Custom cursor */
-(function(){const c=document.getElementById('cursor');if(!c||matchMedia('(hover:none)').matches)return;document.addEventListener('mousemove',e=>{c.style.left=e.clientX+'px';c.style.top=e.clientY+'px'});document.querySelectorAll('a,button,.pain-card,.svc-card,.svc-tech-card,.bento-stat,.founder-avatar,.chip').forEach(el=>{el.addEventListener('mouseenter',()=>c.classList.add('hover'));el.addEventListener('mouseleave',()=>c.classList.remove('hover'))})})();
+(function(){const c=document.getElementById('cursor');if(!c||matchMedia('(hover:none)').matches)return;document.addEventListener('mousemove',e=>{c.style.left=e.clientX+'px';c.style.top=e.clientY+'px'});document.querySelectorAll('a,button,.pain-card,.svc-card,.bento-stat,.founder-avatar,.chip,.result-card,.process-step,.faq-item').forEach(el=>{el.addEventListener('mouseenter',()=>c.classList.add('hover'));el.addEventListener('mouseleave',()=>c.classList.remove('hover'))})})();
 
 /* Scroll reveal */
 (function(){if(matchMedia('(prefers-reduced-motion:reduce)').matches)return;const ro=new IntersectionObserver(entries=>{entries.forEach(e=>{if(e.isIntersecting){e.target.classList.add('visible');ro.unobserve(e.target)}})},{threshold:.1});document.querySelectorAll('.reveal').forEach(el=>ro.observe(el))})();
 
+/* FAQ toggle */
+document.querySelectorAll('.faq-q').forEach(function(q){q.addEventListener('click',function(){q.parentElement.classList.toggle('open')})});
+
 let currentLang='zh-TW';
 const LANG={
   en:{
-    page_title:'XiangChuan Neo｜YaoTech — AI Automation · Solopreneur Solutions',
-    hero_label:'AI Automation · Solopreneur Solutions',
-    hero_l1:'Save 4 Hours Daily',
-    hero_l2:'Build a 24/7 Automated Money System with AI',
-    hero_desc:'Designed for solopreneurs and one-person businesses. From AI customer service to marketing automation — let the system handle the busywork while you focus on what actually makes money.',
-    hero_btn:'📩 Free 30-min AI Audit',
-    hero_btn2:'👉 View Solutions',
-    pain_label:'Bottlenecks',
-    pain_title:'Facing These One-Person Business Bottlenecks?',
+    page_title:'XiangChuan Neo — AI Automation That Saves You 4 Hours Daily',
+    hero_badge:'AI Automation · For Solopreneurs',
+    hero_l1:'Save 4 Hours Every Day',
+    hero_l2:'With AI Automation',
+    hero_desc:'From AI customer service to marketing automation — let the system handle the repetitive work so you can focus on what actually makes money.',
+    hero_btn:'📩 Book Free 30-min AI Audit',
+    hero_btn2:'view Solutions',
+    pain_label:'Are You Facing These Bottlenecks?',
+    pain_title:'Three Time Killers for Solopreneurs',
     pain_1_title:'Drowning in customer messages?',
-    pain_1_desc:'Our AI virtual assistant replies instantly, 24/7 — never miss a lead. From FAQs to order inquiries, fully automated.',
-    pain_1_sol:'→ AI Customer Service Solutions',
+    pain_1_desc:'Customers message at 3 AM — sleep and miss leads, or stay awake and burn out. AI replies 24/7 in seconds.',
+    pain_1_sol:'→ AI Customer Service',
     pain_2_title:'No time for content marketing?',
-    pain_2_desc:'AI marketing automation generates and schedules posts across platforms. What took 3 hours now takes 15 minutes.',
-    pain_2_sol:'→ Marketing Automation System',
+    pain_2_desc:'You know you should post, but daily operations eat all your time. AI generates and schedules posts for you.',
+    pain_2_sol:'→ Marketing Automation',
     pain_3_title:'Unstable systems that crash?',
-    pain_3_desc:'10+ years senior DevOps expert Lewis Lunora backs your business with Kubernetes high-availability architecture.',
-    pain_3_sol:'→ Technical Architecture Consulting',
+    pain_3_desc:'Slow website, downtime, data loss — 10+ year DevOps expert keeps your systems running reliably.',
+    pain_3_sol:'→ Technical Consulting',
     svc_label:'Solutions',
-    svc_title:'From Consulting to Systems, Full AI Digital Transformation',
-    svc_sub:'Tailored for solopreneurs and SMEs — making technology your best employee',
-    tech_label:'Tech Ecosystem',
-    svc_1_title:'Solopreneur Solution',
-    svc_1_desc:'The ultimate automation brain for one-person businesses. AI scheduling, customer service, marketing, and data analytics — all integrated.',
+    svc_title:'From AI Customer Service to Marketing — All In One',
+    svc_sub:'No bloated features you won\'t use — just systems that save you time',
+    svc_1_title:'AI Full Automation System',
+    svc_1_desc:'The ultimate automation brain for one-person businesses. AI scheduling, customer service, marketing, analytics — all integrated.',
     svc_2_title:'Marketing Automation',
-    svc_2_desc:'AI content generation & multi-platform scheduling dashboard. One post → auto-translate → schedule to FB, IG, LINE, website.',
-    svc_3_title:'AI Virtual Assistant & Support',
-    svc_3_desc:'24/7 online receptionist with your brand knowledge base. Integrate with website, LINE, Telegram for instant responses.',
-    founder_label:'Founder',
-    founder_title:'Your Powerful Technical Backbone — Lewis Lunora',
+    svc_2_desc:'One post → auto-translate to 4 languages → schedule to FB, IG, LINE, website.',
+    svc_3_title:'AI Virtual Assistant',
+    svc_3_desc:'24/7 receptionist with your brand knowledge base. Connects to website, LINE, Telegram.',
+    result_label:'Actual Results',
+    result_title:'Changes After AI Automation',
+    result_1:'4 hr+',
+    result_1_label:'Time saved daily',
+    result_2:'<3 sec',
+    result_2_label:'Avg AI response time',
+    result_3:'4 langs',
+    result_3_label:'Languages supported',
+    founder_label:'About Me',
+    founder_title:'Lewis Lunora — Your Technical Backbone',
     founder_role:'Founder · Chief Architect',
-    founder_desc:'10+ years of DevOps, Kubernetes, GCP cloud architecture and AI system integration experience. I don\'t just understand technology — I know how to transform complex tech into monetization tools for solopreneurs and SMEs.',
-    cta_title:'Ready to Launch Your AI Automation Profit Engine?',
-    cta_desc:'Free 30-min online consultation. We\'ll customize an automation blueprint for your brand.',
-    form_name:'Your Name/Nickname *',
-    form_contact:'Line ID or Phone Number *',
+    founder_desc:'10+ years DevOps, Kubernetes, GCP cloud architecture and AI system integration. I don\'t just understand technology — I know how to turn complex tech into monetization tools.',
+    process_label:'How We Work',
+    process_title:'Three Steps to AI Automation',
+    step_1_title:'Free AI Audit',
+    step_1_desc:'30-min online consultation to understand your pain points and evaluate AI automation opportunities.',
+    step_2_title:'Custom Blueprint',
+    step_2_desc:'Design your专属 automation architecture and execution plan with clear deliverables.',
+    step_3_title:'Go Live',
+    step_3_desc:'System built, tested, and launched. Continuous optimization for stable operation.',
+    faq_label:'FAQ',
+    faq_title:'Common Questions',
+    faq_q1:'How much does AI automation cost?',
+    faq_a1:'Every client is different. We start with a free 30-min consultation to understand your situation, then provide a customized plan and quote.',
+    faq_q2:'I\'m not technical — can I still adopt AI?',
+    faq_a2:'Absolutely. We handle all technical aspects. You just tell us your business needs — we take care of the rest.',
+    faq_q3:'What if something goes wrong after implementation?',
+    faq_a3:'We provide technical support and maintenance. All systems are built on high-availability architecture to minimize downtime.',
+    faq_q4:'How soon will I see results?',
+    faq_a4:'Simple AI customer service can go live in 1-2 weeks; full automation systems take about 4-8 weeks. You start saving time immediately after launch.',
+    cta_title:'Ready to Let AI Work for You?',
+    cta_desc:'Free 30-min online consultation. We\'ll evaluate the best AI automation plan for your business.',
+    form_name:'Your Name *',
+    form_contact:'Line ID or Phone *',
     form_need:'Biggest Challenge Right Now',
-    form_opt_1:'Slow customer replies',
-    form_opt_2:'Want automated posting',
-    form_opt_3:'Want to build a brand site',
-    form_opt_4:'Other',
-    form_btn:'📩 Send Request — Book Free Tech Consultation',
-    feed_label:'Updates',
-    feed_title:'👀 Latest',
-    feed_sub:'Insights · Tech Notes · Project Progress',
-    footer_desc:'Tech consulting · System integration · AI automation · Collaboration<br>',
-    footer_copy:'© 2026 XiangChuan Neo｜YaoTech |Ai_bot'
-  },
-  'zh-CN':{
-    page_title:'翔川 Neo｜曜科技 — AI 自动化 · 超级个体解决方案',
-    hero_label:'AI 自动化 · 超级个体解决方案',
-    hero_l1:'每天省下 4 小时',
-    hero_l2:'用 AI 打造 24/7 自动化赚钱系统',
-    hero_desc:'专为「超级个体」与「一人公司」设计。从 AI 智能客服到自动化营销，帮你把繁琐庶务交给系统，专注在真正赚钱的核心业务。',
-    hero_btn:'📩 30 分钟免费 AI 健检',
-    hero_btn2:'👉 观看解决方案',
-    pain_label:'瓶颈分析',
-    pain_title:'你是否也面临这些一人公司的瓶颈？',
-    hero_btn_main:'📩 立即免费预约：30 分钟 AI 自动化健检',
-    hero_btn_alt:'👉 观看超级个体解决方案',
-    trust_1:'✨ 133+ AI 模块实战运用',
-    trust_2:'🌍 4 国语言国际化支持',
-    trust_3:'⚡ 24/7 全自动不间断运作',
-    pain_title:'你是否也面临这些一人公司的瓶颈？',
-    pain_1_title:'每天被客户私讯淹没？',
-    pain_1_desc:'我们用 AI 虚拟助手帮你秒回，24 小时不休息，绝不漏单。从 FAQ 到订单查询，全自动应对。',
-    pain_1_sol:'→ AI 智能客服解决方案',
-    pain_2_title:'想做内容营销却没时间发文？',
-    pain_2_desc:'AI 营销自动化系统帮你一键生成社群贴文、排程发布。从灵感到上线，原本 3 小时的工作只需 15 分钟。',
-    pain_2_sol:'→ 营销自动化系统',
-    pain_3_title:'系统架构不稳，常常当机？',
-    pain_3_desc:'10+ 年资深 DevOps 专家 Lewis Lunora，用 Kubernetes、高可用架构为你的生意撑腰。',
-    pain_3_sol:'→ 技术架构顾问服务',
-    svc_label:'解决方案',
-    svc_title:'从顾问到系统，全面启动你的 AI 数字化转型',
-    svc_sub:'为超级个体与中小企业量身打造，让技术成为你最好的员工',
-    tech_label:'技术生态系',
-    svc_1_title:'超级个体解决方案',
-    svc_1_desc:'一人公司的终极自动化大脑。AI 排程、客服、营销、数据分析全部整合，你只需要专注决策与创作。',
-    svc_2_title:'营销自动化系统',
-    svc_2_desc:'AI 内容生成与多平台排程发布后台。一篇贴文 → 自动转换四国语言 → 排程发布到 FB、IG、LINE、官网。',
-    svc_3_title:'AI 虚拟助手与客服',
-    svc_3_desc:'专属品牌知识库的 24 小时线上接待员。串接官网、LINE、Telegram，让每个访客都能得到即时回應。',
-    founder_label:'创办人',
-    founder_title:'你的技术强大后盾 — Lewis Lunora',
-    founder_role:'创办人 · 首席架构师',
-    founder_desc:'10+ 年 DevOps、Kubernetes、GCP 云端架构与 AI 系统整合经验。我不只懂技术，更懂如何把复杂的技术转化为一人公司与中小企业的变现工具。',
-    cta_title:'准备好启动你的 AI 自动化获利了吗？',
-    cta_desc:'免费预约 30 分钟在线咨询，我们将为你的品牌定制化一套自动化蓝图。',
-    form_name:'你的名字/昵称 *',
-    form_contact:'Line ID 或 手机号码 *',
-    form_need:'目前最想解决的瓶颈',
-    form_opt_1:'客服回复太慢',
-    form_opt_2:'想自动化发文',
-    form_opt_3:'想建置品牌网站',
-    form_opt_4:'其他',
-    form_btn:'📩 发送申请，预约免费技术咨询',
-    feed_label:'最新动态',
-    feed_title:'👀 翔川日常',
-    feed_sub:'观点分享 · 技术笔记 · 项目进度',
-    footer_desc:'技术顾问 · 系统整合 · AI 自动化 · 项目合作<br>',
-    footer_copy:'© 2026 翔川 Neo｜曜科技 |Ai_bot'
+    form_btn:'📩 Book Free Consultation Now',
+    footer_copy:'© 2026 XiangChuan Neo'
   }
 };
-function switchLang(val){
-  localStorage.setItem('lang',val);
-  if(val==='zh-TW'){location.reload();return}
-  const t=LANG[val];if(!t)return;
-  document.documentElement.lang=val;
-  document.title=t.page_title||document.title;
-  document.querySelectorAll('[data-i18n]').forEach(el=>{
-    const k=el.dataset.i18n;
-    if(t[k]){el.innerHTML=t[k]}
-  })
+function switchLang(lang){
+  if(!LANG[lang])return;
+  currentLang=lang;
+  var t=LANG[lang];
+  document.title=t.page_title;
+  document.querySelectorAll('[data-i18n]').forEach(function(el){
+    var k=el.getAttribute('data-i18n');
+    if(t[k])el.innerHTML=t[k];
+  });
+  localStorage.setItem('site_lang',lang);
 }
-async function handleContact(e){
+(function(){var l=localStorage.getItem('site_lang');if(l&&LANG[l])switchLang(l)})();
+</script>
+<script>
+/* Contact form handler */
+function handleContact(e){
   e.preventDefault();
-  const btn=document.getElementById('contactBtn');
-  const result=document.getElementById('contactResult');
-  const form=document.getElementById('contactForm');
-  const fd=new FormData(form);const data={};
-  fd.forEach((v,k)=>{data[k]=v});
-  btn.disabled=true;btn.textContent='送出中...';result.style.display='none';
-  const apiUrl=location.hostname.includes('github.io')?'https://lewislunora.onrender.com/api/contact':'/api/contact';
-  const ac=new AbortController();const timer=setTimeout(()=>ac.abort(),10000);
-  try{
-    const res=await fetch(apiUrl,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(data),signal:ac.signal});
-    clearTimeout(timer);const json=await res.json();
-    if(res.ok){result.textContent='✅ 預約成功！我們會盡快與您聯繫。';result.style.color='#00d4ff';form.reset()}
-    else{result.textContent='❌ '+(json.message||'送出失敗，請重試');result.style.color='#ff6b6b'}
-  }catch(err){
-    result.textContent=err.name==='AbortError'?'❌ 伺服器無回應（逾時），您的資料已儲存在本地，我們會儘快聯繫您':'❌ 網路錯誤，請稍後再試';
-    result.style.color='#ff6b6b';
-    try{const existing=JSON.parse(localStorage.getItem('pending_contacts')||'[]');existing.push({...data,_ts:Date.now()});localStorage.setItem('pending_contacts',JSON.stringify(existing))}catch(_){}
-  }
-  result.style.display='block';btn.disabled=false;btn.textContent='📩 發送申請，預約免費技術諮詢';return false
+  var btn=document.getElementById('contactBtn');
+  var result=document.getElementById('contactResult');
+  var name=document.getElementById('f_name').value;
+  var contact=document.getElementById('f_contact').value;
+  var need=document.getElementById('f_need').value;
+  btn.disabled=true;btn.textContent='⏳ 發送中...';
+  var api=location.hostname.includes('github.io')?'https://lewislunora.onrender.com/api/contact':'/api/contact';
+  fetch(api,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({姓名:name,聯絡方式:contact,需求:need})})
+  .then(function(r){return r.json()})
+  .then(function(d){
+    btn.textContent='✅ 已送出！我們會盡快聯繫你';
+    result.style.display='block';result.style.color='#00d4ff';
+    result.textContent='感謝你的諮詢申請，我們會在 24 小時內與你聯繫！';
+    setTimeout(function(){btn.disabled=false;btn.textContent='📩 立即預約免費諮詢'},5000);
+  })
+  .catch(function(){
+    btn.textContent='❌ 發送失敗，請直接聯繫';
+    result.style.display='block';result.style.color='#ff6b6b';
+    result.textContent='發送失敗，請直接聯繫 lewislunora@gmail.com';
+    setTimeout(function(){btn.disabled=false;btn.textContent='📩 立即預約免費諮詢'},5000);
+  });
+  return false;
 }
-(function(){
-  const api = location.hostname.includes('github.io') ? 'https://lewislunora.onrender.com/api/analytics/track' : '/api/analytics/track';
-  try {
-    const d = {page:location.pathname, ref:document.referrer, ts:Date.now()};
-    if (navigator.sendBeacon) { navigator.sendBeacon(api, JSON.stringify(d)); }
-    else { fetch(api, {method:'POST', body:JSON.stringify(d), headers:{'Content-Type':'application/json'}, keepalive:true}); }
-  } catch(e) {}
-})();
-(function(){if(!localStorage.getItem('lang')){var n=(navigator.language||navigator.userLanguage||'').toLowerCase();localStorage.setItem('lang',n.startsWith('en')?'en':n.startsWith('zh-cn')||n.startsWith('zh-hans')?'zh-CN':'zh-TW')}})();
-const savedLang=localStorage.getItem('lang');
-if(savedLang&&savedLang!=='zh-TW'){document.querySelector('.lang-select').value=savedLang;switchLang(savedLang)}
 </script>
 </body>
 </html>
