@@ -14,21 +14,22 @@
 <script src="../auth-guard.js"></script>
 <link rel="stylesheet" href="../widget.css">
 <style>
-* { margin:0; padding:0; box-sizing:border-box; }
-:root {
-  --fs-hero: clamp(36px,6vw + 18px,72px);
-  --fs-lg: clamp(28px,3.2vw + 16px,44px);
-  --fs-base: clamp(22px,1.8vw + 16px,32px);
-  --fs-sm: clamp(20px,1.4vw + 14px,28px);
-  --fs-xs: clamp(18px,1.2vw + 12px,24px);
+*{margin:0;padding:0;box-sizing:border-box;scroll-behavior:smooth}
+:root{
+  --fs-hero:clamp(32px,5vw + 14px,64px);
+  --fs-lg:clamp(24px,3vw + 12px,42px);
+  --fs-base:clamp(16px,1.4vw + 10px,22px);
+  --fs-sm:clamp(14px,1.2vw + 8px,18px);
+  --fs-xs:clamp(12px,1vw + 6px,15px)
 }
-html { font-size: 16px; }
-body {
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
-  background: #0a0e27;
-  color: #fff;
-  overflow-x: hidden;
+html{font-size:16px;-webkit-text-size-adjust:100%}
+body{
+  font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',system-ui,sans-serif;
+  background:#0a0e27;color:#fff;overflow-x:hidden;
+  -webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;text-rendering:optimizeLegibility
 }
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}html{scroll-behavior:auto}}
+@media(prefers-contrast:high){body{color:#fff}.hero p,.section-sub,.feature-card p,.price-desc,.price-features li,.footer-links a,.footer-copy,.stat-label{color:rgba(255,255,255,.75)!important}}
 
 nav {
   position: fixed; top:0; left:0; right:0; z-index:100;
@@ -313,6 +314,37 @@ footer {
 }
 .toast.show { opacity: 1; }
 
+@media(prefers-color-scheme:light){
+  body{background:#f8f9fc;color:#1a1a2e}
+  nav{background:rgba(248,249,252,.95);border-bottom:1px solid rgba(0,0,0,.06)}
+  .nav-links a{color:rgba(26,26,46,.6)}
+  .nav-links a:hover{color:#1a1a2e}
+  .lang-select{background:rgba(0,0,0,.06);border-color:rgba(0,0,0,.1);color:#1a1a2e}
+  .hero p,.section-sub,.feature-card p,.price-desc,.price-features li{color:rgba(26,26,46,.55)}
+  .feature-card,.price-card{background:rgba(255,255,255,.8);border-color:rgba(0,0,0,.06)}
+  .feature-card:hover{background:#fff}
+  .feature-card h3{color:#1a1a2e}
+  .chat-container{background:rgba(0,0,0,.06)}
+  .chat-msg.ai{background:rgba(123,104,238,.08);border-color:rgba(123,104,238,.15);color:#1a1a2e}
+  .chat-suggestions button{background:rgba(0,0,0,.04);border-color:rgba(0,0,0,.08);color:rgba(26,26,46,.5)}
+  .chat-suggestions button:hover{background:rgba(0,212,255,.1);border-color:#00d4ff;color:#1a1a2e}
+  .chat-input input,.contact-form input,.contact-form select,.contact-form textarea{background:rgba(255,255,255,.8);border-color:rgba(0,0,0,.1);color:#1a1a2e}
+  .chat-input input::placeholder,.contact-form input::placeholder,.contact-form textarea::placeholder{color:rgba(26,26,46,.3)}
+  .demo-section{background:rgba(255,255,255,.5);border-color:rgba(0,0,0,.06)}
+  .demo-header .tab{color:rgba(26,26,46,.5)}
+  .demo-header .tab.active{background:rgba(255,255,255,.8);color:#1a1a2e;border-color:rgba(0,0,0,.08)}
+  .demo-content pre{background:rgba(0,0,0,.04);color:rgba(26,26,46,.75)}
+  .price-card.featured{background:rgba(0,212,255,.04)}
+  .price-card.featured{border-color:#00d4ff}
+  .stat-label,.price-usd,.btn-share-plan,.footer-copy{color:rgba(26,26,46,.4)!important}
+  .footer-links a{color:rgba(26,26,46,.35)}
+  footer{border-color:rgba(0,0,0,.05)}
+  .btn-outline{border-color:rgba(0,0,0,.15);color:#1a1a2e}
+  .btn-outline:hover{background:rgba(0,0,0,.04)}
+  .contact-form label{color:rgba(26,26,46,.5)}
+  .contact-form select option{background:#fff;color:#1a1a2e}
+  .toast{background:rgba(0,212,255,.85);color:#fff}
+}
 @media(max-width:900px){
   .features-grid{grid-template-columns:1fr 1fr}
   .nav-links{gap:1rem}
@@ -1425,6 +1457,7 @@ document.addEventListener('DOMContentLoaded', function() {
     wt.textContent = now.getHours().toString().padStart(2,'0') + ':' + now.getMinutes().toString().padStart(2,'0');
   }
 
+  if(!localStorage.getItem('lang')){var n=(navigator.language||navigator.userLanguage||'').toLowerCase();localStorage.setItem('lang',n.startsWith('en')?'en':n.startsWith('zh-cn')||n.startsWith('zh-hans')?'zh-CN':'zh-TW')}
   var savedLang = localStorage.getItem('lang');
   if (savedLang && savedLang !== 'zh-TW') {
     var sel = document.querySelector('.lang-select');
@@ -1461,6 +1494,7 @@ document.addEventListener('DOMContentLoaded', function() {
 <script src="https://accounts.google.com/gsi/client" async defer></script>
 <script src="../widget.js"></script>
 <script src="../share.js"></script>
+<script src="../js/features.js"></script>
 <script>
 (function(){
   var api = location.hostname.includes('github.io') ? 'https://lewislunora.onrender.com/api/analytics/track' : '/api/analytics/track';

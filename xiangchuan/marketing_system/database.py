@@ -15,6 +15,8 @@ DB_TABLES = [
     "accounts", "contents", "schedules", "analytics",
     "ai_templates", "kb_entries", "kb_pending", "contacts", "users",
     "page_views", "geo_cache",
+    "comments", "reactions", "feed_posts", "community_threads",
+    "community_replies", "article_views",
 ]
 
 

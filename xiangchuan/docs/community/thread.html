@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>討論串 — 翔川 Neo 社群</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{
+  font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',system-ui,sans-serif;
+  background:#0a0e27;color:#e8ecf4;line-height:1.6;
+  -webkit-font-smoothing:antialiased
+}
+.header{text-align:center;padding:3rem 1.5rem 1rem;background:radial-gradient(ellipse at top,rgba(123,104,238,0.06) 0%,transparent 60%)}
+.back-link{display:inline-block;margin-bottom:1rem;font-size:.85rem;color:rgba(255,255,255,0.3);text-decoration:none}
+.back-link:hover{color:#7b68ee}
+.container{max-width:680px;margin:0 auto;padding:0 1.5rem}
+.thread-title{font-size:clamp(22px,3vw,32px);font-weight:700;margin-bottom:.5rem}
+.thread-meta{font-size:13px;color:rgba(255,255,255,0.3);display:flex;gap:1rem;margin-bottom:1.5rem;flex-wrap:wrap}
+.thread-meta .anonymous-tag{background:rgba(123,104,238,0.12);color:#7b68ee;padding:0 6px;border-radius:3px;font-size:11px}
+.thread-content{font-size:clamp(14px,1.2vw,17px);color:rgba(255,255,255,0.7);line-height:1.8;margin-bottom:2rem;white-space:pre-wrap}
+.reply-section h3{font-size:1rem;font-weight:600;margin-bottom:1rem;color:rgba(255,255,255,0.5)}
+.reply-list{}
+.reply-item{
+  padding:.8rem 0;border-bottom:1px solid rgba(255,255,255,0.03)
+}
+.reply-item:last-child{border-bottom:none}
+.reply-header{font-size:12px;color:rgba(255,255,255,0.3);margin-bottom:.3rem;display:flex;gap:.5rem}
+.reply-body{font-size:clamp(13px,1.1vw,15px);color:rgba(255,255,255,0.65);white-space:pre-wrap}
+.reply-form{display:flex;flex-direction:column;gap:.5rem;margin-top:1.5rem;padding-top:1rem;border-top:1px solid rgba(255,255,255,0.05)}
+.reply-form textarea{
+  width:100%;padding:.7rem;border-radius:8px;border:1px solid rgba(255,255,255,0.1);
+  background:rgba(255,255,255,0.04);color:#e8ecf4;font-size:14px;outline:none;font-family:inherit;min-height:80px;resize:vertical
+}
+.reply-form textarea:focus{border-color:rgba(123,104,238,0.4)}
+.reply-form .reply-actions{display:flex;gap:.5rem;align-items:center;justify-content:space-between;flex-wrap:wrap}
+.reply-form .reply-actions label{font-size:12px;color:rgba(255,255,255,0.4);display:flex;align-items:center;gap:.3rem}
+.reply-form .reply-actions label input{width:auto;margin:0}
+.reply-form button{
+  padding:.5rem 1.2rem;border-radius:6px;font-size:13px;cursor:pointer;border:none;font-weight:500;
+  background:linear-gradient(135deg,#7b68ee,#00d4ff);color:#fff
+}
+.reply-form button:disabled{opacity:.5;cursor:not-allowed}
+.empty-replies{text-align:center;padding:2rem;color:rgba(255,255,255,0.2);font-size:14px}
+.loading{text-align:center;padding:3rem;color:rgba(255,255,255,0.2)}
+.footer{text-align:center;padding:2rem;font-size:.75rem;color:rgba(255,255,255,0.15)}
+@media(prefers-reduced-motion:reduce){*{animation-duration:.01ms!important;transition-duration:.01ms!important}}
+</style>
+</head>
+<body>
+<div class="header">
+  <a class="back-link" href=".">← 返回討論區</a>
+</div>
+<div class="container">
+  <div id="threadContent"><div class="loading">載入中...</div></div>
+  <div class="reply-section">
+    <h3>💬 回覆</h3>
+    <div class="reply-list" id="replyList"><div class="loading">載入中...</div></div>
+    <div class="reply-form">
+      <textarea id="replyInput" placeholder="寫下你的回覆..." rows="3"></textarea>
+      <div class="reply-actions">
+        <label><input type="checkbox" id="replyAnonymous" checked> 匿名回覆</label>
+        <button id="replySubmit" onclick="submitReply()">送出回覆</button>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="footer">© 翔川 Neo｜曜科技</div>
+<script>
+var BASE=location.hostname.includes('github.io')?'https://lewislunora.onrender.com':'';
+var tid=new URLSearchParams(location.search).get('id');
+
+if(!tid){
+  document.getElementById('threadContent').innerHTML='<div class="empty-replies">❌ 找不到討論串</div>';
+} else {
+  loadThread();
+}
+
+function loadThread(){
+  fetch(BASE+'/api/community/threads/'+tid).then(function(r){return r.json()}).then(function(t){
+    document.title=t.title+' — 翔川 Neo 社群';
+    document.getElementById('threadContent').innerHTML=
+      '<h1 class="thread-title">'+esc(t.title)+'</h1>'+
+      '<div class="thread-meta">'+
+        (t.is_anonymous?'<span class="anonymous-tag">匿名</span>':'<span>'+esc(t.author_name)+'</span>')+
+        '<span>'+timeAgo(t.created_at)+'</span>'+
+        '<span>👁️ '+t.view_count+'</span>'+
+      '</div>'+
+      '<div class="thread-content">'+esc(t.content)+'</div>';
+    var rl=document.getElementById('replyList');
+    if(!t.replies||!t.replies.length){
+      rl.innerHTML='<div class="empty-replies">還沒有回覆，來坐沙發吧 🛋️</div>';
+    } else {
+      rl.innerHTML=t.replies.map(function(r){
+        return '<div class="reply-item">'+
+          '<div class="reply-header">'+
+            (r.is_anonymous?'<span class="anonymous-tag">匿名</span>':'<span>'+esc(r.author_name)+'</span>')+
+            '<span>'+timeAgo(r.created_at)+'</span>'+
+          '</div>'+
+          '<div class="reply-body">'+esc(r.content)+'</div>'+
+        '</div>';
+      }).join('');
+    }
+  }).catch(function(){
+    document.getElementById('threadContent').innerHTML='<div class="empty-replies">❌ 載入失敗</div>';
+  });
+}
+
+function submitReply(){
+  var content=document.getElementById('replyInput').value.trim();
+  var isAnonymous=document.getElementById('replyAnonymous').checked;
+  var btn=document.getElementById('replySubmit');
+  if(!content)return;
+  btn.disabled=true;btn.textContent='送出中...';
+  fetch(BASE+'/api/community/threads/'+tid+'/reply',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({content:content,is_anonymous:isAnonymous})}).then(function(r){return r.json()}).then(function(d){
+    if(d.status==='ok'){
+      document.getElementById('replyInput').value='';
+      loadThread();
+    }else{alert('送出失敗')}
+    btn.disabled=false;btn.textContent='送出回覆';
+  }).catch(function(){btn.disabled=false;btn.textContent='送出回覆';alert('網路錯誤')});
+}
+
+function esc(s){var d=document.createElement('div');d.textContent=s;return d.innerHTML}
+function timeAgo(ts){
+  var diff=Date.now()-new Date(ts.replace(' ','T')+'Z').getTime();
+  var mins=Math.floor(diff/6e4);
+  if(mins<1)return'剛剛';
+  if(mins<60)return mins+'分鐘前';
+  var hrs=Math.floor(mins/60);
+  if(hrs<24)return hrs+'小時前';
+  return Math.floor(hrs/24)+'天前';
+}
+
+// analytics
+(function(){
+  var api=BASE+'/api/analytics/article-view';
+  fetch(api,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({path:'/community/thread.html'})}).catch(function(){});
+})();
+</script>
+<script src="../js/features.js"></script>
+</body>
+</html>

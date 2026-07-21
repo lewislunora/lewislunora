@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>社群討論 — 翔川 Neo</title>
+<meta property="og:title" content="社群討論 — 翔川 Neo">
+<meta property="og:description" content="匿名討論區 · AI 自媒體 · 超級個體交流">
+<meta property="og:image" content="https://lewislunora.github.io/lewislunora/assets/og-image.png">
+<meta property="og:url" content="https://lewislunora.onrender.com/community/">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{
+  font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',system-ui,sans-serif;
+  background:#0a0e27;color:#e8ecf4;line-height:1.6;
+  -webkit-font-smoothing:antialiased
+}
+.header{
+  text-align:center;padding:4rem 1.5rem 2rem;
+  background:radial-gradient(ellipse at top,rgba(123,104,238,0.08) 0%,transparent 60%);
+}
+.header h1{
+  font-size:clamp(28px,4vw,48px);font-weight:800;
+  background:linear-gradient(135deg,#7b68ee,#00d4ff);-webkit-background-clip:text;-webkit-text-fill-color:transparent;
+}
+.header p{color:rgba(255,255,255,0.4);margin-top:.5rem;font-size:clamp(14px,1.2vw,18px)}
+.container{max-width:720px;margin:0 auto;padding:0 1.5rem}
+.sort-bar{display:flex;gap:.5rem;align-items:center;padding:1rem 0;border-bottom:1px solid rgba(255,255,255,0.05)}
+.sort-bar button{
+  background:transparent;border:1px solid rgba(255,255,255,0.08);color:rgba(255,255,255,0.4);
+  padding:.35rem .9rem;border-radius:6px;font-size:12px;cursor:pointer;transition:all .2s
+}
+.sort-bar button.active{background:rgba(123,104,238,0.2);border-color:rgba(123,104,238,0.3);color:#fff}
+.sort-bar button:hover{border-color:rgba(123,104,238,0.3);color:#fff}
+.sort-bar .spacer{flex:1}
+.new-thread-btn{
+  background:linear-gradient(135deg,#7b68ee,#00d4ff);color:#fff;border:none;
+  padding:.35rem 1rem;border-radius:6px;font-size:12px;cursor:pointer;font-weight:600;transition:all .2s
+}
+.new-thread-btn:hover{transform:translateY(-1px);box-shadow:0 4px 15px rgba(123,104,238,0.3)}
+.thread-list{padding:0}
+.thread-item{
+  padding:1rem 0;border-bottom:1px solid rgba(255,255,255,0.03);
+  cursor:pointer;transition:all .2s;
+}
+.thread-item:hover{padding-left:.5rem}
+.thread-item h3{
+  font-size:clamp(15px,1.3vw,18px);font-weight:600;margin-bottom:.2rem;
+  color:#e8ecf4
+}
+.thread-item .thread-meta{
+  font-size:12px;color:rgba(255,255,255,0.3);display:flex;gap:.8rem;align-items:center;flex-wrap:wrap
+}
+.thread-item .thread-meta .anonymous-tag{
+  background:rgba(123,104,238,0.12);color:#7b68ee;padding:0 6px;border-radius:3px;font-size:10px
+}
+.thread-item .thread-excerpt{
+  font-size:clamp(13px,1.1vw,15px);color:rgba(255,255,255,0.45);margin-top:.3rem;
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap
+}
+.thread-item .thread-stats{font-size:11px;color:rgba(255,255,255,0.2);margin-top:.4rem;display:flex;gap:1rem}
+.empty-state{
+  text-align:center;padding:4rem 1rem;color:rgba(255,255,255,0.2)
+}
+.empty-state .icon{font-size:3rem;opacity:.3;margin-bottom:1rem}
+.modal-overlay{
+  position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.6);
+  z-index:200;display:none;justify-content:center;align-items:center;backdrop-filter:blur(4px)
+}
+.modal-overlay.open{display:flex}
+.modal{
+  background:#14183a;border:1px solid rgba(255,255,255,0.08);border-radius:16px;
+  padding:2rem;width:90%;max-width:500px;max-height:90vh;overflow-y:auto
+}
+.modal h2{font-size:1.2rem;margin-bottom:1rem}
+.modal input,.modal textarea{
+  width:100%;padding:.7rem;border-radius:8px;border:1px solid rgba(255,255,255,0.1);
+  background:rgba(255,255,255,0.04);color:#e8ecf4;font-size:14px;margin-bottom:.8rem;outline:none;
+  font-family:inherit
+}
+.modal input:focus,.modal textarea:focus{border-color:rgba(123,104,238,0.4)}
+.modal textarea{min-height:120px;resize:vertical}
+.modal .modal-actions{display:flex;gap:.5rem;justify-content:flex-end}
+.modal .modal-actions button{
+  padding:.5rem 1.2rem;border-radius:6px;font-size:13px;cursor:pointer;border:none;font-weight:500
+}
+.modal .btn-cancel{background:rgba(255,255,255,0.06);color:rgba(255,255,255,0.5)}
+.modal .btn-submit{background:linear-gradient(135deg,#7b68ee,#00d4ff);color:#fff}
+.modal .btn-submit:disabled{opacity:.5;cursor:not-allowed}
+.modal .anonymous-toggle{display:flex;align-items:center;gap:.5rem;margin-bottom:.8rem;font-size:13px;color:rgba(255,255,255,0.5)}
+.modal .anonymous-toggle input[type=checkbox]{width:auto;margin:0}
+.loading{text-align:center;padding:2rem;color:rgba(255,255,255,0.2)}
+.footer{text-align:center;padding:2rem;font-size:.75rem;color:rgba(255,255,255,0.15)}
+.back-link{display:inline-block;margin-bottom:1rem;font-size:.85rem;color:rgba(255,255,255,0.3);text-decoration:none}
+.back-link:hover{color:#7b68ee}
+</style>
+</head>
+<body>
+<div class="header">
+  <a class="back-link" href="../">← 回首頁</a>
+  <h1>🗣️ 社群討論</h1>
+  <p>匿名發文 · 自由交流 · AI 自媒體與超級個體話題</p>
+</div>
+<div class="container">
+  <div class="sort-bar">
+    <button class="active" data-sort="latest">🕐 最新</button>
+    <button data-sort="hot">🔥 熱門</button>
+    <div class="spacer"></div>
+    <button class="new-thread-btn" onclick="openNewThread()">✏️ 發文</button>
+  </div>
+  <div class="thread-list" id="threadList"><div class="loading">載入中...</div></div>
+</div>
+<div class="modal-overlay" id="modalOverlay">
+  <div class="modal">
+    <h2>✏️ 發佈新討論</h2>
+    <input id="threadTitle" placeholder="標題" maxlength="100">
+    <textarea id="threadContent" placeholder="寫下你想討論的內容..." rows="5"></textarea>
+    <label class="anonymous-toggle">
+      <input type="checkbox" id="threadAnonymous" checked> 匿名發文
+    </label>
+    <div class="modal-actions">
+      <button class="btn-cancel" onclick="closeNewThread()">取消</button>
+      <button class="btn-submit" id="threadSubmit" onclick="submitThread()">發佈</button>
+    </div>
+  </div>
+</div>
+<div class="footer">© 翔川 Neo｜曜科技</div>
+<script>
+var BASE=location.hostname.includes('github.io')?'https://lewislunora.onrender.com':'';
+var currentSort='latest';
+
+document.querySelectorAll('.sort-bar button[data-sort]').forEach(function(btn){
+  btn.onclick=function(){
+    document.querySelectorAll('.sort-bar button[data-sort]').forEach(function(b){b.classList.remove('active')});
+    btn.classList.add('active');
+    currentSort=btn.dataset.sort;
+    loadThreads();
+  };
+});
+
+function loadThreads(){
+  var list=document.getElementById('threadList');
+  list.innerHTML='<div class="loading">載入中...</div>';
+  fetch(BASE+'/api/community/threads?sort='+currentSort).then(function(r){return r.json()}).then(function(d){
+    if(!d.items||!d.items.length){
+      list.innerHTML='<div class="empty-state"><div class="icon">💬</div><p>還沒有討論串<br>快來發起第一個話題吧！</p></div>';
+      return;
+    }
+    list.innerHTML=d.items.map(function(t){
+      var excerpt=t.content.replace(/<[^>]+>/g,'').slice(0,80);
+      return '<div class="thread-item" onclick="location.href=\'thread.html?id='+t.id+'\'">'+
+        '<h3>'+esc(t.title)+'</h3>'+
+        '<div class="thread-meta">'+
+          (t.is_anonymous?'<span class="anonymous-tag">匿名</span>':'<span>'+esc(t.author_name)+'</span>')+
+          '<span>'+timeAgo(t.created_at)+'</span>'+
+        '</div>'+
+        '<div class="thread-excerpt">'+esc(excerpt)+(excerpt.length>=80?'...':'')+'</div>'+
+        '<div class="thread-stats">'+
+          '<span>👁️ '+t.view_count+'</span>'+
+          '<span>💬 '+t.reply_count+'</span>'+
+        '</div>'+
+      '</div>';
+    }).join('');
+  }).catch(function(){
+    list.innerHTML='<div class="empty-state"><p>❌ 載入失敗，請稍後再試</p></div>';
+  });
+}
+loadThreads();
+
+function openNewThread(){document.getElementById('modalOverlay').classList.add('open')}
+function closeNewThread(){document.getElementById('modalOverlay').classList.remove('open')}
+document.getElementById('modalOverlay').onclick=function(e){if(e.target===this)closeNewThread()};
+
+function submitThread(){
+  var title=document.getElementById('threadTitle').value.trim();
+  var content=document.getElementById('threadContent').value.trim();
+  var isAnonymous=document.getElementById('threadAnonymous').checked;
+  var btn=document.getElementById('threadSubmit');
+  if(!title||!content)return;
+  btn.disabled=true;btn.textContent='發佈中...';
+  fetch(BASE+'/api/community/threads',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({title:title,content:content,is_anonymous:isAnonymous})}).then(function(r){return r.json()}).then(function(d){
+    if(d.thread){location.href='thread.html?id='+d.thread.id}
+    else{btn.disabled=false;btn.textContent='發佈';alert('發佈失敗，請重試')}
+  }).catch(function(){btn.disabled=false;btn.textContent='發佈';alert('網路錯誤')});
+}
+
+function esc(s){var d=document.createElement('div');d.textContent=s;return d.innerHTML}
+function timeAgo(ts){
+  var diff=Date.now()-new Date(ts.replace(' ','T')+'Z').getTime();
+  var mins=Math.floor(diff/6e4);
+  if(mins<1)return'剛剛';
+  if(mins<60)return mins+'分鐘前';
+  var hrs=Math.floor(mins/60);
+  if(hrs<24)return hrs+'小時前';
+  return Math.floor(hrs/24)+'天前';
+}
+
+// analytics
+(function(){
+  var api=BASE+'/api/analytics/article-view';
+  fetch(api,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({path:'/community/'})}).catch(function(){});
+})();
+</script>
+<script src="../js/features.js"></script>
+</body>
+</html>

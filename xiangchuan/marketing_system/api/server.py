@@ -668,6 +668,15 @@ async def serve_solopreneur(): return await _serve_sub("solopreneur")
 async def serve_games(): return await _serve_sub("games")
 
 
+@app.get("/admin/analytics")
+@app.get("/admin/analytics/")
+async def serve_admin_analytics():
+    fp = DOCS_DIR / "admin" / "analytics.html"
+    if fp.exists():
+        return HTMLResponse(fp.read_text(encoding="utf-8"))
+    raise HTTPException(404, "Not found")
+
+
 @app.get("/student")
 @app.get("/student/")
 async def serve_student():
@@ -720,6 +729,226 @@ async def game_20questions(body: GameQuestion):
         return JSONResponse({"answer": answer, "hint_level": 0})
     except Exception:
         return JSONResponse({"answer": "不確定", "hint_level": 0})
+
+
+class CommentCreate(BaseModel):
+    page_path: str
+    author_name: str = "匿名"
+    content: str
+    parent_id: Optional[int] = None
+
+
+class ReactionToggle(BaseModel):
+    page_path: str
+    emoji: str
+
+
+class FeedPostCreate(BaseModel):
+    content: str
+    post_type: str = "tip"
+    author: str = "翔川 Neo"
+
+
+class ThreadCreate(BaseModel):
+    title: str
+    content: str
+    author_name: str = "匿名"
+    is_anonymous: bool = True
+
+
+class ThreadReplyCreate(BaseModel):
+    content: str
+    author_name: str = "匿名"
+    is_anonymous: bool = True
+
+
+@app.post("/api/comments")
+def create_comment(data: CommentCreate):
+    cid = execute(
+        "INSERT INTO comments (page_path, author_name, content, parent_id) VALUES (?, ?, ?, ?)",
+        [data.page_path, data.author_name.strip() or "匿名", data.content, data.parent_id],
+    )
+    row = fetch_one("SELECT * FROM comments WHERE id=?", [cid])
+    return {"status": "ok", "comment": row}
+
+
+@app.get("/api/comments")
+def list_comments(path: str = ""):
+    if not path:
+        return {"items": []}
+    rows = fetch(
+        "SELECT * FROM comments WHERE page_path=? ORDER BY created_at ASC",
+        [path],
+    )
+    tree = {}
+    top = []
+    for r in rows:
+        r["replies"] = []
+        tree[r["id"]] = r
+    for r in rows:
+        if r["parent_id"] and r["parent_id"] in tree:
+            tree[r["parent_id"]]["replies"].append(r)
+        else:
+            top.append(r)
+    return {"items": top}
+
+
+@app.delete("/api/comments/{comment_id}")
+def delete_comment(comment_id: int):
+    execute("DELETE FROM comments WHERE id=?", [comment_id])
+    return {"status": "deleted"}
+
+
+@app.post("/api/reactions/toggle")
+def toggle_reaction(data: ReactionToggle):
+    existing = fetch_one(
+        "SELECT id FROM reactions WHERE page_path=? AND emoji=?",
+        [data.page_path, data.emoji],
+    )
+    if existing:
+        execute("DELETE FROM reactions WHERE id=?", [existing["id"]])
+        return {"status": "removed"}
+    execute(
+        "INSERT INTO reactions (page_path, emoji) VALUES (?, ?)",
+        [data.page_path, data.emoji],
+    )
+    return {"status": "added"}
+
+
+@app.get("/api/reactions")
+def get_reactions(path: str = ""):
+    if not path:
+        return {"items": []}
+    rows = fetch(
+        "SELECT emoji, COUNT(*) as count FROM reactions WHERE page_path=? GROUP BY emoji ORDER BY count DESC",
+        [path],
+    )
+    return {"items": rows}
+
+
+@app.post("/api/feed")
+def create_feed_post(data: FeedPostCreate):
+    pid = execute(
+        "INSERT INTO feed_posts (content, post_type, author) VALUES (?, ?, ?)",
+        [data.content, data.post_type, data.author],
+    )
+    return {"status": "ok", "id": pid}
+
+
+@app.get("/api/feed")
+def list_feed_posts(page: int = 1, per_page: int = 10):
+    offset = (page - 1) * per_page
+    items = fetch(
+        "SELECT * FROM feed_posts ORDER BY created_at DESC LIMIT ? OFFSET ?",
+        [per_page, offset],
+    )
+    total = fetch("SELECT COUNT(*) as c FROM feed_posts")[0]["c"]
+    return {"items": items, "total": total, "page": page}
+
+
+@app.post("/api/community/threads")
+def create_thread(data: ThreadCreate):
+    tid = execute(
+        "INSERT INTO community_threads (title, content, author_name, is_anonymous) VALUES (?, ?, ?, ?)",
+        [data.title, data.content, data.author_name.strip() or "匿名", int(data.is_anonymous)],
+    )
+    row = fetch_one("SELECT * FROM community_threads WHERE id=?", [tid])
+    return {"status": "ok", "thread": row}
+
+
+@app.get("/api/community/threads")
+def list_threads(sort: str = "latest", page: int = 1, per_page: int = 20):
+    offset = (page - 1) * per_page
+    order = "created_at DESC"
+    if sort == "hot":
+        order = "(view_count + reply_count * 2) DESC, created_at DESC"
+    items = fetch(
+        f"SELECT * FROM community_threads ORDER BY {order} LIMIT ? OFFSET ?",
+        [per_page, offset],
+    )
+    total = fetch("SELECT COUNT(*) as c FROM community_threads")[0]["c"]
+    return {"items": items, "total": total, "page": page}
+
+
+@app.get("/api/community/threads/{thread_id}")
+def get_thread(thread_id: int):
+    thread = fetch_one("SELECT * FROM community_threads WHERE id=?", [thread_id])
+    if not thread:
+        raise HTTPException(404, "Thread not found")
+    execute("UPDATE community_threads SET view_count = view_count + 1 WHERE id=?", [thread_id])
+    thread["view_count"] += 1
+    replies = fetch(
+        "SELECT * FROM community_replies WHERE thread_id=? ORDER BY created_at ASC",
+        [thread_id],
+    )
+    thread["replies"] = replies
+    return thread
+
+
+@app.post("/api/community/threads/{thread_id}/reply")
+def reply_to_thread(thread_id: int, data: ThreadReplyCreate):
+    thread = fetch_one("SELECT id FROM community_threads WHERE id=?", [thread_id])
+    if not thread:
+        raise HTTPException(404, "Thread not found")
+    rid = execute(
+        "INSERT INTO community_replies (thread_id, content, author_name, is_anonymous) VALUES (?, ?, ?, ?)",
+        [thread_id, data.content, data.author_name.strip() or "匿名", int(data.is_anonymous)],
+    )
+    execute("UPDATE community_threads SET reply_count = reply_count + 1 WHERE id=?", [thread_id])
+    return {"status": "ok", "id": rid}
+
+
+@app.post("/api/community/threads/{thread_id}/upvote")
+def upvote_thread(thread_id: int):
+    thread = fetch_one("SELECT id FROM community_threads WHERE id=?", [thread_id])
+    if not thread:
+        raise HTTPException(404, "Thread not found")
+    execute("UPDATE community_threads SET view_count = view_count + 1 WHERE id=?", [thread_id])
+    return {"status": "ok"}
+
+
+@app.post("/api/ai/summarize")
+async def ai_summarize(request: Request):
+    body = await request.json()
+    text = body.get("text", "")
+    lang = body.get("language", "zh-TW")
+    if not text.strip():
+        return {"summary": "", "fallback": True}
+    if not ai_generator.is_available():
+        lang_label = {"zh-TW": "繁體中文", "zh-CN": "簡體中文", "en": "英文"}.get(lang, lang)
+        return {"summary": f"（AI 摘要功能需要設定 GROQ_API_KEY）", "fallback": True}
+    prompt = f"請用{lang}用 3 句話簡短總結以下內容：\n\n{text[:3000]}"
+    try:
+        summary = ai_generator.generate("custom", {"prompt": prompt})
+        return {"summary": summary.strip(), "fallback": False}
+    except Exception as e:
+        return {"summary": "", "fallback": True, "error": str(e)}
+
+
+@app.post("/api/ai/recommend")
+async def ai_recommend(request: Request):
+    body = await request.json()
+    path = body.get("path", "")
+    lang = body.get("language", "zh-TW")
+    if not path:
+        return {"items": []}
+    exclude = [path]
+    rows = fetch(
+        "SELECT page_path, COUNT(*) as score FROM article_views WHERE page_path != ? GROUP BY page_path ORDER BY score DESC LIMIT 5",
+        [path],
+    )
+    items = []
+    for r in rows:
+        items.append({"path": r["page_path"], "reason": f"其他讀者也閱覽了此內容"})
+    return {"items": items}
+
+
+@app.post("/api/analytics/article-view")
+async def track_article_view(request: Request):
+    body = await request.json()
+    path = body.get("path", "/")
+    execute("INSERT INTO article_views (page_path) VALUES (?)", [path])
+    return {"ok": True}
 
 
 app.mount("/", StaticFiles(directory=str(DOCS_DIR), html=True), name="site")
