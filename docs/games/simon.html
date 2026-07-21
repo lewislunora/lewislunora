@@ -64,7 +64,11 @@ h1{font-size:clamp(20px,5vw,28px);font-weight:800;background:linear-gradient(135
     </div>
   </div>
   <div class="status" id="status">按下開始</div>
-  <button class="start-btn" id="startBtn" onclick="startGame()">▶ 開始遊戲</button>
+    <div style="display:flex;gap:6px;margin-bottom:8px">
+      <button id="simMode1p" style="padding:4px 14px;border-radius:8px;border:1px solid rgba(255,255,255,.1);background:linear-gradient(135deg,#a855f7,#ec4899);color:#fff;font-size:12px;font-weight:600;cursor:pointer;font-family:inherit">👤 單人</button>
+      <button id="simMode2p" style="padding:4px 14px;border-radius:8px;border:1px solid rgba(255,255,255,.1);background:rgba(255,255,255,.05);color:rgba(255,255,255,.4);font-size:12px;cursor:pointer;font-family:inherit">👥 雙人輪流</button>
+    </div>
+    <button class="start-btn" id="startBtn" onclick="startGame()">▶ 開始遊戲</button>
   <a href="../games/" class="back-link">← 返回遊戲大廳</a>
 </div>
 <div id="overlay">
@@ -77,7 +81,7 @@ h1{font-size:clamp(20px,5vw,28px);font-weight:800;background:linear-gradient(135
 </div>
 <script>
 const COLORS=['#ef4444','#22c55e','#f59e0b','#3b82f6'];
-let sequence=[],playerStep=0,playing=false,acceptInput=false,level=0,highScore=0;
+let sequence=[],playerStep=0,playing=false,acceptInput=false,level=0,highScore=0,sMode='1p';
 const quads=document.querySelectorAll('.quad');
 const levelDisplay=document.getElementById('levelDisplay');
 const statusEl=document.getElementById('status');
@@ -130,18 +134,60 @@ quads.forEach((q,idx)=>q.addEventListener('click',()=>{
 function gameOver(){
   playing=false;acceptInput=false;
   overlay.style.display='flex';overlay.classList.add('show');
+  if(sMode==='2p'&&window.MP2P&&MP2P.active){
+    oTitle.textContent=MP2P.current===1?'🔵 P1 完成！換 P2':'🔴 P2 完成！';
+    oMsg.textContent=`關卡 ${level}`;
+    document.getElementById('startBtn').textContent=MP2P.current===1?'▶ P2 開始':'🔄 再來一輪';
+    document.getElementById('startBtn').onclick=()=>{
+      if(MP2P.current===1){overlay.classList.remove('show');MP2P.playerDone(level);document.getElementById('startBtn').textContent='▶ 開始遊戲';document.getElementById('startBtn').onclick=startGame;}
+      else{overlay.classList.remove('show');MP2P.playerDone(level);document.getElementById('startBtn').textContent='▶ 開始遊戲';document.getElementById('startBtn').onclick=startGame;}
+    };
+    statusEl.textContent='';
+    return;
+  }
   oTitle.textContent='🎵 遊戲結束';
   oMsg.textContent=`關卡 ${level} · 最高紀錄 ${highScore}`;
   document.getElementById('startBtn').style.display='inline-block';
   document.getElementById('startBtn').textContent='🔄 再玩一次';
+  document.getElementById('startBtn').onclick=startGame;
   statusEl.textContent='點擊再玩一次';
 }
 window.shareScore=function(){
-  const msg=`🎵 Simon 記憶挑戰 — 我過了 ${level} 關！你能超過我嗎？`;
-  if(navigator.share)navigator.share({title:'Simon 記憶挑戰',text:msg,url:location.href});
+  const msg=sMode==='2p'?`🎵 Simon 2P — 我過了 ${level} 關！你能超過我嗎？`:`🎵 Simon 記憶挑戰 — 我過了 ${level} 關！你能超過我嗎？`;
+  if(navigator.share)navigator.share({title:'Simon 挑戰',text:msg,url:location.href});
   else shareToLine(location.href);
 }
+document.getElementById('simMode1p').onclick=function(){
+  sMode='1p';
+  this.style.background='linear-gradient(135deg,#a855f7,#ec4899)';this.style.color='#fff';this.style.fontWeight='600';
+  document.getElementById('simMode2p').style.background='rgba(255,255,255,.05)';document.getElementById('simMode2p').style.color='rgba(255,255,255,.4)';document.getElementById('simMode2p').style.fontWeight='400';
+};
+document.getElementById('simMode2p').onclick=function(){
+  sMode='2p';
+  this.style.background='linear-gradient(135deg,#a855f7,#ec4899)';this.style.color='#fff';this.style.fontWeight='600';
+  document.getElementById('simMode1p').style.background='rgba(255,255,255,.05)';document.getElementById('simMode1p').style.color='rgba(255,255,255,.4)';document.getElementById('simMode1p').style.fontWeight='400';
+  if(!window.MP2P)return;
+  MP2P.name='Simon';
+  MP2P.buildUI();
+  MP2P.showModeSelector();
+  MP2P.mode='2p';
+  MP2P.hide();
+  MP2P.start();
+  MP2P.p1Start=()=>{level=0;document.getElementById('startBtn').click();};
+  MP2P.p2Start=()=>{level=0;document.getElementById('startBtn').click();};
+  MP2P.onDone=function(phase,s1,s2){
+    if(phase===2){
+      const w=s1>s2?'P1':s2>s1?'P2':null;
+      overlay.style.display='flex';overlay.classList.add('show');
+      oTitle.textContent=w?'🏆 '+w+' 獲勝！':'🤝 平手！';
+      oMsg.textContent=`P1 ${s1} 關 ｜ P2 ${s2} 關`;
+      document.getElementById('startBtn').textContent='🔄 再玩一次';
+      document.getElementById('startBtn').onclick=()=>{overlay.classList.remove('show');MP2P.showModeSelector();};
+    }
+  };
+};
 </script>
+<script src="../multiplayer.js"></script>
 <script src="../share.js"></script>
 </body>
 </html>

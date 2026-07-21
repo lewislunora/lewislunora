@@ -340,6 +340,10 @@ body { width: 100%; padding: 16px; }
     <span id="turnLabel">換你下棋</span>
     <span class="turn-badge player-turn" id="turnBadge">● O</span>
   </div>
+  <div class="scoreboard" style="gap:4px">
+    <button id="modeAI" class="btn" style="padding:4px 14px;font-size:12px;background:linear-gradient(135deg,#f7971e,#ffd200);color:#1a1a2e;font-weight:600;border:none;border-radius:100px">🤖 vs AI</button>
+    <button id="mode2P" class="btn btn-secondary" style="padding:4px 14px;font-size:12px;border-radius:100px">👥 vs Friend</button>
+  </div>
 
   <div class="scoreboard">
     <div class="score-item win">
@@ -392,10 +396,12 @@ body { width: 100%; padding: 16px; }
 
   let board = Array(9).fill(null);
   let gameActive = true;
+  let gameMode = 'ai';
   let playerSymbol = 'O';
   let aiSymbol = 'X';
   let currentTurn = 'player';
   let scores = { win: 0, loss: 0, draw: 0 };
+  let mpScores = [0, 0];
   let winningLine = null;
   let aiTimer = null;
 
@@ -514,9 +520,36 @@ body { width: 100%; padding: 16px; }
     return bestMove;
   }
 
+  function setMode(m) {
+    gameMode = m;
+    document.getElementById('modeAI').className = m === 'ai' ? 'btn' : 'btn btn-secondary';
+    document.getElementById('mode2P').className = m === 'friend' ? 'btn' : 'btn btn-secondary';
+    if (m === 'ai') { document.getElementById('modeAI').style.background = 'linear-gradient(135deg,#f7971e,#ffd200)'; document.getElementById('modeAI').style.color = '#1a1a2e'; document.getElementById('mode2P').style.background = ''; document.getElementById('mode2P').style.color = ''; }
+    else { document.getElementById('mode2P').style.background = 'linear-gradient(135deg,#f7971e,#ffd200)'; document.getElementById('mode2P').style.color = '#1a1a2e'; document.getElementById('modeAI').style.background = ''; document.getElementById('modeAI').style.color = ''; }
+    mpScores = [0, 0];
+    resetGame(false);
+  }
+
   function clickCell(i) {
-    if (!gameActive || currentTurn !== 'player' || board[i] !== null || aiTimer) return;
-    playerMove(i);
+    if (!gameActive || board[i] !== null || aiTimer) return;
+    if (gameMode === 'ai') {
+      if (currentTurn !== 'player') return;
+      playerMove(i);
+    } else {
+      friendMove(i);
+    }
+  }
+
+  function friendMove(i) {
+    const sym = currentTurn === 'player' ? 'O' : 'X';
+    board[i] = sym;
+    render();
+    const r = checkWinner(board);
+    if (r) { endGame(r); return; }
+    if (isFull(board)) { endGame(null); return; }
+    currentTurn = currentTurn === 'player' ? 'friend' : 'player';
+    updateUI();
+    render();
   }
 
   function playerMove(i) {
@@ -549,33 +582,65 @@ body { width: 100%; padding: 16px; }
   function endGame(result) {
     gameActive = false;
     currentTurn = 'over';
-    if (result) {
-      winningLine = result.line;
-      if (result.winner === playerSymbol) { scores.win++; showOverlay('你贏了！', '恭喜你擊敗了 AI 🎉', 'win-text'); }
-      else { scores.loss++; showOverlay('你輸了！', 'AI 獲勝，再接再厲', 'lose-text'); }
+    if (gameMode === 'friend') {
+      if (result) {
+        const winnerIdx = result.winner === 'O' ? 0 : 1;
+        mpScores[winnerIdx]++;
+        showOverlay(result.winner === 'O' ? '🔵 P1 獲勝！' : '🔴 P2 獲勝！', `${mpScores[0]} : ${mpScores[1]}`, 'win-text');
+        if (mpScores[0] + mpScores[1] >= 3 || mpScores[0] >= 2 || mpScores[1] >= 2) {
+          document.getElementById('playAgainBtn').textContent = '🔄 再來一局';
+        } else {
+          document.getElementById('playAgainBtn').textContent = '▶ 下一局';
+        }
+      } else {
+        showOverlay('平局！', `${mpScores[0]} : ${mpScores[1]}`, 'draw-text');
+        document.getElementById('playAgainBtn').textContent = '🔄 再來一局';
+      }
     } else {
-      scores.draw++;
-      showOverlay('平局！', '勢均力敵', 'draw-text');
+      if (result) {
+        winningLine = result.line;
+        if (result.winner === playerSymbol) { scores.win++; showOverlay('你贏了！', '恭喜你擊敗了 AI 🎉', 'win-text'); }
+        else { scores.loss++; showOverlay('你輸了！', 'AI 獲勝，再接再厲', 'lose-text'); }
+      } else {
+        scores.draw++;
+        showOverlay('平局！', '勢均力敵', 'draw-text');
+      }
+      updateScoreUI();
+      saveScores();
     }
-    updateScoreUI();
-    saveScores();
     render();
     updateUI();
   }
 
   function updateUI() {
-    if (currentTurn === 'player') {
-      turnLabel.textContent = '換你下棋';
-      turnBadge.className = 'turn-badge player-turn';
-      turnBadge.innerHTML = '● O';
-    } else if (currentTurn === 'ai') {
-      turnLabel.textContent = 'AI 思考中...';
-      turnBadge.className = 'turn-badge ai-turn';
-      turnBadge.innerHTML = '✕ X';
+    if (gameMode === 'friend') {
+      if (currentTurn === 'player') {
+        turnLabel.textContent = 'P1 下棋';
+        turnBadge.className = 'turn-badge player-turn';
+        turnBadge.innerHTML = '🔵 O';
+      } else if (currentTurn === 'friend') {
+        turnLabel.textContent = 'P2 下棋';
+        turnBadge.className = 'turn-badge ai-turn';
+        turnBadge.innerHTML = '🔴 X';
+      } else {
+        turnLabel.textContent = '遊戲結束';
+        turnBadge.className = 'turn-badge game-over';
+        turnBadge.innerHTML = ` ${mpScores[0]} : ${mpScores[1]}`;
+      }
     } else {
-      turnLabel.textContent = '遊戲結束';
-      turnBadge.className = 'turn-badge game-over';
-      turnBadge.innerHTML = '—';
+      if (currentTurn === 'player') {
+        turnLabel.textContent = '換你下棋';
+        turnBadge.className = 'turn-badge player-turn';
+        turnBadge.innerHTML = '● O';
+      } else if (currentTurn === 'ai') {
+        turnLabel.textContent = 'AI 思考中...';
+        turnBadge.className = 'turn-badge ai-turn';
+        turnBadge.innerHTML = '✕ X';
+      } else {
+        turnLabel.textContent = '遊戲結束';
+        turnBadge.className = 'turn-badge game-over';
+        turnBadge.innerHTML = '—';
+      }
     }
   }
 
@@ -611,8 +676,19 @@ body { width: 100%; padding: 16px; }
   function newGame() { resetGame(true); }
   function fullReset() { resetGame(false); }
 
-  playAgainBtn.addEventListener('click', newGame);
-  resetBtn.addEventListener('click', fullReset);
+  playAgainBtn.addEventListener('click', function(){
+    if (gameMode === 'friend' && mpScores[0] + mpScores[1] >= 3) {
+      const winner = mpScores[0] > mpScores[1] ? 'P1' : mpScores[1] > mpScores[0] ? 'P2' : null;
+      showOverlay(winner ? `🏆 ${winner} 贏得比賽！` : '🤝 平手！', `總比分 ${mpScores[0]} : ${mpScores[1]}`, winner ? 'win-text' : 'draw-text');
+      document.getElementById('playAgainBtn').textContent = '🔄 再來一輪';
+      mpScores = [0, 0];
+      return;
+    }
+    newGame();
+  });
+  resetBtn.addEventListener('click', function(){ if (gameMode === 'friend') { mpScores = [0, 0]; } fullReset(); });
+  document.getElementById('modeAI').addEventListener('click', function(){ setMode('ai'); });
+  document.getElementById('mode2P').addEventListener('click', function(){ setMode('friend'); });
 
   loadScores();
   resetGame(false);

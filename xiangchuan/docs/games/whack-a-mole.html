@@ -45,10 +45,20 @@ h1{font-size:clamp(20px,5vw,28px);font-weight:800;background:linear-gradient(135
 <div class="wrap">
   <div class="header">
     <h1>🔨 打地鼠</h1>
-    <div class="stats">
+    <div class="stats" id="stats1p">
       <span>🎯 <strong id="score">0</strong></span>
       <span>⏱ <strong id="timer">30</strong>s</span>
     </div>
+    <div class="stats" id="stats2p" style="display:none">
+      <span style="color:#00d4ff">🔵 P1 <strong id="p1score">0</strong></span>
+      <span style="color:rgba(255,255,255,.15)">|</span>
+      <span style="color:#ef4444">🔴 P2 <strong id="p2score">0</strong></span>
+      <span>⏱ <strong id="timer2">30</strong>s</span>
+    </div>
+  </div>
+  <div style="display:flex;gap:6px;margin-bottom:6px">
+    <button id="wmMode1p" style="padding:4px 14px;border-radius:8px;border:1px solid rgba(255,255,255,.1);background:linear-gradient(135deg,#00d4ff,#7b68ee);color:#fff;font-size:12px;font-weight:600;cursor:pointer;font-family:inherit">👤 單人</button>
+    <button id="wmMode2p" style="padding:4px 14px;border-radius:8px;border:1px solid rgba(255,255,255,.1);background:rgba(255,255,255,.05);color:rgba(255,255,255,.4);font-size:12px;cursor:pointer;font-family:inherit">👥 雙人</button>
   </div>
   <div class="timer-bar"><div class="timer-fill" id="timerFill"></div></div>
   <div class="grid" id="grid"></div>
@@ -63,37 +73,50 @@ h1{font-size:clamp(20px,5vw,28px);font-weight:800;background:linear-gradient(135
   </div>
 </div>
 <script>
-const DURATION=30;let score=0,timeLeft=DURATION,running=false,spawnInt,timerInt,highScore=0;
+const DURATION=30;let mode='1p',score=0,p1score=0,p2score=0,timeLeft=DURATION,running=false,spawnInt,timerInt,highScore=0;
 const grid=document.getElementById('grid');
 const scoreEl=document.getElementById('score');
-const timerEl=document.getElementById('timer');
+const p1El=document.getElementById('p1score'),p2El=document.getElementById('p2score');
+const timerEl=document.getElementById('timer'),timer2El=document.getElementById('timer2');
 const timerFill=document.getElementById('timerFill');
 const overlay=document.getElementById('overlay');
-const oTitle=document.getElementById('oTitle');
-const oMsg=document.getElementById('oMsg');
-
+const oTitle=document.getElementById('oTitle'),oMsg=document.getElementById('oMsg');
+const s1p=document.getElementById('stats1p'),s2p=document.getElementById('stats2p');
 highScore=parseInt(localStorage.getItem('whackHigh')||'0');
 
 for(let i=0;i<9;i++){
   const hole=document.createElement('div');
-  hole.className='hole';
-  hole.dataset.i=i;
+  hole.className='hole';hole.dataset.i=i;
   hole.innerHTML='<span class="mole">🐹</span>';
-  hole.addEventListener('click',()=>whack(i));
-  hole.addEventListener('touchstart',(e)=>{e.preventDefault();whack(i)},{passive:false});
+  hole.addEventListener('click',(e)=>{if(mode==='2p')whack2p(e,i);else whack(i);});
+  hole.addEventListener('touchstart',(e)=>{e.preventDefault();if(mode==='2p')whack2p(e,i);else whack(i);},{passive:false});
   grid.appendChild(hole);
 }
 
+function setMode(m){
+  mode=m;
+  document.getElementById('wmMode1p').style.background=m==='1p'?'linear-gradient(135deg,#00d4ff,#7b68ee)':'rgba(255,255,255,.05)';
+  document.getElementById('wmMode1p').style.color=m==='1p'?'#fff':'rgba(255,255,255,.4)';
+  document.getElementById('wmMode1p').style.fontWeight=m==='1p'?'600':'400';
+  document.getElementById('wmMode2p').style.background=m==='2p'?'linear-gradient(135deg,#00d4ff,#7b68ee)':'rgba(255,255,255,.05)';
+  document.getElementById('wmMode2p').style.color=m==='2p'?'#fff':'rgba(255,255,255,.4)';
+  document.getElementById('wmMode2p').style.fontWeight=m==='2p'?'600':'400';
+  s1p.style.display=m==='1p'?'flex':'none';
+  s2p.style.display=m==='2p'?'flex':'none';
+  startGame();
+}
+
 function startGame(){
-  score=0;timeLeft=DURATION;running=true;
-  scoreEl.textContent='0';timerEl.textContent=DURATION;
+  score=0;p1score=0;p2score=0;timeLeft=DURATION;running=true;
+  scoreEl.textContent='0';p1El.textContent='0';p2El.textContent='0';
+  timerEl.textContent=DURATION;timer2El.textContent=DURATION;
   timerFill.style.width='100%';
   overlay.classList.remove('show');overlay.style.display='none';
   document.querySelectorAll('.hole').forEach(h=>{h.classList.remove('active','mole-hit')});
   clearInterval(spawnInt);clearInterval(timerInt);
   spawnInt=setInterval(spawnMole,800);
   timerInt=setInterval(()=>{
-    timeLeft--;timerEl.textContent=timeLeft;
+    timeLeft--;timerEl.textContent=timeLeft;timer2El.textContent=timeLeft;
     timerFill.style.width=(timeLeft/DURATION*100)+'%';
     if(timeLeft<=0)endGame();
   },1000);
@@ -121,19 +144,39 @@ function whack(i){
   hole.classList.add('mole-hit');
   setTimeout(()=>hole.classList.remove('mole-hit'),200);
 }
+function whack2p(e,i){
+  if(!running)return;
+  const hole=document.querySelectorAll('.hole')[i];
+  if(!hole.classList.contains('active'))return;
+  const rect=grid.getBoundingClientRect();
+  const x=(e.clientX||e.changedTouches&&e.changedTouches[0].clientX)-rect.left;
+  if(x<rect.width/2){p1score++;p1El.textContent=p1score}
+  else{p2score++;p2El.textContent=p2score}
+  hole.classList.remove('active');
+  hole.classList.add('mole-hit');
+  setTimeout(()=>hole.classList.remove('mole-hit'),200);
+}
 function endGame(){
   running=false;
   clearInterval(spawnInt);clearInterval(timerInt);
-  if(score>highScore){highScore=score;localStorage.setItem('whackHigh',highScore.toString())}
+  if(mode==='2p'){
+    const w=p1score>p2score?'🔵 P1 獲勝！':p2score>p1score?'🔴 P2 獲勝！':'🤝 平手！';
+    oTitle.textContent='⏰ 時間到！';
+    oMsg.textContent=`${w}  P1 ${p1score} : ${p2score} P2`;
+  }else{
+    if(score>highScore){highScore=score;localStorage.setItem('whackHigh',highScore.toString())}
+    oTitle.textContent='⏰ 時間到！';
+    oMsg.textContent=`你打了 ${score} 隻地鼠${score>=highScore?' 🎉 新紀錄！':''}`;
+  }
   overlay.style.display='flex';overlay.classList.add('show');
-  oTitle.textContent='⏰ 時間到！';
-  oMsg.textContent=`你打了 ${score} 隻地鼠${score>=highScore?' 🎉 新紀錄！':''}`;
 }
 window.shareScore=function(){
-  const msg=`🔨 打地鼠 30 秒打了 ${score} 隻${score>=20?' 我是快手王！':'！你能比我多嗎？'}`;
+  const msg=mode==='2p'?`🔨 打地鼠 2P 對戰 ${p1score}:${p2score}！${p1score>p2score?'P1':'P2'} 獲勝！`:`🔨 打地鼠 30 秒打了 ${score} 隻${score>=20?' 我是快手王！':'！你能比我多嗎？'}`;
   if(navigator.share)navigator.share({title:'打地鼠挑戰',text:msg,url:location.href});
   else shareToLine(location.href);
 }
+document.getElementById('wmMode1p').onclick=()=>setMode('1p');
+document.getElementById('wmMode2p').onclick=()=>setMode('2p');
 startGame();
 </script>
 <script src="../share.js"></script>

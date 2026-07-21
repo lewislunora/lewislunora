@@ -292,8 +292,12 @@
 </head>
 <body>
 <div class="container">
-  <h1>記憶翻牌</h1>
-  <div class="stats-bar">
+    <h1>記憶翻牌</h1>
+    <div style="display:flex;gap:6px;margin-bottom:8px;justify-content:center">
+      <button id="memMode1p" style="padding:4px 14px;border-radius:8px;border:1px solid rgba(255,255,255,.1);background:linear-gradient(135deg,#f7971e,#ffd200);color:#1a1a2e;font-size:12px;font-weight:600;cursor:pointer;font-family:inherit">👤 單人</button>
+      <button id="memMode2p" style="padding:4px 14px;border-radius:8px;border:1px solid rgba(255,255,255,.1);background:rgba(255,255,255,.05);color:rgba(255,255,255,.4);font-size:12px;cursor:pointer;font-family:inherit">👥 雙人輪流</button>
+    </div>
+    <div class="stats-bar">
     <div class="stat-item">
       <span class="label">配對</span>
       <span class="value" id="pairs">0 / 8</span>
@@ -337,6 +341,7 @@
   let isLocked = false;
   let gameStarted = false;
   let flipTimeout = null;
+  let memMode = '1p';
 
   const grid = document.getElementById('grid');
   const pairsEl = document.getElementById('pairs');
@@ -493,6 +498,18 @@
     finalMoves.textContent = moves;
     finalTime.textContent = formatTime(seconds);
 
+    if (memMode === '2p') {
+      const mpDone = window.MP2P && MP2P.active;
+      if (mpDone) {
+        overlay.classList.add('show');
+        document.querySelector('.modal h2').textContent = 'P1 完成！換 P2';
+        document.querySelector('.modal p').textContent = `P1 用了 ${moves} 步`;
+        document.getElementById('playAgainBtn').textContent = '▶ P2 開始';
+        document.getElementById('playAgainBtn').onclick = () => { overlay.classList.remove('show'); MP2P.playerDone(moves); };
+        document.querySelector('.new-record').style.display = 'none';
+        return;
+      }
+    }
     const best = getBest();
     let isRecord = false;
     if (best === null || moves < best) {
@@ -502,11 +519,49 @@
     }
     newRecordBadge.style.display = isRecord ? 'inline-block' : 'none';
     overlay.classList.add('show');
+    document.querySelector('.modal h2').textContent = '🏆 恭喜過關！';
+    document.getElementById('playAgainBtn').textContent = '再玩一次';
+    document.getElementById('playAgainBtn').onclick = resetGame;
   }
 
   function updateStats() {
     pairsEl.textContent = `${matchedPairs} / ${EMOJIS.length}`;
     movesEl.textContent = moves;
+  }
+
+  function setMemMode(m) {
+    memMode = m;
+    const b1 = document.getElementById('memMode1p'), b2 = document.getElementById('memMode2p');
+    if (m === '1p') {
+      b1.style.background = 'linear-gradient(135deg,#f7971e,#ffd200)'; b1.style.color = '#1a1a2e'; b1.style.fontWeight = '600';
+      b2.style.background = 'rgba(255,255,255,.05)'; b2.style.color = 'rgba(255,255,255,.4)'; b2.style.fontWeight = '400';
+    } else {
+      b2.style.background = 'linear-gradient(135deg,#f7971e,#ffd200)'; b2.style.color = '#1a1a2e'; b2.style.fontWeight = '600';
+      b1.style.background = 'rgba(255,255,255,.05)'; b1.style.color = 'rgba(255,255,255,.4)'; b1.style.fontWeight = '400';
+      if (!window.MP2P) return;
+      MP2P.name = '記憶翻牌';
+      MP2P.buildUI();
+      MP2P.showModeSelector();
+      MP2P.mode = '2p';
+      MP2P.hide();
+      MP2P.start();
+      MP2P.p1Start = resetGame;
+      MP2P.p2Start = resetGame;
+      MP2P.onDone = (phase, s1, s2) => {
+        if (phase === 2) {
+          const w = s1 < s2 ? 'P1' : s2 < s1 ? 'P2' : null;
+          const title = w ? `🏆 ${w} 獲勝！` : '🤝 平手！';
+          overlay.classList.add('show');
+          document.querySelector('.modal h2').textContent = title;
+          document.querySelector('.modal p').textContent = `P1 ${s1} 步 ｜ P2 ${s2} 步`;
+          document.getElementById('playAgainBtn').textContent = '🔄 再玩一次';
+          document.getElementById('playAgainBtn').onclick = () => { overlay.classList.remove('show'); MP2P.showModeSelector(); };
+          document.querySelector('.new-record').style.display = 'none';
+        }
+      };
+      return;
+    }
+    resetGame();
   }
 
   function resetGame() {
@@ -526,10 +581,13 @@
     cards = buildDeck().map(c => ({ ...c, matched: false }));
     renderGrid();
     updateBestDisplay();
+    document.querySelector('.modal h2').textContent = '🏆 恭喜過關！';
   }
 
   resetBtn.addEventListener('click', resetGame);
   playAgainBtn.addEventListener('click', resetGame);
+  document.getElementById('memMode1p').addEventListener('click', () => setMemMode('1p'));
+  document.getElementById('memMode2p').addEventListener('click', () => setMemMode('2p'));
 
   resetGame();
   window.shareScore = function() {
@@ -540,6 +598,7 @@
   };
 })();
 </script>
+<script src="../multiplayer.js"></script>
 <script src="../share.js"></script>
 </body>
 </html>
