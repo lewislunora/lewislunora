@@ -492,6 +492,15 @@
       "ip": "210.241.233.154",
       "country": "Taiwan",
       "visited_at": "2026-07-21 01:01:43"
+    },
+    {
+      "id": 11,
+      "page": "/lewislunora/product/",
+      "referrer": "https://lewislunora.github.io/lewislunora/",
+      "user_agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36",
+      "ip": "122.100.112.224",
+      "country": "Taiwan",
+      "visited_at": "2026-07-21 12:58:01"
     }
   ],
   "geo_cache": [
