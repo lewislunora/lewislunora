@@ -83,7 +83,7 @@ const nextCanvas=document.getElementById('nextCanvas'),nctx=nextCanvas.getContex
 const scoreEl=document.getElementById('score'),linesEl=document.getElementById('lines');
 const overlay=document.getElementById('overlay'),overlayTitle=document.getElementById('overlayTitle'),overlayScore=document.getElementById('overlayScore');
 
-const SHAPES=[[[1,1,1,1]],[[1,1],[1,1]],[[1,0],[1,1],[0,1]],[[0,1],[1,1],[1,0]],[[1,0],[1,1],[1,0]],[[1,1,0],[0,1,1]],[[0,1,1],[1,1,0]]];
+const SHAPES=[[[1,1,1,1]],[[1,1],[1,1]],[[1,0],[1,0],[1,1]],[[0,1],[0,1],[1,1]],[[1,0],[1,1],[1,0]],[[0,1,1],[1,1,0]],[[1,1,0],[0,1,1]]];
 const COLORS=['#00d4ff','#f59e0b','#ef4444','#22c55e','#a855f7','#ec4899','#f97316'];
 let board,score,lines,totalLines,gameOver,gameInterval;
 let piece={shape:[],x:0,y:0,color:''},nextShape,nextColor;
@@ -164,8 +164,9 @@ function draw(){
     if(piece.shape[r][c]){ctx.fillStyle=piece.color;ctx.fillRect((piece.x+c)*BLOCK,(piece.y+r)*BLOCK,BLOCK-1,BLOCK-1);}
   }
   nctx.fillStyle='rgba(255,255,255,.03)';nctx.fillRect(0,0,80,80);
-  if(nextShape)for(let r=0;r<nextShape.length;r++)for(let c=0;c<nextShape[r].length;c++)
-    if(nextShape[r][c]){nctx.fillStyle=nextColor;nctx.fillRect(c*20+20,r*20+20,18,18);}
+  if(nextShape){const nw=nextShape[0].length*20,nh=nextShape.length*20,ox=(80-nw)/2,oy=(80-nh)/2;
+  for(let r=0;r<nextShape.length;r++)for(let c=0;c<nextShape[r].length;c++)
+    if(nextShape[r][c]){nctx.fillStyle=nextColor;nctx.fillRect(ox+c*20,oy+r*20,18,18);}}
 }
 document.addEventListener('keydown',e=>{
   if(e.key==='ArrowLeft')move(-1);
