@@ -483,6 +483,15 @@
       "ip": "54.70.53.60",
       "country": "United States",
       "visited_at": "2026-07-20 18:12:18"
+    },
+    {
+      "id": 10,
+      "page": "/",
+      "referrer": "https://l.threads.com/",
+      "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36",
+      "ip": "210.241.233.154",
+      "country": "Taiwan",
+      "visited_at": "2026-07-21 01:01:43"
     }
   ],
   "geo_cache": [
@@ -503,6 +512,12 @@
       "country": "United States",
       "city": "Portland",
       "cached_at": "2026-07-20 18:12:17"
+    },
+    {
+      "ip": "210.241.233.154",
+      "country": "Taiwan",
+      "city": "Taoyuan",
+      "cached_at": "2026-07-21 01:01:43"
     }
   ]
 }
