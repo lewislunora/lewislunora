@@ -180,12 +180,14 @@ document.addEventListener('keydown',e=>{
   else if(e.key==='ArrowUp'){rotatePiece();e.preventDefault()}
   else if(e.key===' '){e.preventDefault();while(!gameOver&&!collision(piece.shape,piece.x,piece.y+1))piece.y++;lockPiece();draw()}
 });
-let tx=0;canvas.addEventListener('touchstart',e=>{tx=e.touches[0].clientX;},{passive:true});
+let tx=0;canvas.addEventListener('touchstart',e=>{e.preventDefault();tx=e.touches[0].clientX;},{passive:false});
 canvas.addEventListener('touchend',e=>{
+  e.preventDefault();
   const dx=e.changedTouches[0].clientX-tx;
   if(Math.abs(dx)>30)move(dx>0?1:-1);
   else rotatePiece();
-},{passive:true});
+},{passive:false});
+document.querySelector('.wrap').addEventListener('touchmove',e=>e.preventDefault(),{passive:false});
 init();
 </script>
 <script src="../share.js"></script>
