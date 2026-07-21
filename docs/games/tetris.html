@@ -155,13 +155,18 @@ window.shareScore=function(){
   else shareToLine(location.href);
 }
 function restart(){init()}
+function drawBlock(ctx,x,y,color){
+  ctx.fillStyle=color;ctx.fillRect(x,y,BLOCK,BLOCK);
+  ctx.fillStyle='rgba(0,0,0,.35)';ctx.fillRect(x,y,BLOCK,1);ctx.fillRect(x,y,1,BLOCK);
+  ctx.fillStyle='rgba(255,255,255,.15)';ctx.fillRect(x,y+BLOCK-1,BLOCK,1);ctx.fillRect(x+BLOCK-1,y,1,BLOCK);
+}
 function draw(){
-  ctx.fillStyle='rgba(255,255,255,.03)';ctx.fillRect(0,0,200,400);
+  ctx.fillStyle='#16213e';ctx.fillRect(0,0,200,400);
   for(let r=0;r<ROWS;r++)for(let c=0;c<COLS;c++){
-    if(board[r][c]){ctx.fillStyle=board[r][c];ctx.fillRect(c*BLOCK,r*BLOCK,BLOCK-1,BLOCK-1);}
+    if(board[r][c])drawBlock(ctx,c*BLOCK,r*BLOCK,board[r][c]);
   }
   for(let r=0;r<piece.shape.length;r++)for(let c=0;c<piece.shape[r].length;c++){
-    if(piece.shape[r][c]){ctx.fillStyle=piece.color;ctx.fillRect((piece.x+c)*BLOCK,(piece.y+r)*BLOCK,BLOCK-1,BLOCK-1);}
+    if(piece.shape[r][c])drawBlock(ctx,(piece.x+c)*BLOCK,(piece.y+r)*BLOCK,piece.color);
   }
   nctx.fillStyle='rgba(255,255,255,.03)';nctx.fillRect(0,0,80,80);
   if(nextShape){const nw=nextShape[0].length*20,nh=nextShape.length*20,ox=(80-nw)/2,oy=(80-nh)/2;
