@@ -18,12 +18,12 @@
 <style>
 *{margin:0;padding:0;box-sizing:border-box;scroll-behavior:smooth}
 :root{
-  --fs-mega:clamp(48px,10vw + 20px,140px);
-  --fs-hero:clamp(36px,5vw + 16px,72px);
-  --fs-lg:clamp(24px,3vw + 12px,44px);
-  --fs-base:clamp(16px,1.4vw + 10px,22px);
-  --fs-sm:clamp(14px,1.2vw + 8px,18px);
-  --fs-xs:clamp(12px,1vw + 6px,15px)
+  --fs-mega:clamp(32px,5vw + 10px,72px);
+  --fs-hero:clamp(28px,4vw + 10px,52px);
+  --fs-lg:clamp(20px,2.5vw + 8px,34px);
+  --fs-base:clamp(15px,1.2vw + 8px,19px);
+  --fs-sm:clamp(13px,1vw + 7px,16px);
+  --fs-xs:clamp(11px,0.8vw + 5px,13px)
 }
 html{font-size:16px;-webkit-text-size-adjust:100%}
 body{
@@ -65,9 +65,9 @@ nav{
 
 /* Hero — oversized typography */
 .hero{
-  min-height:100vh;display:flex;flex-direction:column;
+  min-height:75vh;display:flex;flex-direction:column;
   justify-content:center;align-items:center;text-align:center;
-  padding:clamp(5rem,8vw,7rem) clamp(1rem,3vw,2rem) clamp(2rem,4vw,3rem);
+  padding:clamp(4rem,6vw,5rem) clamp(1rem,3vw,2rem) clamp(1.5rem,3vw,2rem);
   position:relative;overflow:hidden
 }
 .hero-glow{
@@ -83,8 +83,8 @@ nav{
   border-radius:100px
 }
 .hero h1{
-  font-size:var(--fs-mega);font-weight:900;line-height:.9;
-  margin-bottom:1rem;letter-spacing:-2px;max-width:92vw
+  font-size:var(--fs-mega);font-weight:800;line-height:1.05;
+  margin-bottom:.8rem;letter-spacing:-1px;max-width:92vw
 }
 .hero h1 .line1{
   display:block;
