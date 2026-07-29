@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>網路遊尋 — AI 自動貼文 | 翔川 Neo</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#0a0e27;color:#e8ecf4;padding:2rem;max-width:1000px;margin:0 auto}
+h1{font-size:24px;margin-bottom:.5rem;background:linear-gradient(135deg,#00d4ff,#7b68ee);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+h2{font-size:16px;color:rgba(255,255,255,.4);margin-bottom:1.5rem}
+.desc{color:rgba(255,255,255,.3);font-size:14px;margin-bottom:2rem;line-height:1.5}
+.card{background:rgba(255,255,255,.035);border:1px solid rgba(255,255,255,.07);border-radius:12px;padding:1.5rem;margin-bottom:1rem}
+.card h3{font-size:15px;font-weight:600;margin-bottom:.5rem;word-break:break-all}
+.card .site-title{font-size:13px;color:rgba(255,255,255,.6);margin-bottom:.3rem}
+.card .site-url{font-size:11px;color:rgba(255,255,255,.2);word-break:break-all;margin-bottom:.5rem}
+.card .site-content{font-size:12px;color:rgba(255,255,255,.3);line-height:1.5;margin-bottom:.6rem}
+.badge{display:inline-block;padding:.15rem .5rem;border-radius:4px;font-size:11px;font-weight:600;margin-right:.3rem}
+.badge.yes{background:rgba(0,212,255,.15);color:#00d4ff}
+.badge.no{background:rgba(255,255,255,.05);color:rgba(255,255,255,.2)}
+.badge.wait{background:rgba(255,193,7,.15);color:#ffc107}
+.badge.done{background:rgba(0,200,83,.15);color:#00c853}
+.badge.fail{background:rgba(255,107,107,.15);color:#ff6b6b}
+.btn{display:inline-flex;align-items:center;gap:.4rem;padding:.5rem 1rem;border-radius:8px;font-weight:600;font-size:13px;cursor:pointer;border:none;transition:all .2s;margin-right:.5rem;margin-bottom:.3rem}
+.btn-primary{background:linear-gradient(135deg,#00d4ff,#7b68ee);color:#fff}
+.btn-primary:hover{opacity:.9}
+.btn-outline{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);color:rgba(255,255,255,.6)}
+.btn-outline:hover{background:rgba(255,255,255,.08);color:#fff}
+.btn-sm{padding:.3rem .6rem;font-size:11px}
+.reply-box{background:rgba(0,0,0,.2);border-radius:8px;padding:.8rem;margin:.5rem 0;font-size:13px;line-height:1.5;color:rgba(255,255,255,.4);white-space:pre-wrap;border:1px solid rgba(255,255,255,.05)}
+.reply-box .link{color:#00d4ff}
+.search-row{display:flex;gap:.5rem;margin-bottom:1.5rem}
+.search-row input{flex:1;padding:.5rem .8rem;border-radius:8px;background:rgba(0,0,0,.2);border:1px solid rgba(255,255,255,.1);color:#e8ecf4;font-size:13px}
+.search-row input:focus{border-color:#00d4ff;outline:none}
+.empty{text-align:center;padding:2rem;color:rgba(255,255,255,.12);font-size:13px}
+.loading{text-align:center;padding:2rem;color:rgba(255,255,255,.2)}
+textarea{width:100%;padding:.5rem;border-radius:8px;background:rgba(0,0,0,.2);border:1px solid rgba(255,255,255,.1);color:#e8ecf4;font-size:12px;font-family:inherit;min-height:60px;margin:.3rem 0;resize:vertical}
+textarea:focus{border-color:#00d4ff;outline:none}
+.tabs{display:flex;gap:.5rem;margin-bottom:1rem;flex-wrap:wrap}
+.tab{padding:.4rem 1rem;border-radius:8px;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.05);color:rgba(255,255,255,.3);cursor:pointer;font-size:12px;transition:all .2s}
+.tab.active{background:rgba(0,212,255,.1);border-color:rgba(0,212,255,.2);color:#00d4ff}
+.tab:hover{background:rgba(255,255,255,.05)}
+</style>
+</head>
+<body>
+<h1>🌐 網路遊尋 — AI 自動貼文</h1>
+<div class="desc">系統會搜尋網路上與你服務相關的討論，用 AI 生成自然回覆並嘗試以訪客身分留言。不用帳號密碼，就能把網站推廣出去。</div>
+
+<div class="tabs">
+  <div class="tab active" onclick="switchTab('search',this)">🔍 搜尋與貼文</div>
+  <div class="tab" onclick="switchTab('auto',this)">🤖 全自動遊尋</div>
+</div>
+
+<div id="tab-search">
+  <div class="card">
+    <div class="search-row">
+      <input id="queryInput" value="一人公司 工具 推薦" placeholder="輸入搜尋關鍵字..." onkeydown="if(event.key==='Enter')search()">
+      <button class="btn btn-primary" onclick="search()">🔍 搜尋</button>
+    </div>
+    <div style="font-size:11px;color:rgba(255,255,255,.15);margin-top:-.5rem">使用 DuckDuckGo 搜尋，不需 API Key。會略過已知社群平台。</div>
+  </div>
+  <div id="searchResults"></div>
+</div>
+
+<div id="tab-auto" style="display:none">
+  <div class="card">
+    <p style="font-size:13px;color:rgba(255,255,255,.3);margin-bottom:1rem">一鍵開始：搜尋 → 瀏覽 → AI 生成回覆 → 訪客留言。全自動執行。</p>
+    <button class="btn btn-primary" onclick="runRoam()">🚀 開始遊尋</button>
+    <span id="roamStatus" style="font-size:13px;color:rgba(255,255,255,.2);margin-left:.5rem"></span>
+  </div>
+  <div id="roamResults"></div>
+</div>
+
+<script>
+function switchTab(name, el){
+  document.querySelectorAll('.tab').forEach(function(t){t.classList.remove('active')});
+  el.classList.add('active');
+  document.getElementById('tab-search').style.display=name==='search'?'block':'none';
+  document.getElementById('tab-auto').style.display=name==='auto'?'block':'none';
+}
+function api(path){
+  return location.hostname.includes('github.io')?'https://lewislunora.onrender.com'+path:path;
+}
+
+function search(){
+  var q=document.getElementById('queryInput').value.trim();
+  if(!q)return;
+  var el=document.getElementById('searchResults');
+  el.innerHTML='<div class="loading">🔍 搜尋中...</div>';
+  fetch(api('/api/roam/search?query='+encodeURIComponent(q))).then(function(r){return r.json()}).then(function(d){
+    if(!d.results||d.results.length===0){
+      el.innerHTML='<div class="empty">沒有找到相關結果</div>';return;
+    }
+    var html='<p style="font-size:12px;color:rgba(255,255,255,.15);margin-bottom:.5rem">找到 '+d.count+' 個相關頁面</p>';
+    d.results.forEach(function(site){
+      html+=renderSiteCard(site);
+    });
+    el.innerHTML=html;
+  }).catch(function(){
+    el.innerHTML='<div class="empty">搜尋失敗，請確認伺服器正常</div>';
+  });
+}
+
+function renderSiteCard(site){
+  var html='<div class="card" id="site-'+encodeURIComponent(site.url)+'">';
+  html+='<div class="site-title">'+escapeHtml(site.title||'(無標題)')+'</div>';
+  html+='<div class="site-url">'+escapeHtml(site.url)+'</div>';
+  html+='<div style="margin-top:.3rem">';
+  html+='<span class="badge wait">待檢查</span>';
+  html+='</div>';
+  html+='<div style="margin-top:.6rem">';
+  html+='<button class="btn btn-outline btn-sm" onclick="visitSite(\''+escapeHtml(site.url)+'\',this)">👁️ 檢查</button>';
+  html+='</div>';
+  html+='<div class="visit-result"></div>';
+  html+='</div>';
+  return html;
+}
+
+function visitSite(url, btn){
+  var card=btn.closest('.card');
+  var resultDiv=card.querySelector('.visit-result');
+  resultDiv.innerHTML='<div class="loading">載入中...</div>';
+  btn.disabled=true;btn.textContent='⏳ 檢查中';
+  fetch(api('/api/roam/visit'),{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({url:url})})
+  .then(function(r){return r.json()}).then(function(info){
+    btn.disabled=false;btn.textContent='👁️ 重新檢查';
+    var html='';
+    html+='<div style="margin-top:.6rem">';
+    html+='<span class="badge '+(info.guest_friendly?'yes':'no')+'">訪客留言：'+(info.guest_friendly?'✅ 可能可行':'❌ 可能不行')+'</span>';
+    html+='<span class="badge '+(info.has_comment_form?'yes':'no')+'">留言表單：'+(info.has_comment_form?'✅ 有':'❌ 無')+'</span>';
+    html+='</div>';
+    if(info.content){
+      html+='<div class="site-content">'+escapeHtml(info.content.substring(0,300))+'...</div>';
+    }
+    if(info.has_comment_form || info.guest_friendly){
+      html+='<div style="margin-top:.6rem">';
+      html+='<button class="btn btn-primary btn-sm" onclick="generateReply(\''+escapeHtml(url)+'\',\''+escapeHtml(info.title||'')+'\',\''+escapeHtml(info.content||'')+'\',this)">🧠 AI 生成回覆</button>';
+      html+='</div>';
+      html+='<div class="reply-section"></div>';
+    }
+    resultDiv.innerHTML=html;
+  }).catch(function(){
+    btn.disabled=false;btn.textContent='👁️ 檢查';
+    resultDiv.innerHTML='<div style="color:#ff6b6b;font-size:12px">檢查失敗</div>';
+  });
+}
+
+function generateReply(url, title, content, btn){
+  var section=btn.closest('.card').querySelector('.reply-section');
+  section.innerHTML='<div class="loading">🤖 AI 生成中...</div>';
+  btn.disabled=true;btn.textContent='⏳ 生成中';
+  fetch(api('/api/roam/generate'),{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({url:url,title:title,content:content})})
+  .then(function(r){return r.json()}).then(function(d){
+    btn.disabled=false;btn.textContent='🧠 重新生成';
+    var html='<div class="reply-box">'+escapeHtml(d.reply)+'</div>';
+    html+='<button class="btn btn-primary btn-sm" onclick="postReply(\''+escapeHtml(url)+'\',this)">📨 訪客留言</button>';
+    html+='<span class="post-status" style="margin-left:.5rem;font-size:12px;color:rgba(255,255,255,.2)"></span>';
+    html+='<div style="margin-top:.3rem"><textarea>'+escapeHtml(d.reply)+'</textarea></div>';
+    section.innerHTML=html;
+  }).catch(function(){
+    btn.disabled=false;btn.textContent='🧠 AI 生成回覆';
+    section.innerHTML='<div style="color:#ff6b6b;font-size:12px">生成失敗</div>';
+  });
+}
+
+function postReply(url, btn){
+  var section=btn.closest('.reply-section');
+  var reply=section.querySelector('textarea').value;
+  var status=section.querySelector('.post-status');
+  btn.disabled=true;btn.textContent='⏳ 張貼中...';
+  status.textContent='';
+  fetch(api('/api/roam/post'),{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({url:url,reply:reply})})
+  .then(function(r){return r.json()}).then(function(d){
+    btn.disabled=false;btn.textContent='📨 訪客留言';
+    if(d.ok){
+      status.textContent='✅ 已張貼！';
+      status.style.color='#00c853';
+    }else{
+      status.textContent='❌ '+d.error;
+      status.style.color='#ff6b6b';
+    }
+  }).catch(function(){
+    btn.disabled=false;btn.textContent='📨 訪客留言';
+    status.textContent='❌ 連線失敗';
+    status.style.color='#ff6b6b';
+  });
+}
+
+function runRoam(){
+  var status=document.getElementById('roamStatus');
+  var results=document.getElementById('roamResults');
+  status.textContent='⏳ 搜尋中...';
+  results.innerHTML='';
+  fetch(api('/api/roam/run'),{method:'POST'}).then(function(r){return r.json()}).then(function(d){
+    status.textContent='✅ 完成！搜尋詞：「'+d.query+'」，找到 '+d.total_found+' 個網站，成功張貼 '+d.posted_count+' 篇';
+    var html='';
+    d.results.forEach(function(r){
+      html+='<div class="card">';
+      html+='<div class="site-title">'+escapeHtml(r.title||'(無標題)')+'</div>';
+      html+='<div class="site-url">'+escapeHtml(r.url)+'</div>';
+      html+='<div style="margin-top:.3rem">';
+      html+='<span class="badge '+(r.guest_friendly?'yes':'no')+'">可訪客留言：'+(r.guest_friendly?'✅':'❌')+'</span>';
+      html+='<span class="badge '+(r.has_comment_form?'yes':'no')+'">有留言表單：'+(r.has_comment_form?'✅':'❌')+'</span>';
+      if(r.post_result){
+        html+='<span class="badge '+(r.post_result.ok?'done':'fail')+'">張貼：'+(r.post_result.ok?'✅ 成功':'❌ 失敗')+'</span>';
+      }
+      html+='</div>';
+      if(r.error){html+='<div style="color:#ff6b6b;font-size:12px;margin-top:.3rem">⚠️ '+escapeHtml(r.error)+'</div>';}
+      if(r.generated_reply){
+        html+='<div class="reply-box">'+escapeHtml(r.generated_reply)+'</div>';
+      }
+      if(r.post_result && !r.post_result.ok && r.post_result.error){
+        html+='<div style="color:rgba(255,255,255,.2);font-size:11px;margin-top:.2rem">錯誤：'+escapeHtml(r.post_result.error)+'</div>';
+      }
+      html+='</div>';
+    });
+    results.innerHTML=html;
+  }).catch(function(){
+    status.textContent='❌ 遊尋失敗';
+  });
+}
+
+function escapeHtml(s){
+  if(!s)return'';
+  return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#039;');
+}
+</script>
+</body>
+</html>

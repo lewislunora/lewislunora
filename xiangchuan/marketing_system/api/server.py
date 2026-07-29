@@ -1153,6 +1153,70 @@ def _register_promo_task():
     scheduler._loop = patched_loop
 
 
+# ── Web Roamer ──────────────────────────────────────────────────────────
+@app.get("/api/roam/search")
+def roam_search(query: str = ""):
+    from ..services.web_roamer import WebRoamer
+    roamer = WebRoamer(data_dir=DATA_DIR)
+    results = roamer.search(query or None, max_results=10)
+    return {"query": query, "results": results, "count": len(results)}
+
+
+@app.post("/api/roam/visit")
+async def roam_visit(request: Request):
+    body = await request.json()
+    url = body.get("url", "")
+    if not url:
+        raise HTTPException(400, "url required")
+    from ..services.web_roamer import WebRoamer
+    roamer = WebRoamer(data_dir=DATA_DIR)
+    info = roamer.visit(url)
+    return info
+
+
+@app.post("/api/roam/generate")
+async def roam_generate(request: Request):
+    body = await request.json()
+    from ..services.web_roamer import WebRoamer
+    roamer = WebRoamer(data_dir=DATA_DIR)
+    from ..config import GROQ_API_KEY, GROQ_MODEL
+    reply = roamer.generate_reply(
+        body.get("title", ""),
+        body.get("content", ""),
+        body.get("url", ""),
+        groq_client=GROQ_API_KEY,
+        groq_model=GROQ_MODEL,
+    )
+    return {"reply": reply or "（無法生成）"}
+
+
+@app.post("/api/roam/post")
+async def roam_post(request: Request):
+    body = await request.json()
+    url = body.get("url", "")
+    reply = body.get("reply", "")
+    from ..services.web_roamer import WebRoamer
+    roamer = WebRoamer(data_dir=DATA_DIR)
+    result = await roamer.post_reply_playwright(url, reply)
+    return result
+
+
+@app.post("/api/roam/run")
+def roam_run():
+    """Full roam cycle: search → visit → generate → post."""
+    from ..services.web_roamer import WebRoamer
+    from ..config import GROQ_API_KEY, GROQ_MODEL
+    roamer = WebRoamer(data_dir=DATA_DIR)
+    result = roamer.roam(
+        max_sites=5,
+        groq_client=GROQ_API_KEY,
+        groq_model=GROQ_MODEL,
+    )
+    posted = sum(1 for r in result["results"] if r.get("post_result", {}).get("ok"))
+    result["posted_count"] = posted
+    return result
+
+
 _register_promo_task()
 
 
