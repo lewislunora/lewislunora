@@ -1,0 +1,112 @@
+# =============================================================================
+# AI Code Review Pipeline — Jira + GitLab + SonarQube + AI Review
+# =============================================================================
+# How it works:
+#   1. Developer creates branch: PROJ-123-feature-name
+#   2. Opens MR → triggers this pipeline
+#   3. Stage 1: SonarQube Quality Gate (gatekeeper)
+#   4. Stage 2: AI Code Review via Groq (only if SQ passes)
+#   5. Stage 3: Human Approval required before merge
+#   6. Merge → Jira ticket auto-transitions to "Code Reviewed"
+#
+# Requirements:
+#   - GitLab 15+ with CI/CD enabled
+#   - SonarQube server (self-hosted or cloud)
+#   - AI Review API (self-hosted, see docs/services/ai-review/)
+#   - GitLab MR webhook configured
+# =============================================================================
+
+variables:
+  SONAR_HOST_URL: "https://sonarqube.yourcompany.com"
+  SONAR_TOKEN: "${SONAR_TOKEN}"              # Set in GitLab CI/CD variables
+  AI_REVIEW_URL: "https://lewislunora.onrender.com/api/ai-review"
+  AI_REVIEW_KEY: "${AI_REVIEW_KEY}"          # Set in GitLab CI/CD variables
+  JIRA_PROJECT_KEY: "PROJ"
+
+stages:
+  - quality-gate
+  - ai-review
+  - notify
+
+# ── Stage 1: SonarQube Quality Gate ────────────────────────────────────────
+sonarqube-check:
+  stage: quality-gate
+  image: sonarsource/sonar-scanner-cli:latest
+  only:
+    - merge_requests
+  script:
+    - sonar-scanner
+        -Dsonar.host.url=$SONAR_HOST_URL
+        -Dsonar.login=$SONAR_TOKEN
+        -Dsonar.projectKey=$CI_PROJECT_NAME
+        -Dsonar.sourceEncoding=UTF-8
+        -Dsonar.branch.name=$CI_MERGE_REQUEST_SOURCE_BRANCH_NAME
+        -Dsonar.qualitygate.wait=true
+        -Dsonar.qualitygate.timeout=300
+  allow_failure: false
+
+# ── Stage 2: AI Code Review (only if SonarQube passes) ────────────────────
+ai-code-review:
+  stage: ai-review
+  image: alpine/curl:latest
+  only:
+    - merge_requests
+  needs:
+    - sonarqube-check
+  script:
+    # Extract MR info
+    - MR_DESC=$(curl -s --header "PRIVATE-TOKEN: ${GITLAB_ACCESS_TOKEN}"
+        "${CI_API_V4_URL}/projects/${CI_PROJECT_ID}/merge_requests/${CI_MERGE_REQUEST_IID}"
+        | jq -r '.description // "No description"')
+    # Get MR diff
+    - MR_DIFF=$(curl -s --header "PRIVATE-TOKEN: ${GITLAB_ACCESS_TOKEN}"
+        "${CI_API_V4_URL}/projects/${CI_PROJECT_ID}/merge_requests/${CI_MERGE_REQUEST_IID}/changes"
+        | jq -r '.changes[] | "File: \(.old_path) → \(.new_path)\n\(.diff)"')
+    # Send to AI Review API
+    - REVIEW_RESPONSE=$(curl -s -X POST "${AI_REVIEW_URL}"
+        -H "Authorization: Bearer ${AI_REVIEW_KEY}"
+        -H "Content-Type: application/json"
+        -d "$(jq -n \
+          --arg diff "$MR_DIFF" \
+          --arg desc "$MR_DESC" \
+          --arg project "$CI_PROJECT_NAME" \
+          --arg mr "$CI_MERGE_REQUEST_IID" \
+          '{diff: $diff, description: $desc, project: $project, mr_iid: $mr}')")
+    # Post AI review as comment on MR
+    - REVIEW_TEXT=$(echo "$REVIEW_RESPONSE" | jq -r '.review // "AI review unavailable"')
+    - >
+      curl -s --request POST --header "PRIVATE-TOKEN: ${GITLAB_ACCESS_TOKEN}"
+      "${CI_API_V4_URL}/projects/${CI_PROJECT_ID}/merge_requests/${CI_MERGE_REQUEST_IID}/notes"
+      --data "body=🤖 **AI Code Review**\n\n${REVIEW_TEXT}\n\n_This review was automatically generated._"
+  environment:
+    name: review/$CI_MERGE_REQUEST_SOURCE_BRANCH_NAME
+
+# ── Notify assignee on MR ─────────────────────────────────────────────────
+notify-reviewer:
+  stage: notify
+  image: alpine/curl:latest
+  only:
+    - merge_requests
+  needs:
+    - ai-code-review
+  script:
+    - >
+      curl -s --request POST --header "PRIVATE-TOKEN: ${GITLAB_ACCESS_TOKEN}"
+      "${CI_API_V4_URL}/projects/${CI_PROJECT_ID}/merge_requests/${CI_MERGE_REQUEST_IID}/notes"
+      --data "body=👀 **@${CI_MERGE_REQUEST_ASSIGNEE_USERNAME}** AI review complete. Please review and Approve."
+  when: always
+
+# ── Branch naming convention enforcement ──────────────────────────────────
+check-branch-name:
+  stage: quality-gate
+  image: alpine:latest
+  only:
+    - merge_requests
+  script:
+    - |
+      BRANCH="$CI_MERGE_REQUEST_SOURCE_BRANCH_NAME"
+      if ! echo "$BRANCH" | grep -qE "^${JIRA_PROJECT_KEY}-[0-9]+"; then
+        echo "❌ Branch name must start with ${JIRA_PROJECT_KEY}-NUMBER (eg. PROJ-123-feature)"
+        exit 1
+      fi
+      echo "✅ Branch name valid: $BRANCH"

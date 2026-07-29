@@ -951,4 +951,61 @@ async def track_article_view(request: Request):
     return {"ok": True}
 
 
+# ── AI Code Review ──────────────────────────────────────────────────────
+class AIReviewRequest(BaseModel):
+    diff: str
+    description: str = ""
+    project: str = ""
+    mr_iid: str = ""
+    language: str = ""
+
+@app.post("/api/ai-review")
+async def ai_code_review(req: AIReviewRequest):
+    from ..config import GROQ_API_KEY, GROQ_MODEL
+    if not GROQ_API_KEY:
+        return {"review": "⚠️ AI Code Review 未啟用（需要設定 GROQ_API_KEY）", "fallback": True}
+    try:
+        from groq import Groq
+        client = Groq(api_key=GROQ_API_KEY)
+
+        prompt = f"""你是一個專業的 Senior Code Reviewer。請針對以下 Merge Request 進行程式碼審查。
+
+MR 描述：
+{req.description or "(無描述)"}
+
+Diff 變更：
+{req.diff[:8000]}
+
+請輸出以下結構（繁體中文）：
+
+## 🔍 審查結果
+
+### ✅ 優點
+- （列出 1-2 個優點）
+
+### ⚠️ 需要改善
+- （列出問題，含檔案與行號）
+- 每個問題附上風險等級：🟢 建議 / 🟡 注意 / 🔴 嚴重
+
+### 💡 建議改善範例
+- （如果發現問題，給出 diff 格式的建議寫法）
+
+### 📊 總結
+- 總變更檔案數、建議數量、主要風險領域
+
+如果沒有重大問題，回覆「✅ 程式碼品質良好，無重大問題。」"""
+
+        resp = client.chat.completions.create(
+            model=GROQ_MODEL,
+            messages=[{"role": "user", "content": prompt}],
+            max_tokens=2048,
+            temperature=0.3,
+        )
+        review = resp.choices[0].message.content or "（AI 無法生成審查）"
+        return {"review": review, "fallback": False}
+
+    except Exception as e:
+        return {"review": f"⚠️ AI Review 錯誤：{str(e)}", "fallback": True}
+
+
 app.mount("/", StaticFiles(directory=str(DOCS_DIR), html=True), name="site")

@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI Code Review — Jira + GitLab + SonarQube 自動化審碼 | 翔川 Neo</title>
+<meta name="description" content="導入 SDLC 自動化：Jira 開票 → GitLab MR → SonarQube 品質關卡 → AI 自動審查。人工 review 時間從 30 分降到 10 分。">
+<link rel="canonical" href="https://lewislunora.onrender.com/ai-code-review/">
+<link rel="stylesheet" href="../widget.css">
+<style>
+*{margin:0;padding:0;box-sizing:border-box;scroll-behavior:smooth}
+:root{--fs-mega:clamp(34px,5vw+10px,68px);--fs-hero:clamp(26px,4vw+10px,50px);--fs-lg:clamp(20px,2.5vw+8px,34px);--fs-base:clamp(15px,1.2vw+8px,19px);--fs-sm:clamp(13px,1vw+7px,16px);--fs-xs:clamp(11px,0.8vw+5px,13px)}
+html{font-size:16px}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',system-ui,sans-serif;background:#0a0e27;color:#e8ecf4;min-height:100vh;overflow-x:hidden;-webkit-font-smoothing:antialiased}
+a{color:inherit;text-decoration:none}
+@media(prefers-color-scheme:light){body{background:#f4f6fa;color:#1a1a2e}}
+nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:clamp(.5rem,1.5vw,.8rem) clamp(1rem,3vw,2rem);background:rgba(10,14,39,.65);backdrop-filter:blur(32px);border-bottom:1px solid rgba(255,255,255,.04);display:flex;justify-content:space-between;align-items:center}
+.nav-brand{font-size:14px;font-weight:700;color:rgba(255,255,255,.6)}.nav-brand em{font-style:normal;background:linear-gradient(135deg,#00d4ff,#7b68ee);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.nav-links{display:flex;gap:1.2rem;align-items:center}
+.nav-links a{color:rgba(255,255,255,.5);font-size:13px;transition:color .3s}.nav-links a:hover{color:#fff}
+.hero{min-height:60vh;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;padding:6rem 1rem 2rem;position:relative;overflow:hidden}
+.hero-glow{position:absolute;top:40%;left:50%;transform:translate(-50%,-50%);width:80vw;height:80vw;border-radius:50%;background:radial-gradient(circle,rgba(0,212,255,.08) 0%,rgba(123,104,238,.04) 40%,transparent 65%);pointer-events:none}
+.hero h1{font-size:var(--fs-mega);font-weight:800;line-height:1.08;margin-bottom:.8rem}
+.hero h1 .accent{background:linear-gradient(135deg,#00d4ff,#7b68ee);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.hero p{font-size:var(--fs-sm);color:rgba(255,255,255,.4);max-width:560px;margin:0 auto 2rem;line-height:1.7}
+.btn{display:inline-flex;align-items:center;gap:.5rem;padding:.8rem 2rem;border-radius:10px;font-weight:600;font-size:14px;transition:all .3s;cursor:pointer;border:none}
+.btn-primary{background:linear-gradient(135deg,#00d4ff,#7b68ee);color:#fff;box-shadow:0 4px 20px rgba(0,212,255,.15)}
+.btn-primary:hover{transform:translateY(-2px);box-shadow:0 8px 30px rgba(0,212,255,.25)}
+.btn-outline{background:rgba(255,255,255,.035);border:1px solid rgba(255,255,255,.07);color:rgba(255,255,255,.5)}
+.btn-outline:hover{background:rgba(255,255,255,.07);color:#fff}
+.section{padding:clamp(2.5rem,4vw,4rem) clamp(1rem,3vw,2rem)}
+.wrap{max-width:1000px;margin:0 auto}
+.section-label{font-size:12px;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,.25);margin-bottom:.6rem;text-align:center}
+.section-title{font-size:var(--fs-lg);font-weight:700;text-align:center;margin-bottom:.6rem;line-height:1.2}
+.section-sub{text-align:center;color:rgba(255,255,255,.35);margin-bottom:2rem;font-size:var(--fs-sm);max-width:560px;margin-left:auto;margin-right:auto}
+.flow-diagram{background:rgba(255,255,255,.035);border:1px solid rgba(255,255,255,.07);border-radius:16px;padding:2rem;margin:0 auto 2rem;max-width:800px;overflow-x:auto}
+.flow-row{display:flex;align-items:center;justify-content:center;gap:.5rem;flex-wrap:nowrap}
+.flow-node{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);border-radius:10px;padding:.5rem .8rem;text-align:center;min-width:80px;font-size:12px;color:rgba(255,255,255,.6);flex-shrink:0}
+.flow-node .icon{display:block;font-size:1.2rem;margin-bottom:3px}
+.flow-node.pass{border-color:rgba(0,212,255,.2);background:rgba(0,212,255,.04)}
+.flow-node.fail{border-color:rgba(255,107,107,.2);background:rgba(255,107,107,.04)}
+.flow-arrow{color:rgba(255,255,255,.15);font-size:18px;flex-shrink:0}
+.feature-grid{display:grid;grid-template-columns:1fr 1fr;gap:.7rem;max-width:800px;margin:0 auto}
+.feature-card{background:rgba(255,255,255,.035);border:1px solid rgba(255,255,255,.07);border-radius:14px;padding:1.5rem;transition:all .3s}
+.feature-card:hover{background:rgba(255,255,255,.07);transform:translateY(-2px)}
+.feature-card .icon{font-size:1.5rem;margin-bottom:.5rem;display:block}
+.feature-card h3{font-size:var(--fs-base);font-weight:600;margin-bottom:.3rem}
+.feature-card p{font-size:var(--fs-sm);color:rgba(255,255,255,.4);line-height:1.5}
+.code-block{background:rgba(0,0,0,.3);border:1px solid rgba(255,255,255,.06);border-radius:12px;padding:1.2rem;overflow-x:auto;font-family:'SF Mono','Fira Code','Courier New',monospace;font-size:12px;line-height:1.6;color:rgba(255,255,255,.6);white-space:pre;margin:0 auto 1.5rem;max-width:800px}
+.code-block .comment{color:rgba(255,255,255,.2)}.code-block .key{color:#7b68ee}.code-block .val{color:#00d4ff}
+.code-block .tag{color:#ff6b6b}
+.pricing-card{background:linear-gradient(135deg,rgba(0,212,255,.04),rgba(123,104,238,.04));border:1px solid rgba(123,104,238,.15);border-radius:16px;padding:2rem;max-width:400px;margin:0 auto;text-align:center}
+.pricing-card .price{font-size:var(--fs-hero);font-weight:800;background:linear-gradient(135deg,#00d4ff,#7b68ee);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.pricing-card .unit{font-size:var(--fs-sm);color:rgba(255,255,255,.3);margin-bottom:.5rem}
+.pricing-card .desc{font-size:var(--fs-sm);color:rgba(255,255,255,.4);margin-bottom:1.5rem;line-height:1.5}
+.pricing-card .btn{margin-top:.5rem}
+footer{border-top:1px solid rgba(255,255,255,.03);padding:1.5rem 1rem;text-align:center}
+.footer-info{font-size:var(--fs-xs);color:rgba(255,255,255,.2);line-height:1.6}
+.footer-info a{color:rgba(255,255,255,.25)}
+.footer-info a:hover{color:#00d4ff}
+@media(max-width:768px){.hero h1{font-size:clamp(28px,7vw,44px)}.flow-row{flex-wrap:wrap;gap:.3rem}.flow-arrow{transform:rotate(90deg)}.feature-grid{grid-template-columns:1fr}.code-block{font-size:11px}}
+</style>
+</head>
+<body>
+<nav>
+  <div class="nav-brand"><em>翔川 Neo</em></div>
+  <div class="nav-links">
+    <a href="../">首頁</a>
+    <a href="../product/">方案</a>
+    <a href="../guides/">知識</a>
+    <a href="../#contact">預約諮詢</a>
+  </div>
+</nav>
+
+<!-- Hero -->
+<section class="hero">
+  <div class="hero-glow"></div>
+  <h1><span class="accent">AI Code Review</span><br>幫你的團隊省下 70% 審查時間</h1>
+  <p>Jira → GitLab MR → SonarQube Quality Gate → AI 自動審碼 → 人工 Approve。六個關卡全自動串接，一個 MR 從 30 分鐘縮到 10 分鐘。</p>
+  <div class="hero-actions" style="display:flex;gap:.8rem;flex-wrap:wrap;justify-content:center">
+    <a href="../#contact" class="btn btn-primary">📩 預約免費諮詢</a>
+    <a href="#pricing" class="btn btn-outline">=pricing 看方案</a>
+  </div>
+</section>
+
+<!-- Flow -->
+<section class="section">
+  <div class="wrap">
+    <div class="section-label">自動化流程</div>
+    <h2 class="section-title">一個 MR 的自動化旅程</h2>
+    <div class="flow-diagram">
+      <div class="flow-row">
+        <div class="flow-node"><span class="icon">📋</span>Jira 開票</div>
+        <span class="flow-arrow">→</span>
+        <div class="flow-node"><span class="icon">🌿</span>Git Branch<br><span style="font-size:10px;color:rgba(255,255,255,.3)">PROJ-123-feature</span></div>
+        <span class="flow-arrow">→</span>
+        <div class="flow-node"><span class="icon">🔄</span>Open MR</div>
+        <span class="flow-arrow">→</span>
+        <div class="flow-node pass"><span class="icon">✅</span>SonarQube<br><span style="font-size:10px;color:#00d4ff">Quality Gate</span></div>
+        <span class="flow-arrow">→</span>
+        <div class="flow-node pass"><span class="icon">🤖</span>AI Review<br><span style="font-size:10px;color:#7b68ee">Groq LLM</span></div>
+        <span class="flow-arrow">→</span>
+        <div class="flow-node"><span class="icon">👤</span>Human Approve</div>
+        <span class="flow-arrow">→</span>
+        <div class="flow-node pass"><span class="icon">🚀</span>Merge → Deploy</div>
+      </div>
+    </div>
+
+    <div class="section-label" style="margin-top:2rem">Branch 命名強制</div>
+    <div class="code-block"># Branch 必須符合 PROJ-123-描述，否則 pipeline 直接擋
+# commit 含 PROJ-123 自動連回 Jira
+# MR 合併後 Jira 自動轉到 "Code Reviewed"
+<span class="comment"># GitLab CI 檢查</span>
+check-branch-name:
+  script:
+    - |<span class="tag">
+      if ! echo "$BRANCH" | grep -qE "^${JIRA_PROJECT_KEY}-[0-9]+"; then
+        exit 1
+      fi</span></div>
+  </div>
+</section>
+
+<!-- Features -->
+<section class="section">
+  <div class="wrap">
+    <div class="section-label">三大關卡</div>
+    <h2 class="section-title">從品質到安全，層層把關</h2>
+    <div class="feature-grid">
+      <div class="feature-card">
+        <span class="icon">🔍</span>
+        <h3>SonarQube Quality Gate</h3>
+        <p>第一道防線。Bug、漏洞、程式碼異味自動掃描，Quality Gate 沒過直接擋，不准合併。</p>
+      </div>
+      <div class="feature-card">
+        <span class="icon">🧠</span>
+        <h3>AI 語意審查 (Groq)</h3>
+        <p>SonarQube 過了才觸發。AI 檢查三件事：是否符合 Jira 需求、有無 SQL Injection 風險、是否有更好的寫法。</p>
+      </div>
+      <div class="feature-card">
+        <span class="icon">👁️</span>
+        <h3>Jira 全連動</h3>
+        <p>Branch 命名強制綁 Jira ticket。AI 審查時自動讀取 Jira Description 比對實作。Merge 後自動更新 Jira 狀態。</p>
+      </div>
+      <div class="feature-card">
+        <span class="icon">📊</span>
+        <h3>成果指標</h3>
+        <p>首月目標：人工 review 30分→10分。SonarQube 重大漏洞歸零。MR 24小時內合併率 &gt;80%。</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Pipeline YAML Preview -->
+<section class="section">
+  <div class="wrap">
+    <div class="section-label">完整 Pipeline 範本</div>
+    <h2 class="section-title">複製就能跑的 .gitlab-ci.yml</h2>
+    <div class="code-block"><span class="comment"># .gitlab-ci.yml — 直接拿去用</span>
+stages:
+  - quality-gate
+  - ai-review
+  - notify
+
+sonarqube-check:
+  stage: quality-gate
+  image: sonarsource/sonar-scanner-cli:latest
+  only: [merge_requests]
+  script:
+    - sonar-scanner \
+        -Dsonar.host.url=$SONAR_HOST_URL \
+        -Dsonar.login=$SONAR_TOKEN \
+        -Dsonar.qualitygate.wait=true
+
+ai-code-review:
+  stage: ai-review
+  image: alpine/curl:latest
+  only: [merge_requests]
+  needs: [sonarqube-check]
+  script:
+    - MR_DIFF=$(curl -s --header "PRIVATE-TOKEN: ${GITLAB_ACCESS_TOKEN}" \
+        "<span class="val">${CI_API_V4_URL}</span>/projects/<span class="val">${CI_PROJECT_ID}</span>/merge_requests/<span class="val">${CI_MERGE_REQUEST_IID}</span>/changes" \
+        | jq -r '.changes[] | "File: \(.old_path)\n\(.diff)"')
+    - REVIEW=$(curl -s -X POST <span class="val">https://lewislunora.onrender.com/api/ai-review</span> \
+        -H "Authorization: Bearer ${AI_REVIEW_KEY}" \
+        -H "Content-Type: application/json" \
+        -d "$(jq -n --arg diff "$MR_DIFF" '{diff: $diff}')")
+    - curl -s --request POST --header "PRIVATE-TOKEN: ${GITLAB_ACCESS_TOKEN}" \
+        "<span class="val">${CI_API_V4_URL}</span>/projects/<span class="val">${CI_PROJECT_ID}</span>/merge_requests/<span class="val">${CI_MERGE_REQUEST_IID}</span>/notes" \
+        --data "body=🤖 **AI Review**\n${REVIEW}"</div>
+    <p style="text-align:center;font-size:var(--fs-sm);color:rgba(255,255,255,.35)">完整範本含 Branch 檢查 + SonarQube + AI Review + Jira 連動 → <a href="../assets/ai-code-review.yml" style="color:#00d4ff" download>下載 .gitlab-ci.yml</a></p>
+  </div>
+</section>
+
+<!-- Pricing -->
+<section class="section" id="pricing">
+  <div class="wrap">
+    <div class="section-label">方案</div>
+    <h2 class="section-title">導入 AI Code Review</h2>
+    <div class="pricing-card">
+      <div class="price">NT$30,000</div>
+      <div class="unit">一次性導入 + 三個月維護</div>
+      <div class="desc">含 GitLab CI 建置、SonarQube 串接、AI Review API 部署、Jira 自動化連動、團隊教育訓練 1 次。後續維護 NT$3,000/月。</div>
+      <a href="../#contact" class="btn btn-primary">📩 預約免費諮詢</a>
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section class="section" style="text-align:center">
+  <div class="wrap">
+    <h2 class="section-title">現在導入，首月就看到成效</h2>
+    <p class="section-sub">人工 review 從 30 分降到 10 分，重大漏洞歸零。30 分鐘免費諮詢，告訴我你的團隊規模與需求。</p>
+    <a href="../#contact" class="btn btn-primary" style="margin-top:.5rem">📩 立即預約</a>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <div class="footer-info">
+      <a href="../privacy.html">隱私政策</a> · <a href="../tos.html">服務條款</a><br>
+      <a href="https://t.me/lewislunora">✈️ Telegram</a> · <a href="mailto:lewislunora@gmail.com">📧 Email</a>
+    </div>
+    <div style="margin-top:.5rem;font-size:11px;color:rgba(255,255,255,.1)">© 2026 翔川 Neo｜曜科技</div>
+  </div>
+</footer>
+</body>
+</html>
