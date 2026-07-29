@@ -16,7 +16,7 @@ DB_TABLES = [
     "ai_templates", "kb_entries", "kb_pending", "contacts", "users",
     "page_views", "geo_cache",
     "comments", "reactions", "feed_posts", "community_threads",
-    "community_replies", "article_views",
+    "community_replies", "article_views", "promo_queue",
 ]
 
 
@@ -264,6 +264,16 @@ def init_db():
             api_key TEXT UNIQUE,
             is_active INTEGER DEFAULT 1,
             created_at TEXT DEFAULT (datetime('now'))
+        );
+
+        CREATE TABLE IF NOT EXISTS promo_queue (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            platform TEXT DEFAULT 'threads',
+            body TEXT NOT NULL,
+            status TEXT DEFAULT 'pending',
+            error TEXT DEFAULT '',
+            created_at TEXT DEFAULT (datetime('now')),
+            posted_at TEXT DEFAULT NULL
         );
 
         INSERT OR IGNORE INTO ai_templates (name, prompt_template, platform, category) VALUES

@@ -3,6 +3,7 @@ import json
 import hashlib
 import secrets
 import threading
+import time
 from datetime import datetime
 from fastapi import FastAPI, HTTPException, Request
 from fastapi.responses import HTMLResponse, JSONResponse
@@ -1006,6 +1007,153 @@ Diff 變更：
 
     except Exception as e:
         return {"review": f"⚠️ AI Review 錯誤：{str(e)}", "fallback": True}
+
+
+# ── Auto Promote ────────────────────────────────────────────────────────
+PROMO_TOPICS = [
+    "一人公司的 AI 自動化——每天省 4 小時的 3 個系統",
+    "Code Review 太慢？用 AI 把 30 分鐘變成 10 分鐘",
+    "為什麼你的 AI 客服沒有效？90% 的人少了這一步",
+    "一人公司不需要工程團隊——你只需要這套 AI 系統",
+    "工程師如何用 Threads 接到第一個付費客戶？",
+    "AI 自動化導入失敗的 3 個常見原因",
+    "從接案到 SaaS：一人工程師的獲利路徑",
+    "資料庫報表整理太花時間？把這個交給 AI",
+    "一人公司最該外包的不是會計，是客服",
+    "寫了 10 年 Code，我學到最重要的事：別自己扛全部",
+]
+
+@app.get("/api/auto-promote")
+def auto_promote():
+    from ..config import GROQ_API_KEY, GROQ_MODEL
+    import random
+    topic = random.choice(PROMO_TOPICS)
+    if not GROQ_API_KEY:
+        return {"ok": False, "error": "GROQ_API_KEY not set", "body": "", "topic": topic}
+
+    try:
+        from groq import Groq
+        client = Groq(api_key=GROQ_API_KEY)
+        prompt = f"""你是一個擅長在 Threads 上推廣 AI 自動化服務的文案高手。
+請根據主題寫一篇 Threads 貼文（繁體中文，200 字內）。
+
+主題：{topic}
+
+風格：專業但有溫度，像在分享經驗，而不是廣告。
+結構：開頭一句話抓住注意 → 2-3 句說明痛點或方法 → 結尾引導到免費諮詢。
+不用 hashtag，不要 emoji 過多。
+結尾固定加這行：
+「👇 預約免費 30 分鐘 AI 盤點 👉 lewislunora.onrender.com/」"""
+
+        resp = client.chat.completions.create(
+            model=GROQ_MODEL,
+            messages=[{"role": "user", "content": prompt}],
+            max_tokens=500,
+            temperature=0.7,
+        )
+        body = resp.choices[0].message.content or ""
+
+        execute(
+            "INSERT INTO promo_queue (platform, body, status) VALUES ('threads', ?, 'pending')",
+            [body]
+        )
+        return {"ok": True, "body": body, "topic": topic}
+
+    except Exception as e:
+        return {"ok": False, "error": str(e), "body": "", "topic": topic}
+
+
+@app.get("/api/auto-promote/queue")
+def promo_queue(page: int = 1, per_page: int = 20):
+    rows = fetch(
+        "SELECT * FROM promo_queue ORDER BY created_at DESC LIMIT ? OFFSET ?",
+        [per_page, (page - 1) * per_page]
+    )
+    total = fetch("SELECT COUNT(*) as c FROM promo_queue")[0]["c"]
+    return {"items": rows, "total": total, "page": page}
+
+
+@app.post("/api/auto-promote/post/{promo_id}")
+def post_promo(promo_id: int):
+    """Post a generated promo to Threads (if credentials configured)."""
+    from ..config import GROQ_API_KEY
+    row = fetch_one("SELECT * FROM promo_queue WHERE id=?", [promo_id])
+    if not row:
+        raise HTTPException(404, "Promo not found")
+    if row["status"] == "done":
+        return {"ok": False, "error": "Already posted"}
+
+    from ..platforms.browser_automation import ThreadsConnector
+    from ..config import DATA_DIR
+    config_path = DATA_DIR / "threads_config.json"
+    if not config_path.exists():
+        return {"ok": False, "error": "Threads credentials not configured. Set up at /admin/promo"}
+
+    config = json.loads(config_path.read_text())
+    connector = ThreadsConnector(config)
+    try:
+        result = connector.post(row["body"])
+        execute(
+            "UPDATE promo_queue SET status='done', posted_at=datetime('now') WHERE id=?",
+            [promo_id]
+        )
+        return {"ok": True, "result": result}
+    except Exception as e:
+        execute(
+            "UPDATE promo_queue SET status='failed', error=? WHERE id=?",
+            [str(e), promo_id]
+        )
+        return {"ok": False, "error": str(e)}
+
+
+# ── Scheduler auto-promote task ─────────────────────────────────────────
+def _register_promo_task():
+    if not scheduler:
+        return
+    import random
+    minute = random.randint(0, 59)
+
+    def daily_promo():
+        from ..config import GROQ_API_KEY
+        if not GROQ_API_KEY:
+            return
+        try:
+            today = fetch(
+                "SELECT COUNT(*) as c FROM promo_queue WHERE date(created_at) = date('now')"
+            )[0]["c"]
+            if today > 0:
+                return
+            resp = auto_promote()
+            from ..config import DATA_DIR
+            config_path = DATA_DIR / "threads_config.json"
+            if config_path.exists():
+                row = fetch_one("SELECT id FROM promo_queue ORDER BY id DESC LIMIT 1")
+                if row:
+                    post_promo(row["id"])
+        except Exception:
+            pass
+
+    original_loop = scheduler._loop
+
+    def patched_loop():
+        while scheduler.running:
+            try:
+                scheduler._process_pending()
+                scheduler._ping_count += 1
+                if scheduler._ping_count % 1440 == 0:
+                    scheduler._daily_backup()
+                if scheduler._ping_count % 60 == 0:
+                    scheduler._auto_learn_kb()
+                if scheduler._ping_count % 1440 == minute:
+                    daily_promo()
+            except Exception:
+                pass
+            time.sleep(60)
+
+    scheduler._loop = patched_loop
+
+
+_register_promo_task()
 
 
 app.mount("/", StaticFiles(directory=str(DOCS_DIR), html=True), name="site")

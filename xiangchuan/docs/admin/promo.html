@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>自動推廣管理 — 翔川 Neo</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#0a0e27;color:#e8ecf4;padding:2rem}
+h1{font-size:24px;margin-bottom:.5rem;background:linear-gradient(135deg,#00d4ff,#7b68ee);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.desc{color:rgba(255,255,255,.3);font-size:14px;margin-bottom:2rem}
+.card{background:rgba(255,255,255,.035);border:1px solid rgba(255,255,255,.07);border-radius:12px;padding:1.5rem;margin-bottom:1rem}
+.card h3{font-size:16px;font-weight:600;margin-bottom:.5rem}
+.btn{display:inline-flex;align-items:center;gap:.4rem;padding:.5rem 1rem;border-radius:8px;font-weight:600;font-size:13px;cursor:pointer;border:none;transition:all .2s;margin-right:.5rem}
+.btn-primary{background:linear-gradient(135deg,#00d4ff,#7b68ee);color:#fff}
+.btn-primary:hover{opacity:.9}
+.btn-outline{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);color:rgba(255,255,255,.6)}
+.btn-outline:hover{background:rgba(255,255,255,.08);color:#fff}
+.btn-sm{padding:.3rem .6rem;font-size:11px}
+.post-body{background:rgba(0,0,0,.2);border-radius:8px;padding:1rem;margin:.8rem 0;font-size:14px;line-height:1.6;color:rgba(255,255,255,.5);white-space:pre-wrap}
+.post-body .link{color:#00d4ff}
+.meta{font-size:12px;color:rgba(255,255,255,.2)}
+.badge{display:inline-block;padding:.15rem .5rem;border-radius:4px;font-size:11px;font-weight:600}
+.badge.pending{background:rgba(255,193,7,.15);color:#ffc107}
+.badge.done{background:rgba(0,212,255,.15);color:#00d4ff}
+.badge.failed{background:rgba(255,107,107,.15);color:#ff6b6b}
+.empty{text-align:center;padding:3rem;color:rgba(255,255,255,.15);font-size:14px}
+.loading{text-align:center;padding:2rem;color:rgba(255,255,255,.2)}
+#result{display:none;margin-top:1rem;padding:.8rem;border-radius:8px;font-size:13px}
+#result.success{display:block;background:rgba(0,212,255,.1);color:#00d4ff}
+#result.error{display:block;background:rgba(255,107,107,.1);color:#ff6b6b}
+textarea{width:100%;padding:.6rem;border-radius:8px;background:rgba(0,0,0,.2);border:1px solid rgba(255,255,255,.1);color:#e8ecf4;font-size:13px;font-family:inherit;min-height:80px;margin:.5rem 0;resize:vertical}
+textarea:focus{border-color:#00d4ff;outline:none}
+</style>
+</head>
+<body>
+<h1>自動推廣管理</h1>
+<div class="desc">AI 每天自動產生一篇 Threads 推廣文。可手動產生、編輯、發布。</div>
+
+<div style="display:flex;gap:.8rem;margin-bottom:1.5rem;flex-wrap:wrap">
+  <button class="btn btn-primary" onclick="generate()">✨ 立即產生一篇</button>
+  <button class="btn btn-outline" onclick="loadQueue()">🔄 重新整理</button>
+</div>
+
+<div id="result"></div>
+
+<section>
+  <h2 style="font-size:18px;margin-bottom:1rem;color:rgba(255,255,255,.5)">📋 產生的貼文</h2>
+  <div id="queue"><div class="loading">載入中...</div></div>
+</section>
+
+<script>
+function showResult(msg, type){
+  var r=document.getElementById('result');
+  r.textContent=msg;r.className=type;
+}
+function generate(){
+  var btn=document.querySelector('.btn-primary');
+  btn.textContent='⏳ 產生中...';btn.disabled=true;
+  showResult('AI 正在產生貼文...','success');
+  var api=location.hostname.includes('github.io')?'https://lewislunora.onrender.com/api/auto-promote':'/api/auto-promote';
+  fetch(api).then(function(r){return r.json()}).then(function(d){
+    btn.textContent='✨ 立即產生一篇';btn.disabled=false;
+    if(d.ok){
+      showResult('✅ 已產生新貼文','success');
+      loadQueue();
+    }else{
+      showResult('❌ '+d.error,'error');
+    }
+  }).catch(function(e){
+    btn.textContent='✨ 立即產生一篇';btn.disabled=false;
+    showResult('❌ 連線失敗: '+e.message,'error');
+  });
+}
+function postPromo(id){
+  if(!confirm('確定發布這篇到 Threads？'))return;
+  var btn=event.target;btn.textContent='⏳';btn.disabled=true;
+  var api=location.hostname.includes('github.io')?'https://lewislunora.onrender.com/api/auto-promote/post/'+id:'/api/auto-promote/post/'+id;
+  fetch(api,{method:'POST'}).then(function(r){return r.json()}).then(function(d){
+    if(d.ok){
+      showResult('✅ 已發布到 Threads！','success');
+      loadQueue();
+    }else{
+      showResult('❌ 發布失敗: '+d.error,'error');
+      btn.textContent='▶ 發布';btn.disabled=false;
+    }
+  }).catch(function(e){
+    showResult('❌ 連線失敗: '+e.message,'error');
+    btn.textContent='▶ 發布';btn.disabled=false;
+  });
+}
+function loadQueue(){
+  var el=document.getElementById('queue');
+  el.innerHTML='<div class="loading">載入中...</div>';
+  var api=location.hostname.includes('github.io')?'https://lewislunora.onrender.com/api/auto-promote/queue':'/api/auto-promote/queue';
+  fetch(api).then(function(r){return r.json()}).then(function(d){
+    if(!d.items||d.items.length===0){
+      el.innerHTML='<div class="empty">還沒有產生任何貼文。點擊「立即產生一篇」開始。</div>';
+      return;
+    }
+    var html='';
+    d.items.forEach(function(item){
+      var statusClass=item.status;
+      var body=item.body.replace(/https?:\/\/[^\s]+/g,'<span class="link">$&</span>');
+      var date=item.created_at;
+      html+='<div class="card">';
+      html+='<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.5rem">';
+      html+='<div>';
+      html+='<span class="badge '+statusClass+'">'+statusClass+'</span> ';
+      html+='<span class="meta">'+date+'</span>';
+      html+='</div>';
+      if(item.status==='pending'){
+        html+='<button class="btn btn-outline btn-sm" onclick="postPromo('+item.id+')">▶ 發布到 Threads</button>';
+      }
+      html+='</div>';
+      html+='<div class="post-body">'+body+'</div>';
+      if(item.error){
+        html+='<div style="color:#ff6b6b;font-size:12px;margin-top:.3rem">錯誤: '+item.error+'</div>';
+      }
+      html+='</div>';
+    });
+    el.innerHTML=html;
+  }).catch(function(){
+    el.innerHTML='<div class="empty">無法載入，請確認伺服器正常。</div>';
+  });
+}
+loadQueue();
+</script>
+</body>
+</html>
