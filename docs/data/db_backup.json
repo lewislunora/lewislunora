@@ -528,5 +528,22 @@
       "city": "Taoyuan",
       "cached_at": "2026-07-21 01:01:43"
     }
+  ],
+  "comments": [],
+  "reactions": [],
+  "feed_posts": [],
+  "community_threads": [],
+  "community_replies": [],
+  "article_views": [],
+  "promo_queue": [
+    {
+      "id": 1,
+      "platform": "threads",
+      "body": "你是否曾經試過將AI自動化導入到你的企業，但結果卻不是你所期望的？導入AI自動化服務的過程中，很多企業都會遇到一些常見的問題。其中三個主要原因包括：缺乏明確的目標和策略、不足夠的數據質量和準備，以及不夠充分的團隊培訓和支持。要避免這些錯誤，企業需要對自己的需求有深入的了解，並找到合適的AI解決方案。\n\n👇 預約免費 30 分鐘 AI 盤點 👉 lewislunora.onrender.com/",
+      "status": "pending",
+      "error": "",
+      "created_at": "2026-07-29 14:58:35",
+      "posted_at": null
+    }
   ]
 }
