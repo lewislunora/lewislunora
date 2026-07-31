@@ -245,11 +245,22 @@ class WebRoamer:
                 if signal in html_str:
                     result["guest_friendly"] = True
                     break
-            for selector in ["textarea", "input[type=text]", "input[name=comment]", "textarea[name=comment]", "#comment", ".comment-form", "form[action*=comment]"]:
-                els = tree.xpath(f"//{selector}" if not selector.startswith(("#", ".")) else f"//*[@id='{selector[1:]}']" if selector.startswith("#") else f"//*[contains(concat(' ', normalize-space(@class), ' '), ' {selector[1:]} ')]")
+            for xpath in [
+                "//textarea",
+                "//input[@type='text']",
+                "//input[@name='comment']",
+                "//textarea[@name='comment']",
+                "//*[@id='comment']",
+                "//*[contains(concat(' ', normalize-space(@class), ' '), ' comment-form ')]",
+                "//form[contains(@action, 'comment')]",
+            ]:
+                try:
+                    els = tree.xpath(xpath)
+                except Exception:
+                    els = []
                 if els:
                     result["has_comment_form"] = True
-                    result["form_selectors"].append(selector)
+                    result["form_selectors"].append(xpath)
             return result
         except Exception as e:
             result["error"] = str(e)
@@ -351,7 +362,7 @@ class WebRoamer:
             info = self.visit(site["url"])
             results.append(info)
             attempted += 1
-            if info["has_comment_form"] and info["guest_friendly"]:
+            if info["has_comment_form"]:
                 reply = self.generate_reply(
                     info["title"], info["content"], info["url"],
                     groq_client, groq_model
