@@ -3,7 +3,7 @@ services:
     name: neo-marketing-system
     runtime: python
     region: oregon
-    buildCommand: pip install --force-reinstall --no-cache-dir -r xiangchuan/marketing_system/requirements.txt && playwright install chromium --with-deps
+    buildCommand: pip install --force-reinstall --no-cache-dir -r xiangchuan/marketing_system/requirements.txt && PLAYWRIGHT_BROWSERS_PATH=/opt/render/.cache/ms-playwright python3 -m playwright install --with-deps chromium
     startCommand: PYTHONPATH=xiangchuan:$PYTHONPATH python3 -m uvicorn marketing_system.api.server:app --host 0.0.0.0 --port $PORT
     envVars:
       - key: GROQ_API_KEY
