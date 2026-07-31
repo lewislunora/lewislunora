@@ -38,6 +38,17 @@ IGNORE_DOMAINS = [
     "tiktok.com", "amazon.com", "shopee",
 ]
 
+# Direct targets: blogs/forums likely to allow guest comments
+TARGET_SITES = [
+    "https://www.mobile01.com/forumtopic.php?c=17",
+    "https://forum.gamer.com.tw/A.php?bsn=60076",
+    "https://www.ptt.cc/",
+    "https://blog.trendmicro.com.tw/?p=",
+    "https://ithelp.ithome.com.tw/",
+    "https://www.playpcesor.com/",
+    "https://www.techbang.com/",
+]
+
 
 class WebRoamer:
     def __init__(self, data_dir=None):
@@ -68,6 +79,48 @@ class WebRoamer:
             if qs.get("uddg"):
                 return qs["uddg"][0]
         return href if href.startswith("http") else None
+
+    def _search_playwright(self, query):
+        """Search using real browser (bypasses datacenter IP blocks)."""
+        try:
+            from playwright.async_api import async_playwright
+            import asyncio
+            results = []
+
+            async def _run():
+                async with async_playwright() as p:
+                    browser = await p.chromium.launch(headless=True)
+                    page = await browser.new_page(
+                        user_agent="Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) "
+                                   "AppleWebKit/537.36 (KHTML, like Gecko) "
+                                   "Chrome/125.0.0.0 Safari/537.36"
+                    )
+                    try:
+                        await page.goto(
+                            "https://duckduckgo.com/?q=" + query,
+                            timeout=30000, wait_until="domcontentloaded"
+                        )
+                        await page.wait_for_timeout(3000)
+                        links = await page.eval_on_selector_all(
+                            "a[data-testid='result-title-a'], a.result__a",
+                            "els => els.map(e => ({href: e.href, text: e.innerText}))"
+                        )
+                        for item in links:
+                            href = item.get("href", "")
+                            title = item.get("text", "").strip()
+                            if href and title and not any(d in href for d in IGNORE_DOMAINS):
+                                parsed = urlparse(href)
+                                if parsed.netloc and parsed.netloc not in self.seen:
+                                    results.append({"url": href, "title": title, "query": query, "engine": "ddg-browser"})
+                                    self.seen.add(parsed.netloc)
+                    finally:
+                        await browser.close()
+
+            asyncio.run(_run())
+            return results
+        except Exception as e:
+            logger.error(f"Playwright search failed: {e}")
+            return []
 
     def search(self, query=None, max_results=15):
         if not query:
@@ -114,6 +167,16 @@ class WebRoamer:
                             self.seen.add(parsed.netloc)
             except Exception as e:
                 logger.error(f"Bing search failed: {e}")
+        # Fallback: real-browser search (bypasses datacenter blocks)
+        if not results:
+            results = self._search_playwright(query)
+        # Last resort: known guest-friendly targets
+        if not results:
+            for site in TARGET_SITES:
+                parsed = urlparse(site)
+                if parsed.netloc and parsed.netloc not in self.seen:
+                    results.append({"url": site, "title": f"Target: {parsed.netloc}", "query": query, "engine": "direct"})
+                    self.seen.add(parsed.netloc)
         self._save_history()
         return results[:max_results]
 
