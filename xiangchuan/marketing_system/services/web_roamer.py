@@ -81,8 +81,37 @@ class WebRoamer:
                 return qs["uddg"][0]
         return href if href.startswith("http") else None
 
+    def _ensure_browser(self):
+        """Download Playwright browsers at runtime if missing."""
+        try:
+            from pathlib import Path
+            import os
+            from playwright.async_api import async_playwright
+            import subprocess, sys
+            import asyncio
+
+            def _missing():
+                try:
+                    async def _check():
+                        async with async_playwright() as p:
+                            await p.chromium.launch(headless=True)
+                    asyncio.run(_check())
+                    return False
+                except Exception:
+                    return True
+
+            if _missing():
+                logger.info("Installing Playwright chromium at runtime...")
+                subprocess.run(
+                    [sys.executable, "-m", "playwright", "install", "chromium"],
+                    check=True, capture_output=True
+                )
+        except Exception as e:
+            logger.error(f"Browser ensure failed: {e}")
+
     def _search_playwright(self, query):
         """Search using real browser (bypasses datacenter IP blocks)."""
+        self._ensure_browser()
         try:
             from playwright.async_api import async_playwright
             import asyncio
@@ -261,12 +290,15 @@ class WebRoamer:
         except Exception as e:
             logger.error(f"Generate reply failed: {e}")
             return None
-
     async def post_reply_playwright(self, url, reply_text, name="小川"):
         try:
             from playwright.async_api import async_playwright
             async with async_playwright() as p:
-                browser = await p.chromium.launch(headless=True)
+                try:
+                    browser = await p.chromium.launch(headless=True)
+                except Exception:
+                    self._ensure_browser()
+                    browser = await p.chromium.launch(headless=True)
                 page = await browser.new_page()
                 await page.goto(url, timeout=30000, wait_until="domcontentloaded")
                 await page.wait_for_timeout(3000)
