@@ -18,4 +18,6 @@ services:
         value: "626453598"
       - key: RENDER
         value: "true"
+      - key: PLAYWRIGHT_BROWSERS_PATH
+        value: "/opt/render/.cache/ms-playwright"
     plan: free

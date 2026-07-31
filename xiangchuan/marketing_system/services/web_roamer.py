@@ -53,6 +53,7 @@ TARGET_SITES = [
 class WebRoamer:
     def __init__(self, data_dir=None):
         self.seen = set()
+        self._direct_used = set()
         self.data_dir = data_dir or Path("data")
         self.data_dir.mkdir(parents=True, exist_ok=True)
         self.history_path = self.data_dir / "roam_history.json"
@@ -170,13 +171,13 @@ class WebRoamer:
         # Fallback: real-browser search (bypasses datacenter blocks)
         if not results:
             results = self._search_playwright(query)
-        # Last resort: known guest-friendly targets
+        # Last resort: known guest-friendly targets (not subject to history dedup)
         if not results:
             for site in TARGET_SITES:
                 parsed = urlparse(site)
-                if parsed.netloc and parsed.netloc not in self.seen:
+                if parsed.netloc and parsed.netloc not in self._direct_used:
                     results.append({"url": site, "title": f"Target: {parsed.netloc}", "query": query, "engine": "direct"})
-                    self.seen.add(parsed.netloc)
+                    self._direct_used.add(parsed.netloc)
         self._save_history()
         return results[:max_results]
 
