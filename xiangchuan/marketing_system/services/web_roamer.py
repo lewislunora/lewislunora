@@ -60,34 +60,62 @@ class WebRoamer:
         except Exception:
             pass
 
+    def _resolve_href(self, href):
+        """Decode DDG redirect links to the real URL."""
+        if href.startswith("//duckduckgo.com/l/"):
+            from urllib.parse import parse_qs
+            qs = parse_qs(urlparse(href).query)
+            if qs.get("uddg"):
+                return qs["uddg"][0]
+        return href if href.startswith("http") else None
+
     def search(self, query=None, max_results=15):
         if not query:
             query = random.choice(SEARCH_QUERIES)
+        headers = {
+            "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) "
+                          "AppleWebKit/537.36 (KHTML, like Gecko) "
+                          "Chrome/125.0.0.0 Safari/537.36"
+        }
+        results = []
         try:
             import requests
             from lxml import html
-            headers = {
-                "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) "
-                              "AppleWebKit/537.36 (KHTML, like Gecko) "
-                              "Chrome/125.0.0.0 Safari/537.36"
-            }
             url = f"https://html.duckduckgo.com/html/?q={requests.utils.quote(query)}"
             resp = requests.get(url, headers=headers, timeout=15)
             tree = html.fromstring(resp.text)
-            results = []
-            for a in tree.cssselect("a.result__a"):
-                href = a.get("href")
+            for a in tree.xpath("//a[contains(@class,'result__a')]"):
+                href = self._resolve_href(a.get("href"))
                 title = a.text_content().strip()
                 if href and title and not any(d in href for d in IGNORE_DOMAINS):
                     parsed = urlparse(href)
                     if parsed.netloc and parsed.netloc not in self.seen:
                         results.append({"url": href, "title": title, "query": query})
                         self.seen.add(parsed.netloc)
-            self._save_history()
-            return results[:max_results]
         except Exception as e:
-            logger.error(f"Search failed: {e}")
-            return []
+            logger.error(f"DDG search failed: {e}")
+        if not results:
+            try:
+                import requests
+                from lxml import html
+                url = f"https://www.bing.com/search?q={requests.utils.quote(query)}"
+                resp = requests.get(url, headers=headers, timeout=15)
+                tree = html.fromstring(resp.text)
+                for li in tree.xpath("//li[@class='b_algo']"):
+                    a = li.xpath(".//h2/a")[0] if li.xpath(".//h2/a") else None
+                    if a is None:
+                        continue
+                    href = a.get("href")
+                    title = a.text_content().strip()
+                    if href and title and not any(d in href for d in IGNORE_DOMAINS):
+                        parsed = urlparse(href)
+                        if parsed.netloc and parsed.netloc not in self.seen:
+                            results.append({"url": href, "title": title, "query": query, "engine": "bing"})
+                            self.seen.add(parsed.netloc)
+            except Exception as e:
+                logger.error(f"Bing search failed: {e}")
+        self._save_history()
+        return results[:max_results]
 
     def visit(self, url):
         result = {
@@ -109,13 +137,13 @@ class WebRoamer:
             }
             resp = requests.get(url, headers=headers, timeout=15)
             tree = html.fromstring(resp.content)
-            title_el = tree.cssselect("title")
+            title_el = tree.xpath("//title")
             result["title"] = title_el[0].text_content().strip() if title_el else ""
-            meta_desc = tree.cssselect("meta[name=description]")
+            meta_desc = tree.xpath("//meta[@name='description']")
             if meta_desc:
                 result["content"] = meta_desc[0].get("content", "")
             if not result["content"]:
-                paragraphs = tree.cssselect("p")
+                paragraphs = tree.xpath("//p")
                 result["content"] = " ".join(p.text_content().strip() for p in paragraphs[:5] if p.text_content().strip())
             result["content"] = result["content"][:2000]
             page_text = resp.text.lower()
@@ -125,7 +153,7 @@ class WebRoamer:
                     result["guest_friendly"] = True
                     break
             for selector in ["textarea", "input[type=text]", "input[name=comment]", "textarea[name=comment]", "#comment", ".comment-form", "form[action*=comment]"]:
-                els = tree.cssselect(selector)
+                els = tree.xpath(f"//{selector}" if not selector.startswith(("#", ".")) else f"//*[@id='{selector[1:]}']" if selector.startswith("#") else f"//*[contains(concat(' ', normalize-space(@class), ' '), ' {selector[1:]} ')]")
                 if els:
                     result["has_comment_form"] = True
                     result["form_selectors"].append(selector)
