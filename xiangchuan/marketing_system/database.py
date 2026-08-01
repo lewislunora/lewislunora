@@ -276,6 +276,56 @@ def init_db():
             posted_at TEXT DEFAULT NULL
         );
 
+        CREATE TABLE IF NOT EXISTS comments (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            page_path TEXT NOT NULL,
+            author_name TEXT DEFAULT '匿名',
+            content TEXT NOT NULL,
+            parent_id INTEGER DEFAULT 0,
+            created_at TEXT DEFAULT (datetime('now'))
+        );
+
+        CREATE TABLE IF NOT EXISTS reactions (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            page_path TEXT NOT NULL,
+            emoji TEXT NOT NULL,
+            created_at TEXT DEFAULT (datetime('now'))
+        );
+
+        CREATE TABLE IF NOT EXISTS feed_posts (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            content TEXT NOT NULL,
+            post_type TEXT DEFAULT 'note',
+            author TEXT DEFAULT '翔川',
+            created_at TEXT DEFAULT (datetime('now'))
+        );
+
+        CREATE TABLE IF NOT EXISTS community_threads (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            title TEXT NOT NULL,
+            content TEXT NOT NULL,
+            author_name TEXT DEFAULT '匿名',
+            is_anonymous INTEGER DEFAULT 1,
+            view_count INTEGER DEFAULT 0,
+            reply_count INTEGER DEFAULT 0,
+            created_at TEXT DEFAULT (datetime('now'))
+        );
+
+        CREATE TABLE IF NOT EXISTS community_replies (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            thread_id INTEGER NOT NULL,
+            content TEXT NOT NULL,
+            author_name TEXT DEFAULT '匿名',
+            is_anonymous INTEGER DEFAULT 1,
+            created_at TEXT DEFAULT (datetime('now'))
+        );
+
+        CREATE TABLE IF NOT EXISTS article_views (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            page_path TEXT NOT NULL,
+            created_at TEXT DEFAULT (datetime('now'))
+        );
+
         INSERT OR IGNORE INTO ai_templates (name, prompt_template, platform, category) VALUES
         ('社群貼文', '以{language}寫一篇關於{topic}的社群貼文，語氣{style}，長度約{length}字。加入3-5個相關hashtag。', 'facebook', 'social'),
         ('品牌文章', '以{language}寫一篇關於{topic}的品牌部落格文章，字數約{length}字，語氣{style}。包含引言、主體和結語。', 'blog', 'content'),
