@@ -8,9 +8,7 @@ css.textContent=
 /* ─── Reading Progress ─── */
 '.reading-progress{position:fixed;top:0;left:0;width:0;height:2px;background:linear-gradient(90deg,#00d4ff,#7b68ee);z-index:999;transition:width .1s linear}'+
 /* ─── Particle Canvas ─── */
-'#particle-canvas{position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:0}'+
-'.hero{position:relative;overflow:hidden}'+
-'.hero>*:not(#particle-canvas){position:relative;z-index:1}'+
+'#particle-canvas{position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:0}'+
 /* ─── 3D Tilt ─── */
 '.tilt-3d{transition:transform .2s ease-out;will-change:transform}'+
 /* ─── Ripple ─── */
@@ -69,18 +67,18 @@ if(document.querySelector('.container')){
   });
 }
 
-// ─── Hero Particle Canvas ───
+// ─── Background Particle Canvas (fixed, behind everything) ───
 var hero=document.querySelector('.hero');
 if(hero&&!matchMedia('(prefers-reduced-motion:reduce)').matches){
   var canvas=document.createElement('canvas');
   canvas.id='particle-canvas';
-  hero.insertBefore(canvas,hero.firstChild);
+  document.body.appendChild(canvas);
   var ctx=canvas.getContext('2d');
   var particles=[];
   var W,H;
   function resize(){
-    W=canvas.width=hero.offsetWidth;
-    H=canvas.height=hero.offsetHeight;
+    W=canvas.width=window.innerWidth;
+    H=canvas.height=window.innerHeight;
   }
   resize();
   window.addEventListener('resize',resize);
@@ -92,9 +90,9 @@ if(hero&&!matchMedia('(prefers-reduced-motion:reduce)').matches){
     })
   }
   var mouse={x:W/2,y:H/2};
-  hero.addEventListener('mousemove',function(e){
-    mouse.x=e.clientX-hero.getBoundingClientRect().left;
-    mouse.y=e.clientY-hero.getBoundingClientRect().top;
+  document.addEventListener('mousemove',function(e){
+    mouse.x=e.clientX;
+    mouse.y=e.clientY;
   });
   function draw(){
     ctx.clearRect(0,0,W,H);
