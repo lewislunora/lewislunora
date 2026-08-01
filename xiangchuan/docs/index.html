@@ -16,7 +16,7 @@
 <meta property="og:url" content="https://lewislunora.onrender.com/">
 <meta property="og:type" content="website">
 <meta name="twitter:card" content="summary_large_image">
-<link rel="stylesheet" href="widget.css">
+<link rel="stylesheet" href="widget.css?v=20260801">
 <style>
 *{margin:0;padding:0;box-sizing:border-box;scroll-behavior:smooth}
 :root{
@@ -570,10 +570,10 @@ footer .wrap{display:flex;flex-wrap:wrap;gap:.8rem;justify-content:space-between
 </div>
 
 <script src="https://accounts.google.com/gsi/client" async defer></script>
-<script src="share.js"></script>
-<script src="widget.js"></script>
-<script src="js/feed.js"></script>
-<script src="js/features.js"></script>
+<script src="share.js?v=20260801"></script>
+<script src="widget.js?v=20260801"></script>
+<script src="js/feed.js?v=20260801"></script>
+<script src="js/features.js?v=20260801"></script>
 <script>
 /* Cross-platform auto-detection */
 (function(){
@@ -718,6 +718,12 @@ function handleContact(e){
     setTimeout(function(){btn.disabled=false;btn.textContent='📩 立即預約免費諮詢'},5000);
   });
   return false;
+}
+</script>
+<script>
+/* Service Worker — auto-updates without clearing cache */
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('sw.js?v=20260801').catch(function(){});
 }
 </script>
 </body>

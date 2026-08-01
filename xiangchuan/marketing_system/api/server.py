@@ -1220,4 +1220,14 @@ def roam_run():
 _register_promo_task()
 
 
+@app.middleware("http")
+async def cache_control_headers(request, call_next):
+    response = await call_next(request)
+    if request.url.path.endswith(".html") or request.url.path == "/":
+        response.headers["Cache-Control"] = "no-cache, no-store, must-revalidate"
+    else:
+        response.headers.setdefault("Cache-Control", "no-cache, max-age=0")
+    return response
+
+
 app.mount("/", StaticFiles(directory=str(DOCS_DIR), html=True), name="site")
