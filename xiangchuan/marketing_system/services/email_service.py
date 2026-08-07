@@ -65,3 +65,25 @@ def send_contact_email(data: dict) -> dict:
 def _fallback_log(data: dict, error: str = None):
     logger.warning(f"Contact form fallback (SMTP not configured or failed): {data}")
     return {"status": "logged", "note": "Form submitted (email not sent)", "error": error}
+
+
+def send_generic_email(subject: str, text: str) -> dict:
+    cfg = get_smtp_config()
+    if not is_configured():
+        logger.info("SMTP not configured, skipping generic email")
+        return {"status": "skipped"}
+    msg = MIMEMultipart()
+    msg["From"] = cfg["user"]
+    msg["To"] = cfg["to"]
+    msg["Subject"] = subject
+    msg.attach(MIMEText(text, "plain", "utf-8"))
+    try:
+        with smtplib.SMTP(cfg["host"], cfg["port"], timeout=10) as server:
+            server.starttls()
+            server.login(cfg["user"], cfg["password"])
+            server.send_message(msg)
+        logger.info(f"Generic email sent to {cfg['to']}: {subject}")
+        return {"status": "sent"}
+    except Exception as e:
+        logger.error(f"Generic email SMTP failed: {e}")
+        return {"status": "error", "error": str(e)}

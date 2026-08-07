@@ -22,9 +22,9 @@ from ..platforms.line_connector import LineConnector
 from ..platforms.facebook_connector import FacebookConnector
 from ..platforms.twitter_connector import TwitterConnector
 from ..platforms.browser_automation import ThreadsConnector, DcardConnector, XiaohongshuConnector
-from ..config import PLATFORMS, DATA_DIR, DOCS_DIR, TELEGRAM_BOT_TOKEN
+from ..config import PLATFORMS, DATA_DIR, DOCS_DIR, TELEGRAM_BOT_TOKEN, LINE_NOTIFY_TOKEN
 from ..services.email_service import send_contact_email, is_configured as smtp_configured
-from ..services.notification_service import send_telegram_notification
+from ..services.notification_service import notify_owner, send_telegram_notification
 from ..services.openclaw_agent import _handle_command as openclaw_handle, _is_authorized as openclaw_authorized
 from ..services.knowledge_base import get_kb_reply, save_unanswered, get_pending, auto_learn
 from ..services.analytics import track_async, summary as analytics_summary
@@ -131,6 +131,7 @@ def status():
         "ai_available": ai_generator.is_available(),
         "smtp_configured": smtp_configured(),
         "telegram_bot_token_set": bool(TELEGRAM_BOT_TOKEN),
+        "line_notify_configured": bool(LINE_NOTIFY_TOKEN),
         "database_type": "sqlite",
         "scheduler": scheduler.get_status_summary(),
         "platforms": {k: v["enabled"] for k, v in PLATFORMS.items()},
@@ -172,10 +173,7 @@ def analytics_summary_endpoint(since: int = 24):
 
 def _notify_contact(data: dict):
     try:
-        if smtp_configured():
-            send_contact_email(data)
-        else:
-            send_telegram_notification(data)
+        notify_owner("contact", data, url="https://lewislunora.onrender.com/")
     except Exception as e:
         import logging
         logging.getLogger(__name__).error(f"Contact notification failed: {e}")
@@ -770,6 +768,14 @@ def create_comment(data: CommentCreate):
         [data.page_path, data.author_name.strip() or "匿名", data.content, data.parent_id],
     )
     row = fetch_one("SELECT * FROM comments WHERE id=?", [cid])
+    try:
+        notify_owner("comment", {
+            "author_name": data.author_name.strip() or "匿名",
+            "content": data.content,
+            "page_path": data.page_path,
+        }, url=f"https://lewislunora.onrender.com{data.page_path}")
+    except Exception:
+        pass
     return {"status": "ok", "comment": row}
 
 
@@ -854,6 +860,14 @@ def create_thread(data: ThreadCreate):
         [data.title, data.content, data.author_name.strip() or "匿名", int(data.is_anonymous)],
     )
     row = fetch_one("SELECT * FROM community_threads WHERE id=?", [tid])
+    try:
+        notify_owner("thread", {
+            "title": data.title,
+            "content": data.content,
+            "author_name": data.author_name.strip() or "匿名",
+        }, url=f"https://lewislunora.onrender.com/community/?thread={tid}")
+    except Exception:
+        pass
     return {"status": "ok", "thread": row}
 
 
@@ -896,6 +910,13 @@ def reply_to_thread(thread_id: int, data: ThreadReplyCreate):
         [thread_id, data.content, data.author_name.strip() or "匿名", int(data.is_anonymous)],
     )
     execute("UPDATE community_threads SET reply_count = reply_count + 1 WHERE id=?", [thread_id])
+    try:
+        notify_owner("reply", {
+            "content": data.content,
+            "author_name": data.author_name.strip() or "匿名",
+        }, url=f"https://lewislunora.onrender.com/community/?thread={thread_id}")
+    except Exception:
+        pass
     return {"status": "ok", "id": rid}
 
 
