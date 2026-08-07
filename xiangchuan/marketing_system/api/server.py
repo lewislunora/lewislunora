@@ -138,6 +138,25 @@ def status():
     }
 
 
+@app.get("/api/notify/test")
+def notify_test():
+    """Synchronously test all notification channels and report results."""
+    from ..services import notification_service
+    results = {
+        "telegram": notification_service._send_telegram(
+            "✅ [測試] 翔川 Neo 即時通知測試 — Telegram 管道正常"
+        ),
+        "line": notification_service._send_line_notify(
+            "✅ [測試] 翔川 Neo 即時通知測試 — LINE 管道正常"
+        ),
+        "email": notification_service._send_email(
+            "✅ [測試] 翔川 Neo 即時通知",
+            "這是翔川 Neo 即時通知系統的測試信件。收到代表 Email 管道正常。"
+        ),
+    }
+    return {"results": results, "line_notify_configured": bool(LINE_NOTIFY_TOKEN)}
+
+
 @app.get("/api/openclaw")
 def openclaw_info():
     import requests as http
