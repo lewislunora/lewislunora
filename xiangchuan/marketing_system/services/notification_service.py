@@ -61,14 +61,14 @@ def _send_line_notify(text: str) -> bool:
         return False
 
 
-def _send_email(subject: str, text: str) -> bool:
+def _send_email(subject: str, text: str):
     try:
         from ..services.email_service import send_generic_email
         result = send_generic_email(subject, text)
-        return result.get("status") == "sent"
+        return result
     except Exception as e:
         logger.error(f"Email notify error: {e}")
-        return False
+        return {"status": "error", "error": str(e)}
 
 
 def notify_owner(event_type: str, data: dict, url: str = ""):

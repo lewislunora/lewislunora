@@ -154,7 +154,7 @@ def notify_test():
             "這是翔川 Neo 即時通知系統的測試信件。收到代表 Email 管道正常。"
         ),
     }
-    return {"results": results, "line_notify_configured": bool(LINE_NOTIFY_TOKEN)}
+    return {"results": results, "line_notify_configured": bool(LINE_NOTIFY_TOKEN), "smtp_configured": smtp_configured()}
 
 
 @app.get("/api/openclaw")
