@@ -282,17 +282,37 @@ nav::before{
 .pain-card p{font-size:var(--fs-sm);color:rgba(255,255,255,.4);line-height:1.6}
 .pain-card .sol{display:inline-block;margin-top:.5rem;color:#00d4ff;font-size:var(--fs-xs);font-weight:500}
 
-/* Solutions → bento glass */
-.svcs-bento{display:grid;grid-template-columns:1.4fr .6fr;gap:.7rem;max-width:900px;margin:0 auto}
-.svcs-bento .svc-card{background:linear-gradient(160deg,rgba(255,255,255,.05),rgba(255,255,255,.015));border:1px solid rgba(123,104,238,.12);border-radius:var(--radius-md);padding:1.6rem;transition:all .4s;position:relative;overflow:hidden;display:flex;flex-direction:column;backdrop-filter:blur(10px);box-shadow:inset 0 1px 0 rgba(255,255,255,.06),0 4px 24px rgba(0,0,0,.2)}
+/* Solutions → Bento Grid (Apple style) */
+.svcs-bento{display:grid;grid-template-columns:repeat(3,1fr);grid-auto-rows:minmax(140px,auto);gap:.9rem;max-width:960px;margin:0 auto}
+.svcs-bento .svc-card{background:linear-gradient(160deg,rgba(255,255,255,.05),rgba(255,255,255,.015));border:1px solid rgba(123,104,238,.12);border-radius:var(--radius-lg);padding:1.5rem;transition:all .4s;position:relative;overflow:hidden;display:flex;flex-direction:column;backdrop-filter:blur(10px);box-shadow:inset 0 1px 0 rgba(255,255,255,.06),0 4px 24px rgba(0,0,0,.2)}
 .svcs-bento .svc-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,#7b68ee,transparent);opacity:0;transition:opacity .4s}
 .svcs-bento .svc-card:hover::before{opacity:1}
 .svcs-bento .svc-card:hover{background:linear-gradient(160deg,rgba(123,104,238,.1),rgba(0,212,255,.05));border-color:rgba(123,104,238,.28);transform:translateY(-3px);box-shadow:0 8px 30px rgba(123,104,238,.1),inset 0 1px 0 rgba(255,255,255,.08)}
-.svcs-bento .svc-card.featured{grid-column:1/2;grid-row:1/3;background:linear-gradient(160deg,rgba(0,212,255,.07),rgba(123,104,238,.05));border-color:rgba(0,212,255,.16)}
+.svc-card.featured{grid-column:span 2;grid-row:span 2;background:linear-gradient(160deg,rgba(0,212,255,.07),rgba(123,104,238,.05));border-color:rgba(0,212,255,.16)}
 .svc-card h3{font-size:var(--fs-base);font-weight:600;margin-bottom:.4rem}
 .svc-card .svc-icon{font-size:1.5rem;margin-bottom:.6rem;display:block}
 .svc-card p{font-size:var(--fs-sm);color:rgba(255,255,255,.4);line-height:1.5;flex-grow:1}
 .svc-card .svc-meta{font-size:11px;color:rgba(255,255,255,.28);margin-top:.6rem;letter-spacing:.8px;text-transform:uppercase}
+
+/* Bento mini-graphics */
+.svc-graphic{display:flex;align-items:flex-end;gap:.5rem;height:110px;margin:1rem 0 .6rem;padding:.8rem;border:1px solid rgba(0,212,255,.1);border-radius:12px;background:rgba(0,0,0,.12)}
+.svc-graph-line{flex:1;background:linear-gradient(180deg,#00d4ff,#7b68ee);border-radius:4px 4px 0 0;opacity:.85;transition:transform .3s}
+.svc-graph-line:nth-child(2n){background:linear-gradient(180deg,#7b68ee,#00d4ff)}
+.svc-card.featured:hover .svc-graph-line{transform:scaleY(1.04)}
+.svc-pipeline{display:flex;align-items:center;gap:.4rem;margin:1rem 0 .4rem;font-size:1.1rem}
+.svc-pipeline span{background:rgba(0,212,255,.08);border:1px solid rgba(0,212,255,.15);border-radius:10px;padding:.3rem .5rem;font-size:1rem}
+.svc-pipeline em{font-style:normal;color:rgba(0,212,255,.5)}
+.svc-bubbles{display:flex;gap:.35rem;margin:1rem 0 .4rem}
+.svc-bub{border-radius:12px;opacity:.9}
+.svc-bub.b1{width:52px;height:20px;background:linear-gradient(135deg,rgba(123,104,238,.5),rgba(123,104,238,.15))}
+.svc-bub.b2{width:38px;height:20px;background:linear-gradient(135deg,rgba(0,212,255,.5),rgba(0,212,255,.15));border-radius:12px}
+.svc-bub.b3{width:26px;height:20px;background:linear-gradient(135deg,rgba(123,104,238,.35),rgba(0,212,255,.2))}
+.svc-wide{grid-column:span 3;flex-direction:row;align-items:center;gap:1rem;padding:1.2rem 1.5rem}
+.svc-wide .svc-icon{font-size:2rem;margin:0;flex-shrink:0}
+.svc-wide-copy{flex:1}
+.svc-wide-copy h3{margin-bottom:.2rem}
+.svc-wide-copy p{margin:0}
+.svc-wide .svc-meta{margin:0;flex-shrink:0}
 
 /* Results — concrete metrics */
 .results-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:.7rem;max-width:800px;margin:0 auto}
@@ -373,6 +393,8 @@ footer .wrap{display:flex;flex-wrap:wrap;gap:.8rem;justify-content:space-between
   .hero{padding-top:5rem;padding-bottom:1.8rem}
   .svcs-bento{grid-template-columns:1fr}
   .svcs-bento .svc-card.featured{grid-column:auto;grid-row:auto}
+  .svc-wide{grid-column:auto;flex-direction:column;align-items:flex-start}
+  .svc-wide .svc-meta{margin-left:auto}
   .founder-section{grid-template-columns:1fr;text-align:center;justify-items:center}
   .founder-avatar{margin:0 auto}
   .founder-chips{justify-content:center}
@@ -478,24 +500,37 @@ footer .wrap{display:flex;flex-wrap:wrap;gap:.8rem;justify-content:space-between
         <span class="svc-icon">🚀</span>
         <h3>AI 全自動營運系統</h3>
         <p>一人公司的終極自動化大腦。AI 排程、客服、行銷、數據分析全部整合，你只需要專注決策與創作。</p>
+        <div class="svc-graphic">
+          <div class="svc-graph-line" style="height:30%"></div>
+          <div class="svc-graph-line" style="height:55%"></div>
+          <div class="svc-graph-line" style="height:42%"></div>
+          <div class="svc-graph-line" style="height:78%"></div>
+          <div class="svc-graph-line" style="height:60%"></div>
+          <div class="svc-graph-line" style="height:92%"></div>
+          <div class="svc-graph-line" style="height:70%"></div>
+        </div>
         <span class="svc-meta">核心方案</span>
       </a>
       <a href="product/" class="svc-card reveal">
         <span class="svc-icon">⚙️</span>
         <h3>行銷自動化</h3>
-        <p>一篇貼文 → 自動轉四國語言 → 排程發布到 FB、IG、LINE、官網。</p>
+        <p>一篇貼文 → 自動轉 4 國語言 → 排程發布 FB、IG、LINE、官網。</p>
+        <div class="svc-pipeline"><span>✏️</span><em>→</em><span>🌐</span><em>→</em><span>🚀</span></div>
         <span class="svc-meta">核心方案</span>
       </a>
       <a href="product/" class="svc-card reveal">
         <span class="svc-icon">🤖</span>
         <h3>AI 客服虛擬助手</h3>
         <p>專屬知識庫的 24 小時線上接待員，串接官網、LINE、Telegram。</p>
+        <div class="svc-bubbles"><span class="svc-bub b1"></span><span class="svc-bub b2"></span><span class="svc-bub b3"></span></div>
         <span class="svc-meta">核心方案</span>
       </a>
-      <a href="ai-code-review/" class="svc-card reveal" style="grid-column:1/-1;margin-top:-.3rem">
+      <a href="ai-code-review/" class="svc-card reveal svc-wide">
         <span class="svc-icon">🔍</span>
-        <h3>AI Code Review — 自動化審碼系統</h3>
-        <p>Jira + GitLab + SonarQube + AI 審查全自動串接。人工 review 時間從 30 分 → 10 分。</p>
+        <div class="svc-wide-copy">
+          <h3>AI Code Review — 自動化審碼系統</h3>
+          <p>Jira + GitLab + SonarQube + AI 審查全自動串接。人工 review 時間從 30 分 → 10 分。</p>
+        </div>
         <span class="svc-meta">新服務</span>
       </a>
     </div>
