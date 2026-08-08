@@ -4,10 +4,25 @@ let currentUser = JSON.parse(localStorage.getItem(USER_KEY) || 'null');
 let chatOpen = false;
 let chatMessages = [];
 
+/* GitHub Pages 為子路徑 /lewislunora/，API 一律走 Render 後端 */
+function siteBase() {
+  if (/\.github\.io/i.test(location.hostname)) {
+    const m = location.pathname.match(/^\/([^/]+)/);
+    return m ? '/' + m[1] + '/' : '/';
+  }
+  return '/';
+}
+function apiOrigin() {
+  return /\.github\.io/i.test(location.hostname) ? 'https://lewislunora.onrender.com' : location.origin;
+}
+function loginUrl() {
+  return siteBase() + 'login.html?next=' + encodeURIComponent(location.origin + location.pathname);
+}
+
 /* ===== Google Sign-In ===== */
 let GOOGLE_CLIENT_ID = localStorage.getItem('google_client_id') || '';
 
-fetch('/api/config').then(r => r.json()).then(cfg => {
+fetch(apiOrigin() + '/api/config', { credentials: 'include' }).then(r => r.json()).then(cfg => {
   if (cfg.google_client_id && !GOOGLE_CLIENT_ID) {
     GOOGLE_CLIENT_ID = cfg.google_client_id;
     localStorage.setItem('google_client_id', cfg.google_client_id);
@@ -42,6 +57,17 @@ function signOut() {
   chatMessages = [];
   updateUI();
   if (typeof onUserLogout === 'function') onUserLogout();
+  window.location.href = apiOrigin() + '/api/auth/logout?next=' + encodeURIComponent(location.origin + location.pathname);
+}
+
+/* ===== Social Login Session (cookie from /login.html) ===== */
+function checkSocialSession() {
+  fetch(apiOrigin() + '/api/auth/me', { credentials: 'include' }).then(r => r.json()).then(u => {
+    if (u && u.id && !currentUser) {
+      currentUser = { name: u.name || u.username || u.email, email: u.email, avatar: u.avatar || '', provider: 'session' };
+      updateUI();
+    }
+  }).catch(() => {});
 }
 
 /* ===== UI Update ===== */
@@ -59,10 +85,7 @@ function updateUI() {
           <span class="gsi-logout" onclick="event.stopPropagation();signOut()" title="登出">✕</span>
         </div>`;
     } else {
-      area.innerHTML = `
-        <div id="gsi-button" style="display:${GOOGLE_CLIENT_ID ? 'inline-block' : 'none'}"></div>
-        <button class="btn-login-local" onclick="showLogin()">🔑 Google 登入</button>`;
-      if (GOOGLE_CLIENT_ID) initGoogle('gsi-button');
+      area.innerHTML = `<a class="sn-login-link" href="${loginUrl()}">登入</a>`;
     }
   }
   renderChat();
@@ -87,11 +110,11 @@ if (!document.getElementById('loginOverlay')) {
 }
 
 function showLogin() {
-  const overlay = document.getElementById('loginOverlay');
-  if (overlay) overlay.style.display = 'flex';
-  if (GOOGLE_CLIENT_ID && typeof google !== 'undefined') {
-    google.accounts.id.renderButton(document.getElementById('gsi-button-alt'), { type: 'standard', shape: 'pill', theme: 'outline', size: 'large', text: 'signin_with' });
-  }
+  window.location.href = loginUrl();
+}
+
+function showLocalLogin() {
+  window.location.href = loginUrl();
 }
 
 function hideLogin() {
@@ -192,4 +215,4 @@ function onUserLogin(user) { if (chatOpen) renderChat(); addChatMsg('bot', '✅ 
 function onUserLogout() { chatMessages = []; if (chatOpen) renderChat(); }
 
 /* ===== Init ===== */
-document.addEventListener('DOMContentLoaded', () => { updateUI(); });
+document.addEventListener('DOMContentLoaded', () => { updateUI(); checkSocialSession(); });

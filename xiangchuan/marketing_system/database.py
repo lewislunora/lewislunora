@@ -17,6 +17,8 @@ DB_TABLES = [
     "page_views", "geo_cache",
     "comments", "reactions", "feed_posts", "community_threads",
     "community_replies", "article_views", "promo_queue",
+    "social_identities", "conversations", "messages", "follows",
+    "incoming_messages",
 ]
 
 
@@ -263,7 +265,18 @@ def init_db():
             plan TEXT DEFAULT 'free',
             api_key TEXT UNIQUE,
             is_active INTEGER DEFAULT 1,
+            name TEXT DEFAULT '',
+            avatar TEXT DEFAULT '',
+            bio TEXT DEFAULT '',
             created_at TEXT DEFAULT (datetime('now'))
+        );
+
+        CREATE TABLE IF NOT EXISTS social_identities (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            user_id INTEGER NOT NULL,
+            provider TEXT NOT NULL,
+            provider_id TEXT NOT NULL,
+            UNIQUE(provider, provider_id)
         );
 
         CREATE TABLE IF NOT EXISTS promo_queue (
@@ -282,6 +295,7 @@ def init_db():
             author_name TEXT DEFAULT '匿名',
             content TEXT NOT NULL,
             parent_id INTEGER DEFAULT 0,
+            user_id INTEGER DEFAULT NULL,
             created_at TEXT DEFAULT (datetime('now'))
         );
 
@@ -289,15 +303,42 @@ def init_db():
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             page_path TEXT NOT NULL,
             emoji TEXT NOT NULL,
+            user_id INTEGER DEFAULT NULL,
             created_at TEXT DEFAULT (datetime('now'))
         );
 
         CREATE TABLE IF NOT EXISTS feed_posts (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
+            user_id INTEGER DEFAULT NULL,
             content TEXT NOT NULL,
             post_type TEXT DEFAULT 'note',
             author TEXT DEFAULT '翔川',
             created_at TEXT DEFAULT (datetime('now'))
+        );
+
+        CREATE TABLE IF NOT EXISTS conversations (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            user_a INTEGER NOT NULL,
+            user_b INTEGER NOT NULL,
+            last_message_at TEXT DEFAULT (datetime('now')),
+            created_at TEXT DEFAULT (datetime('now'))
+        );
+
+        CREATE TABLE IF NOT EXISTS messages (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            conversation_id INTEGER NOT NULL,
+            sender_id INTEGER NOT NULL,
+            body TEXT NOT NULL,
+            read_at TEXT DEFAULT NULL,
+            created_at TEXT DEFAULT (datetime('now'))
+        );
+
+        CREATE TABLE IF NOT EXISTS follows (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            follower_id INTEGER NOT NULL,
+            following_id INTEGER NOT NULL,
+            created_at TEXT DEFAULT (datetime('now')),
+            UNIQUE(follower_id, following_id)
         );
 
         CREATE TABLE IF NOT EXISTS community_threads (
@@ -326,6 +367,18 @@ def init_db():
             created_at TEXT DEFAULT (datetime('now'))
         );
 
+        CREATE TABLE IF NOT EXISTS incoming_messages (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            platform TEXT NOT NULL,
+            external_id TEXT DEFAULT '',
+            sender TEXT DEFAULT '',
+            text TEXT DEFAULT '',
+            raw TEXT DEFAULT '{}',
+            handled INTEGER DEFAULT 0,
+            created_at TEXT DEFAULT (datetime('now')),
+            UNIQUE(platform, external_id)
+        );
+
         INSERT OR IGNORE INTO ai_templates (name, prompt_template, platform, category) VALUES
         ('社群貼文', '以{language}寫一篇關於{topic}的社群貼文，語氣{style}，長度約{length}字。加入3-5個相關hashtag。', 'facebook', 'social'),
         ('品牌文章', '以{language}寫一篇關於{topic}的品牌部落格文章，字數約{length}字，語氣{style}。包含引言、主體和結語。', 'blog', 'content'),
@@ -340,9 +393,20 @@ def init_db():
         return
 
     # Migration: add missing columns
-    for col, col_def in [("email", "TEXT DEFAULT ''"), ("salt", "TEXT DEFAULT ''"), ("token", "TEXT DEFAULT ''")]:
+    for col, col_def in [("email", "TEXT DEFAULT ''"), ("salt", "TEXT DEFAULT ''"), ("token", "TEXT DEFAULT ''"),
+                         ("name", "TEXT DEFAULT ''"), ("avatar", "TEXT DEFAULT ''"), ("bio", "TEXT DEFAULT ''")]:
         try:
             conn.execute(f"ALTER TABLE users ADD COLUMN {col} {col_def}")
+        except sqlite3.OperationalError:
+            pass
+    for col, col_def in [("user_id", "INTEGER DEFAULT NULL")]:
+        try:
+            conn.execute(f"ALTER TABLE feed_posts ADD COLUMN {col} {col_def}")
+        except sqlite3.OperationalError:
+            pass
+    for table in ("comments", "reactions"):
+        try:
+            conn.execute(f"ALTER TABLE {table} ADD COLUMN user_id INTEGER DEFAULT NULL")
         except sqlite3.OperationalError:
             pass
     conn.commit()

@@ -1,12 +1,13 @@
 import os
 import json
 import hashlib
+import hmac
 import secrets
 import threading
 import time
 from datetime import datetime
 from fastapi import FastAPI, HTTPException, Request
-from fastapi.responses import HTMLResponse, JSONResponse
+from fastapi.responses import HTMLResponse, JSONResponse, Response, RedirectResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
@@ -25,6 +26,11 @@ from ..platforms.browser_automation import ThreadsConnector, DcardConnector, Xia
 from ..config import PLATFORMS, DATA_DIR, DOCS_DIR, TELEGRAM_BOT_TOKEN, LINE_NOTIFY_TOKEN
 from ..services.email_service import send_contact_email, is_configured as smtp_configured
 from ..services.notification_service import notify_owner, send_telegram_notification
+from ..services import platform_webhooks
+from ..services.social_auth import (
+    is_configured, configured_providers, authorize_url, exchange_and_profile,
+    verify_telegram, encode_next, decode_next, PROVIDER_LABELS, TELEGRAM_BOT_USERNAME,
+)
 from ..services.openclaw_agent import _handle_command as openclaw_handle, _is_authorized as openclaw_authorized
 from ..services.knowledge_base import get_kb_reply, save_unanswered, get_pending, auto_learn
 from ..services.analytics import track_async, summary as analytics_summary
@@ -33,7 +39,11 @@ app = FastAPI(title="翔川 Neo｜曜科技 行銷自動化系統")
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=[
+        "https://lewislunora.github.io",
+        "https://lewislunora.onrender.com",
+    ],
+    allow_origin_regex=r"^https?://(localhost|127\.0\.0\.1)(:\d+)?$",
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -127,11 +137,14 @@ def shutdown():
 
 @app.get("/api/status")
 def status():
+    from ..services.email_service import channel_summary
     return {
         "ai_available": ai_generator.is_available(),
         "smtp_configured": smtp_configured(),
+        "email_channel": channel_summary(),
         "telegram_bot_token_set": bool(TELEGRAM_BOT_TOKEN),
         "line_notify_configured": bool(LINE_NOTIFY_TOKEN),
+        "platform_webhooks": platform_webhooks.status(),
         "database_type": "sqlite",
         "scheduler": scheduler.get_status_summary(),
         "platforms": {k: v["enabled"] for k, v in PLATFORMS.items()},
@@ -142,6 +155,7 @@ def status():
 def notify_test():
     """Synchronously test all notification channels and report results."""
     from ..services import notification_service
+    from ..services.email_service import channel_summary
     results = {
         "telegram": notification_service._send_telegram(
             "✅ [測試] 翔川 Neo 即時通知測試 — Telegram 管道正常"
@@ -154,7 +168,12 @@ def notify_test():
             "這是翔川 Neo 即時通知系統的測試信件。收到代表 Email 管道正常。"
         ),
     }
-    return {"results": results, "line_notify_configured": bool(LINE_NOTIFY_TOKEN), "smtp_configured": smtp_configured()}
+    return {
+        "results": results,
+        "email_channel": channel_summary(),
+        "line_notify_configured": bool(LINE_NOTIFY_TOKEN),
+        "smtp_configured": smtp_configured(),
+    }
 
 
 @app.get("/api/openclaw")
@@ -544,6 +563,49 @@ async def telegram_webhook(request: Request):
     return {"ok": True}
 
 
+# ── Platform webhooks (FB / IG / Threads / X 即時接收) ────────────────
+def _webhook_platform(request):
+    path = request.url.path
+    for p in ("facebook", "instagram", "threads", "x"):
+        if f"/{p}" in path:
+            return p
+    return "facebook"
+
+
+@app.api_route("/api/webhooks/facebook", methods=["GET", "POST"])
+@app.api_route("/api/webhooks/instagram", methods=["GET", "POST"])
+@app.api_route("/api/webhooks/threads", methods=["GET", "POST"])
+@app.api_route("/api/webhooks/x", methods=["GET", "POST"])
+async def platform_webhook_endpoint(request: Request):
+    platform = _webhook_platform(request)
+
+    if request.method == "GET":
+        if platform == "x":
+            resp = platform_webhooks.verify_x(dict(request.query_params))
+            if resp:
+                return JSONResponse(resp)
+            return JSONResponse({"status": "error", "message": "Invalid CRC token"}, status_code=403)
+        challenge = platform_webhooks.verify_meta(dict(request.query_params))
+        if challenge:
+            return Response(content=challenge, media_type="text/plain")
+        return JSONResponse({"status": "error", "message": "Invalid verify token"}, status_code=403)
+
+    try:
+        body = await request.json()
+    except Exception:
+        body = {}
+    if platform == "x":
+        count = platform_webhooks.process_x_payload(body)
+    else:
+        count = platform_webhooks.process_meta_payload(body, platform)
+    return {"status": "ok", "received": count}
+
+
+@app.get("/api/incoming-messages")
+def incoming_messages(limit: int = 50, platform: str = ""):
+    return {"items": platform_webhooks.list_incoming(limit, platform)}
+
+
 @app.get("/api/backup")
 def backup_database():
     tables = ["contents", "schedules", "analytics", "contacts", "accounts", "ai_templates"]
@@ -612,13 +674,178 @@ def auth_login(body: AuthLogin):
 
 
 @app.get("/api/auth/me")
-def auth_me(token: str = ""):
-    if not token:
+def auth_me(request: Request, token: str = ""):
+    u = _current_user(request, token)
+    if not u:
         raise HTTPException(401, "未登入")
-    row = fetch_one("SELECT email FROM users WHERE token=?", (token,))
+    return _user_dict(u)
+
+
+@app.get("/api/auth/providers")
+def auth_providers(request: Request):
+    base = str(request.base_url).rstrip("/")
+    providers = []
+    for p in configured_providers():
+        item = {"id": p, "name": PROVIDER_LABELS[p], "authorize_url": f"{base}/api/auth/oauth/{p}/authorize"}
+        if p == "telegram":
+            item["authorize_url"] = f"{base}/api/auth/telegram/start"
+        providers.append(item)
+    return {"providers": providers, "email_password": True}
+
+
+def _login_or_register(provider, profile):
+    """依 provider profile 找尋或建立使用者，回傳 {token, user}。"""
+    row = fetch_one("SELECT user_id FROM social_identities WHERE provider=? AND provider_id=?",
+                    (provider, profile["provider_id"]))
+    user = None
+    if row:
+        user = fetch_one("SELECT id, token FROM users WHERE id=? AND is_active=1", (row["user_id"],))
+    if not user and profile.get("email"):
+        user = fetch_one("SELECT id, token FROM users WHERE email=? AND is_active=1", (profile["email"],))
+    if not user:
+        base = (profile.get("name") or (profile.get("email") or "").split("@")[0] or f"{provider}_user")[:24]
+        username = base
+        suffix = 1
+        while fetch_one("SELECT id FROM users WHERE username=?", (username,)):
+            username = f"{base}_{suffix}"
+            suffix += 1
+        user_id = execute(
+            "INSERT INTO users (username, email, password_hash, salt, token, name, avatar) VALUES (?,?,?,?,?,?,?)",
+            (username, profile.get("email", ""), "", "", secrets.token_hex(24),
+             profile.get("name", ""), profile.get("avatar", "")))
+        user = fetch_one("SELECT id, token FROM users WHERE id=?", (user_id,))
+    else:
+        if user and user["token"] is None or not user["token"]:
+            token = secrets.token_hex(24)
+            execute("UPDATE users SET token=? WHERE id=?", (token, user["id"]))
+            user["token"] = token
+        if profile.get("avatar"):
+            execute("UPDATE users SET avatar=? WHERE id=? AND avatar=''", (profile["avatar"], user["id"]))
+        if profile.get("name"):
+            execute("UPDATE users SET name=? WHERE id=? AND name=''", (profile["name"], user["id"]))
     if not row:
+        execute("INSERT OR IGNORE INTO social_identities (user_id, provider, provider_id) VALUES (?,?,?)",
+                (user["id"], provider, profile["provider_id"]))
+    return user
+
+
+def _safe_next(next_path: str, request: Request) -> str:
+    """允許站內路徑或本站 / GH Pages 完整網址，避免開放轉址。"""
+    if not next_path or next_path.startswith("//"):
+        return ""
+    if next_path.startswith("/"):
+        return next_path
+    base = str(request.base_url).rstrip("/")
+    allowed = [u for u in ("https://lewislunora.github.io", base) if u]
+    return next_path if any(next_path.startswith(u) for u in allowed) else ""
+
+
+def _set_token_cookie(resp, token, request, max_age=86400 * 90):
+    secure = str(request.base_url).startswith("https://")
+    resp.set_cookie("token", token, httponly=True,
+                    samesite="none" if secure else "lax",
+                    secure=secure, max_age=max_age, path="/")
+    return resp
+
+
+@app.get("/api/auth/oauth/{provider}/authorize")
+def oauth_authorize(provider: str, request: Request, next: str = ""):
+    if provider not in ("google", "facebook", "instagram", "line") or not is_configured(provider):
+        raise HTTPException(404, "此登入方式尚未設定")
+    url, state = authorize_url(provider, _safe_next(next, request))
+    resp = RedirectResponse(url)
+    resp.set_cookie("oauth_state", state["state"], httponly=True, samesite="lax", max_age=600, path="/")
+    resp.set_cookie("oauth_next", encode_next(state["next"]), httponly=True, samesite="lax", max_age=600, path="/")
+    return resp
+
+
+@app.get("/api/auth/oauth/{provider}/callback")
+def oauth_callback(provider: str, request: Request, code: str = "", state: str = "", error: str = ""):
+    if provider not in ("google", "facebook", "instagram", "line"):
+        raise HTTPException(404, "此登入方式尚未設定")
+    saved_state = request.cookies.get("oauth_state", "")
+    next_path = _safe_next(decode_next(request.cookies.get("oauth_next", "")), request)
+    if error or not code or not saved_state or not hmac.compare_digest(saved_state, state):
+        raise HTTPException(400, "登入失敗或授權逾時，請重試")
+    try:
+        profile = exchange_and_profile(provider, code)
+    except Exception as e:
+        raise HTTPException(502, f"取得帳號資料失敗: {e}")
+    user = _login_or_register(provider, profile)
+    target = f"{next_path}{'&' if '?' in next_path else '?'}ok=1" if next_path else "/login.html?ok=1"
+    resp = RedirectResponse(target)
+    resp.delete_cookie("oauth_state", path="/")
+    resp.delete_cookie("oauth_next", path="/")
+    _set_token_cookie(resp, user["token"], request)
+    return resp
+
+
+@app.get("/api/auth/telegram/start")
+def telegram_start(request: Request, next: str = ""):
+    if not is_configured("telegram"):
+        raise HTTPException(404, "Telegram 登入尚未設定")
+    widget = f"""
+<!doctype html><html lang="zh-Hant"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Telegram 登入</title>
+<style>
+body{{margin:0;min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:24px;
+background:#0f172a;color:#e2e8f0;font-family:system-ui,sans-serif}}
+h2{{font-weight:600;margin:0}}
+p{{color:#94a3b8;margin:0;font-size:14px}}
+#tg-widget{{display:flex;justify-content:center}}
+a{{color:#38bdf8;font-size:13px}}
+</style></head><body>
+<h2>使用 Telegram 登入</h2>
+<p>點下方按鈕，在 Telegram 中授權後自動登入</p>
+<div id="tg-widget"></div>
+<a href="/login.html">← 返回登入頁</a>
+<script src="https://telegram.org/js/telegram-widget.js?22"></script>
+<script>
+new TelegramLoginWidget({{"data-telegram-login":"{TELEGRAM_BOT_USERNAME}",
+"data-auth-url":"/api/auth/telegram/callback","data-size":"large","data-request-access":"write"}});
+</script>
+</body></html>"""
+    resp = HTMLResponse(widget)
+    safe_next = _safe_next(next, request)
+    if safe_next:
+        resp.set_cookie("oauth_next", encode_next(safe_next), httponly=True, samesite="lax", max_age=600, path="/")
+    return resp
+
+
+@app.post("/api/auth/telegram/callback")
+async def telegram_callback(request: Request):
+    if not is_configured("telegram"):
+        raise HTTPException(404, "Telegram 登入尚未設定")
+    form = await request.form()
+    try:
+        profile = verify_telegram(dict(form))
+    except ValueError as e:
+        raise HTTPException(400, str(e))
+    user = _login_or_register("telegram", profile)
+    next_path = _safe_next(decode_next(request.cookies.get("oauth_next", "")), request)
+    resp = RedirectResponse(next_path or "/login.html?ok=1")
+    _set_token_cookie(resp, user["token"], request)
+    resp.delete_cookie("oauth_next", path="/")
+    return resp
+
+
+@app.get("/api/auth/set-cookie")
+def auth_set_cookie(request: Request, token: str = "", next: str = ""):
+    if not token or not fetch_one("SELECT id FROM users WHERE token=?", (token,)):
         raise HTTPException(401, "Token 無效")
-    return {"email": row["email"], "name": row["email"].split("@")[0] if row["email"] else ""}
+    resp = RedirectResponse(_safe_next(next, request) or "/login.html?ok=1")
+    _set_token_cookie(resp, token, request)
+    return resp
+
+
+@app.get("/api/auth/logout")
+def auth_logout(request: Request, next: str = ""):
+    secure = str(request.base_url).startswith("https://")
+    resp = RedirectResponse(_safe_next(next, request) or "/login.html")
+    resp.delete_cookie("token", path="/",
+                       samesite="none" if secure else "lax", secure=secure)
+    return resp
 
 
 @app.get("/dashboard")
@@ -780,6 +1007,30 @@ class ThreadReplyCreate(BaseModel):
     is_anonymous: bool = True
 
 
+class ChatOpen(BaseModel):
+    user_id: int
+
+
+class MessageSend(BaseModel):
+    conversation_id: Optional[int] = None
+    to_user_id: Optional[int] = None
+    body: str
+
+
+class FollowToggle(BaseModel):
+    user_id: int
+
+
+class ProfileUpdate(BaseModel):
+    name: Optional[str] = None
+    bio: Optional[str] = None
+    avatar: Optional[str] = None
+
+
+class FeedCommentCreate(BaseModel):
+    content: str
+
+
 @app.post("/api/comments")
 def create_comment(data: CommentCreate):
     cid = execute(
@@ -850,26 +1101,6 @@ def get_reactions(path: str = ""):
         [path],
     )
     return {"items": rows}
-
-
-@app.post("/api/feed")
-def create_feed_post(data: FeedPostCreate):
-    pid = execute(
-        "INSERT INTO feed_posts (content, post_type, author) VALUES (?, ?, ?)",
-        [data.content, data.post_type, data.author],
-    )
-    return {"status": "ok", "id": pid}
-
-
-@app.get("/api/feed")
-def list_feed_posts(page: int = 1, per_page: int = 10):
-    offset = (page - 1) * per_page
-    items = fetch(
-        "SELECT * FROM feed_posts ORDER BY created_at DESC LIMIT ? OFFSET ?",
-        [per_page, offset],
-    )
-    total = fetch("SELECT COUNT(*) as c FROM feed_posts")[0]["c"]
-    return {"items": items, "total": total, "page": page}
 
 
 @app.post("/api/community/threads")
@@ -946,6 +1177,338 @@ def upvote_thread(thread_id: int):
         raise HTTPException(404, "Thread not found")
     execute("UPDATE community_threads SET view_count = view_count + 1 WHERE id=?", [thread_id])
     return {"status": "ok"}
+
+
+def _current_user(request: Request, token: str = ""):
+    """從 cookie 或 query token 取得目前登入使用者。未登入回傳 None。"""
+    if not token:
+        token = request.cookies.get("token", "")
+    if not token:
+        return None
+    return fetch_one("SELECT id, username, email, name, avatar, bio FROM users WHERE token=? AND is_active=1", (token,))
+
+
+def _user_dict(u):
+    if not u:
+        return None
+    email_prefix = u["email"].split("@")[0] if u["email"] else ""
+    name = u["name"] or email_prefix or u["username"] or "使用者"
+    return {"id": u["id"], "name": name,
+            "username": u["username"], "email": u["email"] or "", "avatar": u["avatar"] or "", "bio": u["bio"] or ""}
+
+
+def _require_user(request: Request):
+    u = _current_user(request)
+    if not u:
+        raise HTTPException(401, "請先登入")
+    return u
+
+
+def _get_or_create_conversation(me_id, other_id):
+    row = fetch_one(
+        "SELECT id FROM conversations WHERE (user_a=? AND user_b=?) OR (user_a=? AND user_b=?)",
+        (me_id, other_id, other_id, me_id),
+    )
+    if row:
+        return row["id"]
+    return execute("INSERT INTO conversations (user_a, user_b) VALUES (?, ?)",
+                   (min(me_id, other_id), max(me_id, other_id)))
+
+
+# ---------- 私訊聊天 ----------
+@app.get("/api/chat/conversations")
+def chat_conversations(request: Request):
+    me = _require_user(request)
+    rows = fetch(
+        "SELECT c.id, c.last_message_at, "
+        "u.id AS other_id, COALESCE(NULLIF(u.name,''), u.username) AS other_name, u.username AS other_username, u.avatar AS other_avatar, "
+        "(SELECT m.body FROM messages m WHERE m.conversation_id=c.id ORDER BY m.id DESC LIMIT 1) AS last_body, "
+        "(SELECT m.created_at FROM messages m WHERE m.conversation_id=c.id ORDER BY m.id DESC LIMIT 1) AS last_at, "
+        "(SELECT COUNT(*) FROM messages m WHERE m.conversation_id=c.id AND m.sender_id<>? AND m.read_at IS NULL) AS unread "
+        "FROM conversations c JOIN users u ON u.id = CASE WHEN c.user_a=? THEN c.user_b ELSE c.user_a END "
+        "WHERE c.user_a=? OR c.user_b=? ORDER BY c.last_message_at DESC",
+        (me["id"], me["id"], me["id"], me["id"]),
+    )
+    return {"items": rows}
+
+
+@app.get("/api/chat/conversations/{cid}/messages")
+def chat_messages(cid: int, request: Request, before_id: int = 0, limit: int = 50):
+    me = _require_user(request)
+    conv = fetch_one("SELECT * FROM conversations WHERE id=?", (cid,))
+    if not conv or (conv["user_a"] != me["id"] and conv["user_b"] != me["id"]):
+        raise HTTPException(404, "對話不存在")
+    if before_id:
+        rows = fetch(
+            "SELECT m.*, COALESCE(NULLIF(u.name,''), u.username) AS sender_name, u.avatar AS sender_avatar FROM messages m "
+            "JOIN users u ON u.id=m.sender_id WHERE m.conversation_id=? AND m.id<? "
+            "ORDER BY m.id DESC LIMIT ?",
+            (cid, before_id, limit),
+        )
+        rows.reverse()
+    else:
+        rows = fetch(
+            "SELECT m.*, COALESCE(NULLIF(u.name,''), u.username) AS sender_name, u.avatar AS sender_avatar FROM messages m "
+            "JOIN users u ON u.id=m.sender_id WHERE m.conversation_id=? "
+            "ORDER BY m.id DESC LIMIT ?",
+            (cid, limit),
+        )
+        rows.reverse()
+    execute("UPDATE messages SET read_at=datetime('now') WHERE conversation_id=? AND sender_id<>? AND read_at IS NULL",
+            (cid, me["id"]))
+    return {"items": rows}
+
+
+@app.post("/api/chat/send")
+def chat_send(data: MessageSend, request: Request):
+    me = _require_user(request)
+    if not data.body.strip():
+        raise HTTPException(400, "訊息不能為空")
+    body = data.body.strip()[:2000]
+    if data.conversation_id:
+        conv = fetch_one("SELECT * FROM conversations WHERE id=?", (data.conversation_id,))
+        if not conv or (conv["user_a"] != me["id"] and conv["user_b"] != me["id"]):
+            raise HTTPException(404, "對話不存在")
+        cid = conv["id"]
+    else:
+        if not data.to_user_id:
+            raise HTTPException(400, "缺少接收者")
+        if data.to_user_id == me["id"]:
+            raise HTTPException(400, "不能傳訊息給自己")
+        other = fetch_one("SELECT id FROM users WHERE id=? AND is_active=1", (data.to_user_id,))
+        if not other:
+            raise HTTPException(404, "使用者不存在")
+        cid = _get_or_create_conversation(me["id"], data.to_user_id)
+    mid = execute(
+        "INSERT INTO messages (conversation_id, sender_id, body) VALUES (?, ?, ?)",
+        (cid, me["id"], body),
+    )
+    execute("UPDATE conversations SET last_message_at=datetime('now') WHERE id=?", (cid,))
+    row = fetch_one(
+        "SELECT m.*, u.name AS sender_name, u.avatar AS sender_avatar FROM messages m "
+        "JOIN users u ON u.id=m.sender_id WHERE m.id=?", (mid,))
+    return {"status": "ok", "message": row}
+
+
+@app.post("/api/chat/open")
+def chat_open(data: ChatOpen, request: Request):
+    me = _require_user(request)
+    if data.user_id == me["id"]:
+        raise HTTPException(400, "不能與自己對話")
+    other = fetch_one("SELECT id FROM users WHERE id=? AND is_active=1", (data.user_id,))
+    if not other:
+        raise HTTPException(404, "使用者不存在")
+    cid = _get_or_create_conversation(me["id"], data.user_id)
+    return {"conversation_id": cid}
+
+
+@app.get("/api/chat/unread")
+def chat_unread(request: Request):
+    me = _current_user(request)
+    if not me:
+        return {"unread": 0}
+    row = fetch_one(
+        "SELECT COUNT(*) AS c FROM messages m JOIN conversations c ON c.id=m.conversation_id "
+        "WHERE (c.user_a=? OR c.user_b=?) AND m.sender_id<>? AND m.read_at IS NULL",
+        (me["id"], me["id"], me["id"]),
+    )
+    return {"unread": row["c"] if row else 0}
+
+
+@app.post("/api/chat/suggest")
+def chat_suggest(data: MessageSend, request: Request):
+    me = _require_user(request)
+    context = ""
+    if data.conversation_id:
+        conv = fetch_one("SELECT * FROM conversations WHERE id=?", (data.conversation_id,))
+        if conv and (conv["user_a"] == me["id"] or conv["user_b"] == me["id"]):
+            last = fetch(
+                "SELECT m.body, u.name AS n FROM messages m JOIN users u ON u.id=m.sender_id "
+                "WHERE m.conversation_id=? ORDER BY m.id DESC LIMIT 5", (data.conversation_id,))
+            context = " | ".join(f"{r['n']}: {r['body'][:120]}" for r in reversed(last))
+    if not ai_generator.is_available():
+        return {"suggestion": "", "fallback": True}
+    prompt = ("你是親切友善的交友聊天助手。根據以下對話脈絡，幫我寫一句自然的回覆建議（繁體中文，20-60 字，口語、真誠、不要罐頭話）：\n\n"
+              f"對話：{context}\n\n回覆建議：")
+    try:
+        suggestion = ai_generator.generate("custom", {"prompt": prompt}).strip()
+        return {"suggestion": suggestion, "fallback": False}
+    except Exception:
+        return {"suggestion": "", "fallback": True}
+
+
+# ---------- 交友 / 追蹤 ----------
+@app.get("/api/users")
+def list_users(request: Request, q: str = "", page: int = 1, per_page: int = 30):
+    me = _current_user(request)
+    cond = "is_active=1"
+    params = []
+    if me:
+        cond += " AND id<>?"
+        params.append(me["id"])
+    if q:
+        cond += " AND (name LIKE ? OR username LIKE ? OR email LIKE ?)"
+        like = f"%{q}%"
+        params += [like, like, like]
+    offset = (page - 1) * per_page
+    rows = fetch(f"SELECT id, username, email, name, avatar, bio FROM users WHERE {cond} ORDER BY id DESC LIMIT ? OFFSET ?",
+                 params + [per_page, offset])
+    items = []
+    for r in rows:
+        item = _user_dict(r)
+        if me:
+            item["is_following"] = bool(fetch_one("SELECT id FROM follows WHERE follower_id=? AND following_id=?",
+                                                  (me["id"], r["id"])))
+        else:
+            item["is_following"] = False
+        items.append(item)
+    total = fetch(f"SELECT COUNT(*) AS c FROM users WHERE {cond}", params)[0]["c"]
+    return {"items": items, "total": total, "page": page}
+
+
+@app.get("/api/users/{uid}")
+def get_user_profile(uid: int, request: Request):
+    me = _current_user(request)
+    row = fetch_one("SELECT id, username, email, name, avatar, bio FROM users WHERE id=? AND is_active=1", (uid,))
+    if not row:
+        raise HTTPException(404, "使用者不存在")
+    profile = _user_dict(row)
+    profile["followers"] = fetch_one("SELECT COUNT(*) AS c FROM follows WHERE following_id=?", (uid,))["c"]
+    profile["following"] = fetch_one("SELECT COUNT(*) AS c FROM follows WHERE follower_id=?", (uid,))["c"]
+    profile["post_count"] = fetch_one("SELECT COUNT(*) AS c FROM feed_posts WHERE user_id=?", (uid,))["c"]
+    profile["is_following"] = bool(me and fetch_one(
+        "SELECT id FROM follows WHERE follower_id=? AND following_id=?", (me["id"], uid)))
+    profile["is_me"] = bool(me and me["id"] == uid)
+    return profile
+
+
+@app.post("/api/users/{uid}/follow")
+def follow_user(uid: int, request: Request):
+    me = _require_user(request)
+    if uid == me["id"]:
+        raise HTTPException(400, "不能追蹤自己")
+    other = fetch_one("SELECT id FROM users WHERE id=? AND is_active=1", (uid,))
+    if not other:
+        raise HTTPException(404, "使用者不存在")
+    execute("INSERT OR IGNORE INTO follows (follower_id, following_id) VALUES (?, ?)", (me["id"], uid))
+    return {"status": "following"}
+
+
+@app.delete("/api/users/{uid}/follow")
+def unfollow_user(uid: int, request: Request):
+    me = _require_user(request)
+    execute("DELETE FROM follows WHERE follower_id=? AND following_id=?", (me["id"], uid))
+    return {"status": "unfollowed"}
+
+
+@app.get("/api/me/following")
+def my_following(request: Request):
+    me = _require_user(request)
+    rows = fetch(
+        "SELECT u.id, u.name, u.username, u.avatar FROM follows f JOIN users u ON u.id=f.following_id "
+        "WHERE f.follower_id=? ORDER BY f.created_at DESC", (me["id"],))
+    return {"items": rows}
+
+
+@app.put("/api/me/profile")
+def update_my_profile(data: ProfileUpdate, request: Request):
+    me = _require_user(request)
+    name = (data.name or "").strip()[:40]
+    bio = (data.bio or "").strip()[:200]
+    if name:
+        execute("UPDATE users SET name=?, bio=? WHERE id=?", (name, bio, me["id"]))
+    else:
+        execute("UPDATE users SET bio=? WHERE id=?", (bio, me["id"]))
+    return {"status": "ok"}
+
+
+# ---------- 動態牆 (Threads 風) ----------
+def _feed_item(p, me):
+    author_id = p["user_id"]
+    author = None
+    if author_id:
+        u = fetch_one("SELECT id, name, username, email, avatar, bio FROM users WHERE id=?", (author_id,))
+        if u:
+            author = _user_dict(u)
+    if not author:
+        author = {"id": None, "name": p["author"], "username": "", "avatar": "", "bio": ""}
+    likes = fetch("SELECT COUNT(*) AS c FROM reactions WHERE page_path=? AND emoji='❤'",
+                  (f"feed:{p['id']}",))
+    like_count = likes[0]["c"] if likes else 0
+    liked = bool(me and fetch_one(
+        "SELECT id FROM reactions WHERE page_path=? AND emoji='❤' AND user_id=?", (f"feed:{p['id']}", me["id"])))
+    comment_count = fetch_one("SELECT COUNT(*) AS c FROM comments WHERE page_path=?", (f"feed:{p['id']}",))["c"]
+    return {
+        "id": p["id"], "content": p["content"], "post_type": p["post_type"],
+        "author": author, "created_at": p["created_at"],
+        "like_count": like_count, "liked": liked, "comment_count": comment_count,
+    }
+
+
+@app.post("/api/feed")
+def create_feed_post(data: FeedPostCreate, request: Request):
+    me = _current_user(request)
+    if not data.content.strip():
+        raise HTTPException(400, "內容不能為空")
+    content = data.content.strip()[:2000]
+    user_id = me["id"] if me else None
+    author = (me["name"] or me["username"] or data.author) if me else data.author
+    pid = execute(
+        "INSERT INTO feed_posts (user_id, content, post_type, author) VALUES (?, ?, ?, ?)",
+        [user_id, content, data.post_type, author],
+    )
+    row = fetch_one("SELECT * FROM feed_posts WHERE id=?", (pid,))
+    return {"status": "ok", "post": _feed_item(row, me)}
+
+
+@app.get("/api/feed")
+def list_feed_posts(request: Request, page: int = 1, per_page: int = 20):
+    me = _current_user(request)
+    offset = (page - 1) * per_page
+    rows = fetch("SELECT * FROM feed_posts ORDER BY created_at DESC, id DESC LIMIT ? OFFSET ?", [per_page, offset])
+    total = fetch("SELECT COUNT(*) AS c FROM feed_posts")[0]["c"]
+    return {"items": [_feed_item(p, me) for p in rows], "total": total, "page": page}
+
+
+@app.post("/api/feed/{pid}/like")
+def toggle_feed_like(pid: int, request: Request):
+    me = _require_user(request)
+    post = fetch_one("SELECT id FROM feed_posts WHERE id=?", (pid,))
+    if not post:
+        raise HTTPException(404, "貼文不存在")
+    path = f"feed:{pid}"
+    existing = fetch_one("SELECT id FROM reactions WHERE page_path=? AND emoji='❤' AND user_id=?", (path, me["id"]))
+    if existing:
+        execute("DELETE FROM reactions WHERE id=?", (existing["id"],))
+        return {"status": "removed", "liked": False}
+    execute("INSERT INTO reactions (page_path, emoji, user_id) VALUES (?, '❤', ?)", (path, me["id"]))
+    return {"status": "added", "liked": True}
+
+
+@app.post("/api/feed/{pid}/comment")
+def comment_feed_post(pid: int, data: FeedCommentCreate, request: Request):
+    me = _require_user(request)
+    post = fetch_one("SELECT id FROM feed_posts WHERE id=?", (pid,))
+    if not post:
+        raise HTTPException(404, "貼文不存在")
+    content = (data.content or "").strip()[:500]
+    if not content:
+        raise HTTPException(400, "留言不能為空")
+    cid = execute(
+        "INSERT INTO comments (page_path, author_name, content, user_id) VALUES (?, ?, ?, ?)",
+        (f"feed:{pid}", me["name"] or me["username"] or "匿名", content, me["id"]),
+    )
+    return {"status": "ok", "comment_id": cid}
+
+
+@app.get("/api/feed/{pid}/comments")
+def feed_comments(pid: int, request: Request):
+    rows = fetch(
+        "SELECT c.*, u.avatar AS user_avatar FROM comments c "
+        "LEFT JOIN users u ON u.id=c.user_id WHERE c.page_path=? ORDER BY c.id ASC",
+        (f"feed:{pid}",),
+    )
+    return {"items": rows}
 
 
 @app.post("/api/ai/summarize")

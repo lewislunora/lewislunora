@@ -419,16 +419,19 @@ footer .wrap{display:flex;flex-wrap:wrap;gap:.8rem;justify-content:space-between
 
 <nav>
   <div class="nav-brand"><em>翔川 Neo</em></div>
-  <div class="nav-links">
-    <a href="product/">方案</a>
-    <a href="ai-code-review/">AI 審碼</a>
-    <a href="guides/">知識</a>
-    <a href="#about">關於我</a>
-    <a href="#contact" style="color:#00d4ff;font-weight:600">預約諮詢</a>
-    <select class="lang-select" onchange="switchLang(this.value)">
-      <option value="zh-TW">繁中</option>
-      <option value="en">EN</option>
-    </select>
+  <div class="nav-right">
+    <div class="nav-links">
+      <a href="product/">方案</a>
+      <a href="ai-code-review/">AI 審碼</a>
+      <a href="guides/">知識</a>
+      <a href="#about">關於我</a>
+      <a href="#contact" style="color:#00d4ff;font-weight:600">預約諮詢</a>
+      <select class="lang-select" onchange="switchLang(this.value)">
+        <option value="zh-TW">繁中</option>
+        <option value="en">EN</option>
+      </select>
+    </div>
+    <div class="gsi-container" id="gsi-user-area"></div>
   </div>
 </nav>
 
@@ -700,8 +703,6 @@ footer .wrap{display:flex;flex-wrap:wrap;gap:.8rem;justify-content:space-between
   });
 })();
 </script>
-
-<div class="gsi-container" id="gsi-user-area"></div>
 
 <button class="chat-bubble" onclick="toggleChat()" id="chatBubble" title="AI 客服聊天">💬</button>
 <div class="chat-panel" id="chatPanel">
