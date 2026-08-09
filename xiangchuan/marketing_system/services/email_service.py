@@ -19,7 +19,47 @@ def get_smtp_config():
 
 def is_configured():
     cfg = get_smtp_config()
-    return bool(cfg["user"] and cfg["password"])
+    if bool(cfg["user"] and cfg["password"]):
+        return True
+    from .gmail_api import is_configured as gmail_configured
+    return gmail_configured()
+
+
+def channel_summary() -> str:
+    cfg = get_smtp_config()
+    if bool(cfg["user"] and cfg["password"]):
+        return "smtp"
+    from .gmail_api import is_configured as gmail_configured
+    if gmail_configured():
+        return "gmail_api"
+    return "unconfigured"
+
+
+def _send_contact_after_build(subject: str, body: str, cfg: dict) -> dict:
+    from .gmail_api import is_configured as gmail_configured, send_email as gmail_send
+
+    if gmail_configured():
+        return gmail_send(subject, body, cfg["to"])
+
+    if not (cfg["user"] and cfg["password"]):
+        return {"status": "logged", "note": "No email channel configured"}
+
+    msg = MIMEMultipart()
+    msg["From"] = cfg["user"]
+    msg["To"] = cfg["to"]
+    msg["Subject"] = subject
+    msg.attach(MIMEText(body, "plain", "utf-8"))
+
+    try:
+        with smtplib.SMTP(cfg["host"], cfg["port"], timeout=10) as server:
+            server.starttls()
+            server.login(cfg["user"], cfg["password"])
+            server.send_message(msg)
+        logger.info(f"Contact email sent to {cfg['to']}")
+        return {"status": "sent"}
+    except Exception as e:
+        logger.error(f"SMTP failed: {e}")
+        return {"status": "error", "error": str(e)}
 
 
 def send_contact_email(data: dict) -> dict:
@@ -43,23 +83,7 @@ def send_contact_email(data: dict) -> dict:
             body_parts.append(f"{label}：{val}")
 
     body = "\n".join(body_parts) if body_parts else "(空表單)"
-
-    msg = MIMEMultipart()
-    msg["From"] = cfg["user"]
-    msg["To"] = cfg["to"]
-    msg["Subject"] = subject
-    msg.attach(MIMEText(body, "plain", "utf-8"))
-
-    try:
-        with smtplib.SMTP(cfg["host"], cfg["port"], timeout=10) as server:
-            server.starttls()
-            server.login(cfg["user"], cfg["password"])
-            server.send_message(msg)
-        logger.info(f"Contact email sent to {cfg['to']}")
-        return {"status": "sent"}
-    except Exception as e:
-        logger.error(f"SMTP failed: {e}")
-        return _fallback_log(data, str(e))
+    return _send_contact_after_build(subject, body, cfg)
 
 
 def _fallback_log(data: dict, error: str = None):
@@ -68,9 +92,14 @@ def _fallback_log(data: dict, error: str = None):
 
 
 def send_generic_email(subject: str, text: str) -> dict:
+    from .gmail_api import is_configured as gmail_configured, send_email as gmail_send
+
+    if gmail_configured():
+        return gmail_send(subject, text)
+
     cfg = get_smtp_config()
     if not is_configured():
-        logger.info("SMTP not configured, skipping generic email")
+        logger.info("No email channel configured, skipping generic email")
         return {"status": "skipped"}
     msg = MIMEMultipart()
     msg["From"] = cfg["user"]

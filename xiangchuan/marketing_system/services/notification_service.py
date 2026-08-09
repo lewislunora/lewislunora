@@ -1,4 +1,5 @@
 import os
+import time
 import logging
 import requests
 
@@ -8,10 +9,31 @@ TELEGRAM_NOTIFY_CHAT_ID = os.getenv("TELEGRAM_NOTIFY_CHAT_ID", "626453598")
 HARDCODED_BOT_TOKEN = "8653211794:AAG08xDDj0UDkX18TE60BQSVs-bwwVh8AH8"
 LINE_NOTIFY_TOKEN = os.getenv("LINE_NOTIFY_TOKEN", "")
 
+MAX_ATTEMPTS = int(os.getenv("NOTIFY_MAX_ATTEMPTS", "3"))
+RETRY_BACKOFF_SECONDS = float(os.getenv("NOTIFY_RETRY_BACKOFF", "2"))
+
 
 def _get_bot_token():
     token = os.getenv("TELEGRAM_BOT_TOKEN", "")
     return token or HARDCODED_BOT_TOKEN
+
+
+def _send_with_retry(fn, label: str, attempts: int = MAX_ATTEMPTS, backoff: float = RETRY_BACKOFF_SECONDS,
+                     is_success=lambda r: bool(r)):
+    """Call fn() until is_success(result), with exponential backoff between tries."""
+    last = None
+    for i in range(attempts):
+        try:
+            result = fn()
+            if is_success(result):
+                return result
+            last = result
+        except Exception as e:
+            last = None
+            logger.error(f"{label} error on attempt {i + 1}: {e}")
+        if i < attempts - 1:
+            time.sleep(backoff * (2 ** i))
+    return last
 
 
 def _send_telegram(text: str) -> bool:
@@ -74,15 +96,23 @@ def _send_email(subject: str, text: str):
 def notify_owner(event_type: str, data: dict, url: str = ""):
     """Fan out an event notification to all configured channels.
     event_type: contact / comment / thread / reply / reaction
+    Returns a dict of per-channel results for testing/diagnostics.
     """
     lines = [_build_message(event_type, data)]
     if url:
         lines.append(f"🔗 連結：{url}")
     text = "\n".join(lines)
 
-    _send_telegram(text)
-    _send_line_notify(text)
-    _send_email(_subject_for(event_type), text)
+    results = {
+        "telegram": bool(_send_with_retry(
+            lambda: _send_telegram(text), "Telegram notification")),
+        "line": bool(_send_with_retry(
+            lambda: _send_line_notify(text), "LINE Notify notification")),
+        "email": _send_with_retry(
+            lambda: _send_email(_subject_for(event_type), text), "Email notification",
+            is_success=lambda r: isinstance(r, dict) and r.get("status") == "sent"),
+    }
+    return results
 
 
 def _subject_for(event_type: str) -> str:
@@ -92,6 +122,7 @@ def _subject_for(event_type: str) -> str:
         "thread": "📌 新發案/貼文 - 翔川 Neo",
         "reply": "↩️ 新回覆 - 翔川 Neo",
         "reaction": "👍 新反應 - 翔川 Neo",
+        "incoming": "📥 社群進站訊息 - 翔川 Neo",
     }.get(event_type, "🔔 翔川 Neo 通知")
 
 
@@ -135,6 +166,14 @@ def _build_message(event_type: str, data: dict) -> str:
             "👍 新反應\n"
             f"頁面：{data.get('page_path', '/')}\n"
             f"表情：{data.get('emoji', '')}"
+        )
+
+    if event_type == "incoming":
+        return (
+            "📥 社群進站訊息\n"
+            f"平台：{data.get('platform', '')}\n"
+            f"發送者：{data.get('sender', '') or '匿名'}\n"
+            f"內容：{(data.get('content') or '')[:500]}"
         )
 
     return str(data)
