@@ -5,6 +5,7 @@ import hmac
 import secrets
 import threading
 import time
+import logging
 from datetime import datetime
 from fastapi import FastAPI, HTTPException, Request
 from fastapi.responses import HTMLResponse, JSONResponse, Response, RedirectResponse
@@ -12,6 +13,8 @@ from fastapi.staticfiles import StaticFiles
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from typing import Optional
+
+logger = logging.getLogger(__name__)
 
 from ..database import init_db, execute, fetch, fetch_one
 from student_platform.database import StudentDatabase
@@ -22,8 +25,13 @@ from ..platforms.telegram_connector import TelegramConnector
 from ..platforms.line_connector import LineConnector
 from ..platforms.facebook_connector import FacebookConnector
 from ..platforms.twitter_connector import TwitterConnector
+from ..platforms.instagram_connector import InstagramConnector
 from ..platforms.browser_automation import ThreadsConnector, DcardConnector, XiaohongshuConnector
-from ..config import PLATFORMS, DATA_DIR, DOCS_DIR, TELEGRAM_BOT_TOKEN, LINE_NOTIFY_TOKEN
+from ..config import (
+    PLATFORMS, DATA_DIR, DOCS_DIR,
+    TELEGRAM_BOT_TOKEN, LINE_NOTIFY_TOKEN,
+    LINE_CHANNEL_ACCESS_TOKEN, FACEBOOK_PAGE_TOKEN, INSTAGRAM_ACCESS_TOKEN,
+)
 from ..services.email_service import send_contact_email, is_configured as smtp_configured
 from ..services.notification_service import notify_owner, send_telegram_notification
 from ..services import platform_webhooks
@@ -73,6 +81,7 @@ def _build_connector(platform, creds):
         "line": LineConnector,
         "facebook": FacebookConnector,
         "twitter": TwitterConnector,
+        "instagram": InstagramConnector,
         "threads": ThreadsConnector,
         "dcard": DcardConnector,
         "xiaohongshu": XiaohongshuConnector,
@@ -81,6 +90,46 @@ def _build_connector(platform, creds):
     if not cls:
         raise HTTPException(400, f"Unsupported platform: {platform}")
     return cls(creds)
+
+
+def _sync_scheduler_connectors():
+    """從環境變數與資料庫帳號建立 connectors，註冊進 scheduler。
+
+    讓排程發佈（scheduler._publish）能真正送到各平台：
+    1. 環境變數提供預設（Telegram / Facebook / LINE）
+    2. 資料庫 accounts 表中 enabled=1 的帳號覆蓋
+    """
+    built = {}
+    if TELEGRAM_BOT_TOKEN:
+        built.setdefault("telegram", TelegramConnector({
+            "bot_token": TELEGRAM_BOT_TOKEN,
+            "chat_id": os.getenv("TELEGRAM_CHAT_ID", ""),
+        }))
+    if FACEBOOK_PAGE_TOKEN:
+        built.setdefault("facebook", FacebookConnector({"page_token": FACEBOOK_PAGE_TOKEN}))
+    if LINE_CHANNEL_ACCESS_TOKEN:
+        built.setdefault("line", LineConnector({"access_token": LINE_CHANNEL_ACCESS_TOKEN}))
+    if INSTAGRAM_ACCESS_TOKEN:
+        built.setdefault("instagram", InstagramConnector({"access_token": INSTAGRAM_ACCESS_TOKEN}))
+
+    try:
+        rows = fetch("SELECT * FROM accounts WHERE enabled=1")
+        for acct in rows:
+            try:
+                creds = json.loads(acct["credentials"] or "{}")
+                if not isinstance(creds, dict) or not any(str(v).strip() for v in creds.values()):
+                    continue
+                built[acct["platform"]] = _build_connector(acct["platform"], creds)
+            except Exception as e:
+                logger.error(f"Connector build failed ({acct['platform']}): {e}")
+    except Exception as e:
+        logger.error(f"Sync connectors (accounts) failed: {e}")
+
+    scheduler.connectors = built
+    connectors.clear()
+    connectors.update(built)
+    logger.info(f"Connectors synced: {sorted(built)}")
+    return built
 
 
 class ContentCreate(BaseModel):
@@ -120,6 +169,7 @@ class AccountCreate(BaseModel):
 def startup():
     init_db()
     StudentDatabase.init_db()
+    _sync_scheduler_connectors()
     scheduler.start()
     try:
         import requests as http
@@ -147,7 +197,7 @@ def status():
         "platform_webhooks": platform_webhooks.status(),
         "database_type": "sqlite",
         "scheduler": scheduler.get_status_summary(),
-        "platforms": {k: v["enabled"] for k, v in PLATFORMS.items()},
+        "platforms": {k: (k in scheduler.connectors) for k in PLATFORMS},
     }
 
 
@@ -327,6 +377,7 @@ def create_account(data: AccountCreate):
         "INSERT INTO accounts (platform, label, credentials) VALUES (?, ?, ?)",
         [data.platform, data.label, json.dumps(data.credentials)]
     )
+    _sync_scheduler_connectors()
     return {"id": cid, "status": "created"}
 
 
@@ -338,6 +389,7 @@ def list_accounts():
 @app.delete("/api/accounts/{account_id}")
 def delete_account(account_id: int):
     execute("DELETE FROM accounts WHERE id=?", [account_id])
+    _sync_scheduler_connectors()
     return {"status": "deleted"}
 
 
