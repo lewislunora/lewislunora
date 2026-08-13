@@ -86,14 +86,18 @@ a{color:inherit;text-decoration:none}
   .nav-links a::after{background:#1a1a2e}
   .lang-select{background:rgba(0,0,0,.03);border-color:rgba(0,0,0,.06);color:rgba(26,26,46,.45)}
   .hero h1 .line1{background:linear-gradient(135deg,#1a1a2e 0%,rgba(26,26,46,.3) 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
-  .hero p,.section-sub,.pain-card p,.svc-card p,.founder-info p,.cta-form-wrap .desc{color:rgba(26,26,46,.45)!important}
+  .hero p,.section-sub,.pain-card p,.svc-card p,.plan-desc,.plan-feats li,.founder-info p,.cta-form-wrap .desc{color:rgba(26,26,46,.45)!important}
   .pain-card .sol{color:#00a3cc!important}
-  .bento-stat,.pain-bento .pain-card,.svcs-bento .svc-card,.svc-tech-card,.founder-section,.cta-form-wrap,.result-card,.process-step,.faq-item{background:rgba(255,255,255,.5);border-color:rgba(0,0,0,.04);backdrop-filter:none}
-  .pain-bento .pain-card:hover,.svcs-bento .svc-card:hover,.svc-tech-card:hover,.result-card:hover{background:rgba(255,255,255,.75)}
-  .pain-card h3,.svc-card h3,.founder-info h3,.result-card h3,.faq-q{color:#1a1a2e}
+  .bento-stat,.pain-bento .pain-card,.svcs-bento .svc-card,.svc-tech-card,.plan-card,.founder-section,.cta-form-wrap,.result-card,.process-step,.faq-item{background:rgba(255,255,255,.5);border-color:rgba(0,0,0,.04);backdrop-filter:none}
+  .pain-bento .pain-card:hover,.svcs-bento .svc-card:hover,.svc-tech-card:hover,.plan-card:hover,.result-card:hover{background:rgba(255,255,255,.75)}
+  .pain-card h3,.svc-card h3,.plan-name,.founder-info h3,.result-card h3,.faq-q{color:#1a1a2e}
   .founder-info .title{color:rgba(26,26,46,.25)}
   .founder-chips .chip{background:rgba(0,0,0,.02);border-color:rgba(0,0,0,.04);color:rgba(26,26,46,.4)}
   .contact-form label{color:rgba(26,26,46,.3)}
+  .plan-price small{-webkit-text-fill-color:rgba(26,26,46,.35)!important}
+  .plan-feats li::before{color:#0891b2}
+  .plan-card.featured{background:rgba(0,212,255,.06)}
+  .plan-note{color:rgba(26,26,46,.25)}
   .contact-form input,.contact-form select{background:rgba(255,255,255,.6);border-color:rgba(0,0,0,.05);color:#1a1a2e;backdrop-filter:none}
   .contact-form input::placeholder{color:rgba(26,26,46,.15)}
   .contact-form select option{background:#fff;color:#1a1a2e}
@@ -314,6 +318,25 @@ nav::before{
 .svc-wide-copy p{margin:0}
 .svc-wide .svc-meta{margin:0;flex-shrink:0}
 
+/* Plans — 接案服務方案 (project pricing) */
+.plans-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:.9rem;max-width:960px;margin:0 auto}
+.plan-card{background:linear-gradient(160deg,rgba(255,255,255,.05),rgba(255,255,255,.015));border:1px solid rgba(0,212,255,.12);border-radius:var(--radius-lg);padding:1.6rem;display:flex;flex-direction:column;position:relative;overflow:hidden;backdrop-filter:blur(10px);box-shadow:inset 0 1px 0 rgba(255,255,255,.06),0 4px 24px rgba(0,0,0,.2);transition:all .4s}
+.plan-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,#00d4ff,transparent);opacity:0;transition:opacity .4s}
+.plan-card:hover{transform:translateY(-3px);border-color:rgba(0,212,255,.28);box-shadow:0 8px 30px rgba(0,212,255,.1),inset 0 1px 0 rgba(255,255,255,.08)}
+.plan-card:hover::before{opacity:1}
+.plan-card.featured{border-color:rgba(0,212,255,.32);background:linear-gradient(160deg,rgba(0,212,255,.08),rgba(123,104,238,.05))}
+.plan-badge{position:absolute;top:0;right:1.2rem;background:linear-gradient(135deg,#00d4ff,#7b68ee);color:#fff;font-size:11px;font-weight:700;letter-spacing:1px;padding:.3rem .8rem;border-radius:0 0 10px 10px}
+.plan-icon{font-size:1.6rem;margin-bottom:.6rem;display:block}
+.plan-name{font-size:var(--fs-base);font-weight:600;margin-bottom:.3rem}
+.plan-price{font-size:var(--fs-hero);font-weight:800;background:linear-gradient(135deg,#00d4ff,#7b68ee);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:.2rem;line-height:1.1}
+.plan-price small{font-size:var(--fs-sm);-webkit-text-fill-color:rgba(255,255,255,.35);font-weight:400}
+.plan-desc{font-size:var(--fs-sm);color:rgba(255,255,255,.4);margin-bottom:1rem;line-height:1.6}
+.plan-feats{list-style:none;margin:0 0 1.4rem;flex-grow:1}
+.plan-feats li{font-size:var(--fs-sm);color:rgba(255,255,255,.45);padding:.32rem 0;display:flex;gap:.45rem;line-height:1.4}
+.plan-feats li::before{content:'✓';color:#00d4ff;font-weight:700}
+.plan-card .btn{justify-content:center}
+.plan-note{text-align:center;color:rgba(255,255,255,.3);font-size:var(--fs-xs);margin-top:1.2rem;letter-spacing:.3px}
+
 /* Results — concrete metrics */
 .results-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:.7rem;max-width:800px;margin:0 auto}
 .result-card{background:linear-gradient(160deg,rgba(255,255,255,.05),rgba(255,255,255,.015));border:1px solid rgba(0,212,255,.09);border-radius:var(--radius-md);padding:1.5rem;text-align:center;transition:all .3s;backdrop-filter:blur(8px);box-shadow:inset 0 1px 0 rgba(255,255,255,.06)}
@@ -393,6 +416,7 @@ footer .wrap{display:flex;flex-wrap:wrap;gap:.8rem;justify-content:space-between
   .hero{padding-top:5rem;padding-bottom:1.8rem}
   .svcs-bento{grid-template-columns:1fr}
   .svcs-bento .svc-card.featured{grid-column:auto;grid-row:auto}
+  .plans-grid{grid-template-columns:1fr}
   .svc-wide{grid-column:auto;flex-direction:column;align-items:flex-start}
   .svc-wide .svc-meta{margin-left:auto}
   .founder-section{grid-template-columns:1fr;text-align:center;justify-items:center}
@@ -537,6 +561,60 @@ footer .wrap{display:flex;flex-wrap:wrap;gap:.8rem;justify-content:space-between
         <span class="svc-meta">新服務</span>
       </a>
     </div>
+  </div>
+</section>
+
+<!-- 接案服務方案 -->
+<section class="section" id="plans">
+  <div class="wrap">
+    <div class="section-label">接案服務 · 透明定價</div>
+    <h2 class="section-title">三大服務方案，免費診斷後報價</h2>
+    <p class="section-sub">每個專案都先免費 30 分鐘盤點需求，再給明確報價與時程，不賣你用不到的功能</p>
+    <div class="plans-grid">
+      <div class="plan-card reveal">
+        <span class="plan-icon">🌐</span>
+        <div class="plan-name">品牌網站建置</div>
+        <div class="plan-price">NT$30K<small> 起</small></div>
+        <p class="plan-desc">響應式官網或高轉換落地頁，2 週內上線。</p>
+        <ul class="plan-feats">
+          <li>RWD 官網 / 落地頁設計</li>
+          <li>SEO 基礎設定</li>
+          <li>Google Analytics 追蹤</li>
+          <li>SSL 與穩定部署</li>
+        </ul>
+        <a href="#contact" class="btn btn-outline">免費診斷 →</a>
+      </div>
+      <div class="plan-card featured reveal">
+        <div class="plan-badge">最受歡迎</div>
+        <span class="plan-icon">🤖</span>
+        <div class="plan-name">AI 智能客服建置</div>
+        <div class="plan-price">NT$50K<small> 起</small></div>
+        <p class="plan-desc">把品牌知識灌進 AI，官網 / LINE / Telegram 24/7 自動回覆不漏單。</p>
+        <ul class="plan-feats">
+          <li>串接官網、LINE、Telegram</li>
+          <li>知識庫建置與訓練</li>
+          <li>24/7 自動回覆</li>
+          <li>後台管理與分析報表</li>
+          <li>1-2 週上線</li>
+        </ul>
+        <a href="#contact" class="btn btn-primary">免費診斷 →</a>
+      </div>
+      <div class="plan-card reveal">
+        <span class="plan-icon">🚀</span>
+        <div class="plan-name">行銷自動化代操</div>
+        <div class="plan-price">NT$120K<small>-150K</small></div>
+        <p class="plan-desc">內容自動生成 + 多平台排程發佈 + 數據追蹤，打造全自動營運引擎。</p>
+        <ul class="plan-feats">
+          <li>AI 內容生成（多語言）</li>
+          <li>FB / IG / LINE / Telegram 自動發佈</li>
+          <li>排程與發佈儀表板</li>
+          <li>成效追蹤與持續優化</li>
+          <li>4-8 週完整交付</li>
+        </ul>
+        <a href="#contact" class="btn btn-outline">免費診斷 →</a>
+      </div>
+    </div>
+    <p class="plan-note">* 以上為參考區間，實際依需求免費診斷後報價 · 月費代操方案另議</p>
   </div>
 </section>
 
