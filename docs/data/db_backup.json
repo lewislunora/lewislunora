@@ -501,6 +501,15 @@
       "ip": "122.100.112.224",
       "country": "Taiwan",
       "visited_at": "2026-07-21 12:58:01"
+    },
+    {
+      "id": 12,
+      "page": "/product/",
+      "referrer": "",
+      "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36 (compatible; meta-externalagent/1.1 (+https://developers.facebook.com/docs/sharing/webmasters/crawler))",
+      "ip": "57.141.0.51",
+      "country": "United States",
+      "visited_at": "2026-08-20 22:15:15"
     }
   ],
   "geo_cache": [
@@ -527,6 +536,12 @@
       "country": "Taiwan",
       "city": "Taoyuan",
       "cached_at": "2026-07-21 01:01:43"
+    },
+    {
+      "ip": "57.141.0.51",
+      "country": "United States",
+      "city": "Ashburn",
+      "cached_at": "2026-08-20 22:15:15"
     }
   ],
   "comments": [],
