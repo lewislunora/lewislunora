@@ -73,6 +73,20 @@
       "ai_generated": 0,
       "created_at": "2026-05-21 16:29:24",
       "published_at": null
+    },
+    {
+      "id": 6,
+      "title": "t-test",
+      "body": "hello",
+      "platforms": "[\"telegram\"]",
+      "scheduled_at": "2000-01-01 00:00",
+      "status": "scheduled",
+      "language": "zh",
+      "category": "測試",
+      "media_urls": "[]",
+      "ai_generated": 0,
+      "created_at": "2026-08-13 00:50:36",
+      "published_at": null
     }
   ],
   "schedules": [
@@ -85,6 +99,16 @@
       "error": "Telegram API error: {'ok': False, 'error_code': 404, 'description': 'Not Found'}",
       "retry_count": 0,
       "created_at": "2026-05-19 07:50:24"
+    },
+    {
+      "id": 2,
+      "content_id": 6,
+      "platform": "telegram",
+      "scheduled_at": "2000-01-01 00:00",
+      "status": "pending",
+      "error": null,
+      "retry_count": 2,
+      "created_at": "2026-08-13 00:50:36"
     }
   ],
   "analytics": [
@@ -347,283 +371,114 @@
       "updated_at": "2026-05-21 16:29:11"
     }
   ],
-  "kb_pending": [
+  "kb_pending": [],
+  "contacts": [],
+  "users": [
     {
       "id": 1,
-      "question": "可以寫程式嗎?",
-      "language": "zh-TW",
-      "count": 1,
-      "ai_suggest": "",
-      "status": "pending",
-      "created_at": "2026-06-09 03:18:44",
-      "updated_at": "2026-06-09 03:18:44"
+      "username": "smoke_a@x.com",
+      "password_hash": "6c51b89cf760b16121456f8777bc85ab70850b0ad79a946341d73c4191dd3cf8",
+      "plan": "free",
+      "api_key": null,
+      "is_active": 1,
+      "created_at": "2026-08-08 14:41:12",
+      "email": "smoke_a@x.com",
+      "salt": "1f7d9f4cee48d699",
+      "token": "e3644b20a22c59b6a85838c8e98d50d4d9fe25a06970537a",
+      "name": "",
+      "avatar": "",
+      "bio": ""
     },
     {
       "id": 2,
-      "question": "後台網址",
-      "language": "zh-TW",
-      "count": 1,
-      "ai_suggest": "",
-      "status": "pending",
-      "created_at": "2026-07-02 00:29:24",
-      "updated_at": "2026-07-02 00:29:24"
-    },
-    {
-      "id": 3,
-      "question": "推廣後台",
-      "language": "zh-TW",
-      "count": 1,
-      "ai_suggest": "",
-      "status": "pending",
-      "created_at": "2026-07-02 00:35:22",
-      "updated_at": "2026-07-02 00:35:22"
+      "username": "smoke_b@x.com",
+      "password_hash": "8e0947bafee01f34a47405028b358b73197093ab3a2e3d9f3f2bef41668d28f0",
+      "plan": "free",
+      "api_key": null,
+      "is_active": 1,
+      "created_at": "2026-08-08 14:41:12",
+      "email": "smoke_b@x.com",
+      "salt": "42b2488ab9130882",
+      "token": "85e837dd75de9249e475941a4a27b98c4ce0cd01ed10631c",
+      "name": "",
+      "avatar": "",
+      "bio": ""
     }
   ],
-  "contacts": [
+  "page_views": [],
+  "geo_cache": [],
+  "comments": [
     {
       "id": 1,
-      "name": "lewisLunora lin",
-      "company": "",
-      "contact": "0925012208",
-      "email": "lewislunora@gmail.com",
-      "industry": "",
-      "message": "",
-      "created_at": "2026-06-08 08:47:48"
+      "page_path": "feed:1",
+      "author_name": "smoke_b@x.com",
+      "content": "你好啊 Alice！",
+      "parent_id": 0,
+      "created_at": "2026-08-08 15:05:51",
+      "user_id": 2
+    }
+  ],
+  "reactions": [
+    {
+      "id": 1,
+      "page_path": "feed:1",
+      "emoji": "❤",
+      "created_at": "2026-08-08 15:04:47",
+      "user_id": 2
+    }
+  ],
+  "feed_posts": [
+    {
+      "id": 1,
+      "content": "測試貼文",
+      "post_type": "note",
+      "author": "翔川",
+      "created_at": "2026-08-01 06:08:42",
+      "user_id": null
     },
     {
       "id": 2,
-      "name": "lewisLunora lin",
-      "company": "",
-      "contact": "0925012208",
-      "email": "lewislunora@gmail.com",
-      "industry": "",
-      "message": "",
-      "created_at": "2026-06-08 08:50:04"
+      "content": "嗨大家，我是 Alice，來認識朋友！",
+      "post_type": "tip",
+      "author": "smoke_a@x.com",
+      "created_at": "2026-08-08 15:04:47",
+      "user_id": 1
     }
   ],
-  "users": [],
-  "page_views": [
-    {
-      "id": 1,
-      "page": "/test",
-      "referrer": "https://test.com",
-      "user_agent": "curl/8.7.1",
-      "ip": "122.100.112.224",
-      "country": "Taiwan",
-      "visited_at": "2026-07-12 13:46:26"
-    },
-    {
-      "id": 2,
-      "page": "/",
-      "referrer": "",
-      "user_agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36",
-      "ip": "122.100.112.224",
-      "country": "Taiwan",
-      "visited_at": "2026-07-12 16:58:43"
-    },
-    {
-      "id": 3,
-      "page": "/",
-      "referrer": "",
-      "user_agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36",
-      "ip": "122.100.112.224",
-      "country": "Taiwan",
-      "visited_at": "2026-07-16 16:12:41"
-    },
-    {
-      "id": 4,
-      "page": "/",
-      "referrer": "",
-      "user_agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36",
-      "ip": "122.100.112.224",
-      "country": "Taiwan",
-      "visited_at": "2026-07-16 16:14:39"
-    },
-    {
-      "id": 5,
-      "page": "/",
-      "referrer": "",
-      "user_agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36",
-      "ip": "122.100.112.224",
-      "country": "Taiwan",
-      "visited_at": "2026-07-20 13:37:06"
-    },
-    {
-      "id": 6,
-      "page": "/",
-      "referrer": "",
-      "user_agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36",
-      "ip": "122.100.112.224",
-      "country": "Taiwan",
-      "visited_at": "2026-07-20 13:51:50"
-    },
-    {
-      "id": 7,
-      "page": "/lewislunora/",
-      "referrer": "",
-      "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36",
-      "ip": "52.34.76.65",
-      "country": "United States",
-      "visited_at": "2026-07-20 18:12:16"
-    },
-    {
-      "id": 8,
-      "page": "/lewislunora/",
-      "referrer": "",
-      "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36",
-      "ip": "54.70.53.60",
-      "country": "United States",
-      "visited_at": "2026-07-20 18:12:17"
-    },
-    {
-      "id": 9,
-      "page": "/",
-      "referrer": "",
-      "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36",
-      "ip": "54.70.53.60",
-      "country": "United States",
-      "visited_at": "2026-07-20 18:12:18"
-    },
-    {
-      "id": 10,
-      "page": "/",
-      "referrer": "https://l.threads.com/",
-      "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36",
-      "ip": "210.241.233.154",
-      "country": "Taiwan",
-      "visited_at": "2026-07-21 01:01:43"
-    },
-    {
-      "id": 11,
-      "page": "/lewislunora/product/",
-      "referrer": "https://lewislunora.github.io/lewislunora/",
-      "user_agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36",
-      "ip": "122.100.112.224",
-      "country": "Taiwan",
-      "visited_at": "2026-07-21 12:58:01"
-    },
-    {
-      "id": 12,
-      "page": "/product/",
-      "referrer": "",
-      "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36 (compatible; meta-externalagent/1.1 (+https://developers.facebook.com/docs/sharing/webmasters/crawler))",
-      "ip": "57.141.0.51",
-      "country": "United States",
-      "visited_at": "2026-08-20 22:15:15"
-    }
-  ],
-  "geo_cache": [
-    {
-      "ip": "122.100.112.224",
-      "country": "Taiwan",
-      "city": "Yilan",
-      "cached_at": "2026-07-12 13:46:26"
-    },
-    {
-      "ip": "52.34.76.65",
-      "country": "United States",
-      "city": "Portland",
-      "cached_at": "2026-07-20 18:12:16"
-    },
-    {
-      "ip": "54.70.53.60",
-      "country": "United States",
-      "city": "Portland",
-      "cached_at": "2026-07-20 18:12:17"
-    },
-    {
-      "ip": "210.241.233.154",
-      "country": "Taiwan",
-      "city": "Taoyuan",
-      "cached_at": "2026-07-21 01:01:43"
-    },
-    {
-      "ip": "57.141.0.51",
-      "country": "United States",
-      "city": "Ashburn",
-      "cached_at": "2026-08-20 22:15:15"
-    }
-  ],
-  "comments": [],
-  "reactions": [],
-  "feed_posts": [],
   "community_threads": [],
   "community_replies": [],
-  "article_views": [
-    {
-      "id": 1,
-      "page_path": "/community/",
-      "created_at": "2026-08-20 12:43:17"
-    }
-  ],
+  "article_views": [],
   "promo_queue": [
     {
       "id": 1,
       "platform": "threads",
-      "body": "你是否曾經試過將AI自動化導入到你的企業，但結果卻不是你所期望的？導入AI自動化服務的過程中，很多企業都會遇到一些常見的問題。其中三個主要原因包括：缺乏明確的目標和策略、不足夠的數據質量和準備，以及不夠充分的團隊培訓和支持。要避免這些錯誤，企業需要對自己的需求有深入的了解，並找到合適的AI解決方案。\n\n👇 預約免費 30 分鐘 AI 盤點 👉 lewislunora.onrender.com/",
+      "body": "你曾經在線上社群經營自己的個人品牌，但苦於不知道如何接觸到第一個付費客戶嗎？作為一名工程師，你可能擁有豐富的技術知識，但轉化成商業價值卻是一個挑戰。透過在 Threads 上分享實用的技術經驗和建立人脈關係，可以幫助你打造信譽和吸引潛在客戶。透過這種方式，你不僅能夠展示自己的專業度，也能夠收到客戶的實際需求和反饋。\n👇 預約免費 30 分鐘 AI 盤點 👉 lewislunora.onrender.com/",
       "status": "pending",
       "error": "",
-      "created_at": "2026-07-29 14:58:35",
-      "posted_at": null
-    },
-    {
-      "id": 2,
-      "platform": "threads",
-      "body": "從接案到 SaaS 是許多一人工程師的夢想路徑，但實際上要跨越這個門檻卻不是容易的事。許多人苦於接案的時間和金錢無法成正比，同時也難以擺脫對於穩定性和自由度的矛盾。要解決這個問題，關鍵在於找到合適的自動化工具和商業模式，讓你的服務可以無限擴展而不僅僅是依靠個人時間和精力。如果你也在思考如何從接案轉型到 SaaS 的獲利路徑，歡迎和我討論你的困境和需求。\n👇 預約免費 30 分鐘 AI 盤點 👉 lewislunora.onrender.com/",
-      "status": "pending",
-      "error": "",
-      "created_at": "2026-07-31 14:39:12",
-      "posted_at": null
-    },
-    {
-      "id": 3,
-      "platform": "threads",
-      "body": "你是否曾經投入大量資源開發AI客服系統，但最終發現效果不如預期？很多企業在推動AI客服時，常常忽略了一個關鍵步驟：對客戶需求的深入理解和定制化設計。這個疏漏導致AI客服無法有效地解決客戶的問題，從而影響整體的客戶體驗。\n\n傳統的AI客服解決方案往往過於單一，無法滿足不同客戶的個性化需求。因此，企業需要對客戶需求進行深入分析，設計出更具彈性和可適應性的AI客服系統。\n\n如果你也遇到了類似的困境，歡迎與我分享你的經驗和挑戰。 \n👇 預約免費 30 分鐘 AI 盤點 👉 lewislunora.onrender.com/",
-      "status": "pending",
-      "error": "",
-      "created_at": "2026-08-01 17:16:11",
-      "posted_at": null
-    },
-    {
-      "id": 4,
-      "platform": "threads",
-      "body": "作為一人公司的老闆，我們常常被會計和客服這兩個頭痛的問題所困擾。很多人會覺得會計是最頭痛的，但我要說，客服才是最需要外包的。因為客服不僅僅是回答客戶的疑問，還需要隨時隨地地提供服務，否則就會影響到公司的聲譽和客戶滿意度。通過外包客服服務，不僅可以節省時間和成本，也可以提升客戶的滿意度和忠誠度。通過AI自動化服務，可以更有效地管理客服工作，讓您專注於核心業務。\n👇 預約免費 30 分鐘 AI 盤點 👉 lewislunora.onrender.com/",
-      "status": "pending",
-      "error": "",
-      "created_at": "2026-08-02 20:28:20",
-      "posted_at": null
-    },
-    {
-      "id": 5,
-      "platform": "threads",
-      "body": "寫了 10 年 Code，我學到最重要的事：別自己扛全部。過去，我常常沉迷於寫程式碼，試圖解決每個問題，但這樣做只會導致身心疲勞。後來我發現，使用 AI 自動化服務可以大大減輕我的工作量，讓我有更多時間專注於更重要的任務。\n\n透過 AI 自動化，我可以更有效地管理和優化我的工作流程，減少人工錯誤和重複工作。這不僅提高了我的工作效率，也讓我有更多時間與客戶溝通，了解他們的需求，提供更好的服務。\n\n如果你也想從繁雜的工作中解放出來，歡迎預約免費諮詢，讓我們一起探索 AI 自動化的可能性。\n👇 預約免費 30 分鐘 AI 盤點 👉 lewislunora.onrender.com/",
-      "status": "pending",
-      "error": "",
-      "created_at": "2026-08-09 13:19:42",
-      "posted_at": null
-    },
-    {
-      "id": 6,
-      "platform": "threads",
-      "body": "我最近和一位一人公司的老闆聊天，發現他每天都在為重複性的工作而頭痛。他需要花費大量時間來處理資料、客戶服務和行銷推廣。經過一番討論，我們發現可以透過 AI 自動化來解決這些問題。透過實施客戶服務聊天機器人、資料自動化處理系統和社交媒體行銷自動化工具，他現在每天可以省下 4 小時的時間，專注在更重要的工作上。這讓他不僅提高了工作效率，也能夠更好地發展自己的事業。如果你也是一位一人公司的老闆，想知道如何運用 AI 自動化來提升工作效率，歡迎預約免費諮詢。\n👇 預約免費 30 分鐘 AI 盤點 👉 lewislunora.onrender.com/",
-      "status": "pending",
-      "error": "",
-      "created_at": "2026-08-14 07:25:57",
-      "posted_at": null
-    },
-    {
-      "id": 7,
-      "platform": "threads",
-      "body": "寫了 10 年 Code，我學到最重要的事：別自己扛全部。多年來，我見過太多開發者為了完成任務而不堪重負，結果不僅工作效率下降，還影響了身體和心理健康。其實，透過 AI 自動化服務，可以大大減輕工作負擔，讓開發者專注於更高層次的任務。例如，自動化測試和代碼審查，可以節省大量時間和精力，同時也能提高工作質量。\n👇 預約免費 30 分鐘 AI 盤點 👉 lewislunora.onrender.com/",
-      "status": "pending",
-      "error": "",
-      "created_at": "2026-08-17 04:40:25",
+      "created_at": "2026-08-08 15:05:00",
       "posted_at": null
     }
   ],
   "social_identities": [],
-  "conversations": [],
-  "messages": [],
+  "conversations": [
+    {
+      "id": 1,
+      "user_a": 1,
+      "user_b": 2,
+      "last_message_at": "2026-08-08 15:04:47",
+      "created_at": "2026-08-08 15:04:47"
+    }
+  ],
+  "messages": [
+    {
+      "id": 1,
+      "conversation_id": 1,
+      "sender_id": 2,
+      "body": "嗨！很高興認識你",
+      "read_at": "2026-08-08 15:04:47",
+      "created_at": "2026-08-08 15:04:47"
+    }
+  ],
   "follows": [],
   "incoming_messages": []
 }

@@ -97,7 +97,8 @@ class TestSendContactEmail:
         mock_smtp.return_value.__enter__.return_value.send_message.side_effect = Exception("Connection refused")
         with patch.dict(os.environ, {"SMTP_USER": "me@test.com", "SMTP_PASS": "pass"}, clear=False):
             result = send_contact_email({"姓名": "Error Case"})
-            assert result["status"] == "logged"
+            assert result["status"] == "error"
+            assert "Connection refused" in result["error"]
 
     def test_empty_data_does_not_crash(self):
         with patch.dict(os.environ, {"SMTP_USER": "", "SMTP_PASS": ""}, clear=False):

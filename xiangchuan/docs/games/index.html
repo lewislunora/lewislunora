@@ -3,9 +3,9 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>遊戲大廳 — 翔川 Neo｜曜科技 — 20 款免費網頁遊戲</title>
-<meta name="description" content="20 款免費網頁遊戲：2048、貪食蛇、Flappy Bird、俄羅斯方塊、踩地雷、21點、百家樂、拉霸、圈圈叉叉、打磚塊、記憶翻牌、AI 20 問、體感遊戲等。一鍵分享分數挑戰朋友！">
-<meta property="og:title" content="🎮 遊戲大廳 — 20 款免費網頁遊戲">
+<title>遊戲大廳 — 翔川 Neo｜曜科技 — 23 款免費網頁遊戲</title>
+<meta name="description" content="23 款免費網頁遊戲：2048、貪食蛇、Flappy Bird、俄羅斯方塊、踩地雷、21點、百家樂、拉霸、圈圈叉叉、打磚塊、記憶翻牌、AI 20 問、三國志、益智作業等。一鍵分享分數挑戰朋友！">
+<meta property="og:title" content="🎮 遊戲大廳 — 23 款免費網頁遊戲">
 <meta property="og:description" content="2048、貪食蛇、Flappy Bird、俄羅斯方塊⋯⋯ 免費遊玩，分享分數挑戰朋友！">
 <meta property="og:image" content="https://lewislunora.github.io/lewislunora/assets/og-game.png">
 <meta property="og:type" content="website">
@@ -109,6 +109,8 @@ header p { color: #8888aa; margin-top: 8px; font-size: 1.05rem; }
 .card-simon::before { background: linear-gradient(90deg, #4caf50, #2196f3); }
 .card-dino::before { background: linear-gradient(90deg, #795548, #9e9e9e); }
 .card-whack::before { background: linear-gradient(90deg, #e91e63, #ff5722); }
+.card-3k::before { background: linear-gradient(90deg, #f7971e, #ef4444); }
+.card-puzzle::before { background: linear-gradient(90deg, #facc15, #f7971e); }
 .footer-link {
   margin-top: 48px;
   text-align: center;
@@ -130,8 +132,11 @@ header p { color: #8888aa; margin-top: 8px; font-size: 1.05rem; }
 <body>
 <div class="container">
   <header>
-    <h1>🎮 遊戲大廳</h1>
-    <p>20 款免費遊戲 — 點選開始遊玩，分享分數挑戰朋友！</p>
+    <div style="text-align:center">
+      <h1>🎮 遊戲大廳</h1>
+      <p>23 款免費遊戲 — 點選開始遊玩，分享分數挑戰朋友！</p>
+      <a href="/login.html" style="display:inline-block;margin-top:14px;padding:9px 22px;border-radius:999px;background:linear-gradient(90deg,#f59e0b,#f97316);color:#fff;font-weight:600;text-decoration:none;font-size:0.95rem">登入 / 註冊</a>
+    </div>
   </header>
   <div class="games-grid">
     <a href="2048.html" class="game-card card-2048">
@@ -253,6 +258,24 @@ header p { color: #8888aa; margin-top: 8px; font-size: 1.05rem; }
       <h3>打地鼠 Whack-a-Mole</h3>
       <p>經典打地鼠！地鼠隨機冒出，點擊敲打得分，小心別敲到炸彈！</p>
       <span class="tag">點擊</span>
+    </a>
+    <a href="three-kingdoms.html" class="game-card card-3k">
+      <div class="icon">🏯</div>
+      <h3>三國志 攻城略地</h3>
+      <p>選定曹操、劉備或孫權，徵兵、整軍、攻城略地，逐鹿中原一統天下！回合制戰略對弈。</p>
+      <span class="tag">回合制戰略</span>
+    </a>
+    <a href="three-kingdoms-online.html" class="game-card card-3k">
+      <div class="icon">🌐</div>
+      <h3>三國志 線上對戰</h3>
+      <p>1-12 人線上大混戰！開房邀請好友，輸入邀請碼加入，電腦自動補位。1 人也能與電腦對弈！</p>
+      <span class="tag">即時多人</span>
+    </a>
+    <a href="puzzle.html" class="game-card card-puzzle">
+      <div class="icon">🧠</div>
+      <h3>益智作業</h3>
+      <p>Python 程式邏輯題、推理謎題，還有河內塔與猜數字兩款互動益智小遊戲！</p>
+      <span class="tag">邏輯 × 益智</span>
     </a>
   </div>
   <div class="footer-link">

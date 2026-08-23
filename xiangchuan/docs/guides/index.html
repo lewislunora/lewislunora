@@ -6,23 +6,15 @@
 <title>AI 品牌知識庫 - 指南與教學</title>
 <style>
 * { margin:0; padding:0; box-sizing:border-box; }
-:root {
-  --fs-hero: clamp(28px, 4vw + 12px, 52px);
-  --fs-lg: clamp(20px, 2vw + 12px, 30px);
-  --fs-base: clamp(17px, 1.2vw + 12px, 22px);
-  --fs-sm: clamp(15px, 0.9vw + 11px, 19px);
-  --fs-xs: clamp(14px, 0.7vw + 10px, 17px);
-}
-html { font-size: 16px; }
 body {
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
   background: #0a0a0f; color: #e0e0e0; line-height: 1.6;
 }
 .header {
-  text-align: center; padding: clamp(2.5rem, 5vw, 4rem) 1.5rem 2rem;
+  text-align: center; padding: 4rem 1.5rem 2rem;
   background: radial-gradient(ellipse at top, rgba(123,104,238,0.08) 0%, transparent 60%);
 }
-.header h1 { font-size: var(--fs-hero); font-weight: 800; background: linear-gradient(135deg,#7b68ee,#00d4ff); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+.header h1 { font-size: 2rem; font-weight: 800; background: linear-gradient(135deg,#7b68ee,#00d4ff); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
 .header p { color: rgba(255,255,255,0.5); margin-top: 0.5rem; }
 .container { max-width: 900px; margin: 0 auto; padding: 0 1.5rem; }
 .guide-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.2rem; padding: 2rem 0; }
@@ -34,34 +26,34 @@ body {
 .guide-card:hover { border-color: rgba(123,104,238,0.3); transform: translateY(-2px); }
 .guide-card .tag {
   display: inline-block; padding: 0.15rem 0.5rem; border-radius: 4px;
-  font-size: var(--fs-xs); font-weight: 600; margin-bottom: 0.5rem;
+  font-size: 0.7rem; font-weight: 600; margin-bottom: 0.5rem;
   background: rgba(123,104,238,0.15); color: #7b68ee;
 }
-.guide-card h3 { font-size: var(--fs-base); margin-bottom: 0.4rem; }
-.guide-card p { font-size: var(--fs-sm); color: rgba(255,255,255,0.5); }
-.guide-card .meta { font-size: var(--fs-xs); color: rgba(255,255,255,0.2); margin-top: 0.8rem; }
+.guide-card h3 { font-size: 1.05rem; margin-bottom: 0.4rem; }
+.guide-card p { font-size: 0.85rem; color: rgba(255,255,255,0.5); }
+.guide-card .meta { font-size: 0.75rem; color: rgba(255,255,255,0.2); margin-top: 0.8rem; }
 .cta-banner {
   text-align: center; padding: 2.5rem; margin: 2rem 0;
   background: linear-gradient(135deg, rgba(123,104,238,0.1), rgba(0,212,255,0.05));
   border: 1px solid rgba(123,104,238,0.2); border-radius: 16px;
 }
-.cta-banner h3 { font-size: var(--fs-lg); margin-bottom: 0.5rem; }
-.cta-banner p { color: rgba(255,255,255,0.5); margin-bottom: 1rem; font-size: var(--fs-sm); }
+.cta-banner h3 { font-size: 1.2rem; margin-bottom: 0.5rem; }
+.cta-banner p { color: rgba(255,255,255,0.5); margin-bottom: 1rem; font-size: 0.9rem; }
 .btn {
   display: inline-block; padding: 0.7rem 2rem; border-radius: 10px;
-  font-size: var(--fs-base); font-weight: 600; text-decoration: none;
+  font-size: 0.95rem; font-weight: 600; text-decoration: none;
   background: linear-gradient(135deg, #7b68ee, #00d4ff); color: #fff;
   transition: all 0.2s;
 }
 .btn:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(123,104,238,0.3); }
-.footer { text-align: center; padding: 2rem; font-size: var(--fs-xs); color: rgba(255,255,255,0.2); }
+.footer { text-align: center; padding: 2rem; font-size: 0.75rem; color: rgba(255,255,255,0.2); }
 </style>
 </head>
 <body>
 <div class="header">
   <h1>📚 AI 品牌知識庫</h1>
   <p>免費指南與教學，幫助你用 AI 建立個人品牌、超級個體事業與自動化系統</p>
-  <p style="margin-top:0.8rem"><a href="../solopreneur/" style="color:#7b68ee;font-size:var(--fs-sm)">🔥 超級個體解決方案 →</a></p>
+  <p style="margin-top:0.8rem"><a href="../solopreneur/" style="color:#7b68ee;font-size:0.9rem">🔥 超級個體解決方案 →</a> &nbsp; <a href="../community/" style="color:#7b68ee;font-size:0.9rem">🗣️ 社群討論 →</a></p>
 </div>
 <div class="container">
   <div class="guide-grid">
@@ -113,11 +105,17 @@ body {
       <p>不用露臉或錄影片，用 AI 打造影響力</p>
       <div class="meta">約 8 分鐘閱讀</div>
     </a>
+    <a class="guide-card" href="ai-python-learning-path.html">
+      <div class="tag">程式語言</div>
+      <h3>使用生成式 AI 學習 Python：2026 完整學習路徑</h3>
+      <p>五階段學習路徑，善用 Claude 等 AI 夥伴加速掌握 Python</p>
+      <div class="meta">約 15 分鐘閱讀</div>
+    </a>
   </div>
 
   <div class="cta-banner">
     <h3>📥 免費下載完整指南套裝</h3>
-    <p>8 篇完整指南 + 50 組 AI 提示詞模板，一次獲得</p>
+    <p>9 篇完整指南 + 50 組 AI 提示詞模板，一次獲得</p>
     <a class="btn" href="../ai-brand/">免費領取</a>
   </div>
 </div>

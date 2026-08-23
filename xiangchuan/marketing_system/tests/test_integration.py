@@ -23,20 +23,35 @@ def client():
     return TestClient(app)
 
 
+class _SyncThread:
+    """Runs the target synchronously so tests don't race the notify thread."""
+
+    def __init__(self, target=None, args=(), kwargs=None, **kw):
+        self._target = target
+        self._args = args
+        self._kwargs = kwargs or {}
+
+    def start(self):
+        self._target(*self._args, **self._kwargs)
+
+
 class TestContactFullPipeline:
     """Exercise the real contact_form → email/notification routing with low-level mocks"""
 
     def test_smtp_configured_sends_email(self, client):
-        """When SMTP_USER/SMTP_PASS are set, contact_form should call SMTP, not Telegram"""
-        with patch("smtplib.SMTP") as mock_smtp:
-            mock_smtp.return_value.__enter__.return_value = MagicMock()
-            resp = client.post("/api/contact", json={
-                "姓名": "Alice", "聯絡方式": "@alice",
-                "公司": "Co", "Email": "a@b.com", "行業別": "tech", "備註": "Hello",
-            })
-            assert resp.status_code == 200
-            assert resp.json()["status"] == "ok"
-            mock_smtp.return_value.__enter__.return_value.starttls.assert_called_once()
+        """When SMTP_USER/SMTP_PASS are set, contact_form should send email via SMTP"""
+        with patch("marketing_system.api.server.threading.Thread", _SyncThread):
+            with patch("smtplib.SMTP") as mock_smtp:
+                mock_smtp.return_value.__enter__.return_value = MagicMock()
+                with patch("requests.post") as mock_post:
+                    mock_post.return_value.json.return_value = {"ok": True}
+                    resp = client.post("/api/contact", json={
+                        "姓名": "Alice", "聯絡方式": "@alice",
+                        "公司": "Co", "Email": "a@b.com", "行業別": "tech", "備註": "Hello",
+                    })
+                    assert resp.status_code == 200
+                    assert resp.json()["status"] == "ok"
+                    assert mock_smtp.return_value.__enter__.return_value.starttls.called
 
     def test_smtp_not_configured_sends_telegram(self, client):
         """When SMTP_USER is empty, contact_form should fallback to Telegram notification"""
@@ -59,16 +74,19 @@ class TestContactFullPipeline:
         assert len(rows) == 1
         assert rows[0]["contact"] == "carol@test.com"
 
-    def test_contact_routing_smtp_preferred_over_telegram(self, client):
-        """When SMTP is configured, should NOT call Telegram"""
-        with patch("smtplib.SMTP") as mock_smtp:
-            mock_smtp.return_value.__enter__.return_value = MagicMock()
-            with patch("requests.post") as mock_req:
-                resp = client.post("/api/contact", json={
-                    "姓名": "Routing", "聯絡方式": "test",
-                })
-                assert resp.status_code == 200
-                mock_req.assert_not_called()
+    def test_contact_fans_out_to_all_channels(self, client):
+        """Contact events fan out to Telegram + LINE + Email regardless of SMTP."""
+        with patch("marketing_system.api.server.threading.Thread", _SyncThread):
+            with patch("smtplib.SMTP") as mock_smtp:
+                mock_smtp.return_value.__enter__.return_value = MagicMock()
+                with patch("requests.post") as mock_req:
+                    mock_req.return_value.json.return_value = {"ok": True}
+                    resp = client.post("/api/contact", json={
+                        "姓名": "Routing", "聯絡方式": "test",
+                    })
+                    assert resp.status_code == 200
+                    mock_req.assert_called()  # Telegram push fired
+                    assert mock_smtp.return_value.__enter__.return_value.starttls.called  # Email via SMTP
 
     def test_contact_partial_fields(self, client):
         with patch.dict(os.environ, {"SMTP_USER": "", "SMTP_PASS": ""}, clear=False):
