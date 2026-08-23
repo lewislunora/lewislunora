@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>紅帽滲透測試｜翔川 Neo 安全服務</title>
+<meta name="description" content="專業紅帽滲透測試服務。自動化掃描 550+ 域名、OWASP Top 10 全覆蓋、MITRE ATT&CK 框架。立即預約免費資安健檢。">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--bg:#0a0a0a;--card:#111;--border:#222;--accent:#e74c3c;--accent2:#f39c12;--accent3:#3498db;--accent4:#2ecc71;--text:#ddd;--muted:#888;--font:-apple-system,'Microsoft YaHei',sans-serif}
+body{font-family:var(--font);background:var(--bg);color:var(--text);line-height:1.6}
+.container{max-width:1100px;margin:0 auto;padding:20px}
+
+/* Nav */
+nav{background:#111;border-bottom:1px solid var(--border);padding:12px 20px;position:sticky;top:0;z-index:100}
+nav .inner{max-width:1100px;margin:0 auto;display:flex;justify-content:space-between;align-items:center}
+nav a{color:var(--text);text-decoration:none;font-weight:600;font-size:16px}
+nav a:hover{color:var(--accent)}
+
+/* Hero */
+.hero{background:linear-gradient(135deg,#1a1a2e 0%,#16213e 100%);border:1px solid var(--accent);border-radius:12px;padding:40px;margin:30px 0;text-align:center}
+.hero h1{color:var(--accent);font-size:2.2em;margin-bottom:10px}
+.hero .sub{color:var(--muted);font-size:1.1em}
+
+/* Stats */
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:15px;margin:25px 0}
+.stat{background:var(--card);border:1px solid var(--border);border-radius:8px;padding:20px;text-align:center}
+.stat .num{font-size:2.5em;font-weight:bold}
+.stat .label{color:var(--muted);margin-top:5px;font-size:13px}
+.stat.c1 .num{color:var(--accent)}
+.stat.c2 .num{color:var(--accent2)}
+.stat.c3 .num{color:var(--accent3)}
+.stat.c4 .num{color:var(--accent4)}
+
+/* Sections */
+h2{font-size:22px;color:var(--accent);margin:30px 0 12px;border-bottom:2px solid var(--accent);padding-bottom:8px}
+h3{font-size:17px;color:var(--accent2);margin:20px 0 8px}
+.section{background:var(--card);border:1px solid var(--border);border-radius:8px;padding:20px;margin:12px 0}
+.section p{margin:8px 0}
+
+/* Tags */
+.tag{display:inline-block;padding:3px 10px;border-radius:4px;font-size:12px;font-weight:600;margin:2px}
+.tag-critical{background:#e74c3c22;color:var(--accent);border:1px solid var(--accent)}
+.tag-high{background:#f39c1222;color:var(--accent2);border:1px solid var(--accent2)}
+.tag-medium{background:#3498db22;color:var(--accent3);border:1px solid var(--accent3)}
+.tag-low{background:#2ecc7122;color:var(--accent4);border:1px solid var(--accent4)}
+
+/* Tables */
+table{width:100%;border-collapse:collapse;margin:12px 0}
+th,td{padding:8px 12px;text-align:left;border-bottom:1px solid var(--border);font-size:13px}
+th{background:#1a1a1a;color:#fff;font-weight:600}
+
+/* Demo steps */
+.demo{background:#1a1a1a;border:1px solid #333;border-radius:8px;padding:15px;margin:10px 0;font-family:'Courier New',monospace;font-size:13px;overflow-x:auto}
+.demo .label{color:var(--accent3);font-weight:bold;margin-bottom:6px}
+.demo .cmd{color:var(--accent4)}
+.demo .output{color:var(--accent2)}
+
+/* CTA */
+.cta{background:linear-gradient(135deg,#1a1a2e 0%,#16213e 100%);border:2px solid var(--accent4);border-radius:12px;padding:30px;text-align:center;margin:30px 0}
+.cta h2{color:var(--accent4);border:none;margin:0 0 10px}
+.cta p{margin:8px 0}
+.cta a{display:inline-block;background:var(--accent4);color:#000;padding:12px 30px;border-radius:8px;text-decoration:none;font-weight:600;margin-top:15px;font-size:16px}
+.cta a:hover{opacity:0.9}
+
+/* Responsive */
+@media(max-width:768px){
+  .stats{grid-template-columns:repeat(2,1fr)}
+  .hero h1{font-size:1.6em}
+  .hero{padding:25px}
+}
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="inner">
+    <a href="/">翔川 Neo</a>
+    <a href="/service-terms.html">服務方案</a>
+  </div>
+</nav>
+
+<div class="container">
+
+<div class="hero">
+  <h1>🔴 紅帽滲透測試</h1>
+  <div class="sub">模擬真實攻擊，找出你不知道的安全漏洞</div>
+</div>
+
+<!-- Stats -->
+<div class="stats">
+  <div class="stat c1"><div class="num">550+</div><div class="label">已掃描網域</div></div>
+  <div class="stat c2"><div class="num">60+</div><div class="label">自動化測試階段</div></div>
+  <div class="stat c3"><div class="num">OWASP</div><div class="label">Top 10 全覆蓋</div></div>
+  <div class="stat c4"><div class="num">MITRE</div><div class="label">ATT&CK 框架</div></div>
+</div>
+
+<!-- Methodology -->
+<h2>測試方法論</h2>
+<div class="section">
+  <p>採用業界標準框架，系統化執行滲透測試：</p>
+  <table>
+    <tr><th>框架</th><th>涵蓋範圍</th></tr>
+    <tr><td>OWASP Top 10</td><td>Web 應用程式十大安全風險</td></tr>
+    <tr><td>PTES</td><td>滲透測試執行標準（7 階段流程）</td></tr>
+    <tr><td>NIST SP 800-115</td><td>技術安全評估指南</td></tr>
+    <tr><td>MITRE ATT&CK</td><td>真實攻擊者行為矩陣</td></tr>
+  </table>
+</div>
+
+<!-- Capabilities -->
+<h2>測試能力</h2>
+
+<h3>🔴 發現的漏洞類型</h3>
+<div class="section">
+  <table>
+    <tr><th>嚴重程度</th><th>漏洞類型</th><th>說明</th></tr>
+    <tr><td><span class="tag tag-critical">CRITICAL</span></td><td>內部 IP 公開洩漏</td><td>內網 IP 出現在公開 DNS，攻擊者可直接定位基礎架構</td></tr>
+    <tr><td><span class="tag tag-critical">CRITICAL</span></td><td>郵件偽造風險</td><td>域名無 SPF/DMARC 保護，可被用來發送釣魚郵件</td></tr>
+    <tr><td><span class="tag tag-critical">CRITICAL</span></td><td>CRLF 注入</td><td>可在 HTTP 回應中注入任意標頭，竊取 Session</td></tr>
+    <tr><td><span class="tag tag-high">HIGH</span></td><td>SSL 弱協議</td><td>支援已淘汰的 SSL 3.0 / TLS 1.0 / 1.1</td></tr>
+    <tr><td><span class="tag tag-high">HIGH</span></td><td>Open Redirect</td><td>可將使用者導向惡意網站</td></tr>
+    <tr><td><span class="tag tag-medium">MEDIUM</span></td><td>缺少安全標頭</td><td>Clickjacking、XSS、MIME 嗅探風險</td></tr>
+    <tr><td><span class="tag tag-medium">MEDIUM</span></td><td>DNS 配置缺失</td><td>無 DNSSEC、無 CAA 記錄</td></tr>
+  </table>
+</div>
+
+<h3>🛠️ 自動化掃描流程</h3>
+<div class="section">
+  <p>從發現到報告，全自動化執行：</p>
+  <table>
+    <tr><th>階段</th><th>內容</th><th>工具</th></tr>
+    <tr><td>1. 偵察</td><td>子網域枚舉、DNS 記錄分析</td><td>Subfinder, Amass, Dig</td></tr>
+    <tr><td>2. 掃描</td><td>端口掃描、服務識別</td><td>Nmap, Httpx</td></tr>
+    <tr><td>3. 漏洞掃描</td><td>自動化漏洞偵測</td><td>Nuclei, 自訂 Script</td></tr>
+    <tr><td>4. 深度測試</td><td>CRLF、Open Redirect、SSRF</td><td>Curl, Python Script</td></tr>
+    <tr><td>5. SSL 分析</td><td>憑證、協議、 Cipher 檢查</td><td>SSLyze, TestSSL</td></tr>
+    <tr><td>6. DNS 安全</td><td>SPF/DMARC/DNSSEC 檢查</td><td>Dmarcian, Dig</td></tr>
+    <tr><td>7. 報告生成</td><td>自動化 HTML/Markdown 報告</td><td>Python, Jinja2</td></tr>
+  </table>
+</div>
+
+<!-- Demo -->
+<h2>實戰演示</h2>
+
+<div class="section">
+  <h3>演示 1: CRLF 注入攻擊</h3>
+  <p>攻擊者在 URL 中注入 CRLF 字元，成功在 HTTP 回應中植入惡意標頭：</p>
+  <div class="demo">
+    <div class="label">攻擊指令：</div>
+    <div class="cmd">curl -skI 'https://target.com/%0d%0aX-Injected:malicious'</div>
+    <div class="label" style="margin-top:10px">伺服器回應（成功注入）：</div>
+    <div class="output">HTTP/1.1 200 OK<br>X-Injected: malicious<br>Content-Type: text/html</div>
+  </div>
+  <p><strong>影響：</strong>攻擊者可竊取使用者 Session、進行釣魚攻擊、繞過安全控管。</p>
+</div>
+
+<div class="section">
+  <h3>演示 2: Open Redirect 攻擊</h3>
+  <p>利用登入頁面的 redirect 參數，將使用者導向惡意網站：</p>
+  <div class="demo">
+    <div class="label">惡意連結：</div>
+    <div class="cmd">https://target.com/login?redirect=https://steal-password.com</div>
+    <div class="label" style="margin-top:10px">結果：</div>
+    <div class="output">使用者看到正常的登入頁面，但帳號密碼已送出到攻擊者伺服器</div>
+  </div>
+  <p><strong>影響：</strong>釣魚攻擊成功率大幅提升，使用者難以察覺。</p>
+</div>
+
+<div class="section">
+  <h3>演示 3: 內網 IP 洩漏</h3>
+  <p>透過公開 DNS 查詢，直接取得內網基礎架構資訊：</p>
+  <div class="demo">
+    <div class="label">DNS 查詢：</div>
+    <div class="cmd">dig dev.target.com A +short</div>
+    <div class="output">10.1.0.202 ← 內網 IP 直接暴露</div>
+    <div class="label" style="margin-top:10px">攻擊者可以：</div>
+    <div class="output">1. 定位開發/測試環境<br>2. 嘗試直接連接內網服務<br>3. 繞過防火牆進行內網滲透</div>
+  </div>
+</div>
+
+<!-- Stats from real scan (anonymized) -->
+<h2>實戰成果</h2>
+<div class="section">
+  <p>以下為實際執行的自動化紅帽測試成果（已去識別化）：</p>
+  <div class="stats" style="margin:15px 0">
+    <div class="stat c1"><div class="num">34</div><div class="label">CRITICAL 漏洞</div></div>
+    <div class="stat c2"><div class="num">6</div><div class="label">HIGH 漏洞</div></div>
+    <div class="stat c3"><div class="num">20</div><div class="label">MEDIUM 漏洞</div></div>
+    <div class="stat c4"><div class="num">168</div><div class="label">Web 服務發現</div></div>
+  </div>
+  <table>
+    <tr><th>發現類別</th><th>數量</th><th>影響</th></tr>
+    <tr><td>內部 IP 公開洩漏</td><td>60+ 筆</td><td>攻擊者可直接定位內網基礎架構</td></tr>
+    <tr><td>域名無 SPF/DMARC</td><td>7 個域名</td><td>可偽造郵件進行釣魚攻擊</td></tr>
+    <tr><td>SSL 弱協議支援</td><td>多台伺服器</td><td>已淘汰協議可被中間人攻擊利用</td></tr>
+    <tr><td>缺少 HTTP 安全標頭</td><td>全部 Web 服務</td><td>Clickjacking、XSS 風險</td></tr>
+  </table>
+</div>
+
+<!-- CTA -->
+<div class="cta">
+  <h2>需要資安健檢？</h2>
+  <p>免費 30 分鐘諮詢，幫你找出最迫切的安全風險</p>
+  <p>NT$15,000 起，完整紅帽滲透測試報告</p>
+  <a href="https://line.me/oa/p/YOUR_LINE_OA_ID/">💬 LINE 免費諮詢</a>
+</div>
+
+</div>
+
+</body>
+</html>
