@@ -7,3 +7,4 @@ venv/
 .DS_Store
 *.db
 xiangchuan/marketing_system/data/test_backup.json
+xiangchuan/work/
