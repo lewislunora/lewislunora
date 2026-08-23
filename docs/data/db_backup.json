@@ -405,8 +405,25 @@
       "created_at": "2026-08-08 14:41:12"
     }
   ],
-  "page_views": [],
-  "geo_cache": [],
+  "page_views": [
+    {
+      "id": 1,
+      "page": "/lewislunora/stock-trading/",
+      "referrer": "",
+      "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36 (compatible; meta-externalagent/1.1 (+https://developers.facebook.com/docs/sharing/webmasters/crawler))",
+      "ip": "57.141.0.67",
+      "country": "United States",
+      "visited_at": "2026-08-23 23:44:26"
+    }
+  ],
+  "geo_cache": [
+    {
+      "ip": "57.141.0.67",
+      "country": "United States",
+      "city": "Ashburn",
+      "cached_at": "2026-08-23 23:44:26"
+    }
+  ],
   "comments": [
     {
       "id": 1,
