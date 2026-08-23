@@ -501,6 +501,15 @@
       "ip": "122.100.112.224",
       "country": "Taiwan",
       "visited_at": "2026-07-21 12:58:01"
+    },
+    {
+      "id": 12,
+      "page": "/product/",
+      "referrer": "",
+      "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36 (compatible; meta-externalagent/1.1 (+https://developers.facebook.com/docs/sharing/webmasters/crawler))",
+      "ip": "57.141.0.51",
+      "country": "United States",
+      "visited_at": "2026-08-20 22:15:15"
     }
   ],
   "geo_cache": [
@@ -527,6 +536,12 @@
       "country": "Taiwan",
       "city": "Taoyuan",
       "cached_at": "2026-07-21 01:01:43"
+    },
+    {
+      "ip": "57.141.0.51",
+      "country": "United States",
+      "city": "Ashburn",
+      "cached_at": "2026-08-20 22:15:15"
     }
   ],
   "comments": [],
@@ -534,7 +549,13 @@
   "feed_posts": [],
   "community_threads": [],
   "community_replies": [],
-  "article_views": [],
+  "article_views": [
+    {
+      "id": 1,
+      "page_path": "/community/",
+      "created_at": "2026-08-20 12:43:17"
+    }
+  ],
   "promo_queue": [
     {
       "id": 1,
@@ -580,6 +601,29 @@
       "error": "",
       "created_at": "2026-08-09 13:19:42",
       "posted_at": null
+    },
+    {
+      "id": 6,
+      "platform": "threads",
+      "body": "我最近和一位一人公司的老闆聊天，發現他每天都在為重複性的工作而頭痛。他需要花費大量時間來處理資料、客戶服務和行銷推廣。經過一番討論，我們發現可以透過 AI 自動化來解決這些問題。透過實施客戶服務聊天機器人、資料自動化處理系統和社交媒體行銷自動化工具，他現在每天可以省下 4 小時的時間，專注在更重要的工作上。這讓他不僅提高了工作效率，也能夠更好地發展自己的事業。如果你也是一位一人公司的老闆，想知道如何運用 AI 自動化來提升工作效率，歡迎預約免費諮詢。\n👇 預約免費 30 分鐘 AI 盤點 👉 lewislunora.onrender.com/",
+      "status": "pending",
+      "error": "",
+      "created_at": "2026-08-14 07:25:57",
+      "posted_at": null
+    },
+    {
+      "id": 7,
+      "platform": "threads",
+      "body": "寫了 10 年 Code，我學到最重要的事：別自己扛全部。多年來，我見過太多開發者為了完成任務而不堪重負，結果不僅工作效率下降，還影響了身體和心理健康。其實，透過 AI 自動化服務，可以大大減輕工作負擔，讓開發者專注於更高層次的任務。例如，自動化測試和代碼審查，可以節省大量時間和精力，同時也能提高工作質量。\n👇 預約免費 30 分鐘 AI 盤點 👉 lewislunora.onrender.com/",
+      "status": "pending",
+      "error": "",
+      "created_at": "2026-08-17 04:40:25",
+      "posted_at": null
     }
-  ]
+  ],
+  "social_identities": [],
+  "conversations": [],
+  "messages": [],
+  "follows": [],
+  "incoming_messages": []
 }
