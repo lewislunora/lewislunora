@@ -1923,7 +1923,8 @@ async def security_and_cache_headers(request, call_next):
     response.headers["Content-Security-Policy"] = csp
 
     # Remove server info
-    response.headers.pop("server", None)
+    if "server" in response.headers:
+        del response.headers["server"]
 
     return response
 
