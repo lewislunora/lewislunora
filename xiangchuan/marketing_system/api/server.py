@@ -43,7 +43,12 @@ from ..services.openclaw_agent import _handle_command as openclaw_handle, _is_au
 from ..services.knowledge_base import get_kb_reply, save_unanswered, get_pending, auto_learn
 from ..services.analytics import track_async, summary as analytics_summary
 
-app = FastAPI(title="翔川 Neo｜曜科技 行銷自動化系統")
+app = FastAPI(
+    title="翔川 Neo｜曜科技 行銷自動化系統",
+    docs_url=None,
+    redoc_url=None,
+    openapi_url=None,
+)
 
 app.add_middleware(
     CORSMiddleware,
@@ -404,7 +409,10 @@ def create_account(data: AccountCreate):
 
 @app.get("/api/accounts")
 def list_accounts():
-    return {"items": fetch("SELECT * FROM accounts ORDER BY created_at DESC")}
+    rows = fetch("SELECT * FROM accounts ORDER BY created_at DESC")
+    for row in rows:
+        row["credentials"] = "***"
+    return {"items": rows}
 
 
 @app.delete("/api/accounts/{account_id}")
@@ -932,18 +940,6 @@ async def dashboard():
         html = html.replace("<head>", "<head>\n" + guard + "\n" + wcss + "\n" + wjs)
     return HTMLResponse(html)
 
-
-@app.get("/api/debug")
-async def debug_info():
-    import os
-    return {
-        "cwd": os.getcwd(),
-        "docs_dir": str(DOCS_DIR),
-        "docs_exists": DOCS_DIR.exists(),
-        "99u_exists": (DOCS_DIR / "99u" / "index.html").exists(),
-        "ai_brand_exists": (DOCS_DIR / "ai-brand" / "index.html").exists(),
-        "files": sorted([str(f) for f in DOCS_DIR.rglob("*.html")])[-20:] if DOCS_DIR.exists() else [],
-    }
 
 
 @app.get("/")
@@ -1897,12 +1893,38 @@ _register_promo_task()
 
 
 @app.middleware("http")
-async def cache_control_headers(request, call_next):
+async def security_and_cache_headers(request, call_next):
     response = await call_next(request)
-    if request.url.path.endswith(".html") or request.url.path == "/":
+    path = request.url.path
+
+    # Cache control
+    if path.endswith(".html") or path == "/":
         response.headers["Cache-Control"] = "no-cache, no-store, must-revalidate"
     else:
         response.headers.setdefault("Cache-Control", "no-cache, max-age=0")
+
+    # Security headers
+    response.headers["Strict-Transport-Security"] = "max-age=31536000; includeSubDomains"
+    response.headers["X-Content-Type-Options"] = "nosniff"
+    response.headers["X-Frame-Options"] = "DENY"
+    response.headers["Referrer-Policy"] = "strict-origin-when-cross-origin"
+    response.headers["Permissions-Policy"] = "camera=(), microphone=(), geolocation=()"
+    response.headers["Cross-Origin-Opener-Policy"] = "same-origin"
+
+    # CSP — allow only own domain + inline styles/scripts (existing site uses them)
+    csp = (
+        "default-src 'self'; "
+        "script-src 'self' 'unsafe-inline' https://accounts.google.com https://cdn.jsdelivr.net; "
+        "style-src 'self' 'unsafe-inline'; "
+        "img-src 'self' data: https:; "
+        "connect-src 'self' https://lewislunora.onrender.com https://accounts.google.com; "
+        "frame-ancestors 'none'"
+    )
+    response.headers["Content-Security-Policy"] = csp
+
+    # Remove server info
+    response.headers.pop("server", None)
+
     return response
 
 
