@@ -263,8 +263,29 @@ def _notify_contact(data: dict):
     try:
         notify_owner("contact", data, url="https://lewislunora.onrender.com/")
     except Exception as e:
-        import logging
-        logging.getLogger(__name__).error(f"Contact notification failed: {e}")
+        logger.error(f"Contact notification failed: {e}")
+
+    # LINE Messaging API direct push
+    try:
+        line_token = os.getenv("LINE_CHANNEL_ACCESS_TOKEN", "")
+        line_chat_id = os.getenv("LINE_CHAT_ID", "")
+        if line_token and line_chat_id:
+            msg = "🔔 新預約諮詢\n"
+            for k, v in [("姓名", "姓名"), ("聯絡方式", "聯絡方式"),
+                         ("公司", "公司"), ("行業別", "行業別"),
+                         ("需求", "需求"), ("備註", "備註")]:
+                val = data.get(k, "").strip()
+                if val:
+                    msg += f"・{v}：{val}\n"
+            import requests as _r
+            _r.post(
+                "https://api.line.me/v2/bot/message/push",
+                headers={"Authorization": f"Bearer {line_token}"},
+                json={"to": line_chat_id, "messages": [{"type": "text", "text": msg}]},
+                timeout=10,
+            )
+    except Exception as e:
+        logger.error(f"LINE push failed: {e}")
 
 @app.post("/api/contact")
 async def contact_form(request: Request):
