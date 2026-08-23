@@ -302,12 +302,23 @@ class SecurityScanner:
             # 檢查是否有未授權可存取的端點
             for path, code in accessible:
                 if code == 200 and "/api/accounts" in path:
-                    self.add_finding(
-                        "HIGH",
-                        f"API 未授權存取: {path}",
-                        "未登入即可存取帳號資料",
-                        "確認所有敏感 API 都有認證保護"
-                    )
+                    # 檢查是否洩漏 credentials
+                    try:
+                        r = requests.get(f"{self.target}{path}", timeout=10)
+                        items = r.json().get("items", [])
+                        creds_exposed = any(
+                            item.get("credentials") not in (None, "", "***")
+                            for item in items
+                        )
+                        if creds_exposed:
+                            self.add_finding(
+                                "HIGH",
+                                f"API 未授權存取: {path}",
+                                "未登入即可存取帳號 credentials",
+                                "確認所有敏感 API 都有認證保護"
+                            )
+                    except Exception:
+                        pass
 
     # ============================
     # 5. 資訊洩漏檢查
