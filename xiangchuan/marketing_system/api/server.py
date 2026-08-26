@@ -1889,6 +1889,173 @@ def roam_run():
     return result
 
 
+# ==============================
+# AI 理想型配對 API
+# ==============================
+
+class BaziRequest(BaseModel):
+    birth_datetime: str  # ISO format: "1990-05-15T14:30:00"
+    gender: str  # "male" or "female"
+    birthplace: Optional[str] = None
+
+
+class MatchingRequest(BaseModel):
+    birth_datetime: str
+    gender: str
+    birthplace: Optional[str] = None
+    preferences: list[str] = []  # 擇偶條件
+    personality: list[str] = []  # 性格特質
+
+
+@app.post("/api/bazi")
+def api_bazi(req: BaziRequest):
+    """八字排盤 API"""
+    from ..services.bazi_engine import calculate_bazi
+    try:
+        result = calculate_bazi(
+            birth_datetime=req.birth_datetime,
+            gender=req.gender,
+            birthplace=req.birthplace,
+        )
+        return result.to_dict()
+    except Exception as e:
+        raise HTTPException(400, str(e))
+
+
+@app.post("/api/matching")
+async def api_matching(req: MatchingRequest):
+    """AI 理想型配對分析"""
+    from ..services.bazi_engine import calculate_bazi
+    from ..config import GROQ_API_KEY, GROQ_MODEL
+    import groq
+
+    # 1. 計算八字
+    try:
+        bazi = calculate_bazi(
+            birth_datetime=req.birth_datetime,
+            gender=req.gender,
+            birthplace=req.birthplace,
+        )
+    except Exception as e:
+        raise HTTPException(400, f"八字計算錯誤: {str(e)}")
+
+    bazi_dict = bazi.to_dict()
+
+    # 2. 用 AI 分析
+    if not GROQ_API_KEY:
+        raise HTTPException(500, "GROQ_API_KEY 未設定")
+
+    preferences_text = "、".join(req.preferences) if req.preferences else "未指定"
+    personality_text = "、".join(req.personality) if req.personality else "未指定"
+
+    prompt = f"""你是專業的命理分析師與情感顧問。根據以下八字資料，進行深度分析。
+
+## 八字資料
+- 四柱：{bazi_dict['pillars']['year']} {bazi_dict['pillars']['month']} {bazi_dict['pillars']['day']} {bazi_dict['pillars']['hour']}
+- 日主：{bazi_dict['day_master']['name']}（{bazi_dict['day_master']['element']}，{bazi_dict['day_master']['polarity']}）
+- 五行分數：{json.dumps(bazi_dict['five_elements']['scores'], ensure_ascii=False)}
+- 十神：{json.dumps([g['ten_god'] for g in bazi_dict['ten_gods']], ensure_ascii=False)}
+- 日主強弱：{'偏強' if bazi_dict['strength_analysis']['is_strong'] else '偏弱'}
+- 地支關係：{json.dumps([r['description'] for r in bazi_dict['relationships']], ensure_ascii=False)}
+
+## 用戶擇偶條件
+{preferences_text}
+
+## 用戶性格特質
+{personality_text}
+
+## 請分析以下內容（使用 JSON 格式回傳）：
+
+{{
+  "personality_analysis": "根據八字分析這個人的性格特質（5-8 點，每點一句話，用換行分隔，不要用 JSON 陣列）",
+  "ideal_partner": "根據八字分析的理想型畫像（具體描述外表氣質、性格、價值觀、生活方式，用換行分隔段落）",
+  "matching_dimensions": {{
+    "values": {{ "score": 0-100, "analysis": "價值觀契合度分析" }},
+    "lifestyle": {{ "score": 0-100, "analysis": "生活風格匹配分析" }},
+    "communication": {{ "score": 0-100, "analysis": "溝通方式相容分析" }},
+    "emotion": {{ "score": 0-100, "analysis": "情感需求互補分析" }}
+  }},
+  "conflicts": ["潛在衝突點1", "潛在衝突點2"],
+  "meeting_suggestion": "建議的認識管道與方式（用換行分隔段落）",
+  "overall_score": 0-100,
+  "overall_summary": "整體分析總結（2-3 句話）"
+}}
+
+注意：
+1. 分析要具體，不要空泛
+2. 結合八字五行與十神的特性
+3. 如果用戶有提供擇偶條件和性格特質，要融入分析中
+4. 保持專業但溫暖的語氣
+5. 只回傳 JSON，不要有其他文字"""
+
+    try:
+        client = groq.Client(api_key=GROQ_API_KEY)
+        response = client.chat.completions.create(
+            model=GROQ_MODEL,
+            messages=[{"role": "user", "content": prompt}],
+            max_tokens=2048,
+            temperature=0.7,
+        )
+        ai_text = response.choices[0].message.content.strip()
+
+        # 嘗試解析 JSON
+        # 有時 AI 會在 JSON 前後加文字，嘗試提取
+        if "```json" in ai_text:
+            ai_text = ai_text.split("```json")[1].split("```")[0].strip()
+        elif "```" in ai_text:
+            ai_text = ai_text.split("```")[1].split("```")[0].strip()
+
+        ai_result = json.loads(ai_text)
+
+        # 修正：AI 有時會把完整 JSON 當字串放在某個欄位裡
+        # 嘗試找到包含完整結構的欄位並展開
+        for key in list(ai_result.keys()):
+            val = ai_result[key]
+            if isinstance(val, str) and val.strip().startswith("{"):
+                try:
+                    nested = json.loads(val)
+                    if isinstance(nested, dict) and len(nested) > 2:
+                        ai_result = nested
+                        break
+                except (json.JSONDecodeError, ValueError):
+                    pass
+    except json.JSONDecodeError as e:
+        # 如果 JSON 解析失敗，回傳原始文字
+        ai_result = {
+            "personality_analysis": ai_text,
+            "ideal_partner": "",
+            "matching_dimensions": {},
+            "conflicts": [],
+            "meeting_suggestion": "",
+            "overall_score": 0,
+            "overall_summary": f"AI 分析完成，但格式解析失敗。原始回應：{ai_text[:500]}",
+        }
+    except Exception as e:
+        raise HTTPException(500, f"AI 分析錯誤: {str(e)}")
+
+    # 3. 儲存用戶資料
+    try:
+        execute(
+            "INSERT INTO matching_records (birth_datetime, gender, bazi_data, ai_result, preferences, personality) VALUES (?, ?, ?, ?, ?, ?)",
+            [
+                req.birth_datetime,
+                req.gender,
+                json.dumps(bazi_dict, ensure_ascii=False),
+                json.dumps(ai_result, ensure_ascii=False),
+                json.dumps(req.preferences, ensure_ascii=False),
+                json.dumps(req.personality, ensure_ascii=False),
+            ],
+        )
+    except Exception:
+        pass  # 儲存失敗不影響回應
+
+    # 4. 回傳結果
+    return {
+        "bazi": bazi_dict,
+        "analysis": ai_result,
+    }
+
+
 _register_promo_task()
 
 

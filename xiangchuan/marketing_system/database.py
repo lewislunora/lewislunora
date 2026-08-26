@@ -379,6 +379,17 @@ def init_db():
             UNIQUE(platform, external_id)
         );
 
+        CREATE TABLE IF NOT EXISTS matching_records (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            birth_datetime TEXT NOT NULL,
+            gender TEXT NOT NULL,
+            bazi_data TEXT DEFAULT '{}',
+            ai_result TEXT DEFAULT '{}',
+            preferences TEXT DEFAULT '[]',
+            personality TEXT DEFAULT '[]',
+            created_at TEXT DEFAULT (datetime('now'))
+        );
+
         INSERT OR IGNORE INTO ai_templates (name, prompt_template, platform, category) VALUES
         ('社群貼文', '以{language}寫一篇關於{topic}的社群貼文，語氣{style}，長度約{length}字。加入3-5個相關hashtag。', 'facebook', 'social'),
         ('品牌文章', '以{language}寫一篇關於{topic}的品牌部落格文章，字數約{length}字，語氣{style}。包含引言、主體和結語。', 'blog', 'content'),

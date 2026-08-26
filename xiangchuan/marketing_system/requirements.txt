@@ -13,3 +13,4 @@ python-jose[cryptography]
 passlib[bcrypt]
 bcrypt
 sqlalchemy
+tianji>=0.3.0

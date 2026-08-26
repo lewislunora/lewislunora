@@ -26,7 +26,7 @@ PLATFORMS = {
 }
 
 GROQ_API_KEY = os.environ.get("GROQ_API_KEY", "")
-GROQ_MODEL = "llama-3.3-70b-versatile"
+GROQ_MODEL = "openai/gpt-oss-120b"
 GROQ_MAX_TOKENS = 2048
 
 TELEGRAM_BOT_TOKEN = os.environ.get("TELEGRAM_BOT_TOKEN", "8653211794:AAG08xDDj0UDkX18TE60BQSVs-bwwVh8AH8")

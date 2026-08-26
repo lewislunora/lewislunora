@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI 理想型配對｜翔川 Neo</title>
+<meta name="description" content="用 AI 分析你的八字，找出你的理想型。免費配對報告，了解你的性格與完美對象。">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--bg:#0a0a0a;--card:#111;--border:#222;--accent:#e74c3c;--accent2:#f39c12;--accent3:#3498db;--accent4:#2ecc71;--text:#ddd;--muted:#888;--font:-apple-system,'Microsoft YaHei',sans-serif}
+body{font-family:var(--font);background:var(--bg);color:var(--text);line-height:1.6;min-height:100vh}
+.container{max-width:800px;margin:0 auto;padding:20px}
+
+/* Nav */
+nav{background:#111;border-bottom:1px solid var(--border);padding:12px 20px;position:sticky;top:0;z-index:100}
+nav .inner{max-width:800px;margin:0 auto;display:flex;justify-content:space-between;align-items:center}
+nav a{color:var(--text);text-decoration:none;font-weight:600;font-size:16px}
+nav a:hover{color:var(--accent)}
+
+/* Hero */
+.hero{text-align:center;padding:40px 20px}
+.hero h1{font-size:2.2em;margin-bottom:10px;background:linear-gradient(135deg,var(--accent),var(--accent2));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.hero .sub{color:var(--muted);font-size:1.1em}
+
+/* Form */
+.form-card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:30px;margin:20px 0}
+.form-group{margin-bottom:20px}
+.form-group label{display:block;font-weight:600;margin-bottom:8px;color:var(--accent2)}
+.form-group input,.form-group select,.form-group textarea{width:100%;padding:12px;border:1px solid var(--border);border-radius:8px;background:#1a1a1a;color:var(--text);font-size:15px;font-family:var(--font)}
+.form-group input:focus,.form-group select:focus,.form-group textarea:focus{outline:none;border-color:var(--accent)}
+.form-group textarea{resize:vertical;min-height:80px}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:15px}
+.form-hint{font-size:12px;color:var(--muted);margin-top:5px}
+
+/* Button */
+.btn{display:block;width:100%;padding:15px;border:none;border-radius:8px;font-size:17px;font-weight:600;cursor:pointer;font-family:var(--font);transition:all 0.3s}
+.btn-primary{background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff}
+.btn-primary:hover{opacity:0.9;transform:translateY(-1px)}
+.btn-primary:disabled{opacity:0.5;cursor:not-allowed;transform:none}
+.btn-back{background:transparent;border:1px solid var(--border);color:var(--text);margin-top:15px}
+.btn-back:hover{border-color:var(--accent)}
+
+/* Loading */
+.loading{display:none;text-align:center;padding:60px 20px}
+.loading.active{display:block}
+.spinner{width:50px;height:50px;border:3px solid var(--border);border-top-color:var(--accent);border-radius:50%;animation:spin 1s linear infinite;margin:0 auto 20px}
+@keyframes spin{to{transform:rotate(360deg)}}
+.loading-text{color:var(--muted);font-size:15px}
+
+/* Report */
+.report{display:none}
+.report.active{display:block}
+.report-header{text-align:center;padding:30px;background:linear-gradient(135deg,#1a1a2e,#16213e);border-radius:12px;margin-bottom:20px;border:1px solid var(--accent)}
+.report-header h2{color:var(--accent);font-size:1.8em;margin-bottom:5px}
+.report-header .score{font-size:3em;font-weight:bold;color:var(--accent2)}
+
+.section{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:25px;margin:20px 0}
+.section h3{color:var(--accent2);font-size:1.2em;margin-bottom:15px;padding-bottom:8px;border-bottom:1px solid var(--border)}
+.section p{margin:10px 0}
+.section ul{margin:10px 0;padding-left:20px}
+.section li{margin:8px 0}
+
+/* Bazi Card */
+.bazi-card{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin:15px 0}
+.pillar{text-align:center;padding:15px;background:#1a1a1a;border-radius:8px;border:1px solid var(--border)}
+.pillar .label{font-size:12px;color:var(--muted);margin-bottom:5px}
+.pillar .char{font-size:1.5em;font-weight:bold;color:var(--accent)}
+.pillar .element{font-size:12px;color:var(--accent2)}
+
+/* Five Elements */
+.elements-bar{display:flex;gap:8px;margin:15px 0}
+.element-item{flex:1;text-align:center;padding:10px;background:#1a1a1a;border-radius:8px}
+.element-item .name{font-size:14px;font-weight:600;margin-bottom:5px}
+.element-item .bar{height:6px;background:var(--border);border-radius:3px;overflow:hidden}
+.element-item .fill{height:100%;border-radius:3px;transition:width 0.5s}
+.element-item .score{font-size:12px;color:var(--muted);margin-top:5px}
+
+/* Radar Chart */
+.radar-container{display:flex;justify-content:center;margin:20px 0}
+.radar{position:relative;width:250px;height:250px}
+.radar-bg{position:absolute;inset:0;display:flex;align-items:center;justify-content:center}
+.radar-ring{position:absolute;border:1px solid var(--border);border-radius:50%}
+.radar-label{position:absolute;font-size:12px;color:var(--muted);white-space:nowrap}
+.radar-score{position:absolute;width:20px;height:20px;background:var(--accent);border-radius:50%;transform:translate(-50%,-50%);transition:all 0.5s}
+
+/* Tags */
+.tag{display:inline-block;padding:4px 12px;border-radius:20px;font-size:13px;margin:4px}
+.tag-conflict{background:#e74c3c22;color:var(--accent);border:1px solid var(--accent)}
+.tag-positive{background:#2ecc7122;color:var(--accent4);border:1px solid var(--accent4)}
+
+/* Disclaimer */
+.disclaimer{text-align:center;padding:20px;color:var(--muted);font-size:13px;border-top:1px solid var(--border);margin-top:30px}
+
+@media(max-width:600px){
+  .form-row{grid-template-columns:1fr}
+  .bazi-card{grid-template-columns:repeat(2,1fr)}
+  .hero h1{font-size:1.6em}
+}
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="inner">
+    <a href="/">翔川 Neo</a>
+    <a href="/service-terms.html">服務方案</a>
+  </div>
+</nav>
+
+<div class="container">
+
+<!-- Hero -->
+<div class="hero">
+  <h1>AI 理想型配對</h1>
+  <div class="sub">用 AI 分析你的八字，找出你的理想型</div>
+</div>
+
+<!-- Form -->
+<div class="form-card" id="formCard">
+  <div class="form-row">
+    <div class="form-group">
+      <label>出生日期</label>
+      <input type="date" id="birthDate" required>
+    </div>
+    <div class="form-group">
+      <label>出生時間</label>
+      <input type="time" id="birthTime" required>
+    </div>
+  </div>
+
+  <div class="form-row">
+    <div class="form-group">
+      <label>性別</label>
+      <select id="gender" required>
+        <option value="">請選擇</option>
+        <option value="male">男</option>
+        <option value="female">女</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label>出生地</label>
+      <select id="birthplace">
+        <option value="">請選擇（可選）</option>
+        <option value="taipei">台北</option>
+        <option value="taichung">台中</option>
+        <option value="kaohsiung">高雄</option>
+        <option value="tainan">台南</option>
+        <option value="other">其他</option>
+      </select>
+    </div>
+  </div>
+
+  <div class="form-group">
+    <label>你的擇偶條件（選 3 個最重要的）</label>
+    <textarea id="preferences" placeholder="例如：穩定的工作、善良體貼、喜歡運動、有幽默感、重視家庭..."></textarea>
+    <div class="form-hint">輸入你最看重的條件，每行一個</div>
+  </div>
+
+  <div class="form-group">
+    <label>你的性格特質（選 3 個最符合的）</label>
+    <textarea id="personality" placeholder="例如：內向安靜、喜歡冒險、做事仔細、愛聊天、容易緊張..."></textarea>
+    <div class="form-hint">描述你覺得最像自己的特質</div>
+  </div>
+
+  <button class="btn btn-primary" onclick="startMatching()" id="submitBtn">
+    分析我的理想型
+  </button>
+</div>
+
+<!-- Loading -->
+<div class="loading" id="loading">
+  <div class="spinner"></div>
+  <div class="loading-text">正在分析你的八字命盤...</div>
+  <div class="loading-text" style="margin-top:10px;color:#666">AI 正在計算你的理想型</div>
+</div>
+
+<!-- Report -->
+<div class="report" id="report">
+  <div class="report-header">
+    <h2>你的理想型配對報告</h2>
+    <div class="score" id="overallScore">--</div>
+    <div style="color:var(--muted)">整體契合度</div>
+  </div>
+
+  <!-- 八字概覽 -->
+  <div class="section">
+    <h3>你的八字命盤</h3>
+    <div class="bazi-card" id="baziCard"></div>
+    <div id="dayMasterInfo" style="margin-top:15px"></div>
+  </div>
+
+  <!-- 五行分析 -->
+  <div class="section">
+    <h3>五行分佈</h3>
+    <div class="elements-bar" id="elementsBar"></div>
+    <div id="strengthInfo" style="margin-top:10px"></div>
+  </div>
+
+  <!-- 性格分析 -->
+  <div class="section">
+    <h3>性格深度解讀</h3>
+    <div id="personalityAnalysis"></div>
+  </div>
+
+  <!-- 理想型畫像 -->
+  <div class="section">
+    <h3>你的理想型畫像</h3>
+    <div id="idealPartner"></div>
+  </div>
+
+  <!-- 配對維度 -->
+  <div class="section">
+    <h3>配對維度分析</h3>
+    <div id="matchingDimensions"></div>
+  </div>
+
+  <!-- 潛在衝突 -->
+  <div class="section">
+    <h3>潛在衝突點</h3>
+    <div id="conflicts"></div>
+  </div>
+
+  <!-- 建議 -->
+  <div class="section">
+    <h3>建議的認識管道</h3>
+    <div id="meetingSuggestion"></div>
+  </div>
+
+  <!-- 免責聲明 -->
+  <div class="disclaimer">
+    ⚠️ 本報告僅供娛樂參考，不構成任何情感或婚姻建議。<br>
+    八字分析結合 AI 技術，結果僅代表一種可能的解讀。
+  </div>
+
+  <button class="btn btn-back" onclick="resetForm()">重新分析</button>
+</div>
+
+</div>
+
+<script>
+const API = location.hostname.includes('github.io')
+  ? 'https://lewislunora.onrender.com'
+  : '';
+
+function parseList(text) {
+  if (!text) return [];
+  return text.split('\n').map(s => s.trim()).filter(s => s.length > 0);
+}
+
+async function startMatching() {
+  const date = document.getElementById('birthDate').value;
+  const time = document.getElementById('birthTime').value;
+  const gender = document.getElementById('gender').value;
+
+  if (!date || !time || !gender) {
+    alert('請填寫出生日期、時間和性別');
+    return;
+  }
+
+  const preferences = parseList(document.getElementById('preferences').value);
+  const personality = parseList(document.getElementById('personality').value);
+
+  // Show loading
+  document.getElementById('formCard').style.display = 'none';
+  document.getElementById('loading').classList.add('active');
+
+  try {
+    const res = await fetch(API + '/api/matching', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        birth_datetime: `${date}T${time}:00`,
+        gender: gender,
+        preferences: preferences,
+        personality: personality,
+      }),
+    });
+
+    if (!res.ok) {
+      const err = await res.text();
+      throw new Error(err);
+    }
+
+    const data = await res.json();
+    renderReport(data);
+  } catch (e) {
+    alert('分析失敗：' + e.message);
+    document.getElementById('formCard').style.display = 'block';
+    document.getElementById('loading').classList.remove('active');
+  }
+}
+
+function renderReport(data) {
+  document.getElementById('loading').classList.remove('active');
+  document.getElementById('report').classList.add('active');
+
+  const bazi = data.bazi;
+  const analysis = data.analysis;
+
+  // Overall score
+  document.getElementById('overallScore').textContent = (analysis.overall_score || 0) + '%';
+
+  // Bazi card
+  const pillars = bazi.pillars;
+  const pillarNames = { year: '年柱', month: '月柱', day: '日柱', hour: '時柱' };
+  let baziHtml = '';
+  for (const [key, name] of Object.entries(pillarNames)) {
+    baziHtml += `
+      <div class="pillar">
+        <div class="label">${name}</div>
+        <div class="char">${pillars[key]}</div>
+        <div class="element">${pillars[key + '_element']}</div>
+      </div>`;
+  }
+  document.getElementById('baziCard').innerHTML = baziHtml;
+
+  // Day master info
+  const dm = bazi.day_master;
+  document.getElementById('dayMasterInfo').innerHTML = `
+    <p><strong>日主：</strong>${dm.name}（${dm.element}，${dm.polarity === '阳' ? '陽' : '陰'}）</p>
+    <p><strong>性格特質：</strong>${dm.traits.join('、')}</p>`;
+
+  // Five elements
+  const scores = bazi.five_elements.scores;
+  const colors = { '木': '#2ecc71', '火': '#e74c3c', '土': '#f39c12', '金': '#3498db', '水': '#9b59b6' };
+  const maxScore = Math.max(...Object.values(scores));
+  let elementsHtml = '';
+  for (const [el, score] of Object.entries(scores)) {
+    const pct = maxScore > 0 ? (score / maxScore * 100) : 0;
+    elementsHtml += `
+      <div class="element-item">
+        <div class="name" style="color:${colors[el]}">${el}</div>
+        <div class="bar"><div class="fill" style="width:${pct}%;background:${colors[el]}"></div></div>
+        <div class="score">${score.toFixed(1)}</div>
+      </div>`;
+  }
+  document.getElementById('elementsBar').innerHTML = elementsHtml;
+
+  // Strength
+  const strength = bazi.strength_analysis;
+  document.getElementById('strengthInfo').innerHTML = `
+    <p><strong>日主強弱：</strong>${strength.is_strong ? '偏強' : '偏弱'}</p>
+    <p><strong>生助元素：</strong>${strength.help_elements.join('、')}（分數 ${strength.help_score}）</p>
+    <p><strong>剋洩元素：</strong>${strength.drain_elements.join('、')}（分數 ${strength.drain_score}）</p>`;
+
+  // Personality
+  document.getElementById('personalityAnalysis').innerHTML = formatText(analysis.personality_analysis);
+
+  // Ideal partner
+  document.getElementById('idealPartner').innerHTML = formatText(analysis.ideal_partner);
+
+  // Matching dimensions
+  const dims = analysis.matching_dimensions || {};
+  let dimsHtml = '<div style="display:grid;grid-template-columns:1fr 1fr;gap:15px">';
+  const dimNames = { values: '價值觀', lifestyle: '生活風格', communication: '溝通方式', emotion: '情感需求' };
+  const dimColors = { values: '#e74c3c', lifestyle: '#f39c12', communication: '#3498db', emotion: '#2ecc71' };
+  for (const [key, name] of Object.entries(dimNames)) {
+    const dim = dims[key] || { score: 0, analysis: '' };
+    dimsHtml += `
+      <div style="background:#1a1a1a;padding:15px;border-radius:8px;border-left:4px solid ${dimColors[key]}">
+        <div style="font-weight:600;margin-bottom:5px">${name}</div>
+        <div style="font-size:24px;font-weight:bold;color:${dimColors[key]}">${dim.score}%</div>
+        <div style="font-size:13px;color:var(--muted);margin-top:5px">${dim.analysis}</div>
+      </div>`;
+  }
+  dimsHtml += '</div>';
+  document.getElementById('matchingDimensions').innerHTML = dimsHtml;
+
+  // Conflicts
+  const conflicts = analysis.conflicts || [];
+  document.getElementById('conflicts').innerHTML = conflicts.length > 0
+    ? conflicts.map(c => `<span class="tag tag-conflict">${c}</span>`).join('')
+    : '<p style="color:var(--accent4)">目前沒有明顯的衝突點</p>';
+
+  // Meeting suggestion
+  document.getElementById('meetingSuggestion').innerHTML = formatText(analysis.meeting_suggestion);
+
+  // Scroll to report
+  document.getElementById('report').scrollIntoView({ behavior: 'smooth' });
+}
+
+function formatText(text) {
+  if (!text) return '';
+  return text.split('\n').filter(s => s.trim()).map(s => `<p>${s}</p>`).join('');
+}
+
+function resetForm() {
+  document.getElementById('report').classList.remove('active');
+  document.getElementById('formCard').style.display = 'block';
+  document.getElementById('report').scrollIntoView({ behavior: 'smooth' });
+}
+</script>
+
+</body>
+</html>
