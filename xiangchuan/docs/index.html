@@ -12,7 +12,7 @@
 <link rel="canonical" href="/">
 <meta property="og:title" content="翔川 Neo｜AI 自動化幫一人公司每天省 4 小時">
 <meta property="og:description" content="專為一人公司設計的 AI 自動化系統。AI 客服 + 行銷自動化 + 技術架構，讓你專注賺錢。">
-<meta property="og:image" content="/assets/og-image.png">
+<meta property="og:image" content="/assets/og-image.svg">
 <meta property="og:url" content="/">
 <meta property="og:type" content="website">
 <meta name="twitter:card" content="summary_large_image">
@@ -418,8 +418,8 @@ footer .wrap{display:flex;flex-wrap:wrap;gap:.8rem;justify-content:space-between
 @media(max-width:768px){
   .hero{padding-top:5rem;padding-bottom:1.8rem}
   .svcs-bento{grid-template-columns:1fr}
-  .plans-grid{grid-template-columns:1fr}
   .svcs-bento .svc-card.featured{grid-column:auto;grid-row:auto}
+  .plans-grid{grid-template-columns:1fr}
   .svc-wide{grid-column:auto;flex-direction:column;align-items:flex-start}
   .svc-wide .svc-meta{margin-left:auto}
   .founder-section{grid-template-columns:1fr;text-align:center;justify-items:center}
@@ -446,18 +446,21 @@ footer .wrap{display:flex;flex-wrap:wrap;gap:.8rem;justify-content:space-between
 
 <nav>
   <div class="nav-brand"><em>翔川 Neo</em></div>
-  <div class="nav-links">
-    <a href="product/">方案</a>
-    <a href="ai-code-review/">AI 審碼</a>
-    <a href="guides/">知識</a>
-    <a href="community/">社群討論</a>
-    <a href="social/" style="color:#7b68ee;font-weight:600">交友聊天</a>
-    <a href="#about">關於我</a>
-    <a href="#contact" style="color:#00d4ff;font-weight:600">預約諮詢</a>
-    <select class="lang-select" onchange="switchLang(this.value)">
-      <option value="zh-TW">繁中</option>
-      <option value="en">EN</option>
-    </select>
+  <div class="nav-right">
+    <div class="nav-links">
+      <a href="product/">方案</a>
+      <a href="ai-code-review/">AI 審碼</a>
+      <a href="matching.html">AI 配對</a>
+      <a href="games/">遊戲</a>
+      <a href="guides/">知識</a>
+      <a href="#about">關於我</a>
+      <a href="#contact" style="color:#00d4ff;font-weight:600">預約諮詢</a>
+      <select class="lang-select" onchange="switchLang(this.value)">
+        <option value="zh-TW">繁中</option>
+        <option value="en">EN</option>
+      </select>
+    </div>
+    <div class="gsi-container" id="gsi-user-area"></div>
   </div>
 </nav>
 
@@ -786,8 +789,6 @@ footer .wrap{display:flex;flex-wrap:wrap;gap:.8rem;justify-content:space-between
   });
 })();
 </script>
-
-<div class="gsi-container" id="gsi-user-area"></div>
 
 <button class="chat-bubble" onclick="toggleChat()" id="chatBubble" title="AI 客服聊天">💬</button>
 <div class="chat-panel" id="chatPanel">

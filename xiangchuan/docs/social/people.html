@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>找人 — 翔川社交</title>
+<meta property="og:title" content="找人 — 翔川社交">
+<meta property="og:description" content="認識新朋友，一起聊天">
+<link rel="stylesheet" href="/css/social.css">
+<style>
+.search{display:flex;gap:10px;margin-bottom:16px}
+.search input{flex:1}
+.user{display:flex;gap:12px;align-items:center}
+.user .ui{flex:1;min-width:0}
+.user .ui .nm{font-weight:700;color:#f1f5f9}
+.user .ui .bio{font-size:13px;color:#94a3b8;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.user .act{display:flex;gap:8px;flex:none}
+.follow-btn.following{background:#1e2740;border:1px solid #2b3446;color:#94a3b8}
+</style>
+</head>
+<body>
+<nav class="sn-top"><div class="sn-inner" id="social-nav"></div></nav>
+<div class="sn-container">
+  <div class="search">
+    <input type="text" id="q" placeholder="🔍 搜尋使用者名稱或 Email…" onkeydown="if(event.key==='Enter')search()">
+    <button class="btn-pri" onclick="search()">搜尋</button>
+  </div>
+  <div id="peopleList"><div class="empty">載入中…</div></div>
+  <div class="empty" id="emptyState" hidden>
+    <div class="icon">🤝</div><p>還沒有其他成員，先登入、邀請朋友一起來吧！<br>分享這個頁面給朋友就能組隊聊天</p>
+  </div>
+</div>
+<script src="/js/social.js"></script>
+<script>
+(function () {
+  'use strict';
+  Social.renderNav('/social/people.html');
+  var list = document.getElementById('peopleList');
+
+  function search() {
+    var q = document.getElementById('q').value.trim();
+    list.innerHTML = '<div class="empty">搜尋中…</div>';
+    Social.api('/api/users?q=' + encodeURIComponent(q) + '&per_page=50').then(render);
+  }
+
+  function render(r) {
+    var items = r.data.items || [];
+    document.getElementById('emptyState').hidden = items.length > 0;
+    if (!items.length) { list.innerHTML = ''; return; }
+    list.innerHTML = items.map(function (u) {
+      return '<div class="card user">' + Social.avatarHtml(u, 52) +
+        '<div class="ui"><div class="nm">' + Social.esc(u.name) + '</div>' +
+        '<div class="bio">' + Social.esc(u.bio || (u.email || '')) + '</div></div>' +
+        '<div class="act">' +
+        '<a class="btn-ghost" href="/social/profile.html?id=' + u.id + '">個人頁</a>' +
+        '<button class="btn-pri follow-btn ' + (u.is_following ? 'following' : '') + '" id="fb-' + u.id + '" onclick="toggleFollow(' + u.id + ', this)">' +
+        (u.is_following ? '✓ 追蹤中' : '+ 追蹤') + '</button>' +
+        '<a class="btn-pri" href="/social/chat.html?uid=' + u.id + '">💬 聊天</a>' +
+        '</div></div>';
+    }).join('');
+  }
+
+  window.toggleFollow = function (uid, btn) {
+    var following = btn.textContent.indexOf('追蹤中') >= 0;
+    Social.requireLogin().then(function () {
+      return Social.api('/api/users/' + uid + (following ? '/follow' : '/follow'),
+        { method: following ? 'DELETE' : 'POST', body: {} });
+    }).then(function (r) {
+      if (!r.ok) { Social.notify('請先登入'); return; }
+      btn.textContent = following ? '+ 追蹤' : '✓ 追蹤中';
+      btn.classList.toggle('following', following);
+    });
+  };
+
+  search();
+})();
+</script>
+</body>
+</html>

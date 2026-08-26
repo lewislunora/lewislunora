@@ -1,0 +1,183 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>登入 — 翔川 Neo｜曜科技</title>
+<link rel="icon" href="favicon.png">
+<style>
+:root{color-scheme:dark}
+*{box-sizing:border-box;margin:0;padding:0}
+body{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;padding:32px 16px;
+background:radial-gradient(1200px 600px at 20% -10%,#1e293b,#0f172a 60%);color:#e2e8f0;font-family:system-ui,-apple-system,'Segoe UI',sans-serif}
+main{width:100%;max-width:400px;display:flex;flex-direction:column;gap:16px}
+.card{background:#111827;border:1px solid #2b3446;border-radius:16px;padding:40px 36px 28px;box-shadow:0 18px 50px rgba(0,0,0,.45)}
+.card.sub{padding:20px 36px;text-align:center;font-size:15px;color:#cbd5e1}
+.card.sub a{color:#f59e0b;font-weight:600;text-decoration:none}
+.logo{display:flex;flex-direction:column;align-items:center;gap:10px;margin-bottom:30px}
+.logo img{width:52px;height:52px;border-radius:14px}
+.logo h1{font-size:21px;font-weight:700;letter-spacing:.3px}
+.social{display:flex;flex-direction:column;gap:10px}
+.btn{display:flex;align-items:center;justify-content:center;gap:10px;width:100%;padding:12px 14px;border:none;border-radius:10px;font-size:14.5px;font-weight:600;color:#fff;cursor:pointer;text-decoration:none;transition:transform .12s ease,filter .12s ease}
+.btn:hover{filter:brightness(1.08);transform:translateY(-1px)}
+.btn .ic{width:22px;height:22px;border-radius:6px;display:inline-flex;align-items:center;justify-content:center;background:rgba(255,255,255,.16);font-size:12px;font-weight:700;flex:none;line-height:1}
+.btn-google{background:#fff;color:#1f2937;border:1px solid #e2e8f0}.btn-google .ic{color:#ea4335;background:#f1f5f9}
+.btn-facebook{background:#1877f2}.btn-facebook .ic{background:rgba(0,0,0,.15)}
+.btn-instagram{background:linear-gradient(45deg,#f09433,#e6683c,#dc2743,#cc2366,#bc1888)}.btn-instagram .ic{background:rgba(0,0,0,.15)}
+.btn-line{background:#06c755}.btn-line .ic{background:rgba(0,0,0,.12)}
+.btn-telegram{background:#229ed9}.btn-telegram .ic{background:rgba(0,0,0,.14)}
+.divider{display:flex;align-items:center;gap:14px;color:#64748b;font-size:12px;margin:26px 0}
+.divider::before,.divider::after{content:"";flex:1;height:1px;background:#2b3446}
+label{display:block;font-size:13px;color:#94a3b8;margin:14px 0 6px}
+input{width:100%;padding:12px 14px;border:1px solid #2b3446;border-radius:10px;background:#0b1120;color:#e2e8f0;font-size:15px;outline:none;transition:border-color .15s}
+input:focus{border-color:#f59e0b}
+.btn-primary{background:linear-gradient(90deg,#f59e0b,#f97316);color:#fff;padding:13px;font-size:15px;margin-top:20px}
+.btn-primary:disabled{opacity:.5;cursor:not-allowed;transform:none}
+.hint{font-size:12px;color:#64748b;margin-top:14px;text-align:center}
+.msg{margin-top:14px;font-size:14px;text-align:center;display:none}
+.msg.err{color:#f87171}.msg.ok{color:#4ade80}
+.legal{margin-top:auto;padding-top:22px;font-size:12px;color:#64748b;text-align:center;line-height:1.8}
+[hidden]{display:none!important}
+.avatar{width:72px;height:72px;border-radius:50%;object-fit:cover;margin:0 auto 16px;display:block;border:2px solid #334155}
+.welcome{text-align:center}
+.welcome .nm{font-size:20px;font-weight:700}
+.welcome .em{color:#94a3b8;font-size:14px;margin-top:6px}
+.welcome .prov{display:inline-block;margin-top:14px;font-size:12px;color:#64748b;border:1px solid #2b3446;border-radius:999px;padding:4px 12px}
+.back{display:inline-block;margin-top:16px;color:#38bdf8;font-size:13px;text-decoration:none}
+</style>
+</head>
+<body>
+<main>
+  <div class="card" id="login-card">
+    <div data-auth="out">
+      <div class="logo">
+        <img src="favicon.png" alt="翔川 Neo">
+        <h1>翔川 Neo</h1>
+      </div>
+
+      <div id="social-btns" class="social"></div>
+
+      <div class="divider">或</div>
+
+      <div style="display:none" id="email-mode-reg">
+        <label>Email</label><input id="reg-email" type="email" placeholder="you@example.com" autocomplete="email">
+        <label>密碼</label><input id="reg-pass" type="password" placeholder="至少 6 碼" autocomplete="new-password">
+      </div>
+      <div id="email-mode-login">
+        <label>Email</label><input id="login-email" type="email" placeholder="you@example.com" autocomplete="email">
+        <label>密碼</label><input id="login-pass" type="password" placeholder="你的密碼" autocomplete="current-password">
+      </div>
+
+      <button class="btn btn-primary" id="btn-submit">登入</button>
+      <div class="msg" id="auth-msg"></div>
+      <p class="hint">登入即表示你同意我們的《使用條款》與《隱私權政策》</p>
+    </div>
+
+    <div data-auth="in" hidden>
+      <div class="welcome">
+        <img class="avatar" data-user-avatar alt="" onerror="this.style.display='none'">
+        <div class="nm" data-user-name></div>
+        <div class="em" data-user-email></div>
+      </div>
+      <button class="btn btn-ghost" data-action="logout" style="background:#334155;margin-top:22px">登出</button>
+    </div>
+  </div>
+
+  <div class="card sub" data-auth="out">
+    <span id="sub-text">還沒有帳號？<a href="#" id="btn-toggle">註冊</a></span>
+  </div>
+
+  <div class="card sub" data-auth="in" hidden>
+    <a href="index.html" class="back">← 回首頁</a>
+  </div>
+
+  <div class="legal" data-auth="out">翔川 Neo｜曜科技 · 使用條款 · 隱私權政策</div>
+</main>
+
+<script src="js/auth.js"></script>
+<script>
+(function () {
+  'use strict';
+  var params = new URLSearchParams(location.search);
+  var next = params.get('next') || location.origin + (window.Auth.SITE_BASE || '/');
+  var regMode = false;
+  var emailInput = document.getElementById('login-email');
+
+  function showMsg(text, ok) {
+    var el = document.getElementById('auth-msg');
+    el.style.display = 'block';
+    el.className = 'msg ' + (ok ? 'ok' : 'err');
+    el.textContent = text;
+  }
+
+  function setToken(token) {
+    window.location.href = Auth.API_ORIGIN + '/api/auth/set-cookie?token=' + encodeURIComponent(token) + '&next=' + encodeURIComponent(next);
+  }
+
+  function renderButtons(providers) {
+    var box = document.getElementById('social-btns');
+    var icons = { google: 'G', facebook: 'f', instagram: 'IG', line: 'L', telegram: '✈' };
+    var labels = { google: '使用 Google 登入', facebook: '使用 Facebook 登入', instagram: '使用 Instagram 登入', line: '使用 LINE 登入', telegram: '使用 Telegram 登入' };
+    var classes = { google: 'btn-google', facebook: 'btn-facebook', instagram: 'btn-instagram', line: 'btn-line', telegram: 'btn-telegram' };
+    box.innerHTML = '';
+    if (!providers.length) {
+      box.innerHTML = '<div class="hint">社群登入尚未設定（請在後端設定 client id/secret 並填入環境變數）</div>';
+      return;
+    }
+    providers.forEach(function (p) {
+      var a = document.createElement('a');
+      var sep = p.authorize_url.indexOf('?') >= 0 ? '&' : '?';
+      var base = /^https?:/i.test(p.authorize_url) ? '' : Auth.API_ORIGIN;
+      a.href = base + p.authorize_url + sep + 'next=' + encodeURIComponent(next);
+      a.className = 'btn ' + (classes[p.id] || '');
+      a.innerHTML = '<span class="ic">' + (icons[p.id] || '·') + '</span>' + (labels[p.id] || p.name);
+      box.appendChild(a);
+    });
+  }
+
+  function setRegMode(mode) {
+    regMode = mode;
+    document.getElementById('email-mode-login').style.display = mode ? 'none' : 'block';
+    document.getElementById('email-mode-reg').style.display = mode ? 'block' : 'none';
+    document.getElementById('btn-submit').textContent = mode ? '註冊並登入' : '登入';
+    document.getElementById('sub-text').innerHTML = mode
+      ? '已經有帳號？<a href="#" id="btn-toggle">登入</a>'
+      : '還沒有帳號？<a href="#" id="btn-toggle">註冊</a>';
+    document.getElementById('btn-toggle').addEventListener('click', function (e) {
+      e.preventDefault();
+      setRegMode(!regMode);
+    });
+  }
+
+  document.getElementById('btn-submit').addEventListener('click', function () {
+    var email = regMode ? document.getElementById('reg-email').value : emailInput.value;
+    var pass = regMode ? document.getElementById('reg-pass').value : document.getElementById('login-pass').value;
+    if (!email || !pass) { showMsg('請填寫 Email 與密碼', false); return; }
+    var endpoint = Auth.API_ORIGIN + (regMode ? '/api/auth/register' : '/api/auth/login');
+    fetch(endpoint, {
+      method: 'POST', credentials: 'include', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email: email, password: pass })
+    }).then(function (r) { return r.json().then(function (d) { return { ok: r.ok, d: d }; }); })
+      .then(function (r) {
+        if (r.ok && r.d.token) setToken(r.d.token);
+        else showMsg((r.d && r.d.detail) || (regMode ? '註冊失敗' : '登入失敗'), false);
+      }).catch(function () { showMsg('無法連線伺服器', false); });
+  });
+
+  emailInput.addEventListener('keydown', function (e) { if (e.key === 'Enter') document.getElementById('btn-submit').click(); });
+  document.getElementById('login-pass').addEventListener('keydown', function (e) { if (e.key === 'Enter') document.getElementById('btn-submit').click(); });
+
+  Auth.providers().then(renderButtons);
+  setRegMode(false);
+  Auth.me().then(function (u) {
+    if (u) {
+      var em = document.querySelector('[data-user-email]');
+      if (em) em.textContent = u.email || '';
+    }
+  });
+  Auth.updateAuthUI();
+  if (params.get('ok')) showMsg('登入成功！', true);
+})();
+</script>
+</body>
+</html>
