@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>動態 — 翔川社交</title>
+<meta property="og:title" content="動態 — 翔川社交">
+<meta property="og:description" content="交友 · 聊天 · 匿名討論，一個地方全部搞定">
+<link rel="stylesheet" href="/css/social.css">
+<style>
+.composer{display:flex;gap:12px}
+.composer .body{flex:1}
+.composer textarea{min-height:64px;resize:vertical}
+.composer .row{display:flex;align-items:center;justify-content:space-between;margin-top:10px}
+.post .head{display:flex;gap:10px;align-items:center}
+.post .head .nm{font-weight:700;color:#f1f5f9;font-size:14.5px}
+.post .head .time{color:#64748b;font-size:12px;margin-left:auto}
+.post .content{font-size:15px;margin-top:10px;white-space:pre-wrap;word-break:break-word}
+.post .actions{display:flex;gap:6px;margin-top:12px;border-top:1px solid #1c2436;padding-top:10px}
+.pa{display:inline-flex;align-items:center;gap:6px;padding:6px 12px;border-radius:999px;font-size:13px;color:#94a3b8;background:transparent;border:none;cursor:pointer;transition:all .15s}
+.pa:hover{background:rgba(123,104,238,.12);color:#fff}
+.pa.liked{color:#f472b6}
+.pa.liked:hover{background:rgba(244,114,182,.12)}
+.comments{margin-top:10px;background:#0d1428;border-radius:12px;padding:12px}
+.comment{display:flex;gap:10px;padding:8px 0;border-bottom:1px solid #161f33}
+.comment:last-child{border-bottom:none}
+.comment .cb{font-size:14px}
+.comment .cb .nm{font-weight:600;color:#cbd5e1;font-size:13px}
+.comment .cb .tx{color:#e2e8f0}
+.comment-input{display:flex;gap:8px;margin-top:8px}
+.comment-input input{flex:1}
+.load-more{text-align:center;padding:14px}
+</style>
+</head>
+<body>
+<nav class="sn-top"><div class="sn-inner" id="social-nav"></div></nav>
+<div class="sn-container">
+  <div class="card composer" id="composer" hidden>
+    <div id="composer-avatar"></div>
+    <div class="body">
+      <textarea id="postContent" placeholder="分享你的近況，跟大家聊天吧…" maxlength="2000"></textarea>
+      <div class="row">
+        <span style="font-size:12px;color:#64748b">💡 用心寫，朋友更想回你</span>
+        <button class="btn-pri" id="postBtn">發佈</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="card" id="loginCard" hidden>
+    <div class="empty"><div class="icon">💬</div>
+      <p style="margin-bottom:16px">登入後就能發文、按讚、交友、私訊聊天</p>
+      <a class="btn-pri" style="padding:10px 26px" href="/login.html?next=/social/">登入 / 註冊</a>
+    </div>
+  </div>
+
+  <div id="feedList"><div class="empty">載入中…</div></div>
+  <div class="load-more" id="loadMore" hidden><button class="btn-ghost" onclick="loadMore()">載入更多</button></div>
+</div>
+<script src="/js/social.js"></script>
+<script>
+(function () {
+  'use strict';
+  var page = 1, loading = false, total = Infinity;
+  var feed = document.getElementById('feedList');
+
+  Social.renderNav('/social/');
+
+  Social.current().then(function (u) {
+    if (u) {
+      document.getElementById('loginCard').hidden = true;
+      document.getElementById('composer').hidden = false;
+      document.getElementById('composer-avatar').innerHTML = Social.avatarHtml(u, 40);
+    } else {
+      document.getElementById('loginCard').hidden = false;
+    }
+  });
+
+  function postHtml(p) {
+    var a = p.author || { name: '翔川' };
+    var profileHref = a.id ? '/social/profile.html?id=' + a.id : '#';
+    var avatar = Social.avatarHtml(a, 42);
+    return '<div class="post">' +
+      '<div class="head">' +
+        (a.id ? '<a href="' + profileHref + '">' + avatar + '</a>' : avatar) +
+        '<div>' +
+          '<div class="nm"><a href="' + profileHref + '">' + Social.esc(a.name) + '</a></div>' +
+        '</div>' +
+        '<span class="time">' + Social.timeAgo(p.created_at) + '</span>' +
+      '</div>' +
+      '<div class="content">' + Social.esc(p.content) + '</div>' +
+      '<div class="actions">' +
+        '<button class="pa ' + (p.liked ? 'liked' : '') + '" onclick="likePost(' + p.id + ', this)">' +
+          (p.liked ? '❤️' : '🤍') + ' <span class="lc">' + p.like_count + '</span></button>' +
+        '<button class="pa" onclick="toggleComments(' + p.id + ', this)">💬 <span>' + p.comment_count + '</span></button>' +
+        '<button class="pa" style="margin-left:auto" onclick="copyLink(' + p.id + ')">🔗</button>' +
+      '</div>' +
+      '<div class="comments" id="cm-' + p.id + '" hidden></div>' +
+    '</div>';
+  }
+
+  function load() {
+    if (loading) return;
+    loading = true;
+    Social.api('/api/feed?page=' + page + '&per_page=15').then(function (r) {
+      loading = false;
+      if (!r.ok) { feed.innerHTML = '<div class="empty">載入失敗</div>'; return; }
+      total = r.data.total;
+      feed.innerHTML = (page === 1 ? '' : feed.innerHTML) + r.data.items.map(postHtml).join('');
+      document.getElementById('loadMore').hidden = page * 15 >= total;
+    });
+  }
+
+  window.loadMore = function () { page++; load(); };
+
+  window.likePost = function (pid, btn) {
+    Social.requireLogin().then(function () {
+      return Social.api('/api/feed/' + pid + '/like', { method: 'POST', body: {} });
+    }).then(function (r) {
+      if (!r.ok) return;
+      var liked = r.data.liked;
+      btn.classList.toggle('liked', liked);
+      btn.innerHTML = (liked ? '❤️' : '🤍') + ' <span class="lc">' + (parseInt(btn.querySelector('.lc').textContent) + (liked ? 1 : -1)) + '</span>';
+    });
+  };
+
+  window.toggleComments = function (pid, btn) {
+    var box = document.getElementById('cm-' + pid);
+    if (box.hidden) {
+      box.hidden = false;
+      if (!box.dataset.loaded) {
+        Social.api('/api/feed/' + pid + '/comments').then(function (r) {
+          box.dataset.loaded = '1';
+          box.innerHTML = (r.data.items || []).map(function (c) {
+            return '<div class="comment">' + Social.avatarHtml(c.user_avatar ? { avatar: c.user_avatar } : null, 30) +
+              '<div class="cb"><span class="nm">' + Social.esc(c.author_name) + '</span> ' +
+              '<span class="tx">' + Social.esc(c.content) + '</span></div></div>';
+          }).join('') + commentInputHtml(pid);
+        });
+      }
+    } else {
+      box.hidden = true;
+    }
+  };
+
+  function commentInputHtml(pid) {
+    return '<div class="comment-input"><input type="text" id="ci-' + pid + '" placeholder="回覆…" maxlength="500">' +
+      '<button class="btn-ghost" onclick="sendComment(' + pid + ')">送出</button></div>';
+  }
+
+  window.sendComment = function (pid) {
+    var input = document.getElementById('ci-' + pid);
+    var text = input.value.trim();
+    if (!text) return;
+    Social.requireLogin().then(function () {
+      return Social.api('/api/feed/' + pid + '/comment', { method: 'POST', body: { content: text } });
+    }).then(function (r) {
+      if (!r.ok) return;
+      input.value = '';
+      var box = document.getElementById('cm-' + pid);
+      Social.api('/api/feed/' + pid + '/comments').then(function (r2) {
+        box.innerHTML = (r2.data.items || []).map(function (c) {
+          return '<div class="comment">' + Social.avatarHtml(c.user_avatar ? { avatar: c.user_avatar } : null, 30) +
+            '<div class="cb"><span class="nm">' + Social.esc(c.author_name) + '</span> ' +
+            '<span class="tx">' + Social.esc(c.content) + '</span></div></div>';
+        }).join('') + commentInputHtml(pid);
+        Social.notify('留言已送出');
+      });
+    });
+  };
+
+  window.copyLink = function (pid) {
+    var url = location.origin + '/social/index.html?p=' + pid;
+    navigator.clipboard.writeText(url).then(function () { Social.notify('已複製貼文連結'); });
+  };
+
+  document.getElementById('postBtn').addEventListener('click', function () {
+    var text = document.getElementById('postContent').value.trim();
+    if (!text) return;
+    var btn = this;
+    btn.disabled = true;
+    Social.requireLogin().then(function () {
+      return Social.api('/api/feed', { method: 'POST', body: { content: text } });
+    }).then(function (r) {
+      btn.disabled = false;
+      if (!r.ok) { Social.notify('發佈失敗'); return; }
+      document.getElementById('postContent').value = '';
+      page = 1;
+      Social.api('/api/feed?page=1&per_page=15').then(function (r2) {
+        feed.innerHTML = r2.data.items.map(postHtml).join('');
+        Social.notify('發佈成功！');
+      });
+    });
+  });
+
+  load();
+})();
+</script>
+</body>
+</html>

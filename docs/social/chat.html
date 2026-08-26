@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>私訊 — 翔川社交</title>
+<meta property="og:title" content="私訊 — 翔川社交">
+<meta property="og:description" content="和朋友一對一聊天">
+<link rel="stylesheet" href="/css/social.css">
+<style>
+.chat-wrap{display:flex;gap:14px;min-height:calc(100vh - 140px);align-items:stretch}
+.conv-pane{width:280px;flex:none;background:#111827;border:1px solid #232c40;border-radius:16px;overflow:hidden;display:flex;flex-direction:column}
+.conv-pane h3{font-size:14px;color:#94a3b8;padding:14px 16px 8px}
+.conv-list{overflow-y:auto;flex:1}
+.conv{
+  display:flex;gap:10px;align-items:center;padding:11px 14px;cursor:pointer;border-bottom:1px solid rgba(255,255,255,.03);transition:background .15s
+}
+.conv:hover{background:rgba(255,255,255,.04)}
+.conv.active{background:rgba(123,104,238,.13)}
+.conv .ci{flex:1;min-width:0}
+.conv .cn{font-size:14px;font-weight:700;color:#f1f5f9;display:flex;align-items:center;gap:8px}
+.conv .cl{font-size:12px;color:#64748b;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.conv .cu{background:#ef4444;color:#fff;font-size:11px;font-weight:700;min-width:19px;height:19px;border-radius:999px;display:inline-flex;align-items:center;justify-content:center;padding:0 5px}
+.msg-pane{flex:1;background:#111827;border:1px solid #232c40;border-radius:16px;display:flex;flex-direction:column;overflow:hidden;min-width:0}
+.msg-head{display:flex;align-items:center;gap:10px;padding:12px 16px;border-bottom:1px solid #232c40}
+.msg-head .cn{font-weight:700;font-size:15px}
+.msg-body{flex:1;overflow-y:auto;padding:18px;display:flex;flex-direction:column;gap:8px;background:#0d1428}
+.bubble{max-width:68%;padding:10px 14px;border-radius:16px;font-size:14.5px;word-break:break-word;line-height:1.5}
+.bubble.me{align-self:flex-end;background:linear-gradient(135deg,#7b68ee,#5a4ae0);color:#fff;border-bottom-right-radius:4px}
+.bubble.other{align-self:flex-start;background:#1e2740;color:#e8ecf4;border-bottom-left-radius:4px}
+.bubble .tm{display:block;font-size:10px;opacity:.55;margin-top:4px;text-align:right}
+.msg-input{display:flex;gap:10px;padding:14px;border-top:1px solid #232c40;align-items:center}
+.msg-input input{flex:1}
+.msg-input button{flex:none}
+.ai-btn{background:transparent;border:1px dashed #7b68ee;color:#a5b4fc;border-radius:10px;padding:9px 12px;cursor:pointer;font-size:13px;transition:all .15s;flex:none}
+.ai-btn:hover{background:rgba(123,104,238,.15)}
+.ai-suggest{margin-top:8px;background:rgba(123,104,238,.1);border:1px solid rgba(123,104,238,.3);color:#c4b5fd;padding:10px 12px;border-radius:10px;font-size:13px;display:flex;gap:8px;align-items:center}
+.empty-state{text-align:center;padding:40px 16px;color:#475569}
+@media (max-width:720px){
+  .chat-wrap{flex-direction:column}
+  .conv-pane{width:100%;max-height:220px}
+}
+</style>
+</head>
+<body>
+<nav class="sn-top"><div class="sn-inner" id="social-nav"></div></nav>
+<div class="sn-container">
+  <div class="chat-wrap">
+    <div class="conv-pane">
+      <h3>訊息</h3>
+      <div class="conv-list" id="convList"><div class="empty-state">載入中…</div></div>
+    </div>
+    <div class="msg-pane">
+      <div class="msg-head" id="msgHead" style="display:none">
+        <div id="headAvatar"></div>
+        <div class="cn" id="headName"></div>
+        <a class="btn-ghost" id="headProfile" style="margin-left:auto;padding:6px 12px;font-size:12px">查看個人頁</a>
+      </div>
+      <div class="msg-body" id="msgBody">
+        <div class="empty-state"><div class="icon" style="font-size:40px">💬</div>
+          <p style="margin-bottom:14px">從左邊選一個對話開始聊天，或到「找人」認識新朋友</p>
+          <a class="btn-pri" href="/social/people.html">🤝 去找人聊聊</a>
+        </div>
+      </div>
+      <div class="msg-input" id="msgInput" style="display:none">
+        <input type="text" id="msgText" placeholder="輸入訊息… Enter 送出" maxlength="2000">
+        <button class="ai-btn" id="aiBtn" title="AI 幫你想回覆">✨ AI</button>
+        <button class="btn-pri" id="sendBtn">送出</button>
+      </div>
+    </div>
+  </div>
+</div>
+<script src="/js/social.js"></script>
+<script>
+(function () {
+  'use strict';
+  var cid = null, other = null, pollTimer = null, meId = null;
+
+  Social.renderNav('/social/chat.html');
+  Social.requireLogin().then(function (u) {
+    meId = u.id;
+    loadConvs();
+    var params = new URLSearchParams(location.search);
+    if (params.get('cid')) openConv(parseInt(params.get('cid')));
+    else if (params.get('uid')) openByUser(parseInt(params.get('uid')));
+  });
+
+  function loadConvs() {
+    Social.api('/api/chat/conversations').then(function (r) {
+      var list = document.getElementById('convList');
+      var items = r.data.items || [];
+      if (!items.length) {
+        list.innerHTML = '<div class="empty-state">還沒有對話<br>去「找人」認識朋友吧</div>';
+        return;
+      }
+      list.innerHTML = items.map(function (c) {
+        var avatar = Social.avatarHtml({ name: c.other_name, avatar: c.other_avatar }, 38);
+        return '<div class="conv' + (cid === c.id ? ' active' : '') + '" onclick="openConv(' + c.id + ')">' + avatar +
+          '<div class="ci"><div class="cn">' + Social.esc(c.other_name) +
+            (c.unread ? '<span class="cu">' + c.unread + '</span>' : '') + '</div>' +
+          '<div class="cl">' + Social.esc(c.last_body || '') + '</div></div></div>';
+      }).join('');
+    });
+  }
+
+  window.openByUser = function (uid) {
+    Social.api('/api/chat/open', { method: 'POST', body: { user_id: uid } }).then(function (r) {
+      if (r.ok) { history.replaceState(null, '', '/social/chat.html?cid=' + r.data.conversation_id); openConv(r.data.conversation_id); }
+    });
+  };
+
+  window.openConv = function (newCid) {
+    cid = newCid;
+    loadConvs();
+    Social.api('/api/chat/conversations').then(function (r) {
+      var conv = (r.data.items || []).find(function (c) { return c.id === cid; });
+      if (!conv) return;
+      other = { id: conv.other_id, name: conv.other_name, avatar: conv.other_avatar };
+      document.getElementById('headAvatar').innerHTML = Social.avatarHtml(other, 38);
+      document.getElementById('headName').textContent = conv.other_name;
+      document.getElementById('msgHead').style.display = 'flex';
+      document.getElementById('msgInput').style.display = 'flex';
+      document.getElementById('headProfile').href = '/social/profile.html?id=' + conv.other_id;
+    }).catch(function () {});
+    loadMessages(cid);
+    clearInterval(pollTimer);
+    pollTimer = setInterval(function () { if (cid) loadMessages(cid, true); loadConvs(); }, 3000);
+  };
+
+  function loadMessages(cid2, silent) {
+    Social.api('/api/chat/conversations/' + cid2 + '/messages?limit=80').then(function (r) {
+      var body = document.getElementById('msgBody');
+      var items = r.data.items || [];
+      if (!silent) {
+        body.innerHTML = items.map(bubbleHtml).join('') || '<div class="empty-state">開始聊天吧！</div>';
+        body.scrollTop = body.scrollHeight;
+      } else {
+        var current = body.innerHTML;
+        var newHtml = items.map(bubbleHtml).join('') || '<div class="empty-state">開始聊天吧！</div>';
+        if (newHtml !== current) {
+          body.innerHTML = newHtml;
+          body.scrollTop = body.scrollHeight;
+        }
+      }
+    });
+  }
+
+  function bubbleHtml(m) {
+    var mine = m.sender_id === meId;
+    var name = mine ? '' : '<strong>' + Social.esc(m.sender_name || '') + '</strong> ';
+    return '<div class="bubble ' + (mine ? 'me' : 'other') + '">' + name + Social.esc(m.body) +
+      '<span class="tm">' + Social.timeAgo(m.created_at) + (mine && m.read_at ? ' · 已讀' : '') + '</span></div>';
+  }
+
+  function send() {
+    var text = document.getElementById('msgText').value.trim();
+    if (!text || !cid) return;
+    Social.api('/api/chat/send', { method: 'POST', body: { conversation_id: cid, body: text } }).then(function (r) {
+      if (!r.ok) { Social.notify('送出失敗'); return; }
+      document.getElementById('msgText').value = '';
+      loadMessages(cid);
+      loadConvs();
+    });
+  }
+  document.getElementById('sendBtn').addEventListener('click', send);
+  document.getElementById('msgText').addEventListener('keydown', function (e) { if (e.key === 'Enter') send(); });
+
+  document.getElementById('aiBtn').addEventListener('click', function () {
+    var text = document.getElementById('msgText').value.trim();
+    var btn = this;
+    if (!cid) return;
+    btn.textContent = 'AI 思考中…';
+    Social.api('/api/chat/suggest', { method: 'POST', body: { conversation_id: cid, body: text } }).then(function (r) {
+      btn.textContent = '✨ AI';
+      var s = r.data.suggestion;
+      if (!s) { Social.notify('請先設定 GROQ_API_KEY 即可使用 AI 回覆建議'); return; }
+      document.getElementById('msgText').value = s;
+      Social.notify('已填入 AI 建議，可再修改');
+    });
+  });
+
+  window.openConv = openConv;
+  window.openByUser = openByUser;
+})();
+</script>
+</body>
+</html>

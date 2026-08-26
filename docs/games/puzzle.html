@@ -1,0 +1,462 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>🧠 益智作業 — 程式邏輯題 × 推理遊戲</title>
+<meta name="description" content="Python 程式邏輯題、邏輯推理謎題，還有河內塔與猜數字兩款互動益智小遊戲！">
+<meta property="og:title" content="🧠 益智作業 — 來挑戰我的解題能力！">
+<meta property="og:description" content="程式邏輯題、推理謎題、河內塔與猜數字互動小遊戲！">
+<meta property="og:image" content="https://lewislunora.github.io/lewislunora/assets/og-game.png">
+<meta property="og:type" content="website">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { min-height: 100%; }
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Microsoft JhengHei', 'PingFang TC', 'Noto Sans TC', Helvetica, Arial, sans-serif;
+  background: linear-gradient(145deg, #0f0f13 0%, #1a1a2e 50%, #16213e 100%);
+  color: #e0e0e0;
+  display: flex;
+  justify-content: center;
+  padding: 24px 14px;
+}
+.game-container {
+  max-width: 760px;
+  width: 100%;
+  background: rgba(255,255,255,0.04);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-radius: 32px;
+  padding: 28px 26px 24px;
+  box-shadow: 0 25px 60px rgba(0,0,0,0.6), inset 0 1px 0 rgba(255,255,255,0.06);
+  border: 1px solid rgba(255,255,255,0.06);
+}
+.title {
+  text-align: center;
+  font-size: 28px;
+  font-weight: 800;
+  letter-spacing: 4px;
+  background: linear-gradient(135deg, #f7971e, #ffd200);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin-bottom: 4px;
+  user-select: none;
+}
+.subtitle { text-align: center; color: rgba(255,255,255,0.45); font-size: 13px; margin-bottom: 24px; }
+section { margin-bottom: 30px; }
+.sec-title {
+  font-size: 18px;
+  font-weight: 800;
+  margin-bottom: 14px;
+  padding-left: 12px;
+  border-left: 4px solid #f7971e;
+}
+.q-card {
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 16px;
+  padding: 16px 18px;
+  margin-bottom: 12px;
+}
+.q-card .q { font-weight: 700; margin-bottom: 6px; }
+.q-card .q code {
+  background: rgba(255,210,0,0.12);
+  color: #ffd866;
+  padding: 1px 6px;
+  border-radius: 6px;
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 0.9em;
+}
+.q-card .desc { font-size: 14px; color: rgba(255,255,255,0.65); line-height: 1.7; }
+details {
+  margin-top: 10px;
+  border: 1px dashed rgba(255,210,0,0.35);
+  border-radius: 10px;
+  overflow: hidden;
+}
+summary {
+  cursor: pointer;
+  padding: 8px 14px;
+  font-size: 13px;
+  font-weight: 700;
+  color: #ffd866;
+  background: rgba(255,210,0,0.06);
+  user-select: none;
+}
+.answer { padding: 10px 14px; font-size: 14px; color: rgba(255,255,255,0.8); line-height: 1.8; }
+.answer code, .q-card pre {
+  background: rgba(0,0,0,0.35);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 8px;
+  padding: 10px 12px;
+  display: block;
+  overflow-x: auto;
+  font-size: 13px;
+  line-height: 1.7;
+  margin: 8px 0;
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  color: #9edcff;
+}
+.answer code { display: inline; padding: 1px 6px; color: #ffd866; }
+
+/* Tower of Hanoi */
+.hanoi-wrap { text-align: center; }
+.hanoi-pegs {
+  display: flex;
+  justify-content: space-around;
+  align-items: flex-end;
+  height: 190px;
+  padding: 10px 4px 0;
+  position: relative;
+}
+.peg {
+  width: 90px;
+  height: 150px;
+  display: flex;
+  flex-direction: column-reverse;
+  align-items: center;
+  cursor: pointer;
+  position: relative;
+}
+.peg::before {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  width: 4px;
+  height: 130px;
+  background: rgba(255,255,255,0.25);
+  border-radius: 2px;
+}
+.peg.selected-peg .disk-wrap { box-shadow: 0 0 0 2px #ffd200; border-radius: 8px; }
+.disk-wrap { width: 100%; display: flex; flex-direction: column-reverse; align-items: center; gap: 4px; z-index: 2; }
+.disk {
+  height: 22px;
+  border-radius: 6px;
+  background: linear-gradient(135deg, #f7971e, #ffd200);
+  margin: 0 auto;
+}
+.disk.d1 { width: 34px; }
+.disk.d2 { width: 50px; }
+.disk.d3 { width: 66px; }
+.disk.d4 { width: 82px; }
+.peg-label { margin-top: 6px; font-size: 12px; color: rgba(255,255,255,0.5); }
+.hanoi-info { text-align: center; font-size: 13px; color: rgba(255,255,255,0.6); margin: 8px 0; }
+
+/* Bulls and Cows */
+.cows-wrap { text-align: center; }
+.cows-input { display: flex; gap: 8px; justify-content: center; margin: 12px 0; }
+.cows-input input {
+  background: rgba(255,255,255,0.06);
+  border: 1px solid rgba(255,255,255,0.15);
+  color: #e0e0e0;
+  border-radius: 10px;
+  padding: 10px 14px;
+  font-size: 18px;
+  text-align: center;
+  letter-spacing: 4px;
+  width: 140px;
+  font-family: inherit;
+  outline: none;
+}
+.cows-input input:focus { border-color: #f7971e; }
+.cows-hint {
+  max-height: 150px;
+  overflow-y: auto;
+  font-size: 13px;
+  color: rgba(255,255,255,0.7);
+  text-align: left;
+  background: rgba(0,0,0,0.3);
+  border-radius: 10px;
+  padding: 8px 14px;
+  margin: 8px 0;
+}
+.cows-hint div { padding: 2px 0; border-bottom: 1px dashed rgba(255,255,255,0.06); }
+
+.btn {
+  border: none;
+  cursor: pointer;
+  padding: 9px 20px;
+  border-radius: 100px;
+  font-size: 13px;
+  font-weight: 700;
+  color: #1a1a2e;
+  background: linear-gradient(135deg, #f7971e, #ffd200);
+  box-shadow: 0 4px 14px rgba(247,151,30,0.25);
+  transition: all 0.2s;
+  font-family: inherit;
+}
+.btn:hover { transform: translateY(-2px); box-shadow: 0 8px 22px rgba(247,151,30,0.35); }
+.btn.ghost {
+  background: rgba(255,255,255,0.08);
+  color: #e0e0e0;
+  box-shadow: none;
+  border: 1px solid rgba(255,255,255,0.1);
+}
+.btn.ghost:hover { background: rgba(255,255,255,0.14); }
+.link-row { text-align: center; margin-top: 22px; }
+.link-row a { color: #8888aa; text-decoration: none; font-size: 13px; }
+.link-row a:hover { color: #f7971e; }
+@media (max-width: 600px) {
+  .title { font-size: 22px; }
+  .game-container { padding: 22px 16px; }
+}
+</style>
+</head>
+<body>
+<div class="game-container">
+  <div class="title">🧠 益智作業</div>
+  <div class="subtitle">程式邏輯題 · 推理謎題 · 互動小遊戲</div>
+
+  <section>
+    <div class="sec-title">一、Python 程式邏輯題</div>
+
+    <div class="q-card">
+      <div class="q">Q1. 在 Python 中執行 <code>0.1 + 0.2 == 0.3</code>，結果是 True 還是 False？</div>
+      <div class="desc">直覺上 0.1+0.2 應該等於 0.3，但電腦是怎麼計算的呢？</div>
+      <details><summary>顯示解答</summary><div class="answer">
+        答案是 <code>False</code>！電腦以二進位儲存十進位小數，<code>0.1</code> 無法被精確表示，
+        所以 <code>0.1 + 0.2 = 0.30000000000000004</code>。<br>
+        正確比較方式：<br>
+        <code>round(0.1 + 0.2, 1) == 0.3</code> → True<br>
+        <code>import math; math.isclose(0.1 + 0.2, 0.3)</code> → True
+      </div></details>
+    </div>
+
+    <div class="q-card">
+      <div class="q">Q2. 執行以下程式後，<code>a</code> 的內容是什麼？</div>
+      <pre>a = [1, 2, 3]
+b = a
+b.append(4)</pre>
+      <div class="desc">b 是 a 的「複製」還是「參照」？</div>
+      <details><summary>顯示解答</summary><div class="answer">
+        <code>a</code> 變成 <code>[1, 2, 3, 4]</code>。<br>
+        變數存的是「記憶體參照」，<code>b = a</code> 讓兩者指向同一個串列，
+        改 b 等於改 a。要真正複製請用 <code>b = a.copy()</code> 或 <code>b = list(a)</code>。
+      </div></details>
+    </div>
+
+    <div class="q-card">
+      <div class="q">Q3. <code>2 ** 3 ** 2</code> 的結果是？</div>
+      <div class="desc">指數運算是左結合還是右結合？</div>
+      <details><summary>顯示解答</summary><div class="answer">
+        答案是 <code>512</code>。指數運算是<b>右結合</b>：
+        <code>2 ** 3 ** 2 = 2 ** (3 ** 2) = 2 ** 9 = 512</code>。
+      </div></details>
+    </div>
+
+    <div class="q-card">
+      <div class="q">Q4. 用一行 Python 反轉字串 <code>"abc"</code>。</div>
+      <div class="desc">提示：利用「切片（slice）」的步進參數。</div>
+      <details><summary>顯示解答</summary><div class="answer">
+        <code>"abc"[::-1]</code> → <code>"cba"</code><br>
+        步進 <code>-1</code> 表示由右往左取值；也可用 <code>"".join(reversed("abc"))</code>。
+      </div></details>
+    </div>
+
+    <div class="q-card">
+      <div class="q">Q5. 寫一個函式判斷數字是否為質數。</div>
+      <div class="desc">質數：大於 1，且只能被 1 和自己整除。想想看可以檢查到「根號 n」就好。</div>
+      <details><summary>顯示解答</summary><div class="answer">
+        <pre>def is_prime(n):
+    if n < 2:
+        return False
+    for i in range(2, int(n ** 0.5) + 1):
+        if n % i == 0:
+            return False
+    return True</pre>
+        檢查到 <code>√n</code> 就足夠，因為若有因數，必然一對中小於等於 √n。
+      </div></details>
+    </div>
+  </section>
+
+  <section>
+    <div class="sec-title">二、邏輯推理謎題</div>
+
+    <div class="q-card">
+      <div class="q">Q6. 有兩個水桶：7L 與 3L，無刻度。如何量出剛好 5L 的水？</div>
+      <div class="desc">只能裝滿、倒空、互相倒入，不能目測。</div>
+      <details><summary>顯示解答</summary><div class="answer">
+        <b>7L 裝滿</b> → 倒入 3L 桶（7L 剩 4L）→ <b>倒掉 3L 桶</b> → 再倒入 3L（7L 剩 1L）→ <b>倒掉 3L 桶</b> → 倒入 1L（3L 桶有 1L）→ <b>7L 裝滿</b> → 倒入 3L 桶補滿（只倒 2L）→ <b>7L 桶剩 5L</b> ✅
+      </div></details>
+    </div>
+
+    <div class="q-card">
+      <div class="q">Q7. 三門問題（Monty Hall）：主持人知道車在哪一門。選 A 後，主持人打開沒有車的 B 門，問你要不要換到 C 門？</div>
+      <div class="desc">換門的勝率是 1/2 還是 2/3？</div>
+      <details><summary>顯示解答</summary><div class="answer">
+        <b>應該換！</b>換門勝率 <code>2/3</code>，不換只有 <code>1/3</code>。
+        初始選中車的機率 1/3；當你選中車時，主持人可開兩扇門任選；當你選空門時（機率 2/3），
+        主持人被迫開出唯一另一扇空門，剩下的那扇門就是車。所以「換」只在初始選中車時才輸。
+      </div></details>
+    </div>
+
+    <div class="q-card">
+      <div class="q">Q8. 用 3、3、8、8 四個數字算出 24（四則運算，每個數字只能用一次）。</div>
+      <details><summary>顯示解答</summary><div class="answer">
+        <code>8 ÷ (3 − 8 ÷ 3) = 24</code><br>
+        因為 <code>8 ÷ 3 = 2.666…</code>，<code>3 − 2.666… = 0.333…</code>，<code>8 ÷ 0.333… = 24</code>。
+      </div></details>
+    </div>
+
+    <div class="q-card">
+      <div class="q">Q9. 一天 24 小時內，時針與分針「完全重疊」幾次？</div>
+      <details><summary>顯示解答</summary><div class="answer">
+        <b>22 次</b>。每 12 小時重疊 11 次（12:00 那一次算在跨週期），
+        24 小時 = 2 × 11 = 22 次。
+      </div></details>
+    </div>
+
+    <div class="q-card">
+      <div class="q">Q10. 房間裡至少要有幾個人，才使「至少有兩人生日相同」的機率超過 50%？（生日悖論）</div>
+      <details><summary>顯示解答</summary><div class="answer">
+        <b>23 人</b>。看似只要 183 人（一年的一半），但兩兩組合數是 C(23,2)=253 對，
+        計算互不相同的機率 <code>(365/365)×(364/365)×…</code>，23 人時不到 50%。
+      </div></details>
+    </div>
+  </section>
+
+  <section>
+    <div class="sec-title">三、互動小遊戲</div>
+
+    <div class="q-card">
+      <div class="q">🀄 河內塔 — 把 A 柱全部移到 C 柱</div>
+      <div class="desc">大盤不能壓小盤。4 層最少要幾步？（提示：2ⁿ−1）</div>
+      <div class="hanoi-wrap">
+        <div class="hanoi-pegs" id="hanoiPegs"></div>
+        <div class="hanoi-info" id="hanoiInfo">點選柱子選取最上層圓盤，再點另一柱放置</div>
+        <button class="btn ghost" onclick="resetHanoi()">🔄 重來</button>
+      </div>
+    </div>
+
+    <div class="q-card">
+      <div class="q">🔢 猜數字 1A2B — 猜出 4 位不重複數字</div>
+      <div class="desc">A = 數字對且位置對，B = 數字對但位置錯。例：答案是 1234，猜 1325 得 2A1B。</div>
+      <div class="cows-wrap">
+        <div class="cows-input">
+          <input id="cowsGuess" maxlength="4" inputmode="numeric" placeholder="1234">
+          <button class="btn" onclick="cowsGuess()">送出</button>
+          <button class="btn ghost" onclick="cowsReset()">重來</button>
+        </div>
+        <div class="cows-hint" id="cowsHint">請猜一個 4 位不重複數字開始…</div>
+      </div>
+    </div>
+  </section>
+
+  <div class="link-row"><a href="index.html">← 返回遊戲大廳</a></div>
+</div>
+
+<script>
+(function () {
+  /* ─── 河內塔 ─── */
+  var pegs = [[4, 3, 2, 1], [], []];
+  var selectedPeg = null;
+  var moves = 0;
+
+  function renderHanoi() {
+    var box = document.getElementById('hanoiPegs');
+    var html = '';
+    for (var p = 0; p < 3; p++) {
+      var label = ['A', 'B', 'C'][p];
+      var disks = '';
+      for (var i = 0; i < pegs[p].length; i++) {
+        var d = pegs[p][i];
+        disks += '<div class="disk d' + d + '"></div>';
+      }
+      html += '<div class="peg' + (selectedPeg === p ? ' selected-peg' : '') + '" onclick="clickHanoi(' + p + ')">' +
+        '<div class="disk-wrap">' + disks + '</div>' +
+        '<div class="peg-label">' + label + '</div></div>';
+    }
+    box.innerHTML = html;
+    document.getElementById('hanoiInfo').textContent =
+      '步數：' + moves + ' / 最少 ' + 15 + ' 步' + (moves > 0 ? '（你用了 ' + moves + ' 步）' : '');
+  }
+
+  window.clickHanoi = function (p) {
+    if (selectedPeg === null) {
+      if (pegs[p].length) selectedPeg = p;
+    } else {
+      var disk = pegs[selectedPeg][pegs[selectedPeg].length - 1];
+      var top = pegs[p][pegs[p].length - 1];
+      if (!pegs[p].length || disk < top) {
+        pegs[p].push(pegs[selectedPeg].pop());
+        moves++;
+        if (pegs[2].length === 4) {
+          renderHanoi();
+          setTimeout(function () {
+            alert('🎉 恭喜！你在 ' + moves + ' 步內完成河內塔！（最少 ' + 15 + ' 步）');
+            window.shareScore && window.shareScore('我以 ' + moves + ' 步完成河內塔！');
+          }, 120);
+        }
+      }
+      selectedPeg = null;
+    }
+    renderHanoi();
+  };
+
+  window.resetHanoi = function () {
+    pegs = [[4, 3, 2, 1], [], []];
+    selectedPeg = null;
+    moves = 0;
+    renderHanoi();
+  };
+
+  /* ─── 猜數字 1A2B ─── */
+  var answer = null;
+
+  function genAnswer() {
+    var digits = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
+    for (var i = digits.length - 1; i > 0; i--) {
+      var j = Math.floor(Math.random() * (i + 1));
+      var tmp = digits[i]; digits[i] = digits[j]; digits[j] = tmp;
+    }
+    return digits.slice(0, 4).join('');
+  }
+
+  window.cowsReset = function () {
+    answer = genAnswer();
+    document.getElementById('cowsGuess').value = '';
+    document.getElementById('cowsHint').innerHTML = '🆕 新遊戲開始！請猜一個 4 位不重複數字…';
+  };
+
+  window.cowsGuess = function () {
+    if (!answer) cowsReset();
+    var v = document.getElementById('cowsGuess').value.trim();
+    if (!/^\d{4}$/.test(v)) { alert('請輸入 4 位數字！'); return; }
+    var seen = {};
+    var dup = false;
+    for (var i = 0; i < v.length; i++) { if (seen[v[i]]) dup = true; seen[v[i]] = 1; }
+    if (dup) { alert('4 位數字不能重複！'); return; }
+    var a = 0, b = 0;
+    for (i = 0; i < 4; i++) {
+      if (v[i] === answer[i]) a++;
+      else if (answer.indexOf(v[i]) !== -1) b++;
+    }
+    var hint = document.getElementById('cowsHint');
+    var div = document.createElement('div');
+    div.textContent = v + ' → ' + a + 'A' + b + 'B';
+    if (a === 4) {
+      div.textContent = '🎉 ' + v + ' → 4A0B 猜中！';
+      hint.appendChild(div);
+      alert('🎉 恭喜猜中答案 ' + answer + '！');
+      window.shareScore && window.shareScore('我猜中 1A2B 的答案！');
+      cowsReset();
+      return;
+    }
+    hint.appendChild(div);
+    hint.scrollTop = hint.scrollHeight;
+    document.getElementById('cowsGuess').value = '';
+    document.getElementById('cowsGuess').focus();
+  };
+
+  window.shareScore = function (msg) {
+    if (navigator.share) navigator.share({ title: '🧠 益智作業', text: msg, url: location.href });
+  };
+
+  renderHanoi();
+  cowsReset();
+})();
+</script>
+<script src="../share.js"></script>
+</body>
+</html>

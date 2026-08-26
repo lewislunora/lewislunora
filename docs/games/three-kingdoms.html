@@ -1,0 +1,511 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>三國志 攻城略地 — 戰略回合制</title>
+<meta name="description" content="選定曹操、劉備或孫權，徵兵、整軍、攻城略地，一統三國！">
+<meta property="og:title" content="🏯 三國志攻城略地 — 來挑戰我的戰績！">
+<meta property="og:description" content="回合制三國戰略遊戲，選主公、徵兵、攻城，一統天下！">
+<meta property="og:image" content="https://lewislunora.github.io/lewislunora/assets/og-game.png">
+<meta property="og:type" content="website">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { min-height: 100%; }
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Microsoft JhengHei', 'PingFang TC', 'Noto Sans TC', Helvetica, Arial, sans-serif;
+  background: linear-gradient(145deg, #0f0f13 0%, #1a1a2e 50%, #16213e 100%);
+  color: #e0e0e0;
+  display: flex;
+  justify-content: center;
+  padding: 24px 14px;
+}
+.game-container {
+  position: relative;
+  max-width: 900px;
+  width: 100%;
+  background: rgba(255,255,255,0.04);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-radius: 32px;
+  padding: 28px 26px 20px;
+  box-shadow: 0 25px 60px rgba(0,0,0,0.6), inset 0 1px 0 rgba(255,255,255,0.06);
+  border: 1px solid rgba(255,255,255,0.06);
+}
+.title {
+  text-align: center;
+  font-size: 30px;
+  font-weight: 800;
+  letter-spacing: 4px;
+  background: linear-gradient(135deg, #f7971e, #ffd200);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin-bottom: 4px;
+  user-select: none;
+}
+.subtitle { text-align: center; color: rgba(255,255,255,0.45); font-size: 13px; margin-bottom: 18px; }
+
+.status-bar {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 10px;
+  margin-bottom: 18px;
+}
+.stat {
+  background: rgba(255,255,255,0.05);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 100px;
+  padding: 6px 16px;
+  font-size: 13px;
+  font-weight: 600;
+}
+.stat b { color: #ffd866; }
+
+.hint {
+  text-align: center;
+  font-size: 13px;
+  color: rgba(255,255,255,0.5);
+  margin-bottom: 14px;
+  min-height: 20px;
+}
+
+.map-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+  margin-bottom: 18px;
+}
+.territory {
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 14px;
+  padding: 12px 8px 10px;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  position: relative;
+}
+.territory .owner { font-size: 12px; font-weight: 700; margin-bottom: 2px; }
+.territory .name { font-size: 15px; font-weight: 700; margin-bottom: 2px; }
+.territory .army { font-size: 13px; color: rgba(255,255,255,0.55); }
+.territory.selected {
+  border-color: #ffd200;
+  box-shadow: 0 0 0 2px rgba(255,210,0,0.25);
+  transform: translateY(-2px);
+}
+.territory.target {
+  border-color: #ff9f43;
+  animation: pulse 1.2s infinite;
+}
+.territory.attackable { cursor: crosshair; }
+@keyframes pulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(255,159,67,0.35); }
+  50% { box-shadow: 0 0 0 8px rgba(255,159,67,0); }
+}
+.territory.dim { opacity: 0.55; }
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 10px;
+  margin-bottom: 16px;
+}
+.btn {
+  border: none;
+  cursor: pointer;
+  padding: 10px 22px;
+  border-radius: 100px;
+  font-size: 14px;
+  font-weight: 700;
+  color: #1a1a2e;
+  background: linear-gradient(135deg, #f7971e, #ffd200);
+  box-shadow: 0 4px 14px rgba(247,151,30,0.25);
+  transition: all 0.2s;
+  font-family: inherit;
+}
+.btn:hover { transform: translateY(-2px); box-shadow: 0 8px 22px rgba(247,151,30,0.35); }
+.btn:disabled { opacity: 0.35; cursor: not-allowed; transform: none; box-shadow: none; }
+.btn.ghost {
+  background: rgba(255,255,255,0.08);
+  color: #e0e0e0;
+  box-shadow: none;
+  border: 1px solid rgba(255,255,255,0.1);
+}
+.btn.ghost:hover { background: rgba(255,255,255,0.14); }
+
+.log-box {
+  background: rgba(0,0,0,0.3);
+  border: 1px solid rgba(255,255,255,0.06);
+  border-radius: 14px;
+  padding: 12px 16px;
+  max-height: 130px;
+  overflow-y: auto;
+  font-size: 13px;
+  line-height: 1.9;
+  color: rgba(255,255,255,0.7);
+}
+.log-box div { border-bottom: 1px dashed rgba(255,255,255,0.05); }
+
+.overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(5,5,10,0.85);
+  backdrop-filter: blur(8px);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  z-index: 50;
+  padding: 20px;
+}
+.overlay.show { display: flex; }
+.overlay-card {
+  background: #1a1a2e;
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 24px;
+  padding: 32px 28px;
+  max-width: 480px;
+  width: 100%;
+  text-align: center;
+  box-shadow: 0 30px 80px rgba(0,0,0,0.7);
+}
+.overlay-card h2 { font-size: 24px; margin-bottom: 10px; }
+.overlay-card p { color: rgba(255,255,255,0.6); font-size: 14px; margin-bottom: 8px; }
+.faction-list { display: flex; gap: 12px; margin: 20px 0; }
+.faction-btn {
+  flex: 1;
+  border: 1px solid rgba(255,255,255,0.1);
+  background: rgba(255,255,255,0.05);
+  border-radius: 16px;
+  padding: 18px 8px;
+  cursor: pointer;
+  color: #e0e0e0;
+  font-family: inherit;
+  transition: all 0.2s;
+}
+.faction-btn:hover { transform: translateY(-3px); background: rgba(255,255,255,0.1); }
+.faction-btn .fname { font-size: 20px; font-weight: 800; }
+.faction-btn .fdesc { font-size: 11px; color: rgba(255,255,255,0.5); margin-top: 6px; }
+.win-text { color: #ffd866; }
+.lose-text { color: #ff6b6b; }
+@media (max-width: 600px) {
+  .map-grid { grid-template-columns: repeat(2, 1fr); }
+  .title { font-size: 24px; }
+  .faction-list { flex-direction: column; }
+}
+</style>
+</head>
+<body>
+<div class="game-container">
+  <div class="title">🏯 三國志 攻城略地</div>
+  <div class="subtitle">回合制戰略 · 徵兵整軍 · 一統天下</div>
+
+  <div class="status-bar" id="statusBar"></div>
+  <div class="hint" id="hint"></div>
+  <div class="map-grid" id="mapGrid"></div>
+  <div class="actions">
+    <button class="btn" id="btnRecruit" onclick="doRecruit()">🔨 徵兵 −10金</button>
+    <button class="btn" id="btnRest" onclick="doRest()">🛡️ 整軍</button>
+    <button class="btn ghost" id="btnEnd" onclick="endTurn()">⏭️ 結束回合</button>
+    <button class="btn ghost" id="btnReset" onclick="newGame()">🔄 重新開始</button>
+  </div>
+  <div class="log-box" id="logBox"></div>
+</div>
+
+<div class="overlay" id="selectOverlay">
+  <div class="overlay-card">
+    <h2>🗡️ 選擇你的主公</h2>
+    <p>三分天下，誰能一統？點選陣營開始征戰！</p>
+    <div class="faction-list">
+      <button class="faction-btn" onclick="selectFaction('曹')" style="border-color:#8a7bff">
+        <div class="fname" style="color:#8a7bff">曹操</div>
+        <div class="fdesc">魏 · 兵多將廣，北方稱雄</div>
+      </button>
+      <button class="faction-btn" onclick="selectFaction('劉')" style="border-color:#34d399">
+        <div class="fname" style="color:#34d399">劉備</div>
+        <div class="fdesc">蜀 · 仁德之君，據險而守</div>
+      </button>
+      <button class="faction-btn" onclick="selectFaction('孫')" style="border-color:#f87171">
+        <div class="fname" style="color:#f87171">孫權</div>
+        <div class="fdesc">吳 · 江東子弟，虎踞天險</div>
+      </button>
+    </div>
+    <p style="font-size:12px;color:rgba(255,255,255,0.4)">⚔️ 選取我方領地 → 徵兵/整軍 → 點擊發光敵方領地出征</p>
+  </div>
+</div>
+
+<div class="overlay" id="endOverlay">
+  <div class="overlay-card">
+    <h2 id="endTitle"></h2>
+    <p id="endMsg"></p>
+    <button class="btn" style="margin-top:12px" onclick="newGame()">🔄 再戰一場</button>
+  </div>
+</div>
+
+<script>
+(function () {
+  const FACTIONS = {
+    '曹': { name: '曹操', title: '魏', color: '#8a7bff', desc: '兵多將廣' },
+    '劉': { name: '劉備', title: '蜀', color: '#34d399', desc: '仁德據險' },
+    '孫': { name: '孫權', title: '吳', color: '#f87171', desc: '江東虎踞' }
+  };
+  const MAP_DEF = [
+    { name: '冀州', row: 0, col: 0, owner: '曹', army: 120 },
+    { name: '司隸', row: 0, col: 1, owner: '曹', army: 110 },
+    { name: '兗州', row: 0, col: 2, owner: '曹', army: 95 },
+    { name: '徐州', row: 0, col: 3, owner: '曹', army: 85 },
+    { name: '涼州', row: 1, col: 0, owner: '曹', army: 75 },
+    { name: '荊州', row: 1, col: 1, owner: '劉', army: 120 },
+    { name: '豫州', row: 1, col: 2, owner: '曹', army: 90 },
+    { name: '揚州', row: 1, col: 3, owner: '孫', army: 100 },
+    { name: '益州', row: 2, col: 0, owner: '劉', army: 105 },
+    { name: '漢中', row: 2, col: 1, owner: '劉', army: 80 },
+    { name: '江東', row: 2, col: 2, owner: '孫', army: 115 },
+    { name: '交州', row: 2, col: 3, owner: '孫', army: 75 }
+  ];
+
+  let map, gold, turn, actions, selected, player, log;
+
+  function newGame() {
+    map = MAP_DEF.map(function (t) { return Object.assign({}, t); });
+    gold = { '曹': 40, '劉': 40, '孫': 40 };
+    turn = 1; actions = 3; selected = null; player = null; log = [];
+    document.getElementById('endOverlay').classList.remove('show');
+    document.getElementById('selectOverlay').classList.add('show');
+    render();
+  }
+
+  function selectFaction(f) {
+    player = f;
+    gold[f] += income(f);
+    document.getElementById('selectOverlay').classList.remove('show');
+    addLog('🔥 ' + FACTIONS[f].name + ' 揭竿而起，逐鹿中原！');
+    render();
+  }
+
+  function owned(f) { return map.filter(function (t) { return t.owner === f; }); }
+  function income(f) { return 20 + owned(f).length * 5; }
+  function neighbors(id) {
+    var t = map[id];
+    return map.filter(function (o) {
+      return Math.abs(o.row - t.row) + Math.abs(o.col - t.col) === 1;
+    });
+  }
+
+  function addLog(msg) {
+    log.push(msg);
+    if (log.length > 60) log.shift();
+    var box = document.getElementById('logBox');
+    var div = document.createElement('div');
+    div.textContent = msg;
+    box.appendChild(div);
+    box.scrollTop = box.scrollHeight;
+  }
+
+  function render() {
+    var sb = document.getElementById('statusBar');
+    if (!player) {
+      sb.innerHTML = '<div class="stat">🎮 等待選擇主公…</div>';
+      document.getElementById('hint').textContent = '';
+      return;
+    }
+    var pn = FACTIONS[player].name, pc = FACTIONS[player].color;
+    sb.innerHTML =
+      '<div class="stat">🏮 第 <b>' + turn + '</b> 回合</div>' +
+      '<div class="stat">👑 ' + pn + '</div>' +
+      '<div class="stat">💰 金錢 <b>' + gold[player] + '</b></div>' +
+      '<div class="stat">🗺️ 領地 <b>' + owned(player).length + '</b>/12</div>' +
+      '<div class="stat">🎯 行動 <b>' + actions + '</b></div>';
+    document.getElementById('btnRecruit').disabled = selected === null || actions <= 0 || gold[player] < 10;
+    document.getElementById('btnRest').disabled = selected === null || actions <= 0;
+    document.getElementById('btnEnd').disabled = false;
+
+    var grid = document.getElementById('mapGrid');
+    var html = '';
+    map.forEach(function (t, id) {
+      var f = FACTIONS[t.owner];
+      var cls = 'territory';
+      if (t.owner === player) cls += ' mine';
+      else cls += ' dim';
+      if (selected === id) cls += ' selected';
+      var isTarget = false;
+      if (selected !== null && t.owner !== player) {
+        if (neighbors(selected).some(function (n) { return map.indexOf(n) === id; })) {
+          isTarget = true;
+        }
+      }
+      if (isTarget) cls += ' target attackable';
+      html += '<div class="' + cls + '" data-id="' + id + '" style="border-color:' + f.color + '" onclick="clickTerritory(' + id + ')">' +
+        '<div class="owner" style="color:' + f.color + '">' + f.title + '·' + f.name + '</div>' +
+        '<div class="name">' + t.name + '</div>' +
+        '<div class="army">⚔️ ' + t.army + '</div>' +
+        '</div>';
+    });
+    grid.innerHTML = html;
+
+    var hint = document.getElementById('hint');
+    if (selected === null) {
+      hint.innerHTML = '📢 點擊 <b style="color:#ffd866">我方領地</b> 選為據點，再徵兵或整軍';
+    } else {
+      hint.innerHTML = '📍 據點：<b style="color:#ffd866">' + map[selected].name + '</b>（兵 ' + map[selected].army + '）｜點擊 <b style="color:#ff9f43">發光敵方領地</b> 出征！';
+    }
+  }
+
+  function clickTerritory(id) {
+    if (!player) return;
+    var t = map[id];
+    if (selected !== null && t.owner !== player && isTargetOf(selected, id)) {
+      doAttack(selected, id, player);
+      return;
+    }
+    if (t.owner === player) {
+      selected = (selected === id) ? null : id;
+      render();
+    }
+  }
+
+  function isTargetOf(sid, tid) {
+    return neighbors(sid).some(function (n) { return map.indexOf(n) === tid; });
+  }
+
+  function doRecruit() {
+    if (selected === null || actions <= 0 || gold[player] < 10) return;
+    var t = map[selected];
+    gold[player] -= 10;
+    t.army = Math.min(t.army + 25, 220);
+    actions--;
+    addLog('🔨 於 ' + t.name + ' 徵兵 +25（現 ' + t.army + ' 兵）');
+    render();
+  }
+
+  function doRest() {
+    if (selected === null || actions <= 0) return;
+    var t = map[selected];
+    t.army = Math.min(Math.round(t.army * 1.15), 220);
+    actions--;
+    addLog('🛡️ ' + t.name + ' 整軍備戰（現 ' + t.army + ' 兵）');
+    render();
+  }
+
+  function doAttack(sid, tid, f) {
+    var s = map[sid], t = map[tid];
+    var aPow = s.army * (0.8 + Math.random() * 0.35);
+    var dPow = t.army * (0.9 + Math.random() * 0.35) * 1.15;
+    if (aPow > dPow) {
+      var rem = Math.max(1, Math.round(s.army - t.army * 0.5));
+      t.owner = f;
+      t.army = Math.min(rem, 220);
+      s.army = Math.max(1, Math.round(s.army * 0.5));
+      addLog('⚔️ ' + FACTIONS[f].name + ' 攻佔 ' + t.name + '！');
+      if (f === player) actions--;
+    } else {
+      var sLoss = Math.max(1, Math.round(s.army * 0.6));
+      var tLoss = Math.max(1, Math.round(t.army * 0.25));
+      s.army -= sLoss;
+      t.army -= tLoss;
+      addLog('💥 攻打 ' + t.name + ' 失利，我方損兵 ' + sLoss);
+      if (f === player) actions--;
+    }
+    if (f === player) selected = null;
+    checkEnd();
+    render();
+  }
+
+  function aiTurn(f) {
+    if (f === player) return;
+    var mine = owned(f);
+    if (mine.length === 0) return;
+    gold[f] += income(f);
+    var borders = mine.filter(function (t) {
+      return neighbors(map.indexOf(t)).some(function (n) { return n.owner !== f; });
+    });
+    if (gold[f] >= 10) {
+      var r = (borders.length ? borders : mine).slice().sort(function (a, b) { return a.army - b.army; })[0];
+      gold[f] -= 10;
+      r.army = Math.min(r.army + 25, 220);
+      addLog('🔨 ' + FACTIONS[f].name + ' 於 ' + r.name + ' 徵兵');
+    }
+    var attacked = false;
+    var sorted = borders.slice().sort(function (a, b) { return b.army - a.army; });
+    for (var i = 0; i < sorted.length; i++) {
+      var s = sorted[i];
+      if (s.army < 25) continue;
+      var tgt = neighbors(map.indexOf(s)).filter(function (n) { return n.owner !== f; })
+        .slice().sort(function (a, b) { return a.army - b.army; })[0];
+      if (!tgt) continue;
+      var aPow = s.army * (0.8 + Math.random() * 0.3);
+      var dPow = tgt.army * (0.9 + Math.random() * 0.3) * 1.15;
+      if (aPow > dPow) {
+        doAttack(map.indexOf(s), map.indexOf(tgt), f);
+        attacked = true;
+        break;
+      }
+    }
+    if (!attacked) {
+      var t = borders.length ? borders[0] : mine[0];
+      t.army = Math.min(Math.round(t.army * 1.12), 220);
+      addLog('🛡️ ' + FACTIONS[f].name + ' 於 ' + t.name + ' 整軍備戰');
+    }
+  }
+
+  function endTurn() {
+    if (!player) return;
+    addLog('———— 第 ' + turn + ' 回合結束 ————');
+    aiTurn('曹');
+    aiTurn('劉');
+    aiTurn('孫');
+    turn++;
+    actions = 3;
+    selected = null;
+    gold[player] += income(player);
+    addLog('🌅 第 ' + turn + ' 回合開始，獲得金錢 ' + income(player));
+    checkEnd();
+    render();
+  }
+
+  function checkEnd() {
+    var owners = {};
+    map.forEach(function (t) { owners[t.owner] = (owners[t.owner] || 0) + 1; });
+    var keys = Object.keys(owners);
+    if (keys.length === 1) { finish(keys[0]); return; }
+    if (owned(player).length === 0) {
+      var best = keys.sort(function (a, b) { return owners[b] - owners[a]; })[0];
+      finish(best);
+    }
+  }
+
+  function finish(winner) {
+    var title = document.getElementById('endTitle');
+    var msg = document.getElementById('endMsg');
+    if (winner === player) {
+      title.innerHTML = '🏆 <span class="win-text">天下一統！</span>';
+      msg.textContent = FACTIONS[player].name + ' 於第 ' + turn + ' 回合一統天下，天下歸心！';
+      window.shareScore && window.shareScore();
+    } else {
+      title.innerHTML = '☠️ <span class="lose-text">漢室傾頹…</span>';
+      msg.textContent = FACTIONS[winner].name + ' 席捲六合，你的霸業就此落幕。';
+    }
+    document.getElementById('endOverlay').classList.add('show');
+    render();
+  }
+
+  document.getElementById('btnReset').addEventListener('click', newGame);
+  window.clickTerritory = clickTerritory;
+  window.doRecruit = doRecruit;
+  window.doRest = doRest;
+  window.endTurn = endTurn;
+  window.newGame = newGame;
+  window.selectFaction = selectFaction;
+  window.shareScore = function () {
+    var msg = '🏯 三國志攻城略地 — 我以' + FACTIONS[player].name + '在第' + turn + '回合一統天下！來挑戰我！';
+    if (navigator.share) navigator.share({ title: '🏯 三國志攻城略地', text: msg, url: location.href });
+  };
+
+  newGame();
+})();
+</script>
+<script src="../share.js"></script>
+</body>
+</html>
