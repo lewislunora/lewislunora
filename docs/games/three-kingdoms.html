@@ -500,7 +500,9 @@ body {
   window.selectFaction = selectFaction;
   window.shareScore = function () {
     var msg = '🏯 三國志攻城略地 — 我以' + FACTIONS[player].name + '在第' + turn + '回合一統天下！來挑戰我！';
-    if (navigator.share) navigator.share({ title: '🏯 三國志攻城略地', text: msg, url: location.href });
+    if (navigator.share) { navigator.share({ title: '🏯 三國志攻城略地', text: msg, url: location.href }); }
+    else if (typeof shareToLine === 'function') { shareToLine(location.href); }
+    else { navigator.clipboard.writeText(msg + ' ' + location.href); alert('已複製到剪貼簿！'); }
   };
 
   newGame();

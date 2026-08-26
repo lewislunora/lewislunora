@@ -450,7 +450,9 @@ b.append(4)</pre>
   };
 
   window.shareScore = function (msg) {
-    if (navigator.share) navigator.share({ title: '🧠 益智作業', text: msg, url: location.href });
+    if (navigator.share) { navigator.share({ title: '🧠 益智作業', text: msg, url: location.href }); }
+    else if (typeof shareToLine === 'function') { shareToLine(location.href); }
+    else { navigator.clipboard.writeText(msg + ' ' + location.href); alert('已複製到剪貼簿！'); }
   };
 
   renderHanoi();

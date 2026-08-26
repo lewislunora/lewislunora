@@ -768,6 +768,7 @@ footer a:hover {
 
   const g = new Game();
   window.g = g;
+  window.shareScore = shareScore;
 
   function shareScore() {
     const msg = `🔢 我在 2048 得了 ${g.score} 分！最佳 ${g.bestScore} 分。來挑戰我！`;
