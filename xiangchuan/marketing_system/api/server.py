@@ -369,6 +369,20 @@ def delete_content(content_id: int):
     return {"status": "deleted"}
 
 
+@app.put("/api/content/{content_id}")
+def update_content(content_id: int, data: ContentCreate):
+    existing = fetch_one("SELECT id FROM contents WHERE id=?", [content_id])
+    if not existing:
+        raise HTTPException(404, "Content not found")
+    execute(
+        "UPDATE contents SET title=?, body=?, platforms=?, scheduled_at=?, status=?, language=?, category=?, media_urls=? WHERE id=?",
+        [data.title, data.body, json.dumps(data.platforms), data.scheduled_at or None,
+         "scheduled" if data.scheduled_at else "draft", data.language, data.category,
+         json.dumps(data.media_urls), content_id]
+    )
+    return {"status": "updated", "id": content_id}
+
+
 @app.post("/api/content/{content_id}/publish")
 def publish_now(content_id: int):
     item = fetch_one("SELECT * FROM contents WHERE id=?", [content_id])
@@ -420,6 +434,19 @@ def delete_account(account_id: int):
     execute("DELETE FROM accounts WHERE id=?", [account_id])
     _sync_scheduler_connectors()
     return {"status": "deleted"}
+
+
+@app.put("/api/accounts/{account_id}")
+def update_account(account_id: int, data: AccountCreate):
+    existing = fetch_one("SELECT id FROM accounts WHERE id=?", [account_id])
+    if not existing:
+        raise HTTPException(404, "Account not found")
+    execute(
+        "UPDATE accounts SET platform=?, label=?, credentials=? WHERE id=?",
+        [data.platform, data.label, json.dumps(data.credentials), account_id]
+    )
+    _sync_scheduler_connectors()
+    return {"status": "updated", "id": account_id}
 
 
 @app.post("/api/accounts/{account_id}/verify")
@@ -991,6 +1018,17 @@ async def serve_admin_analytics():
     raise HTTPException(404, "Not found")
 
 
+@app.get("/admin")
+@app.get("/admin/")
+@app.get("/admin/panel")
+@app.get("/admin/panel/")
+async def serve_admin_panel():
+    fp = DOCS_DIR / "admin" / "panel.html"
+    if fp.exists():
+        return HTMLResponse(fp.read_text(encoding="utf-8"))
+    raise HTTPException(404, "Not found")
+
+
 @app.get("/student")
 @app.get("/student/")
 async def serve_student():
@@ -1270,6 +1308,14 @@ def _require_user(request: Request):
     u = _current_user(request)
     if not u:
         raise HTTPException(401, "請先登入")
+    return u
+
+
+def _require_admin(request: Request):
+    u = _require_user(request)
+    full = fetch_one("SELECT is_admin FROM users WHERE id=?", (u["id"],))
+    if not full or not full.get("is_admin"):
+        raise HTTPException(403, "需要管理員權限")
     return u
 
 
@@ -2057,6 +2103,122 @@ async def api_matching(req: MatchingRequest):
 
 
 _register_promo_task()
+
+
+# ─── Pages CMS API ──────────────────────────────────────────────
+
+class PageCreate(BaseModel):
+    slug: str
+    title: str
+    description: str = ""
+    body: str = ""
+    meta_title: str = ""
+    meta_description: str = ""
+    meta_image: str = ""
+    layout: str = "default"
+    status: str = "draft"
+    sort_order: int = 0
+
+
+@app.get("/api/pages")
+def list_pages(status: str = None, page: int = 1, per_page: int = 50):
+    where = ""
+    params = []
+    if status:
+        where = "WHERE status=?"
+        params.append(status)
+    offset = (page - 1) * per_page
+    items = fetch(f"SELECT id, slug, title, description, layout, status, sort_order, created_at, updated_at FROM pages {where} ORDER BY sort_order, created_at DESC LIMIT ? OFFSET ?", params + [per_page, offset])
+    total = fetch(f"SELECT COUNT(*) as c FROM pages {where}", params)[0]["c"]
+    return {"items": items, "total": total, "page": page}
+
+
+@app.get("/api/pages/{page_id}")
+def get_page(page_id: int):
+    item = fetch_one("SELECT * FROM pages WHERE id=?", [page_id])
+    if not item:
+        raise HTTPException(404, "Page not found")
+    return item
+
+
+@app.get("/api/pages/by-slug/{slug}")
+def get_page_by_slug(slug: str):
+    item = fetch_one("SELECT * FROM pages WHERE slug=? AND status='published'", [slug])
+    if not item:
+        raise HTTPException(404, "Page not found")
+    return item
+
+
+@app.post("/api/pages")
+def create_page(data: PageCreate):
+    existing = fetch_one("SELECT id FROM pages WHERE slug=?", [data.slug])
+    if existing:
+        raise HTTPException(409, "Slug already exists")
+    pid = execute(
+        "INSERT INTO pages (slug, title, description, body, meta_title, meta_description, meta_image, layout, status, sort_order) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+        [data.slug, data.title, data.description, data.body, data.meta_title, data.meta_description, data.meta_image, data.layout, data.status, data.sort_order]
+    )
+    return {"id": pid, "status": "created"}
+
+
+@app.put("/api/pages/{page_id}")
+def update_page(page_id: int, data: PageCreate):
+    existing = fetch_one("SELECT id FROM pages WHERE id=?", [page_id])
+    if not existing:
+        raise HTTPException(404, "Page not found")
+    conflict = fetch_one("SELECT id FROM pages WHERE slug=? AND id!=?", [data.slug, page_id])
+    if conflict:
+        raise HTTPException(409, "Slug already exists")
+    execute(
+        "UPDATE pages SET slug=?, title=?, description=?, body=?, meta_title=?, meta_description=?, meta_image=?, layout=?, status=?, sort_order=?, updated_at=datetime('now') WHERE id=?",
+        [data.slug, data.title, data.description, data.body, data.meta_title, data.meta_description, data.meta_image, data.layout, data.status, data.sort_order, page_id]
+    )
+    return {"status": "updated", "id": page_id}
+
+
+@app.delete("/api/pages/{page_id}")
+def delete_page(page_id: int):
+    execute("DELETE FROM pages WHERE id=?", [page_id])
+    return {"status": "deleted"}
+
+
+@app.post("/api/pages/{page_id}/publish")
+def publish_page(page_id: int):
+    item = fetch_one("SELECT id FROM pages WHERE id=?", [page_id])
+    if not item:
+        raise HTTPException(404, "Page not found")
+    execute("UPDATE pages SET status='published', updated_at=datetime('now') WHERE id=?", [page_id])
+    return {"status": "published"}
+
+
+@app.post("/api/pages/{page_id}/unpublish")
+def unpublish_page(page_id: int):
+    item = fetch_one("SELECT id FROM pages WHERE id=?", [page_id])
+    if not item:
+        raise HTTPException(404, "Page not found")
+    execute("UPDATE pages SET status='draft', updated_at=datetime('now') WHERE id=?", [page_id])
+    return {"status": "draft"}
+
+
+@app.get("/api/admin/check")
+def admin_check(request: Request):
+    u = _current_user(request)
+    if not u:
+        return {"admin": False}
+    full = fetch_one("SELECT is_admin FROM users WHERE id=?", (u["id"],))
+    return {"admin": bool(full and full.get("is_admin")), "user": _user_dict(u)}
+
+
+@app.post("/api/admin/set-admin")
+def set_admin(request: Request, email: str = "", is_admin: bool = True):
+    u = _require_admin(request)
+    if not email:
+        raise HTTPException(400, "email required")
+    target = fetch_one("SELECT id FROM users WHERE email=?", [email])
+    if not target:
+        raise HTTPException(404, "User not found")
+    execute("UPDATE users SET is_admin=? WHERE id=?", [1 if is_admin else 0, target["id"]])
+    return {"status": "ok", "email": email, "is_admin": is_admin}
 
 
 @app.middleware("http")

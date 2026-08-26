@@ -1,0 +1,487 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>管理後台 — 翔川 Neo</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--bg:#0a0a1a;--card:#12122a;--border:rgba(255,255,255,.08);--text:#e0e0e0;--muted:#666;--accent:#00d4ff;--accent2:#7c3aed;--green:#22c55e;--red:#ef4444;--orange:#f59e0b}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:var(--bg);color:var(--text);min-height:100vh}
+.app{display:flex;min-height:100vh}
+.sidebar{width:220px;background:var(--card);border-right:1px solid var(--border);padding:20px 0;position:fixed;height:100vh;overflow-y:auto}
+.sidebar h2{font-size:1.1rem;padding:0 20px 16px;color:var(--accent);border-bottom:1px solid var(--border);margin-bottom:12px}
+.sidebar a{display:block;padding:10px 20px;color:var(--muted);text-decoration:none;font-size:.9rem;transition:.2s}
+.sidebar a:hover,.sidebar a.active{color:var(--accent);background:rgba(0,212,255,.05)}
+.main{margin-left:220px;padding:24px 32px;flex:1}
+.main h1{font-size:1.5rem;margin-bottom:20px;color:var(--accent)}
+.toolbar{display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap}
+.toolbar button{padding:8px 16px;border:1px solid var(--border);background:var(--card);color:var(--text);border-radius:8px;cursor:pointer;font-size:.85rem;transition:.2s}
+.toolbar button:hover,.toolbar button.active{background:var(--accent);color:#000;border-color:var(--accent)}
+.toolbar button.danger{border-color:var(--red);color:var(--red)}
+.toolbar button.danger:hover{background:var(--red);color:#fff}
+table{width:100%;border-collapse:collapse;background:var(--card);border-radius:12px;overflow:hidden;border:1px solid var(--border)}
+th,td{padding:10px 14px;text-align:left;border-bottom:1px solid var(--border);font-size:.85rem}
+th{background:rgba(255,255,255,.03);color:var(--muted);font-weight:600}
+td{color:var(--text)}
+tr:hover{background:rgba(0,212,255,.03)}
+.badge{display:inline-block;padding:2px 8px;border-radius:10px;font-size:.75rem;font-weight:600}
+.badge-green{background:rgba(34,197,94,.15);color:var(--green)}
+.badge-orange{background:rgba(245,158,11,.15);color:var(--orange)}
+.badge-red{background:rgba(239,68,68,.15);color:var(--red)}
+.badge-blue{background:rgba(0,212,255,.15);color:var(--accent)}
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:100;justify-content:center;align-items:center}
+.modal-overlay.show{display:flex}
+.modal{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:28px;width:90%;max-width:700px;max-height:85vh;overflow-y:auto}
+.modal h2{margin-bottom:16px;font-size:1.2rem;color:var(--accent)}
+.modal label{display:block;margin:10px 0 4px;font-size:.85rem;color:var(--muted)}
+.modal input,.modal textarea,.modal select{width:100%;padding:8px 12px;background:var(--bg);border:1px solid var(--border);border-radius:8px;color:var(--text);font-size:.9rem}
+.modal textarea{min-height:200px;font-family:monospace;resize:vertical}
+.modal-actions{display:flex;gap:8px;margin-top:16px;justify-content:flex-end}
+.modal-actions button{padding:8px 20px;border:none;border-radius:8px;cursor:pointer;font-size:.9rem}
+.btn-primary{background:var(--accent);color:#000}
+.btn-cancel{background:var(--border);color:var(--text)}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:16px;margin-bottom:24px}
+.stat-card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:16px}
+.stat-card .num{font-size:1.8rem;font-weight:700;color:var(--accent)}
+.stat-card .label{font-size:.8rem;color:var(--muted);margin-top:4px}
+.empty{text-align:center;padding:40px;color:var(--muted)}
+.search{padding:8px 12px;background:var(--bg);border:1px solid var(--border);border-radius:8px;color:var(--text);font-size:.9rem;width:200px}
+</style>
+</head>
+<body>
+<div class="app">
+  <nav class="sidebar">
+    <h2>翔川 Neo 後台</h2>
+    <a href="#" data-tab="dashboard" class="active">📊 儀表板</a>
+    <a href="#" data-tab="pages">📄 頁面管理</a>
+    <a href="#" data-tab="content">📝 內容管理</a>
+    <a href="#" data-tab="accounts">🔗 帳號管理</a>
+    <a href="#" data-tab="kb">📚 知識庫</a>
+    <a href="#" data-tab="users">👥 使用者</a>
+    <a href="#" data-tab="contacts">📋 諮詢單</a>
+    <hr style="border-color:var(--border);margin:12px 20px">
+    <a href="/admin/analytics.html">📈 流量分析</a>
+    <a href="/admin/roam.html">🌐 網路遊尋</a>
+    <a href="/admin/promo.html">📣 自動推廣</a>
+    <a href="/" style="margin-top:20px">← 回到首頁</a>
+  </nav>
+
+  <div class="main">
+    <!-- DASHBOARD -->
+    <div id="tab-dashboard">
+      <h1>儀表板</h1>
+      <div class="stats" id="stats"></div>
+      <div id="dash-content"></div>
+    </div>
+
+    <!-- PAGES -->
+    <div id="tab-pages" style="display:none">
+      <h1>📄 頁面管理</h1>
+      <div class="toolbar">
+        <button onclick="showPageModal()">+ 新增頁面</button>
+        <input class="search" placeholder="搜尋頁面..." oninput="filterPages(this.value)">
+      </div>
+      <table><thead><tr><th>狀態</th><th>Slug</th><th>標題</th><th>版面</th><th>更新時間</th><th>操作</th></tr></thead>
+      <tbody id="pages-body"></tbody></table>
+    </div>
+
+    <!-- CONTENT -->
+    <div id="tab-content" style="display:none">
+      <h1>📝 內容管理</h1>
+      <div class="toolbar">
+        <button onclick="showContentModal()">+ 新增內容</button>
+        <button onclick="loadContent('')">全部</button>
+        <button onclick="loadContent('draft')">草稿</button>
+        <button onclick="loadContent('published')">已發佈</button>
+      </div>
+      <table><thead><tr><th>狀態</th><th>標題</th><th>平台</th><th>建立時間</th><th>操作</th></tr></thead>
+      <tbody id="content-body"></tbody></table>
+    </div>
+
+    <!-- ACCOUNTS -->
+    <div id="tab-accounts" style="display:none">
+      <h1>🔗 帳號管理</h1>
+      <div class="toolbar">
+        <button onclick="showAccountModal()">+ 新增帳號</button>
+      </div>
+      <table><thead><tr><th>平台</th><th>標籤</th><th>狀態</th><th>建立時間</th><th>操作</th></tr></thead>
+      <tbody id="accounts-body"></tbody></table>
+    </div>
+
+    <!-- KB -->
+    <div id="tab-kb" style="display:none">
+      <h1>📚 知識庫</h1>
+      <div class="toolbar">
+        <button onclick="showKBModal()">+ 新增問答</button>
+        <button onclick="loadKB()">重新整理</button>
+      </div>
+      <table><thead><tr><th>ID</th><th>關鍵字</th><th>回答</th><th>語言</th><th>操作</th></tr></thead>
+      <tbody id="kb-body"></tbody></table>
+    </div>
+
+    <!-- USERS -->
+    <div id="tab-users" style="display:none">
+      <h1>👥 使用者管理</h1>
+      <table><thead><tr><th>ID</th><th>使用者名稱</th><th>Email</th><th>管理員</th><th>狀態</th><th>操作</th></tr></thead>
+      <tbody id="users-body"></tbody></table>
+    </div>
+
+    <!-- CONTACTS -->
+    <div id="tab-contacts" style="display:none">
+      <h1>📋 諮詢單</h1>
+      <table><thead><tr><th>姓名</th><th>聯絡方式</th><th>Email</th><th>訊息</th><th>時間</th></tr></thead>
+      <tbody id="contacts-body"></tbody></table>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL -->
+<div class="modal-overlay" id="modal">
+  <div class="modal">
+    <h2 id="modal-title">編輯</h2>
+    <div id="modal-body"></div>
+    <div class="modal-actions">
+      <button class="btn-cancel" onclick="closeModal()">取消</button>
+      <button class="btn-primary" id="modal-save">儲存</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const API = '';
+let currentTab = 'dashboard';
+let allPages = [], allContent = [], allAccounts = [], allKB = [], allUsers = [], allContacts = [];
+
+// Tab switching
+document.querySelectorAll('.sidebar a[data-tab]').forEach(a => {
+  a.addEventListener('click', e => {
+    e.preventDefault();
+    const tab = a.dataset.tab;
+    document.querySelectorAll('.sidebar a').forEach(x => x.classList.remove('active'));
+    a.classList.add('active');
+    document.querySelectorAll('[id^="tab-"]').forEach(x => x.style.display = 'none');
+    document.getElementById('tab-' + tab).style.display = '';
+    currentTab = tab;
+    loadTab(tab);
+  });
+});
+
+function loadTab(tab) {
+  switch(tab) {
+    case 'dashboard': loadDashboard(); break;
+    case 'pages': loadPages(); break;
+    case 'content': loadContent(''); break;
+    case 'accounts': loadAccounts(); break;
+    case 'kb': loadKB(); break;
+    case 'users': loadUsers(); break;
+    case 'contacts': loadContacts(); break;
+  }
+}
+
+async function api(path, opts = {}) {
+  const r = await fetch(API + path, {
+    headers: { 'Content-Type': 'application/json', ...opts.headers },
+    ...opts
+  });
+  if (!r.ok) { const e = await r.json().catch(() => ({})); throw new Error(e.detail || e.message || r.statusText); }
+  return r.json();
+}
+
+// ─── Dashboard ───
+async function loadDashboard() {
+  try {
+    const [status, pages, content, kb, contacts] = await Promise.all([
+      api('/api/status'),
+      api('/api/pages?per_page=100'),
+      api('/api/content?per_page=100'),
+      api('/api/kb'),
+      api('/api/contacts?per_page=100')
+    ]);
+    document.getElementById('stats').innerHTML = `
+      <div class="stat-card"><div class="num">${pages.total}</div><div class="label">頁面</div></div>
+      <div class="stat-card"><div class="num">${content.total}</div><div class="label">內容</div></div>
+      <div class="stat-card"><div class="num">${kb.length || 0}</div><div class="label">知識庫問答</div></div>
+      <div class="stat-card"><div class="num">${contacts.total || 0}</div><div class="label">諮詢單</div></div>
+      <div class="stat-card"><div class="num">${status.ai_available ? '✅' : '❌'}</div><div class="label">AI 狀態</div></div>
+    `;
+  } catch(e) { document.getElementById('stats').innerHTML = '<div class="empty">載入失敗: ' + e.message + '</div>'; }
+}
+
+// ─── Pages ───
+async function loadPages() {
+  try {
+    const d = await api('/api/pages?per_page=200');
+    allPages = d.items;
+    renderPages(allPages);
+  } catch(e) { document.getElementById('pages-body').innerHTML = `<tr><td colspan="6" class="empty">${e.message}</td></tr>`; }
+}
+function renderPages(items) {
+  document.getElementById('pages-body').innerHTML = items.map(p => `<tr>
+    <td><span class="badge ${p.status==='published'?'badge-green':'badge-orange'}">${p.status}</span></td>
+    <td><code>${esc(p.slug)}</code></td>
+    <td>${esc(p.title)}</td>
+    <td>${esc(p.layout)}</td>
+    <td>${p.updated_at||''}</td>
+    <td>
+      <button onclick="editPage(${p.id})" style="background:none;border:none;color:var(--accent);cursor:pointer">編輯</button>
+      <button onclick="deletePage(${p.id})" style="background:none;border:none;color:var(--red);cursor:pointer">刪除</button>
+      ${p.status==='published'
+        ? `<button onclick="unpublishPage(${p.id})" style="background:none;border:none;color:var(--orange);cursor:pointer">下架</button>`
+        : `<button onclick="publishPage(${p.id})" style="background:none;border:none;color:var(--green);cursor:pointer">發佈</button>`}
+    </td>
+  </tr>`).join('') || '<tr><td colspan="6" class="empty">尚無頁面</td></tr>';
+}
+function filterPages(q) {
+  const f = allPages.filter(p => p.slug.includes(q) || p.title.includes(q) || (p.description||'').includes(q));
+  renderPages(f);
+}
+function showPageModal(page = null) {
+  const isEdit = !!page;
+  document.getElementById('modal-title').textContent = isEdit ? '編輯頁面' : '新增頁面';
+  document.getElementById('modal-body').innerHTML = `
+    <label>Slug（網址路徑）</label><input id="pg-slug" value="${esc(page?.slug||'')}">
+    <label>標題</label><input id="pg-title" value="${esc(page?.title||'')}">
+    <label>描述</label><input id="pg-desc" value="${esc(page?.description||'')}">
+    <label>HTML 內容</label><textarea id="pg-body">${esc(page?.body||'')}</textarea>
+    <label>Meta Title</label><input id="pg-meta-title" value="${esc(page?.meta_title||'')}">
+    <label>Meta Description</label><input id="pg-meta-desc" value="${esc(page?.meta_description||'')}">
+    <label>Meta Image URL</label><input id="pg-meta-img" value="${esc(page?.meta_image||'')}">
+    <label>版面</label><select id="pg-layout"><option value="default"${page?.layout==='default'?' selected':''}>Default</option><option value="full"${page?.layout==='full'?' selected':''}>Full Width</option><option value="sidebar"${page?.layout==='sidebar'?' selected':''}>Sidebar</option></select>
+    <label>狀態</label><select id="pg-status"><option value="draft"${page?.status==='draft'?' selected':''}>草稿</option><option value="published"${page?.status==='published'?' selected':''}>已發佈</option></select>
+    <label>排序</label><input id="pg-sort" type="number" value="${page?.sort_order||0}">
+  `;
+  document.getElementById('modal').classList.add('show');
+  document.getElementById('modal-save').onclick = async () => {
+    const data = {
+      slug: document.getElementById('pg-slug').value.trim(),
+      title: document.getElementById('pg-title').value.trim(),
+      description: document.getElementById('pg-desc').value,
+      body: document.getElementById('pg-body').value,
+      meta_title: document.getElementById('pg-meta-title').value,
+      meta_description: document.getElementById('pg-meta-desc').value,
+      meta_image: document.getElementById('pg-meta-img').value,
+      layout: document.getElementById('pg-layout').value,
+      status: document.getElementById('pg-status').value,
+      sort_order: parseInt(document.getElementById('pg-sort').value) || 0,
+    };
+    if (!data.slug || !data.title) return alert('Slug 和標題必填');
+    try {
+      if (isEdit) {
+        await api(`/api/pages/${page.id}`, { method: 'PUT', body: JSON.stringify(data) });
+      } else {
+        await api('/api/pages', { method: 'POST', body: JSON.stringify(data) });
+      }
+      closeModal(); loadPages();
+    } catch(e) { alert('錯誤: ' + e.message); }
+  };
+}
+async function editPage(id) {
+  try { const p = await api(`/api/pages/${id}`); showPageModal(p); } catch(e) { alert(e.message); }
+}
+async function deletePage(id) {
+  if (!confirm('確定刪除此頁面？')) return;
+  try { await api(`/api/pages/${id}`, { method: 'DELETE' }); loadPages(); } catch(e) { alert(e.message); }
+}
+async function publishPage(id) {
+  try { await api(`/api/pages/${id}/publish`, { method: 'POST' }); loadPages(); } catch(e) { alert(e.message); }
+}
+async function unpublishPage(id) {
+  try { await api(`/api/pages/${id}/unpublish`, { method: 'POST' }); loadPages(); } catch(e) { alert(e.message); }
+}
+
+// ─── Content ───
+async function loadContent(status) {
+  try {
+    const d = await api('/api/content?per_page=200' + (status ? '&status=' + status : ''));
+    allContent = d.items;
+    renderContent(allContent);
+  } catch(e) { document.getElementById('content-body').innerHTML = `<tr><td colspan="5" class="empty">${e.message}</td></tr>`; }
+}
+function renderContent(items) {
+  document.getElementById('content-body').innerHTML = items.map(c => {
+    const platforms = JSON.parse(c.platforms || '[]');
+    return `<tr>
+      <td><span class="badge ${c.status==='published'?'badge-green':c.status==='scheduled'?'badge-blue':'badge-orange'}">${c.status}</span></td>
+      <td>${esc(c.title)}</td>
+      <td>${platforms.join(', ') || '-'}</td>
+      <td>${c.created_at||''}</td>
+      <td>
+        <button onclick="editContent(${c.id})" style="background:none;border:none;color:var(--accent);cursor:pointer">編輯</button>
+        <button onclick="deleteContent(${c.id})" style="background:none;border:none;color:var(--red);cursor:pointer">刪除</button>
+      </td>
+    </tr>`;
+  }).join('') || '<tr><td colspan="5" class="empty">尚無內容</td></tr>';
+}
+function showContentModal(content = null) {
+  const isEdit = !!content;
+  document.getElementById('modal-title').textContent = isEdit ? '編輯內容' : '新增內容';
+  document.getElementById('modal-body').innerHTML = `
+    <label>標題</label><input id="ct-title" value="${esc(content?.title||'')}">
+    <label>內文</label><textarea id="ct-body" style="min-height:120px">${esc(content?.body||'')}</textarea>
+    <label>平台（逗號分隔）</label><input id="ct-platforms" value="${esc((JSON.parse(content?.platforms||'[]')).join(', '))}">
+    <label>排程時間（可選）</label><input id="ct-schedule" type="datetime-local" value="${content?.scheduled_at||''}">
+    <label>語言</label><select id="ct-lang"><option value="zh-TW"${content?.language==='zh-TW'?' selected':''}>繁中</option><option value="en"${content?.language==='en'?' selected':''}>English</option></select>
+    <label>分類</label><input id="ct-category" value="${esc(content?.category||'')}">
+  `;
+  document.getElementById('modal').classList.add('show');
+  document.getElementById('modal-save').onclick = async () => {
+    const data = {
+      title: document.getElementById('ct-title').value.trim(),
+      body: document.getElementById('ct-body').value,
+      platforms: document.getElementById('ct-platforms').value.split(',').map(s=>s.trim()).filter(Boolean),
+      scheduled_at: document.getElementById('ct-schedule').value || null,
+      language: document.getElementById('ct-lang').value,
+      category: document.getElementById('ct-category').value,
+      media_urls: content?.media_urls ? JSON.parse(content.media_urls) : [],
+    };
+    if (!data.title) return alert('標題必填');
+    try {
+      if (isEdit) {
+        await api(`/api/content/${content.id}`, { method: 'PUT', body: JSON.stringify(data) });
+      } else {
+        await api('/api/content', { method: 'POST', body: JSON.stringify(data) });
+      }
+      closeModal(); loadContent('');
+    } catch(e) { alert('錯誤: ' + e.message); }
+  };
+}
+async function editContent(id) {
+  try { const c = await api(`/api/content/${id}`); showContentModal(c); } catch(e) { alert(e.message); }
+}
+async function deleteContent(id) {
+  if (!confirm('確定刪除此內容？')) return;
+  try { await api(`/api/content/${id}`, { method: 'DELETE' }); loadContent(''); } catch(e) { alert(e.message); }
+}
+
+// ─── Accounts ───
+async function loadAccounts() {
+  try {
+    const d = await api('/api/accounts');
+    allAccounts = d.items;
+    renderAccounts(allAccounts);
+  } catch(e) { document.getElementById('accounts-body').innerHTML = `<tr><td colspan="5" class="empty">${e.message}</td></tr>`; }
+}
+function renderAccounts(items) {
+  document.getElementById('accounts-body').innerHTML = items.map(a => `<tr>
+    <td>${esc(a.platform)}</td>
+    <td>${esc(a.label)}</td>
+    <td><span class="badge ${a.enabled?'badge-green':'badge-red'}">${a.enabled?'啟用':'停用'}</span></td>
+    <td>${a.created_at||''}</td>
+    <td>
+      <button onclick="deleteAccount(${a.id})" style="background:none;border:none;color:var(--red);cursor:pointer">刪除</button>
+    </td>
+  </tr>`).join('') || '<tr><td colspan="5" class="empty">尚無帳號</td></tr>';
+}
+async function deleteAccount(id) {
+  if (!confirm('確定刪除此帳號？')) return;
+  try { await api(`/api/accounts/${id}`, { method: 'DELETE' }); loadAccounts(); } catch(e) { alert(e.message); }
+}
+
+// ─── KB ───
+async function loadKB() {
+  try {
+    allKB = await api('/api/kb');
+    renderKB(allKB);
+  } catch(e) { document.getElementById('kb-body').innerHTML = `<tr><td colspan="5" class="empty">${e.message}</td></tr>`; }
+}
+function renderKB(items) {
+  document.getElementById('kb-body').innerHTML = items.map(k => {
+    let keywords = k.keywords;
+    try { keywords = JSON.parse(k.keywords).join(', '); } catch(e) {}
+    return `<tr>
+      <td>${k.id}</td>
+      <td style="max-width:200px;overflow:hidden;text-overflow:ellipsis">${esc(keywords)}</td>
+      <td style="max-width:300px;overflow:hidden;text-overflow:ellipsis">${esc(k.answer)}</td>
+      <td>${k.language}</td>
+      <td>
+        <button onclick="editKB(${k.id})" style="background:none;border:none;color:var(--accent);cursor:pointer">編輯</button>
+        <button onclick="deleteKB(${k.id})" style="background:none;border:none;color:var(--red);cursor:pointer">刪除</button>
+      </td>
+    </tr>`;
+  }).join('') || '<tr><td colspan="5" class="empty">尚無問答</td></tr>';
+}
+function showKBModal(entry = null) {
+  const isEdit = !!entry;
+  document.getElementById('modal-title').textContent = isEdit ? '編輯問答' : '新增問答';
+  let keywords = '';
+  if (entry) { try { keywords = JSON.parse(entry.keywords).join(', '); } catch(e) { keywords = entry.keywords; } }
+  document.getElementById('modal-body').innerHTML = `
+    <label>關鍵字（逗號分隔）</label><input id="kb-keywords" value="${esc(keywords)}">
+    <label>回答</label><textarea id="kb-answer" style="min-height:120px">${esc(entry?.answer||'')}</textarea>
+    <label>語言</label><select id="kb-lang"><option value="zh-TW"${entry?.language==='zh-TW'?' selected':''}>繁中</option><option value="en"${entry?.language==='en'?' selected':''}>English</option></select>
+  `;
+  document.getElementById('modal').classList.add('show');
+  document.getElementById('modal-save').onclick = async () => {
+    const data = {
+      keywords: document.getElementById('kb-keywords').value.split(',').map(s=>s.trim()).filter(Boolean),
+      answer: document.getElementById('kb-answer').value,
+      language: document.getElementById('kb-lang').value,
+    };
+    if (!data.answer) return alert('回答必填');
+    try {
+      if (isEdit) {
+        await api(`/api/kb/${entry.id}`, { method: 'PUT', body: JSON.stringify(data) });
+      } else {
+        await api('/api/kb', { method: 'POST', body: JSON.stringify(data) });
+      }
+      closeModal(); loadKB();
+    } catch(e) { alert('錯誤: ' + e.message); }
+  };
+}
+async function editKB(id) {
+  const entry = allKB.find(k => k.id === id);
+  if (entry) showKBModal(entry);
+}
+async function deleteKB(id) {
+  if (!confirm('確定刪除此問答？')) return;
+  try { await api(`/api/kb/${id}`, { method: 'DELETE' }); loadKB(); } catch(e) { alert(e.message); }
+}
+
+// ─── Users ───
+async function loadUsers() {
+  try {
+    const d = await api('/api/users?per_page=200');
+    allUsers = d.items || d;
+    renderUsers(allUsers);
+  } catch(e) { document.getElementById('users-body').innerHTML = `<tr><td colspan="6" class="empty">${e.message}</td></tr>`; }
+}
+function renderUsers(items) {
+  document.getElementById('users-body').innerHTML = items.map(u => `<tr>
+    <td>${u.id}</td>
+    <td>${esc(u.username||u.name||'')}</td>
+    <td>${esc(u.email||'')}</td>
+    <td>${u.is_admin ? '<span class="badge badge-blue">管理員</span>' : '-'}</td>
+    <td><span class="badge badge-green">啟用</span></td>
+    <td></td>
+  </tr>`).join('') || '<tr><td colspan="6" class="empty">尚無使用者</td></tr>';
+}
+
+// ─── Contacts ───
+async function loadContacts() {
+  try {
+    const d = await api('/api/contacts?per_page=100');
+    allContacts = d.items || [];
+    renderContacts(allContacts);
+  } catch(e) { document.getElementById('contacts-body').innerHTML = `<tr><td colspan="5" class="empty">${e.message}</td></tr>`; }
+}
+function renderContacts(items) {
+  document.getElementById('contacts-body').innerHTML = items.map(c => `<tr>
+    <td>${esc(c.name)}</td>
+    <td>${esc(c.contact||c.company||'')}</td>
+    <td>${esc(c.email||'')}</td>
+    <td style="max-width:300px;overflow:hidden;text-overflow:ellipsis">${esc(c.message||'')}</td>
+    <td>${c.created_at||''}</td>
+  </tr>`).join('') || '<tr><td colspan="5" class="empty">尚無諮詢單</td></tr>';
+}
+
+// ─── Utils ───
+function esc(s) { const d = document.createElement('div'); d.textContent = s||''; return d.innerHTML; }
+function closeModal() { document.getElementById('modal').classList.remove('show'); }
+document.getElementById('modal').addEventListener('click', e => { if (e.target === e.currentTarget) closeModal(); });
+
+// Load dashboard on start
+loadDashboard();
+</script>
+</body>
+</html>

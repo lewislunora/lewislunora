@@ -18,7 +18,7 @@ DB_TABLES = [
     "comments", "reactions", "feed_posts", "community_threads",
     "community_replies", "article_views", "promo_queue",
     "social_identities", "conversations", "messages", "follows",
-    "incoming_messages",
+    "incoming_messages", "pages",
 ]
 
 
@@ -390,6 +390,22 @@ def init_db():
             created_at TEXT DEFAULT (datetime('now'))
         );
 
+        CREATE TABLE IF NOT EXISTS pages (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            slug TEXT NOT NULL UNIQUE,
+            title TEXT NOT NULL,
+            description TEXT DEFAULT '',
+            body TEXT DEFAULT '',
+            meta_title TEXT DEFAULT '',
+            meta_description TEXT DEFAULT '',
+            meta_image TEXT DEFAULT '',
+            layout TEXT DEFAULT 'default',
+            status TEXT DEFAULT 'draft',
+            sort_order INTEGER DEFAULT 0,
+            created_at TEXT DEFAULT (datetime('now')),
+            updated_at TEXT DEFAULT (datetime('now'))
+        );
+
         INSERT OR IGNORE INTO ai_templates (name, prompt_template, platform, category) VALUES
         ('社群貼文', '以{language}寫一篇關於{topic}的社群貼文，語氣{style}，長度約{length}字。加入3-5個相關hashtag。', 'facebook', 'social'),
         ('品牌文章', '以{language}寫一篇關於{topic}的品牌部落格文章，字數約{length}字，語氣{style}。包含引言、主體和結語。', 'blog', 'content'),
@@ -420,6 +436,11 @@ def init_db():
             conn.execute(f"ALTER TABLE {table} ADD COLUMN user_id INTEGER DEFAULT NULL")
         except sqlite3.OperationalError:
             pass
+    # Admin role
+    try:
+        conn.execute("ALTER TABLE users ADD COLUMN is_admin INTEGER DEFAULT 0")
+    except sqlite3.OperationalError:
+        pass
     conn.commit()
     conn.close()
 
