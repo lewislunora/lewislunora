@@ -63,12 +63,12 @@
   window.toggleFollow = function (uid, btn) {
     var following = btn.textContent.indexOf('追蹤中') >= 0;
     Social.requireLogin().then(function () {
-      return Social.api('/api/users/' + uid + (following ? '/follow' : '/follow'),
+      return Social.api('/api/users/' + uid + '/follow',
         { method: following ? 'DELETE' : 'POST', body: {} });
     }).then(function (r) {
       if (!r.ok) { Social.notify('請先登入'); return; }
       btn.textContent = following ? '+ 追蹤' : '✓ 追蹤中';
-      btn.classList.toggle('following', following);
+      btn.classList.toggle('following', !following);
     });
   };
 

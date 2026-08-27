@@ -400,7 +400,7 @@ async function loadTasks() {
     const res = await fetch(`${API}/tasks`, { headers: authHeaders() });
     if (res.status === 401) { handleLogout(); return; }
     const data = await res.json();
-    allTasks = data.tasks || [];
+    allTasks = data.tasks || data.items || [];
     renderTasks(allTasks);
   } catch (e) {
     document.getElementById('taskList').innerHTML = '<div class="empty-state"><span class="empty-icon">❌</span><p>載入失敗</p></div>';

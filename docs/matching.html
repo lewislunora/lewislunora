@@ -271,6 +271,7 @@ async function startMatching() {
       body: JSON.stringify({
         birth_datetime: `${date}T${time}:00`,
         gender: gender,
+        birthplace: document.getElementById('birthplace')?.value || '',
         preferences: preferences,
         personality: personality,
       }),
@@ -317,7 +318,7 @@ function renderReport(data) {
   // Day master info
   const dm = bazi.day_master;
   document.getElementById('dayMasterInfo').innerHTML = `
-    <p><strong>日主：</strong>${dm.name}（${dm.element}，${dm.polarity === '阳' ? '陽' : '陰'}）</p>
+    <p><strong>日主：</strong>${dm.name}（${dm.element}，${(['陽','阳'].includes(dm.polarity) ? '陽' : '陰')}）</p>
     <p><strong>性格特質：</strong>${dm.traits.join('、')}</p>`;
 
   // Five elements

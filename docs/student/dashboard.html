@@ -330,7 +330,8 @@ async function loadDashboard() {
     document.getElementById('statStreak').textContent = stats.streak ?? '-';
     document.getElementById('statRank').textContent = stats.rank ? `#${stats.rank}` : '-';
 
-    const txs = (txData.transactions || []).slice(0, 5);
+    const txsApprox = (txData.transactions || txData.items || []);
+    const txs = txsApprox.slice(0, 5);
     const list = document.getElementById('transactionList');
     if (txs.length === 0) {
       list.innerHTML = '<li style="text-align:center;padding:20px;color:#6666aa">尚無交易記錄</li>';

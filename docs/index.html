@@ -900,7 +900,7 @@ const LANG={
     step_1_title:'Free AI Audit',
     step_1_desc:'30-min online consultation to understand your pain points and evaluate AI automation opportunities.',
     step_2_title:'Custom Blueprint',
-    step_2_desc:'Design your专属 automation architecture and execution plan with clear deliverables.',
+    step_2_desc:'Design your custom automation architecture and execution plan with clear deliverables.',
     step_3_title:'Go Live',
     step_3_desc:'System built, tested, and launched. Continuous optimization for stable operation.',
     faq_label:'FAQ',
@@ -947,7 +947,7 @@ function handleContact(e){
   btn.disabled=true;btn.textContent='⏳ 發送中...';
   var api=location.hostname.includes('github.io')?'https://lewislunora.onrender.com/api/contact':'/api/contact';
   fetch(api,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({姓名:name,聯絡方式:contact,需求:need})})
-  .then(function(r){return r.json()})
+  .then(function(r){ if(!r.ok) throw new Error(r.status); return r.json(); })
   .then(function(d){
     btn.textContent='✅ 已送出！我們會盡快聯繫你';
     result.style.display='block';result.style.color='#00d4ff';

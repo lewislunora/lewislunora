@@ -242,6 +242,26 @@ def get_me(student: Student = Depends(get_current_student)):
     }
 
 
+class ChangePasswordRequest(BaseModel):
+    current_password: str
+    new_password: str
+
+
+@router.post("/auth/change-password")
+def change_password(
+    body: ChangePasswordRequest,
+    student: Student = Depends(get_current_student),
+    db: Session = Depends(get_db),
+):
+    if not _bcrypt.checkpw(body.current_password.encode("utf-8"), student.password_hash.encode("utf-8")):
+        raise HTTPException(status_code=400, detail="目前密碼不正確")
+    if len(body.new_password) < 6:
+        raise HTTPException(status_code=400, detail="新密碼至少 6 碼")
+    student.password_hash = _bcrypt.hashpw(body.new_password.encode("utf-8"), _bcrypt.gensalt()).decode("utf-8")
+    db.commit()
+    return {"ok": True}
+
+
 # ============ STUDENT ENDPOINTS ============
 
 

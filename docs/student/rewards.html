@@ -420,7 +420,7 @@ async function loadRewards() {
     const res = await fetch(`${API}/rewards`, { headers: authHeaders() });
     if (res.status === 401) { handleLogout(); return; }
     const data = await res.json();
-    allRewards = data.rewards || [];
+    allRewards = data.rewards || data.items || [];
     renderRewards(allRewards, balance);
   } catch(e) {
     document.getElementById('rewardGrid').innerHTML = '<div class="empty-state" style="grid-column:1/-1"><span class="empty-icon">❌</span><p>載入失敗</p></div>';
@@ -489,7 +489,7 @@ async function loadRedemptions() {
     if (res.status === 401) return;
     const data = await res.json();
     const list = document.getElementById('redemptionList');
-    const reds = data.redemptions || [];
+    const reds = data.redemptions || data.items || [];
     if (reds.length === 0) {
       list.innerHTML = '<div class="empty-state"><span class="empty-icon">📭</span><p>尚未兌換任何獎勵</p></div>';
       return;

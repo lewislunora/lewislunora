@@ -153,9 +153,9 @@ const API = '';
 
 (async function checkAdmin() {
   try {
-    const r = await fetch(API + '/api/auth/check', { credentials: 'include' });
+    const r = await fetch(API + '/api/admin/check', { credentials: 'include' });
     const d = await r.json();
-    if (!d.authenticated || !d.user?.is_admin) {
+    if (!d.admin) {
       alert('需要管理員權限');
       location.href = '../login.html';
       return;
@@ -199,6 +199,7 @@ function loadTab(tab) {
 async function api(path, opts = {}) {
   const r = await fetch(API + path, {
     headers: { 'Content-Type': 'application/json', ...opts.headers },
+    credentials: 'include',
     ...opts
   });
   if (!r.ok) { const e = await r.json().catch(() => ({})); throw new Error(e.detail || e.message || r.statusText); }
@@ -218,7 +219,7 @@ async function loadDashboard() {
     document.getElementById('stats').innerHTML = `
       <div class="stat-card"><div class="num">${pages.total}</div><div class="label">頁面</div></div>
       <div class="stat-card"><div class="num">${content.total}</div><div class="label">內容</div></div>
-      <div class="stat-card"><div class="num">${kb.length || 0}</div><div class="label">知識庫問答</div></div>
+      <div class="stat-card"><div class="num">${(kb.items ? kb.items.length : kb.length) || 0}</div><div class="label">知識庫問答</div></div>
       <div class="stat-card"><div class="num">${contacts.total || 0}</div><div class="label">諮詢單</div></div>
       <div class="stat-card"><div class="num">${status.ai_available ? '✅' : '❌'}</div><div class="label">AI 狀態</div></div>
     `;
@@ -394,11 +395,35 @@ async function deleteAccount(id) {
   if (!confirm('確定刪除此帳號？')) return;
   try { await api(`/api/accounts/${id}`, { method: 'DELETE' }); loadAccounts(); } catch(e) { alert(e.message); }
 }
+function showAccountModal() {
+  document.getElementById('modal-title').textContent = '新增帳號';
+  document.getElementById('modal-body').innerHTML = `
+    <label>平台</label><select id="acct-platform"><option value="facebook">Facebook</option><option value="instagram">Instagram</option><option value="youtube">YouTube</option><option value="tiktok">TikTok</option><option value="x">X</option><option value="line">LINE</option><option value="telegram">Telegram</option></select>
+    <label>名稱</label><input id="acct-label" placeholder="例：主帳號">
+    <label>Token / 憑證</label><textarea id="acct-token" style="min-height:80px" placeholder="API token 或憑證"></textarea>
+    <label>帳號 ID</label><input id="acct-ref" placeholder="可選，FB/IG page id 等">
+    <label><input type="checkbox" id="acct-enabled" checked> 啟用</label>
+  `;
+  document.getElementById('modal').classList.add('show');
+  document.getElementById('modal-save').onclick = async () => {
+    const data = {
+      platform: document.getElementById('acct-platform').value,
+      label: document.getElementById('acct-label').value,
+      token: document.getElementById('acct-token').value,
+      ref_id: document.getElementById('acct-ref').value,
+      enabled: document.getElementById('acct-enabled').checked
+    };
+    if (!data.label) return alert('名稱必填');
+    try { await api('/api/accounts', { method: 'POST', body: JSON.stringify(data) }); closeModal(); loadAccounts(); }
+    catch(e) { alert('錯誤: ' + e.message); }
+  };
+}
 
 // ─── KB ───
 async function loadKB() {
   try {
-    allKB = await api('/api/kb');
+    const d = await api('/api/kb');
+    allKB = Array.isArray(d) ? d : (d.items || []);
     renderKB(allKB);
   } catch(e) { document.getElementById('kb-body').innerHTML = `<tr><td colspan="5" class="empty">${e.message}</td></tr>`; }
 }

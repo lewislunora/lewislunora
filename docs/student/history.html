@@ -276,7 +276,7 @@ async function loadHistory() {
     document.getElementById('totalSpent').textContent = points.total_spent || 0;
     document.getElementById('currentBalance').textContent = points.balance || 0;
     document.getElementById('headerPoints').textContent = points.balance || 0;
-    allTxs = txData.transactions || [];
+    allTxs = txData.transactions || txData.items || [];
     renderFiltered();
   } catch(e) {
     document.getElementById('txList').innerHTML = '<div class="empty-state"><span class="empty-icon">❌</span><p>載入失敗</p></div>';

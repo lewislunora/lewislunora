@@ -345,7 +345,7 @@ async function handlePasswordChange(e) {
       body: JSON.stringify({ current_password: current, new_password: newPw })
     });
     const data = await res.json();
-    if (!res.ok) { showToast(data.error || '修改失敗', 'error'); btn.disabled = false; btn.textContent = '確認修改'; return; }
+    if (!res.ok) { showToast(data.detail || data.error || '修改失敗', 'error'); btn.disabled = false; btn.textContent = '確認修改'; return; }
     showToast('密碼修改成功！');
     closePasswordModal();
   } catch(e) {
