@@ -16,6 +16,28 @@
 <meta property="og:url" content="/">
 <meta property="og:type" content="website">
 <meta name="twitter:card" content="summary_large_image">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Person",
+  "name": "Lewis Lunora",
+  "alternateName": "翔川 Neo",
+  "jobTitle": "Founder · Chief Architect · AI Automation Consultant",
+  "description": "10+ 年 DevOps、Kubernetes、GCP 雲端架構與 AI 系統整合。協助一人公司建置 24/7 AI 自動化系統。",
+  "knowsAbout": ["Kubernetes", "Docker", "GCP", "CI/CD", "AI integration", "AI automation", "solopreneur systems"],
+  "url": "https://lewislunora.onrender.com/",
+  "sameAs": [
+    "https://github.com/lewislunora",
+    "https://t.me/lewislunora"
+  ],
+  "worksFor": {
+    "@type": "ProfessionalService",
+    "name": "翔川 Neo",
+    "description": "AI 自動化與技術架構服務，專為一人公司與超級個體設計",
+    "priceRange": "NT$30K - NT$150K"
+  }
+}
+</script>
 <link rel="stylesheet" href="widget.css?v=20260801">
 <style>
 *{margin:0;padding:0;box-sizing:border-box;scroll-behavior:smooth}
@@ -342,8 +364,7 @@ nav::before{
 .plan-note{text-align:center;color:rgba(255,255,255,.3);font-size:var(--fs-xs);margin-top:1.2rem;letter-spacing:.3px}
 
 /* Results — concrete metrics */
-.results-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:.7rem;max-width:800px;margin:0 auto}
-.result-card{background:linear-gradient(160deg,rgba(255,255,255,.05),rgba(255,255,255,.015));border:1px solid rgba(0,212,255,.09);border-radius:var(--radius-md);padding:1.5rem;text-align:center;transition:all .3s;backdrop-filter:blur(8px);box-shadow:inset 0 1px 0 rgba(255,255,255,.06)}
+.results-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:.7rem;max-width:800px;margin:0 auto}.result-card{background:linear-gradient(160deg,rgba(255,255,255,.05),rgba(255,255,255,.015));border:1px solid rgba(0,212,255,.09);border-radius:var(--radius-md);padding:1.5rem;text-align:center;transition:all .3s;backdrop-filter:blur(8px);box-shadow:inset 0 1px 0 rgba(255,255,255,.06)}
 .result-card:hover{background:linear-gradient(160deg,rgba(0,212,255,.08),rgba(123,104,238,.04));border-color:rgba(0,212,255,.2);transform:translateY(-3px);box-shadow:0 8px 24px rgba(0,212,255,.08)}
 .result-num{font-size:var(--fs-hero);font-weight:800;background:linear-gradient(135deg,#00d4ff,#7b68ee);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:.3rem}
 .result-label{font-size:var(--fs-xs);color:rgba(255,255,255,.3);letter-spacing:.5px}
@@ -360,6 +381,43 @@ nav::before{
 .founder-chips{display:flex;gap:.35rem;flex-wrap:wrap}
 .founder-chips .chip{display:inline-flex;align-items:center;gap:3px;background:var(--glass-bg);border:1px solid var(--glass-border);border-radius:6px;padding:.3rem .8rem;font-size:12px;color:rgba(255,255,255,.4);letter-spacing:.3px;backdrop-filter:blur(4px);transition:all .2s}
 .founder-chips .chip:hover{background:var(--glass-hover);border-color:rgba(0,212,255,.12);color:#fff}
+
+/* ─── Personal Brand Showcase ─── */
+/* Achievement metric strip */
+.achieve-strip{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:.7rem;max-width:960px;margin:1.2rem auto 0}
+.achieve-item{background:linear-gradient(160deg,rgba(0,212,255,.07),rgba(123,104,238,.04));border:1px solid rgba(0,212,255,.12);border-radius:var(--radius-md);padding:1.1rem 1.2rem;text-align:center;backdrop-filter:blur(10px);box-shadow:inset 0 1px 0 rgba(255,255,255,.06);transition:all .3s}
+.achieve-item:hover{transform:translateY(-3px);border-color:rgba(0,212,255,.28)}
+.achieve-num{font-size:1.7rem;font-weight:800;background:linear-gradient(135deg,#00d4ff,#7b68ee);-webkit-background-clip:text;-webkit-text-fill-color:transparent;display:block;line-height:1.1}
+.achieve-label{font-size:11px;color:rgba(255,255,255,.4);letter-spacing:.3px;margin-top:.25rem;display:block}
+/* Case study cards */
+.case-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:.9rem;max-width:960px;margin:0 auto}
+.case-card{background:var(--glass-bg);border:1px solid var(--glass-border);border-radius:var(--radius-lg);padding:1.5rem;display:flex;flex-direction:column;position:relative;backdrop-filter:blur(10px);box-shadow:inset 0 1px 0 rgba(255,255,255,.06);transition:all .3s}
+.case-card:hover{transform:translateY(-4px);border-color:rgba(0,212,255,.25);box-shadow:0 8px 30px rgba(0,212,255,.08)}
+.case-industry{font-size:11px;font-weight:700;letter-spacing:1px;color:#00d4ff;text-transform:uppercase;margin-bottom:.4rem}
+.case-title{font-size:var(--fs-base);font-weight:600;margin-bottom:.3rem}
+.case-prob{font-size:var(--fs-xs);color:rgba(255,255,255,.35);margin-bottom:.8rem;line-height:1.5}
+.case-sol{font-size:var(--fs-xs);color:rgba(255,255,255,.45);margin-bottom:1rem;line-height:1.6;flex-grow:1}
+.case-sol strong{color:#7b68ee}
+.case-metric{display:inline-flex;align-items:center;gap:.4rem;background:linear-gradient(135deg,rgba(0,212,255,.12),rgba(123,104,238,.1));border:1px solid rgba(0,212,255,.15);border-radius:8px;padding:.35rem .7rem;font-size:12px;color:#00d4ff;font-weight:700;margin-right:.4rem;margin-bottom:.3rem}
+/* Work / portfolio cards */
+.work-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:.8rem;max-width:960px;margin:0 auto}
+.work-card{background:linear-gradient(160deg,rgba(255,255,255,.04),rgba(255,255,255,.01));border:1px solid rgba(0,212,255,.1);border-radius:var(--radius-md);padding:1.3rem;display:flex;flex-direction:column;gap:.5rem;backdrop-filter:blur(8px);transition:all .3s;box-shadow:inset 0 1px 0 rgba(255,255,255,.05)}
+.work-card:hover{transform:translateY(-3px);border-color:rgba(0,212,255,.28);background:linear-gradient(160deg,rgba(0,212,255,.07),rgba(123,104,238,.04))}
+.work-icon{font-size:1.6rem}
+.work-title{font-size:var(--fs-sm);font-weight:600}
+.work-desc{font-size:var(--fs-xs);color:rgba(255,255,255,.35);line-height:1.5;flex-grow:1}
+.work-link{font-size:var(--fs-xs);color:#00d4ff;font-weight:600;text-decoration:none}
+.work-link:hover{text-decoration:underline}
+/* Verified credential chips */
+.cred-row{display:flex;gap:.4rem;flex-wrap:wrap;margin-bottom:.8rem}
+.cred{display:inline-flex;align-items:center;gap:5px;background:rgba(0,212,255,.1);border:1px solid rgba(0,212,255,.14);border-radius:6px;padding:.28rem .7rem;font-size:12px;color:#00d4ff;font-weight:600;letter-spacing:.3px}
+.cred svg{width:13px;height:13px}
+/* Profile links row */
+.profile-links{display:flex;gap:.5rem;flex-wrap:wrap;margin-top:.4rem}
+.profile-links a{display:inline-flex;align-items:center;gap:6px;background:var(--glass-bg);border:1px solid var(--glass-border);border-radius:8px;padding:.4rem .9rem;font-size:13px;color:rgba(255,255,255,.65);text-decoration:none;transition:all .2s}
+.profile-links a:hover{background:var(--glass-hover);color:#fff;border-color:rgba(0,212,255,.2)}
+/* Hero personalities — my one-liner subhead */
+.hero-persona{margin-top:.9rem;text-align:center;font-size:var(--fs-base);font-weight:600;background:linear-gradient(135deg,#7b68ee,#00d4ff);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
 
 /* Process — 3 steps */
 .process-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:.7rem;max-width:800px;margin:0 auto}
@@ -449,13 +507,16 @@ footer .wrap{display:flex;flex-wrap:wrap;gap:.8rem;justify-content:space-between
   <div class="nav-brand"><em>翔川 Neo</em></div>
   <div class="nav-right">
     <div class="nav-links">
+      <a href="#achievements">成效</a>
+      <a href="#results">案例</a>
+      <a href="#work">作品</a>
       <a href="product/">方案</a>
       <a href="ai-code-review/">AI 審碼</a>
-      <a href="matching.html">AI 配對</a>
-      <a href="games/">遊戲</a>
-      <a href="guides/">知識</a>
       <a href="#about">關於我</a>
       <a href="#contact" style="color:#00d4ff;font-weight:600">預約諮詢</a>
+      <a href="games/">遊戲</a>
+      <a href="guides/">知識</a>
+      <a href="matching.html">AI 配對</a>
       <select class="lang-select" onchange="switchLang(this.value)">
         <option value="zh-TW">繁中</option>
         <option value="en">EN</option>
@@ -471,6 +532,7 @@ footer .wrap{display:flex;flex-wrap:wrap;gap:.8rem;justify-content:space-between
   <div class="hero-badge">AI 自動化 · 一人公司專屬</div>
   <h1><span class="line1">每天幫你省下 4 小時</span><span class="line2">的 AI 自動化系統</span></h1>
   <p>從 AI 智能客服到行銷自動化，幫你把重複庶務交給系統，專注在真正賺錢的核心業務。已協助多位超級個體打造 24/7 自動化賺錢引擎。</p>
+  <div class="hero-persona">我是 <b>Lewis Lunora</b> — 10+ 年 DevOps 架構師 × AI 整合 × 一人公司實戰</div>
   <div class="hero-actions">
     <a href="#contact" class="btn btn-primary">📩 免費預約 30 分鐘 AI 盤點</a>
     <a href="#contact" class="btn btn-line">💬 免費諮詢</a>
@@ -492,6 +554,54 @@ footer .wrap{display:flex;flex-wrap:wrap;gap:.8rem;justify-content:space-between
     <div class="ai-float ai-float-1">⚡ 自動回覆</div>
     <div class="ai-float ai-float-2">🤖 AI 排程</div>
     <div class="ai-float ai-float-3">📊 報表</div>
+  </div>
+</section>
+
+<!-- Achievements — concrete, verifiable metrics -->
+<section class="section" id="achievements" style="padding-top:1.4rem">
+  <div class="wrap">
+    <div class="section-label">量化成效</div>
+    <h2 class="section-title">讓數據替我說話</h2>
+    <div class="achieve-strip">
+      <div class="achieve-item"><span class="achieve-num">10+</span><span class="achieve-label">年 DevOps / 雲端架構經驗</span></div>
+      <div class="achieve-item"><span class="achieve-num">【待補】</span><span class="achieve-label">已完成接案專案</span></div>
+      <div class="achieve-item"><span class="achieve-num">【待補】</span><span class="achieve-label">AI 客服月處理訊息</span></div>
+      <div class="achieve-item"><span class="achieve-num">【待補】</span><span class="achieve-label">每月替客戶省下工時</span></div>
+      <div class="achieve-item"><span class="achieve-num">99.9%</span><span class="achieve-label">系統可用性目標</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- Results — anonymized case studies -->
+<section class="section" id="results">
+  <div class="wrap">
+    <div class="section-label">實際成果案例</div>
+    <h2 class="section-title">我幫客戶解決了什麼</h2>
+    <p class="section-sub" style="max-width:640px;margin:0 auto 1.4rem;text-align:center">以下案例皆已匿名處理，只呈現問題、做法與可量化成效。</p>
+    <div class="case-grid">
+      <div class="case-card">
+        <div class="case-industry">【待補】產業</div>
+        <div class="case-title">【待補】案例標題</div>
+        <div class="case-prob">【待補】客戶原本遇到的問題 / 瓶頸</div>
+        <div class="case-sol"><strong>做法：</strong>【待補】我做了什麼（技術方案）</div>
+        <div><span class="case-metric">【待補】成效指標</span></div>
+      </div>
+      <div class="case-card">
+        <div class="case-industry">【待補】產業</div>
+        <div class="case-title">【待補】案例標題</div>
+        <div class="case-prob">【待補】客戶原本遇到的問題 / 瓶頸</div>
+        <div class="case-sol"><strong>做法：</strong>【待補】我做了什麼（技術方案）</div>
+        <div><span class="case-metric">【待補】成效指標</span></div>
+      </div>
+      <div class="case-card">
+        <div class="case-industry">【待補】產業</div>
+        <div class="case-title">【待補】案例標題</div>
+        <div class="case-prob">【待補】客戶原本遇到的問題 / 瓶頸</div>
+        <div class="case-sol"><strong>做法：</strong>【待補】我做了什麼（技術方案）</div>
+        <div><span class="case-metric">【待補】成效指標</span></div>
+      </div>
+    </div>
+    <p style="text-align:center;margin-top:1.4rem"><a href="#contact" class="btn btn-outline">想了解我能為你做什麼？免費聊聊</a></p>
   </div>
 </section>
 
@@ -656,16 +766,63 @@ footer .wrap{display:flex;flex-wrap:wrap;gap:.8rem;justify-content:space-between
         <div class="founder-avatar">L</div>
         <div class="founder-info">
           <h3>Lewis Lunora — 你的技術後盾</h3>
-          <div class="title">創辦人 · 首席架構師</div>
-          <p>10+ 年 DevOps、Kubernetes、GCP 雲端架構與 AI 系統整合經驗。我不只懂技術，更懂如何把複雜的技術轉化為一人公司的變現工具。</p>
+          <div class="title">創辦人 · 首席架構師 · 一人公司實戰者</div>
+          <p>10+ 年 DevOps、Kubernetes、GCP 雲端架構與 AI 系統整合經驗。我不只懂技術，更懂如何把複雜的技術轉化為一人公司的變現工具 — 因為我自己就是把「技術 → 產品 → 內容 → 收入」整條路走一遍的實戰者。</p>
+          <div class="cred-row">
+            <span class="cred"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2l3 3 3-3 1.5 4 4 1.5-3 3 3 3-4 1.5-1.5 4-3-3-3 3-1.5-4-4-1.5 3-3-3-3 4-1.5 1.5-4z"/><circle cx="12" cy="12" r="3"/></svg>Kubernetes</span>
+            <span class="cred"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2l3 3 3-3 1.5 4 4 1.5-3 3 3 3-4 1.5-1.5 4-3-3-3 3-1.5-4-4-1.5 3-3-3-3 4-1.5 1.5-4z"/><circle cx="12" cy="12" r="3"/></svg>GCP Cloud Architect</span>
+            <span class="cred"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2l3 3 3-3 1.5 4 4 1.5-3 3 3 3-4 1.5-1.5 4-3-3-3 3-1.5-4-4-1.5 3-3-3-3 4-1.5 1.5-4z"/><circle cx="12" cy="12" r="3"/></svg>Docker / CI/CD</span>
+            <span class="cred"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2l3 3 3-3 1.5 4 4 1.5-3 3 3 3-4 1.5-1.5 4-3-3-3 3-1.5-4-4-1.5 3-3-3-3 4-1.5 1.5-4z"/><circle cx="12" cy="12" r="3"/></svg>AI 系統整合</span>
+          </div>
           <div class="founder-chips">
             <span class="chip">☸️ Kubernetes</span>
             <span class="chip">🐳 Docker</span>
             <span class="chip">☁️ GCP</span>
             <span class="chip">⚙️ CI/CD</span>
             <span class="chip">🤖 AI 整合</span>
+            <span class="chip">🏗️ 一人公司實戰</span>
+          </div>
+          <div class="profile-links">
+            <a href="https://github.com/lewislunora" target="_blank" rel="noopener">GitHub ▸</a>
+            <a href="https://t.me/lewislunora" target="_blank" rel="noopener">Telegram ▸</a>
+            <a href="mailto:lewislunora@gmail.com">Email ▸</a>
           </div>
         </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Work — portfolio / output showcase -->
+<section class="section" id="work">
+  <div class="wrap">
+    <div class="section-label">作品與產出</div>
+    <h2 class="section-title">看得到、點得開的成果</h2>
+    <p class="section-sub" style="max-width:640px;margin:0 auto 1.4rem;text-align:center">不是空談，以下是可直接使用的工具、系統與內容。</p>
+    <div class="work-grid">
+      <div class="work-card">
+        <span class="work-icon">💬</span>
+        <div class="work-title">AI 智能客服系統</div>
+        <div class="work-desc">24/7 自動回覆、知識庫自增長、串接 LINE/Telegram/網站。</div>
+        <a class="work-link" href="ai-chat.html">立即體驗 →</a>
+      </div>
+      <div class="work-card">
+        <span class="work-icon">💞</span>
+        <div class="work-title">AI 理想型配對</div>
+        <div class="work-desc">結合八字與 AI 的性格配對分析工具。</div>
+        <a class="work-link" href="matching.html">立即體驗 →</a>
+      </div>
+      <div class="work-card">
+        <span class="work-icon">🎮</span>
+        <div class="work-title">23 款遊戲</div>
+        <div class="work-desc">從 AI 問答到多人對戰，展示前端與互動能力。</div>
+        <a class="work-link" href="games/">探索遊戲 →</a>
+      </div>
+      <div class="work-card">
+        <span class="work-icon">📖</span>
+        <div class="work-title">9 篇知識庫指南</div>
+        <div class="work-desc">AI 個人品牌、自動化系統、一人公司實戰方法論。</div>
+        <a class="work-link" href="guides/">閱讀指南 →</a>
       </div>
     </div>
   </div>
