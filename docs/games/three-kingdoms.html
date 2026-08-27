@@ -195,6 +195,8 @@ body {
   .title { font-size: 24px; }
   .faction-list { flex-direction: column; }
 }
+.btn-share{background:rgba(0,212,255,.12);border:1px solid rgba(0,212,255,.2);color:#00d4ff;font-size:.85rem;padding:10px 18px;cursor:pointer;border-radius:10px;font-weight:600;transition:all .2s;font-family:inherit}
+.btn-share:hover{background:rgba(0,212,255,.2)}
 </style>
 </head>
 <body>
@@ -509,6 +511,7 @@ body {
 })();
 </script>
 <script src="../share.js"></script>
-<div style="text-align:center;padding:20px"><a href="index.html" style="color:#00d4ff">← 返回遊戲大廳</a></div>
+<div style="text-align:center;padding:20px"><button class="btn-share" onclick="shareScore()">📤 分享分數</button></div>
+<div style="text-align:center;padding:0 20px 20px"><a href="index.html" style="color:#00d4ff">← 返回遊戲大廳</a></div>
 </body>
 </html>

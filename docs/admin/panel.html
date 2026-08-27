@@ -64,7 +64,7 @@ tr:hover{background:rgba(0,212,255,.03)}
     <a href="/admin/analytics.html">📈 流量分析</a>
     <a href="/admin/roam.html">🌐 網路遊尋</a>
     <a href="/admin/promo.html">📣 自動推廣</a>
-    <a href="/" style="margin-top:20px">← 回到首頁</a>
+    <a href="index.html" style="margin-top:20px">← 回到首頁</a>
   </nav>
 
   <div class="main">
@@ -150,10 +150,27 @@ tr:hover{background:rgba(0,212,255,.03)}
 
 <script>
 const API = '';
+
+(async function checkAdmin() {
+  try {
+    const r = await fetch(API + '/api/auth/check', { credentials: 'include' });
+    const d = await r.json();
+    if (!d.authenticated || !d.user?.is_admin) {
+      alert('需要管理員權限');
+      location.href = '../login.html';
+      return;
+    }
+  } catch (e) {
+    location.href = '../login.html';
+    return;
+  }
+  initPanel();
+})();
+
+function initPanel() {
 let currentTab = 'dashboard';
 let allPages = [], allContent = [], allAccounts = [], allKB = [], allUsers = [], allContacts = [];
 
-// Tab switching
 document.querySelectorAll('.sidebar a[data-tab]').forEach(a => {
   a.addEventListener('click', e => {
     e.preventDefault();
@@ -300,7 +317,7 @@ async function loadContent(status) {
 }
 function renderContent(items) {
   document.getElementById('content-body').innerHTML = items.map(c => {
-    const platforms = JSON.parse(c.platforms || '[]');
+    const platforms = (() => { try { return JSON.parse(c.platforms || '[]'); } catch(e) { return []; } })();
     return `<tr>
       <td><span class="badge ${c.status==='published'?'badge-green':c.status==='scheduled'?'badge-blue':'badge-orange'}">${c.status}</span></td>
       <td>${esc(c.title)}</td>
@@ -319,7 +336,7 @@ function showContentModal(content = null) {
   document.getElementById('modal-body').innerHTML = `
     <label>標題</label><input id="ct-title" value="${esc(content?.title||'')}">
     <label>內文</label><textarea id="ct-body" style="min-height:120px">${esc(content?.body||'')}</textarea>
-    <label>平台（逗號分隔）</label><input id="ct-platforms" value="${esc((JSON.parse(content?.platforms||'[]')).join(', '))}">
+    <label>平台（逗號分隔）</label><input id="ct-platforms" value="${esc((() => { try { return JSON.parse(content?.platforms||'[]'); } catch(e) { return []; } })().join(', '))}">
     <label>排程時間（可選）</label><input id="ct-schedule" type="datetime-local" value="${content?.scheduled_at||''}">
     <label>語言</label><select id="ct-lang"><option value="zh-TW"${content?.language==='zh-TW'?' selected':''}>繁中</option><option value="en"${content?.language==='en'?' selected':''}>English</option></select>
     <label>分類</label><input id="ct-category" value="${esc(content?.category||'')}">
@@ -333,7 +350,7 @@ function showContentModal(content = null) {
       scheduled_at: document.getElementById('ct-schedule').value || null,
       language: document.getElementById('ct-lang').value,
       category: document.getElementById('ct-category').value,
-      media_urls: content?.media_urls ? JSON.parse(content.media_urls) : [],
+      media_urls: content?.media_urls ? (() => { try { return JSON.parse(content.media_urls); } catch(e) { return []; } })() : [],
     };
     if (!data.title) return alert('標題必填');
     try {
@@ -482,6 +499,7 @@ document.getElementById('modal').addEventListener('click', e => { if (e.target =
 
 // Load dashboard on start
 loadDashboard();
+} // end initPanel
 </script>
 </body>
 </html>

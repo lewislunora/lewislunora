@@ -4,6 +4,11 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>21 點 — 翔川 Neo｜曜科技</title>
+<meta name="description" content="經典 21 點撲克比點遊戲，與莊家比點數！">
+<meta property="og:title" content="🃏 21 點 — 來挑戰我的分數！">
+<meta property="og:description" content="經典 21 點撲克比點遊戲，與莊家比點數！">
+<meta property="og:image" content="https://lewislunora.github.io/lewislunora/assets/og-game.png">
+<meta property="og:type" content="website">
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
 body{
@@ -71,6 +76,8 @@ footer a:hover{color:#f7971e}
   .actions button{font-size:.8rem;padding:8px}
   .chip{width:38px;height:38px;font-size:.65rem}
 }
+.btn-share{background:rgba(0,212,255,.12);border:1px solid rgba(0,212,255,.2);color:#00d4ff;font-size:.85rem;padding:10px 18px;cursor:pointer;border-radius:10px;font-weight:600;transition:all .2s;font-family:inherit}
+.btn-share:hover{background:rgba(0,212,255,.2)}
 </style>
 </head>
 <body>
@@ -115,6 +122,7 @@ footer a:hover{color:#f7971e}
     <span>🤝 和: <strong id="statP">0</strong></span>
     <span>💀 負: <strong id="statL">0</strong></span>
   </div>
+  <div style="margin:12px 0"><button class="btn-share" onclick="shareScore()">📤 分享分數</button></div>
   <footer><a href="index.html">← 返回遊戲大廳</a></footer>
 </div>
 <script>
@@ -308,6 +316,13 @@ function resetBalance(){
 }
 
 renderChips();updateBalance();updateBet();updateStats()
+window.shareScore = function() {
+  var msg = "🃏 我在 21 點餘額 " + format(balance) + " 分！勝" + stats.w + " / 和" + stats.p + " / 負" + stats.l + "。來挑戰我！";
+  var url = location.href;
+  if (navigator.share) { navigator.share({ title: "🃏 21 點 — 來挑戰我的分數！", text: msg, url: url }); }
+  else { shareToLine(url); }
+};
 </script>
+<script src="../share.js"></script>
 </body>
 </html>
