@@ -42,6 +42,7 @@ from ..services.social_auth import (
 from ..services.openclaw_agent import _handle_command as openclaw_handle, _is_authorized as openclaw_authorized
 from ..services.knowledge_base import get_kb_reply, save_unanswered, get_pending, auto_learn
 from ..services.analytics import track_async, summary as analytics_summary
+from ..services.story_generator import AIStoryGenerator
 
 app = FastAPI(
     title="翔川 Neo｜曜科技 行銷自動化系統",
@@ -162,6 +163,16 @@ class KBEntryCreate(BaseModel):
 class AIGenerateRequest(BaseModel):
     template: str = "社群貼文"
     variables: dict = {}
+
+
+class StoryRequest(BaseModel):
+    action: str = "short_drama"
+    theme: str = ""
+    tone: str = "狗血反转"
+    char_count: int = 2
+    length: str = "60秒"
+    style: str = "AI 奇幻"
+    script: str = ""
 
 
 class AccountCreate(BaseModel):
@@ -408,6 +419,24 @@ def ai_generate(data: AIGenerateRequest):
     if not ai_generator.is_available():
         return {"text": "⚠️ Groq API 未設定，請設定 GROQ_API_KEY 環境變數。", "fallback": True}
     result = ai_generator.generate(data.template, data.variables)
+    return {"text": result}
+
+
+@app.post("/api/ai/story")
+def ai_story(data: StoryRequest):
+    story = AIStoryGenerator()
+    if not story.is_available():
+        return {"text": "⚠️ GROQ_API_KEY 未設定，請在 Render 設定環境變數。", "fallback": True}
+    if data.action == "short_drama":
+        result = story.generate_short_drama(data.theme, data.char_count, data.length, data.tone)
+    elif data.action == "anime":
+        result = story.generate_anime_synopsis(data.theme, data.style)
+    elif data.action == "storyboard":
+        result = story.generate_storyboard_prompts(data.script)
+    elif data.action == "package":
+        result = story.package_publish(data.theme, data.tone)
+    else:
+        return {"text": f"❌ 未知 action: {data.action}（可用：short_drama / anime / storyboard / package）"}
     return {"text": result}
 
 
