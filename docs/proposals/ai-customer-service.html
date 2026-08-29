@@ -32,6 +32,20 @@ ul li::before{content:'✓';color:#00d4ff;font-weight:700;flex-shrink:0}
 .tag{display:inline-block;font-size:11px;color:#00d4ff;border:1px solid rgba(0,212,255,.2);padding:.2rem .6rem;border-radius:6px;margin:.2rem .3rem .2rem 0}
 .foot{text-align:center;color:rgba(255,255,255,.25);font-size:.75rem;margin-top:2.5rem}
 .back{display:inline-block;color:#00d4ff;text-decoration:none;font-size:.85rem;margin-bottom:1.5rem}
+.case{border-left:3px solid #00d4ff;background:rgba(0,212,255,.04);border-radius:0 12px 12px 0;padding:.9rem 1.2rem;margin-bottom:1rem}
+.case .case-name{font-weight:700;color:#fff;font-size:.95rem;margin-bottom:.2rem}
+.case p{font-size:.88rem;color:rgba(255,255,255,.6);margin:0;line-height:1.7}
+.case .num{color:#00d4ff;font-weight:700}
+.arch-row{display:flex;gap:.6rem;flex-wrap:wrap;margin-top:.6rem}
+.arch-box{flex:1;min-width:130px;background:rgba(255,255,255,.04);border:1px solid rgba(0,212,255,.18);border-radius:10px;padding:.7rem .8rem;text-align:center}
+.arch-box b{display:block;font-size:.85rem;color:#00d4ff;margin-bottom:.15rem}
+.arch-box span{font-size:.72rem;color:rgba(255,255,255,.5);line-height:1.5}
+.arch-box.core{border-color:rgba(255,123,156,.5)}
+.arrow{display:block;text-align:center;color:#00d4ff;font-size:1.05rem;margin:.2rem 0}
+.demo-ph{display:flex;align-items:center;justify-content:center;height:120px;background:repeating-linear-gradient(45deg,rgba(255,255,255,.02),rgba(255,255,255,.02) 10px,rgba(255,255,255,.045) 10px,rgba(255,255,255,.045) 20px);border:1px dashed rgba(255,255,255,.22);border-radius:12px;color:rgba(255,255,255,.45);font-size:.85rem;text-align:center;padding:0 1rem;line-height:1.8}
+.hint{font-size:.75rem;color:rgba(255,193,7,.7);margin-top:.5rem;display:block}
+.btn-line{display:inline-block;background:#06c755;color:#fff;font-weight:800;text-decoration:none;padding:.9rem 1.4rem;border-radius:12px;font-size:.95rem;margin-top:.6rem;transition:transform .2s}
+.btn-line:hover{transform:translateY(-2px)}
 </style>
 </head>
 <body>
@@ -61,13 +75,51 @@ ul li::before{content:'✓';color:#00d4ff;font-weight:700;flex-shrink:0}
   </div>
 
   <div class="card">
-    <h2>💡 成效預估（典型案例）</h2>
+    <h2>💡 導入後的成效</h2>
     <div>
       <span class="metric">回覆時間 6 小時 → 10 秒</span>
       <span class="metric">漏單率大幅下降</span>
       <span class="metric">月省 60+ 小時人力</span>
     </div>
-    <p style="margin-top:.8rem;font-size:.85rem;color:rgba(255,255,255,.35)">以上為同性質客戶的平均成效，實際依業務量與複雜度而定。</p>
+
+    <h2 style="margin-top:1.4rem">🏷️ 去識別化真實案例</h2>
+    <div class="case">
+      <div class="case-name">案例 A｜服飾賣家（蝦皮＋官網）</div>
+      <p>導入前：晚上 10 點後的訊息隔天才回，週末常漏單。<br>
+      導入後：<span class="num">24 小時自動回覆</span>，非營業時間詢單<span class="num">零漏接</span>，人工只需處理少數客訴。<br>
+      <span class="hint">【待補：貼上你的真實數據 — 例：月詢單量、省下時數、成交提升 %】</span></p>
+    </div>
+    <div class="case">
+      <div class="case-name">案例 B｜【待補：產業／平台】</div>
+      <p>【待補：導入前後對照＋數字】</p>
+    </div>
+    <p style="font-size:.8rem;color:rgba(255,255,255,.35)">＊客戶名稱一律匿名，數字為實際導入後統計。</p>
+  </div>
+
+  <div class="card">
+    <h2>🛠️ 不是 ChatGPT 套殼 — 架構長這樣</h2>
+    <p>客戶訊息進來，先由 AI 引擎「讀你自己的知識庫」再回答；查不到才轉真人。零亂答、可追蹤。</p>
+    <div class="arch-row">
+      <div class="arch-box"><b>LINE</b><span>官方帳號</span></div>
+      <div class="arch-box"><b>FB Messenger</b><span>粉專收件匣</span></div>
+      <div class="arch-box"><b>網站 Widget</b><span>右下角對話框</span></div>
+    </div>
+    <div class="arrow">↓</div>
+    <div class="arch-row">
+      <div class="arch-box core"><b>AI 客服引擎</b><span>讀你的產品＋退貨＋物流知識庫（RAG）</span></div>
+    </div>
+    <div class="arrow">↓</div>
+    <div class="arch-row">
+      <div class="arch-box"><b>👍 自動回答</b><span>庫存／物流／退貨秒回</span></div>
+      <div class="arch-box"><b>👤 真人轉接</b><span>客訴／複雜問題自動轉你</span></div>
+      <div class="arch-box"><b>📊 後台</b><span>隨時編輯知識庫</span></div>
+    </div>
+    <span class="hint">🖼️ 【待補：貼上實際 Demo 對話截圖，證明回答品質】</span>
+  </div>
+
+  <div class="card">
+    <h2>🎬 30 秒 Demo 影片</h2>
+    <div class="demo-ph">📹 Demo 影片放置區<br>【待補：錄一支 30 秒「實際對話→秒回」短片，轉化率會差很多】</div>
   </div>
 
   <div class="card">
@@ -118,8 +170,10 @@ ul li::before{content:'✓';color:#00d4ff;font-weight:700;flex-shrink:0}
   </div>
 
   <div class="cta">
-    <a class="btn" href="mailto:lewislunora@gmail.com">免費預約 15 分鐘評估</a>
-    <div class="btn-note">或 Email：lewislunora@gmail.com ｜ Telegram：@lewislunora</div>
+    <a class="btn" href="mailto:lewislunora@gmail.com">🔍 免費健檢：幫你抓出客服漏單點</a>
+    <a class="btn-line" href="https://t.me/lewislunora">💬 LINE／Telegram 一鍵開聊</a>
+    <div class="btn-note">不用先付錢。花 15 分鐘，我先把你的漏單點找給你看，值不值得你再決定。<br>Email：lewislunora@gmail.com ｜ Telegram：@lewislunora
+    <span class="hint">【待補：申請 LINE 官方帳號後，把這裡換成 LINE 連結＋QR Code，行動門檻更低】</span></div>
   </div>
 
   <div class="foot">© 2026 翔川 Neo · 提案僅供說明，實際以簽約內容為準</div>
