@@ -1,0 +1,27 @@
+{
+  "_說明": "翔川 Neo 付費入口設定檔。你申請金流帳號（綠界/統酷/Stripe/BuyMeACoffee）後，把對應付款網址填進『link』欄位即可。網站會自動套用。未填的用 _fill 佔位。",
+  "收款平台": "路線A - 現成站外金流（免審核最快）",
+  "付款方式": {
+    "綠界ECpay": { "狀態": "尚未註冊", "link": "_FILL_ECPAY_付款連結" },
+    "統酷Greensales": { "狀態": "尚未註冊", "link": "_FILL_GREENSALES_付款連結" },
+    "Stripe": { "狀態": "尚未註冊", "link": "_FILL_STRIPE_付款連結" },
+    "BuyMeACoffee": { "狀態": "尚未註冊", "link": "_FILL_BUYMEACOFFEE_頁面連結" }
+  },
+  "主收款平台": "_先註冊一個_（建議綠界ECpay 或 Stripe）",
+  "產品": {
+    "工具訂閱": {
+      "入門版(免費)": { "價格": "NT$0", "付費連結": "" },
+      "專業版": { "價格": "NT$890/月", "付費連結": "_FILL_專業版付款連結", "試用連結": "https://lewislunora.onrender.com/ai-chat.html" },
+      "企業版": { "價格": "NT$5,990/月", "付費連結": "_FILL_企業版付款連結", "試用連結": "https://lewislunora.onrender.com/admin/panel.html" }
+    },
+    "一次性課程": {
+      "AI短劇變現實操課": { "價格": "NT$1,500", "付費連結": "_FILL_課程付款連結", "總覽": "https://lewislunora.onrender.com/ai-story.html" },
+      "AI自動化系統課": { "價格": "NT$2,000", "付費連結": "_FILL_自動化課付款連結" }
+    },
+    "客製服務": {
+      "AI客服整合(入門)": { "價格": "NT$30,000起", "付費連結": "_FILL_提案付款連結", "提案": "https://lewislunora.onrender.com/proposals/ai-customer-service.html" },
+      "AI客服整合(成長)": { "價格": "NT$60,000起", "付費連結": "_FILL_提案付款連結" },
+      "AI客服整合(客製)": { "價格": "NT$120,000起", "付費連結": "_FILL_提案付款連結" }
+    }
+  }
+}

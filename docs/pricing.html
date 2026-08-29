@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>付費開通 | 翔川 Neo 產品與服務</title>
+<meta name="description" content="免費試用 AI 工具，進階訂閱、一次性課程、客製服務，三種方式支持並開通你的 AI 方案。">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Noto Sans TC",system-ui,sans-serif;background:#0a0e27;color:#e6e6e6;line-height:1.6}
+.wrap{max-width:880px;margin:0 auto;padding:2rem 1.4rem 4rem}
+.back{display:inline-block;color:#00d4ff;text-decoration:none;font-size:.85rem;margin-bottom:1.2rem}
+header{text-align:center;margin-bottom:2rem}
+h1{font-size:1.9rem;font-weight:800;background:linear-gradient(135deg,#00d4ff,#ff7b9c);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.sub{color:rgba(255,255,255,.5);font-size:1rem;margin-top:.5rem}
+.sec{margin-bottom:2.4rem}
+.sec h2{font-size:1.3rem;font-weight:700;color:#fff;margin-bottom:.3rem;display:flex;align-items:center;gap:.5rem}
+.sec .sec-sub{color:rgba(255,255,255,.4);font-size:.88rem;margin-bottom:1rem}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:1rem}
+.card{background:linear-gradient(160deg,rgba(255,255,255,.05),rgba(255,255,255,.015));border:1px solid rgba(0,212,255,.13);border-radius:16px;padding:1.4rem;display:flex;flex-direction:column}
+.card.featured{border-color:rgba(255,255,255,.35);background:linear-gradient(160deg,rgba(0,212,255,.12),rgba(255,123,156,.07))}
+.card .name{font-weight:700;font-size:1.05rem;color:#fff}
+.card .badge{display:inline-block;font-size:11px;font-weight:700;color:#0a0e27;background:linear-gradient(135deg,#00d4ff,#ff7b9c);padding:.12rem .55rem;border-radius:99px;margin-left:.4rem}
+.card .price{font-size:1.5rem;font-weight:800;background:linear-gradient(135deg,#00d4ff,#ff7b9c);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin:.5rem 0 .3rem}
+.card .price small{font-size:.85rem;-webkit-text-fill-color:rgba(255,255,255,.4);font-weight:400}
+.card ul{list-style:none;margin:.6rem 0 1rem;flex:1}
+.card ul li{color:rgba(255,255,255,.6);font-size:.88rem;padding:.25rem 0;display:flex;gap:.4rem}
+.card ul li::before{content:'✓';color:#00d4ff;font-weight:700}
+.btn{display:block;text-align:center;background:linear-gradient(135deg,#00d4ff,#ff7b9c);color:#0a0e27;font-weight:800;text-decoration:none;padding:.75rem;border-radius:11px;font-size:.98rem;transition:transform .18s}
+.btn:hover{transform:translateY(-2px)}
+.btn.try{background:rgba(255,255,255,.08);border:1px solid rgba(0,212,255,.3);color:#00d4ff}
+.btn.try:hover{background:rgba(0,212,255,.12)}
+.placeholder{display:block;text-align:center;background:rgba(255,255,255,.05);border:1px dashed rgba(255,255,255,.18);color:rgba(255,255,255,.35);font-size:.8rem;padding:.75rem;border-radius:11px}
+.foot{text-align:center;color:rgba(255,255,255,.3);font-size:.8rem;margin-top:2rem}
+.banner{background:rgba(255,193,7,.08);border:1px solid rgba(255,193,7,.22);border-radius:12px;padding:.9rem 1.1rem;font-size:.86rem;color:rgba(255,235,180,.85);margin-bottom:1.6rem}
+.banner b{color:#ffd34d}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <a class="back" href="../index.html">← 返回翔川 Neo</a>
+  <header>
+    <h1>開通你的方案</h1>
+    <div class="sub">先免費試用 → 再決定要不要升級</div>
+  </header>
+
+  <div class="banner" id="setupBanner" style="display:none">
+    ⚠️ <b>付款尚未串接完成。</b> 網站已把每個產品的<a href="#pricing">付費入口</a>準備好，等你申請金流帳號（建議<a href="#" onclick="return false">綠界 ECpay</a> 或 Stripe）後，把付款連結填進 <code>docs/data/payment-config.json</code>，對應的「立即付費」按鈕就會自動變為可點擊。
+  </div>
+
+  <div class="sec">
+    <h2>🧰 1. 免費試用工具</h2>
+    <div class="sec-sub">不用註冊、不用付費，直接體驗核心功能</div>
+    <div class="grid">
+      <div class="card">
+        <div class="name">AI 智能客服</div>
+        <div class="price">NT$0 <small>免費試用</small></div>
+        <ul><li>即時對話體驗</li><li>知識庫回覆</li><li>24/7 在線</li></ul>
+        <a class="btn try" href="../ai-chat.html">免費體驗 →</a>
+      </div>
+      <div class="card">
+        <div class="name">AI 創作工坊</div>
+        <div class="price">NT$0 <small>免費試用</small></div>
+        <ul><li>短劇腳本自動生成</li><li>動漫企劃</li><li>分鏡提示詞</li></ul>
+        <a class="btn try" href="../ai-story.html">免費體驗 →</a>
+      </div>
+      <div class="card">
+        <div class="name">AI 配對 / 命理</div>
+        <div class="price">NT$0 <small>免費試用</small></div>
+        <ul><li>性格配對分析</li><li>命理推演</li></ul>
+        <a class="btn try" href="../matching.html">免費體驗 →</a>
+      </div>
+    </div>
+  </div>
+
+  <div class="sec" id="pricing">
+    <h2>📡 2. 工具訂閱（月費制）</h2>
+    <div class="sec-sub">升級解鎖無限對話、知識庫、自動化</div>
+    <div class="grid">
+      <div class="card">
+        <div class="name">入門版</div>
+        <div class="price">NT$0 <small>/月</small></div>
+        <ul><li>AI 客服 50 次/天</li><li>10 條知識庫</li><li>基礎回覆模板</li></ul>
+        <a class="btn try" href="../product/index.html#pricing">了解詳情 →</a>
+      </div>
+      <div class="card featured">
+        <div class="name">專業版 <span class="badge">最受歡迎</span></div>
+        <div class="price">NT$890 <small>/月</small></div>
+        <ul><li>無限對話次數</li><li>500 條知識庫</li><li>LLM 驅動（Groq）</li><li>Web 管理後台</li></ul>
+        <a class="btn" data-pay="專業版">立即付費開通</a>
+      </div>
+      <div class="card">
+        <div class="name">企業版</div>
+        <div class="price">NT$5,990 <small>/月</small></div>
+        <ul><li>私有部署（k3s）</li><li>無限知識庫</li><li>SLA 99.9%</li><li>品牌 App 客製</li></ul>
+        <a class="btn" data-pay="企業版">立即付費開通</a>
+      </div>
+    </div>
+  </div>
+
+  <div class="sec">
+    <h2>🎓 3. 一次性課程</h2>
+    <div class="sec-sub">學完立即能實作的 AI 實戰課</div>
+    <div class="grid">
+      <div class="card">
+        <div class="name">AI 短劇變現實操課</div>
+        <div class="price">NT$1,500 <small>一次性</small></div>
+        <ul><li>腳本自動化</li><li>免費影片工具組合</li><li>平台變現門檻</li></ul>
+        <a class="btn" data-pay="AI短劇課">立即購買</a>
+      </div>
+      <div class="card">
+        <div class="name">AI 自動化系統課</div>
+        <div class="price">NT$2,000 <small>一次性</small></div>
+        <ul><li>客服機器人</li><li>行銷自動化</li><li>多平台發布</li></ul>
+        <a class="btn" data-pay="自動化課">立即購買</a>
+      </div>
+    </div>
+  </div>
+
+  <div class="sec">
+    <h2>🛠 4. 客製服務（高單價）</h2>
+    <div class="sec-sub">把 AI 客服直接植入你的業務</div>
+    <div class="grid">
+      <div class="card">
+        <div class="name">入門款</div>
+        <div class="price">NT$30,000 <small>起</small></div>
+        <ul><li>串 1 平台</li><li>吃產品資料</li><li>1 月保固</li></ul>
+        <a class="btn try" href="../proposals/ai-customer-service.html">看提案 →</a>
+      </div>
+      <div class="card featured">
+        <div class="name">成長款 <span class="badge">推薦</span></div>
+        <div class="price">NT$60,000 <small>起</small></div>
+        <ul><li>多平台</li><li>完整知識庫</li><li>後台管理</li></ul>
+        <a class="btn try" href="../mailto:lewislunora@gmail.com">Email 洽詢 →</a>
+      </div>
+      <div class="card">
+        <div class="name">客製款</div>
+        <div class="price">NT$120,000 <small>起</small></div>
+        <ul><li>串訂單/金流</li><li>高可用架構</li><li>優先支援</li></ul>
+        <a class="btn try" href="mailto:lewislunora@gmail.com">Email 洽詢 →</a>
+      </div>
+    </div>
+  </div>
+
+  <div class="foot">© 2026 翔川 Neo｜Lewis Lunora ｜ 先試用、滿意再付錢</div>
+</div>
+
+<script>
+let CONFIG = null;
+
+fetch('../data/payment-config.json').then(r=>r.json()).then(c=>{
+  CONFIG = c;
+  const filled = Object.values(c.產品)
+    .flatMap(g=>Object.values(g).map(p=>p.付費連結))
+    .some(l=>l && !String(l).startsWith('_FILL_') && String(l).startsWith('http'));
+  if (!filled) document.getElementById('setupBanner').style.display='block';
+  document.querySelectorAll('a[data-pay]').forEach(a=>{
+    const name = a.dataset.pay;
+    const link = findLink(name);
+    if (link) { a.href = link; a.target = '_blank'; }
+    else { a.replaceWith(tagPlaceholder(name)); }
+  });
+}).catch(()=>{ document.getElementById('setupBanner').style.display='block'; });
+
+function findLink(name){
+  if(!CONFIG) return null;
+  const group = findGroup(name);
+  if(!group) return null;
+  const key = Object.keys(group).find(k=>k.includes(name)||name.includes(k)||group[k].價格==='NT$890/月'||group[k].價格==='NT$5,990/月');
+  const target = key? group[key] : group[Object.keys(group)[0]];
+  const link = target && target.付費連結;
+  return (link && !String(link).startsWith('_FILL_') && String(link).startsWith('http')) ? link : null;
+}
+function findGroup(name){
+  if(!CONFIG) return null;
+  for(const g of Object.values(CONFIG.產品)){
+    for(const [k,v] of Object.entries(g)){
+      if(k.includes(name)||name.includes(k)||(v.價格&&String(v.價格).includes('890')&&name==='專業版')||(v.價格&&String(v.價格).includes('5,990')&&name==='企業版')) return g;
+    }
+  }
+  return null;
+}
+function tagPlaceholder(name){
+  const s = document.createElement('span');
+  s.className='placeholder';
+  s.textContent = `⏳ ${name} 付款待串接（申請金流後填入設定檔）`;
+  return s;
+}
+</script>
+</body>
+</html>
