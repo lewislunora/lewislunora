@@ -441,7 +441,8 @@ CREATE TABLE IF NOT EXISTS social_identities (
     if restore:
         conn.close()
         _restore_from_backup()
-        return
+
+    conn = _conn()
 
     # Migration: add missing columns
     for col, col_def in [("email", "TEXT DEFAULT ''"), ("salt", "TEXT DEFAULT ''"), ("token", "TEXT DEFAULT ''"),
