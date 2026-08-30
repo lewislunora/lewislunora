@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>全平台自動推廣 30 分鐘設定指南 | 翔川 Neo</title>
+<meta name="description" content="一次把 Telegram、LINE、Facebook、Instagram、X、Threads、Dcard、小紅書全部串上你的自動推廣排程器。">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Noto Sans TC",system-ui,sans-serif;background:#0a0e27;color:#e6e6e6;line-height:1.8}
+.wrap{max-width:760px;margin:0 auto;padding:2.4rem 1.5rem 5rem}
+h1{font-size:1.7rem;font-weight:800;background:linear-gradient(135deg,#00d4ff,#ff7b9c);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:.6rem}
+.lead{color:rgba(255,255,255,.55);font-size:1rem;margin-bottom:2rem}
+h2{font-size:1.2rem;color:#fff;margin:2rem 0 .8rem;display:flex;align-items:center;gap:.5rem}
+h2 .no{min-width:32px;height:32px;display:inline-flex;align-items:center;justify-content:center;background:linear-gradient(135deg,#00d4ff,#ff7b9c);color:#0a0e27;font-weight:800;border-radius:9px;font-size:1rem}
+.card{background:rgba(255,255,255,.04);border:1px solid rgba(0,212,255,.14);border-radius:14px;padding:1.2rem 1.4rem;margin-bottom:1rem}
+.card h3{color:#fff;font-size:1rem;margin-bottom:.3rem;display:flex;align-items:center;gap:.5rem}
+.desc{color:rgba(255,255,255,.45);font-size:.85rem;margin-bottom:.5rem}
+ol,ul{padding-left:1.3rem}
+li{margin:.3rem 0;font-size:.93rem}
+.step{color:#9fe8ff;font-weight:700}
+.warn{background:rgba(255,193,7,.07);border:1px solid rgba(255,193,7,.2);border-radius:10px;padding:.9rem 1.1rem;font-size:.86rem;color:rgba(255,235,180,.85);margin:1rem 0}
+.warn b{color:#ffd34d}
+.tip{background:rgba(125,255,176,.06);border:1px solid rgba(125,255,176,.18);border-radius:10px;padding:.9rem 1.1rem;font-size:.86rem;color:#7dffb0;margin:1rem 0}
+.howto{background:rgba(0,212,255,.05);border:1px dashed rgba(0,212,255,.25);border-radius:10px;padding:.9rem 1.1rem;font-size:.86rem;margin-top:.6rem}
+.howto b{color:#fff}
+code{background:rgba(0,212,255,.12);border:1px solid rgba(0,212,255,.2);border-radius:6px;padding:.1rem .4rem;color:#7fe9ff;font-size:.85rem}
+.done{color:#7dffb0;font-weight:700}
+a{color:#00d4ff}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>全平台自動推廣 30 分鐘設定指南</h1>
+  <div class="lead">你的系統已支援 Telegram、LINE、Facebook、Instagram、X、Threads、Dcard、小紅書自動發布。照下面步驟把每個平台的認證申請好、貼進後台，排程器就會自動替你發文。</div>
+
+  <h2><span class="no">0</span>先懂流程（30 秒）</h2>
+  <div class="card">
+    <ol>
+      <li>你到 <a href="/admin/platforms.html">後台 → 平台連線設定</a>，把每個平台的 token／帳號密碼貼上、儲存。</li>
+      <li>系統偵測到已連線平台 → 到 <a href="/admin/autopilot.html">自動推廣儀表板</a>，AI 生文、勾選平台、排時間、發布。</li>
+      <li>排程器每分鐘自動檢查，時間到了就發布到所有已勾選平台。<span class="done">全自動，之後你只負責「偶爾看看成效」。</span></li>
+    </ol>
+  </div>
+
+  <h2><span class="no">1</span>Telegram（5 分鐘）</h2>
+  <div class="card">
+    <h3>💬 抓你現成的 bot</h3>
+    <div class="desc">最簡單，不用申請。你原本就有一個 bot。</div>
+    <div class="howto">
+      <b>⚠️ 資安步驟：</b>你的舊 bot token 之前寫死在程式碼裡（已修）。請務必到 <code>@BotFather</code> 重新 <code>/newbot</code> 產生<strong>新 token</strong>，舊的即失效，然後：<br>
+      ① Render 後台 → 你的服務 → Environment → 加 <code>TELEGRAM_BOT_TOKEN=<新 token></code> ② 也在 <a href="/admin/platforms.html">平台連線設定</a> 貼一份。
+    </div>
+  </div>
+
+  <h2><span class="no">2</span>LINE（5 分鐘）</h2>
+  <div class="card">
+    <h3>💬 LINE Messaging API</h3>
+    <ol>
+      <li>到 <a href="https://developers.line.biz/console/" target="_blank" rel="noopener">LINE Developers</a> 登入 → 建立 Provider → 建立 Messaging API Channel。</li>
+      <li>取得 <strong>Channel Access Token</strong>（Messaging API 頁籤 → Issue）。</li>
+      <li>貼進 <a href="/admin/platforms.html">平台連線設定 → LINE</a>。</li>
+    </ol>
+  </div>
+
+  <h2><span class="no">3</span>Facebook 粉絲頁（10 分鐘）</h2>
+  <div class="card">
+    <h3>📘 Page Access Token</h3>
+    <ol>
+      <li>到 <a href="https://developers.facebook.com/devapps/" target="_blank" rel="noopener">Meta Developers</a> 建立 App（類型選 Business）。</li>
+      <li>App → 新增「Facebook Login for Business」，設權限 <code>pages_manage_posts</code>、<code>pages_read_engagement</code>。</li>
+      <li>用 Graph API Explorer → 選你的粉絲頁 → Generate Access Token（長效）。</li>
+      <li>貼進 <a href="/admin/platforms.html">平台連線設定 → Facebook</a>。</li>
+    </ol>
+  </div>
+
+  <h2><span class="no">4</span>Instagram（10 分鐘）</h2>
+  <div class="card">
+    <h3>📸 Instagram 商業帳號＋Meta Graph API</h3>
+    <ol>
+      <li>IG 帳號轉成<strong>商業帳號</strong>（設定 → 帳號類型 → 切換到商業）。</li>
+      <li>在 Meta Developers 同一個 App，用 Graph API Explorer 選你的 IG Business Account。</li>
+      <li>產生 token（需要 <code>instagram_basic</code>、<code>instagram_content_publish</code> 權限）。</li>
+      <li>貼進後台。<span class="desc" style="display:inline">（IG 貼文需附圖片，文字-only 會失敗）</span></li>
+    </ol>
+  </div>
+
+  <h2><span class="no">5</span>X / Twitter（10 分鐘）</h2>
+  <div class="card">
+    <h3>🐦 X API</h3>
+    <ol>
+      <li>到 <a href="https://developer.x.com/" target="_blank" rel="noopener">X Developer Portal</a> → 升級到 Free 計畫。</li>
+      <li>建立 App → Keys and tokens：<code>API Key</code>、<code>API Secret</code>、<code>Access Token</code>、<code>Access Secret</code> 四個全拿。</li>
+      <li>四格都貼進 <a href="/admin/platforms.html">平台連線設定 → X</a>。</li>
+    </ol>
+  </div>
+
+  <h2><span class="no">6</span>Threads（5 分鐘）</h2>
+  <div class="card">
+    <h3>🧵 帳號密碼直連</h3>
+    <div class="desc">用瀏覽器自動化登入發文。不用申請 API。</div>
+    <div class="howto"><b>注意：</b>填你 Threads 的帳號（username）與密碼到 <a href="/admin/platforms.html">平台連線設定 → Threads</a>。系統自動登入貼文。建議先用測試帳號試 1-2 次。<br>上次的 Threads 登入 session 若失效，只需重新儲存一次密碼。</div>
+  </div>
+
+  <h2><span class="no">7</span>Dcard、小紅書（5 分鐘）</h2>
+  <div class="card">
+    <h3>🪪 帳號密碼直連</h3>
+    <div class="desc">同樣用瀏覽器自動化。填 Email/帳號＋密碼即可。</div>
+    <div class="warn"><b>法規提醒：</b>社群平台多數禁止自動發文，且可能要求驗證碼（首登會擋）。請用「個人自用小帳」低頻發布（每天 1-2 篇），並以真人客服補充。若平台偵測到異常可能封鎖帳號，後果自負。</div>
+  </div>
+
+  <h2><span class="no">8</span>全部填完之後（2 分鐘）</h2>
+  <div class="card">
+    <ol>
+      <li>到 <a href="/admin/autopilot.html">自動推廣儀表板</a>，確認「已連線平台」列出你要的。</li>
+      <li>勾選平台 → AI 生成 → 設定發布時間 → 發布。</li>
+      <li>回「已排程/已發布」看狀態，失敗會顯示原因。</li>
+    </ol>
+    <div class="tip">💡 黃金節奏建議：每個平台每天 1-2 篇、錯開時間，內容用 AI 批量生產（日曆排程一次排一週）。</div>
+  </div>
+
+  <div class="lead">完成後 = 你的「AI 內容系統」每天都在替你發文到全世界。<br>有任何平台申請卡關，<a href="mailto:lewislunora@gmail.com">Email 我</a>。</div>
+</div>
+</body>
+</html>

@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>平台連線設定 | 翔川 Neo Admin</title>
+<meta name="description" content="一次設定所有社群平台的自動發布連線。">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Noto Sans TC",system-ui,sans-serif;background:#0a0e27;color:#e6e6e6;min-height:100vh;padding:2rem}
+.wrap{max-width:860px;margin:0 auto}
+h1{font-size:1.5rem;color:#fff;margin-bottom:.3rem}
+.sub{color:rgba(255,255,255,.45);font-size:.9rem;margin-bottom:1.6rem}
+.card{background:linear-gradient(160deg,rgba(255,255,255,.05),rgba(255,255,255,.015));border:1px solid rgba(0,212,255,.14);border-radius:14px;padding:1.4rem;margin-bottom:1.2rem}
+.card h2{font-size:1.02rem;color:#fff;margin-bottom:.5rem;display:flex;align-items:center;gap:.5rem;flex-wrap:wrap}
+.status{display:inline-block;font-size:11px;font-weight:700;border-radius:99px;padding:.12rem .55rem;margin-left:.4rem}
+.status.ok{background:rgba(125,255,176,.14);color:#7dffb0}
+.status.off{background:rgba(255,255,255,.08);color:rgba(255,255,255,.45)}
+.desc{color:rgba(255,255,255,.4);font-size:.82rem;margin-bottom:.7rem}
+label{display:block;font-size:.8rem;color:rgba(255,255,255,.55);margin:.6rem 0 .25rem}
+input{background:rgba(255,255,255,.06);border:1px solid rgba(0,212,255,.3);color:#fff;border-radius:9px;padding:.6rem .8rem;font-size:.88rem;width:100%}
+input::placeholder{color:rgba(255,255,255,.3)}
+.how{font-size:.8rem;color:#9fe8ff;background:rgba(0,212,255,.06);border:1px solid rgba(0,212,255,.2);border-radius:9px;padding:.6rem .8rem;margin-top:.6rem;line-height:1.7}
+.how a{color:#00d4ff}
+.btn{display:inline-block;background:linear-gradient(135deg,#00d4ff,#ff7b9c);color:#0a0e27;font-weight:800;border:none;border-radius:10px;padding:.55rem 1.2rem;cursor:pointer;font-size:.86rem;margin-top:.7rem}
+.btn:disabled{opacity:.4;cursor:not-allowed}
+.msg{font-size:.82rem;margin-top:.5rem;min-height:1.2em}
+.ok{color:#7dffb0}.err{color:#ff8a8a}
+.back{display:inline-block;color:#00d4ff;text-decoration:none;font-size:.85rem;margin-bottom:1rem}
+@media (max-width:600px){ body{padding:1rem} }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <a class="back" href="panel.html">← 回管理後台</a>
+  <h1>🌐 平台連線設定</h1>
+  <div class="sub">把各社群平台的認證填進來，排程器就會自動發布到已連線的平台。填了立即生效、不用重開機。</div>
+
+  <div id="list"><div style="color:rgba(255,255,255,.4)">載入中…</div></div>
+</div>
+
+<script>
+const API = '';
+const $ = id => document.getElementById(id);
+
+/* 每個平台的設定欄位定義 */
+const PLATFORMS = [
+  { id:'telegram',    name:'Telegram',        type:'token', desc:'用 @BotFather 建立 bot → 拿 token 貼上', fields:[{k:'bot_token',l:'Bot Token（123456:ABC...）'}], statusKey:k=>k.bot_token },
+  { id:'line',        name:'LINE',            type:'token', desc:'LINE Developers → Messaging API → Channel Access Token', fields:[{k:'access_token',l:'Channel Access Token'}], statusKey:k=>k.access_token },
+  { id:'facebook',    name:'Facebook 粉絲頁', type:'token', desc:'Meta Developer → 粉絲頁 → Page Access Token', fields:[{k:'page_token',l:'Page Access Token'}], statusKey:k=>k.page_token },
+  { id:'instagram',   name:'Instagram',       type:'token', desc:'Meta Graph API → Instagram Business Account token（貼文需附圖片）', fields:[{k:'access_token',l:'Instagram Access Token'}], statusKey:k=>k.access_token },
+  { id:'twitter',     name:'X / Twitter',     type:'token', desc:'X Developer Portal → 三個金鑰都貼上', fields:[{k:'api_key',l:'API Key'},{k:'api_secret',l:'API Secret'},{k:'access_token',l:'Access Token'},{k:'access_secret',l:'Access Secret'}], statusKey:k=>k.api_key&&k.api_secret },
+  { id:'threads',     name:'Threads',         type:'login', desc:'直接填你的帳號密碼（瀏覽器自動化登入貼文）', fields:[{k:'username',l:'Threads 帳號'},{k:'password',l:'Threads 密碼'}], statusKey:k=>k.username&&k.password },
+  { id:'dcard',       name:'Dcard',           type:'login', desc:'填你的 Dcard 帳號密碼', fields:[{k:'email',l:'Dcard Email'},{k:'password',l:'Dcard 密碼'}], statusKey:k=>k.email&&k.password },
+  { id:'xiaohongshu', name:'小紅書',          type:'login', desc:'填你的小紅書帳號密碼', fields:[{k:'username',l:'小紅書帳號'},{k:'password',l:'小紅書密碼'}], statusKey:k=>k.username&&k.password },
+];
+
+let accounts = [];
+
+(async function checkAdmin(){
+  try{
+    const r = await fetch(API + '/api/admin/check', {credentials:'include'});
+    const d = await r.json();
+    if(!d.admin){ alert('需要管理員權限'); location.href = '../login.html'; return; }
+  }catch(e){ location.href = '../login.html'; return; }
+  load();
+})();
+
+async function load(){
+  accounts = await api('/api/accounts');
+  render();
+}
+async function api(path, opts={}){
+  const r = await fetch(API + path, {headers:{'Content-Type':'application/json', ...opts.headers}, credentials:'include', ...opts});
+  if(!r.ok){ const e = await r.json().catch(()=>({})); throw new Error(e.detail || e.message || r.statusText); }
+  return r.json();
+}
+
+function credsFor(platformId){
+  const a = accounts.find(x=>x.platform===platformId);
+  if(!a) return {};
+  try{ return JSON.parse(a.credentials||'{}'); }catch(e){ return {}; }
+}
+
+function render(){
+  $('list').innerHTML = PLATFORMS.map(p=>{
+    const creds = credsFor(p.id);
+    const ok = p.statusKey(creds);
+    const badge = ok ? '<span class="status ok">已連線</span>' : '<span class="status off">未設定</span>';
+    const fields = p.fields.map(f=>`
+      <label>${f.l}</label>
+      <input id="${p.id}_${f.k}" type="password" value="${esc(creds[f.k]||'')}" data-k="${f.k}" autocomplete="off">
+    `).join('');
+    return `
+    <div class="card" id="card_${p.id}">
+      <h2>${p.name} ${badge}</h2>
+      <div class="desc">${p.desc}</div>
+      <div class="how" id="how_${p.id}"></div>
+      ${fields}
+      <button class="btn" onclick="save('${p.id}')">儲存設定</button>
+      ${ok?`<button class="btn" style="background:rgba(255,255,255,.07);border:1px solid rgba(0,212,255,.3);color:#00d4ff" onclick="remove('${p.id}')">清除</button>`:''}
+      <div class="msg" id="msg_${p.id}"></div>
+    </div>`;
+  }).join('');
+  PLATFORMS.forEach(p=>{
+    const how = HOWTO[p.id];
+    if(how && $('how_'+p.id)) $('how_'+p.id).innerHTML = how;
+  });
+}
+
+async function save(platformId){
+  const p = PLATFORMS.find(x=>x.id===platformId);
+  const creds = {};
+  p.fields.forEach(f=>{ creds[f.k] = ($(platformId+'_'+f.k).value||'').trim(); });
+  const existing = accounts.find(x=>x.platform===platformId);
+  const msg = $('msg_'+platformId);
+  try{
+    if(existing){
+      await api('/api/accounts/'+existing.id, {method:'PUT', body: JSON.stringify({credentials:creds})});
+    } else {
+      await api('/api/accounts', {method:'POST', body: JSON.stringify({platform:platformId, label:p.name, credentials:creds})});
+    }
+    msg.className='msg ok'; msg.textContent='✅ 已儲存並連線！排程器將自動發布到此平台。';
+    accounts = await api('/api/accounts'); render();
+  }catch(e){ msg.className='msg err'; msg.textContent='❌ '+e.message; }
+}
+
+async function remove(platformId){
+  const existing = accounts.find(x=>x.platform===platformId);
+  if(!existing) return;
+  if(!confirm('清除 '+platformId+' 的認證？')) return;
+  await api('/api/accounts/'+existing.id, {method:'DELETE'});
+  accounts = await api('/api/accounts'); render();
+}
+
+function esc(s){ return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/"/g,'&quot;'); }
+
+const HOWTO = {
+  telegram: '📖 <a href="https://t.me/BotFather" target="_blank" rel="noopener">@BotFather</a> → /newbot → 取名 → 取得 token。設完記得去 Render 環境變數也貼一份 TELEGRAM_BOT_TOKEN。',
+  line:    '📖 <a href="https://developers.line.biz/console/" target="_blank" rel="noopener">LINE Developers</a> → 你的 Provider/Channel → Messaging API → Long-lived access token。',
+  facebook:'📖 <a href="https://developers.facebook.com/" target="_blank" rel="noopener">Meta Developers</a> → 你的 App → 粉絲頁 → Generate Access Token（需 admin 權限）。',
+  instagram:'📖 Meta Graph API → 連動 IG 商業帳號 → 產生 access token（需先圖庫/整合貼文權限）。',
+  twitter: '📖 <a href="https://developer.x.com/" target="_blank" rel="noopener">X Developer Portal</a> → 你的 App → Keys and tokens → 複製 4 個金鑰。',
+  threads: '直接填帳號密碼即可。系統用 Playwright 自動登入發文。建議先用測試帳號。',
+  dcard:   '直接填 Email＋密碼。系統會自動登入發文（Dcard 可能要求驗證碼，首次需手動）。',
+  xiaohongshu:'直接填帳號密碼。系統自動登入發文。首次可能需手機驗證碼。',
+};
+</script>
+</body>
+</html>

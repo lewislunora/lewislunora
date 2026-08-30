@@ -6,7 +6,6 @@ import requests
 logger = logging.getLogger(__name__)
 
 TELEGRAM_NOTIFY_CHAT_ID = os.getenv("TELEGRAM_NOTIFY_CHAT_ID", "626453598")
-HARDCODED_BOT_TOKEN = "8653211794:AAG08xDDj0UDkX18TE60BQSVs-bwwVh8AH8"
 LINE_NOTIFY_TOKEN = os.getenv("LINE_NOTIFY_TOKEN", "")
 
 MAX_ATTEMPTS = int(os.getenv("NOTIFY_MAX_ATTEMPTS", "3"))
@@ -14,8 +13,7 @@ RETRY_BACKOFF_SECONDS = float(os.getenv("NOTIFY_RETRY_BACKOFF", "2"))
 
 
 def _get_bot_token():
-    token = os.getenv("TELEGRAM_BOT_TOKEN", "")
-    return token or HARDCODED_BOT_TOKEN
+    return os.getenv("TELEGRAM_BOT_TOKEN", "")
 
 
 def _send_with_retry(fn, label: str, attempts: int = MAX_ATTEMPTS, backoff: float = RETRY_BACKOFF_SECONDS,

@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>自動推廣儀表板 | 翔川 Neo Admin</title>
+<meta name="description" content="AI 生成內容 → 一鍵排程到全部已連線社群平台。">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Noto Sans TC",system-ui,sans-serif;background:#0a0e27;color:#e6e6e6;min-height:100vh;padding:2rem}
+.wrap{max-width:900px;margin:0 auto}
+h1{font-size:1.5rem;color:#fff;margin-bottom:.3rem}
+.sub{color:rgba(255,255,255,.45);font-size:.9rem;margin-bottom:1.6rem}
+.card{background:linear-gradient(160deg,rgba(255,255,255,.05),rgba(255,255,255,.015));border:1px solid rgba(0,212,255,.14);border-radius:14px;padding:1.4rem;margin-bottom:1.2rem}
+.card h2{font-size:1.02rem;color:#fff;margin-bottom:.5rem}
+.desc{color:rgba(255,255,255,.4);font-size:.82rem;margin-bottom:.7rem}
+label{display:block;font-size:.8rem;color:rgba(255,255,255,.55);margin:.6rem 0 .25rem}
+input,textarea,select{background:rgba(255,255,255,.06);border:1px solid rgba(0,212,255,.3);color:#fff;border-radius:9px;padding:.6rem .8rem;font-size:.88rem;width:100%}
+textarea{min-height:150px;line-height:1.6;font-family:inherit}
+select option{background:#0a0e27}
+.chips{display:flex;gap:.45rem;flex-wrap:wrap;margin-top:.6rem}
+.chip{background:rgba(255,255,255,.06);border:1px solid rgba(0,212,255,.2);color:#9fe8ff;border-radius:99px;padding:.25rem .7rem;font-size:.78rem;cursor:pointer}
+.chip:hover{background:rgba(0,212,255,.15)}
+.row{display:flex;gap:.7rem;flex-wrap:wrap}
+.row>div{flex:1;min-width:150px}
+.btn{display:inline-block;background:linear-gradient(135deg,#00d4ff,#ff7b9c);color:#0a0e27;font-weight:800;border:none;border-radius:10px;padding:.6rem 1.4rem;cursor:pointer;font-size:.9rem;margin-top:.9rem}
+.btn.ghost{background:rgba(255,255,255,.07);border:1px solid rgba(0,212,255,.3);color:#00d4ff}
+.btn:disabled{opacity:.4;cursor:not-allowed}
+.msg{font-size:.85rem;margin-top:.7rem;min-height:1.3em}
+.ok{color:#7dffb0}.err{color:#ff8a8a}
+.plat{cursor:pointer;display:inline-flex;align-items:center;gap:.35rem;background:rgba(255,255,255,.05);border:1px solid rgba(0,212,255,.18);border-radius:10px;padding:.4rem .7rem;font-size:.82rem;margin:.2rem}
+.plat.on{border-color:rgba(125,255,176,.4);background:rgba(125,255,176,.08)}
+.plat.off{opacity:.45}
+.status{display:inline-block;font-size:11px;font-weight:700;border-radius:99px;padding:.1rem .5rem}
+.status.ready{background:rgba(125,255,176,.14);color:#7dffb0}
+.status.none{background:rgba(255,255,255,.08);color:rgba(255,255,255,.45)}
+table{width:100%;border-collapse:collapse;font-size:.83rem}
+th,td{text-align:left;padding:.5rem .5rem;border-bottom:1px solid rgba(255,255,255,.07);vertical-align:top}
+th{color:rgba(255,255,255,.45);font-weight:600}
+.badge{display:inline-block;font-size:10px;border-radius:6px;padding:.1rem .4rem;margin:.12rem .12rem 0 0;background:rgba(0,212,255,.12);color:#7fe9ff}
+.back{display:inline-block;color:#00d4ff;text-decoration:none;font-size:.85rem;margin-bottom:1rem}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <a class="back" href="panel.html">← 回管理後台</a>
+  <h1>🤖 自動推廣儀表板</h1>
+  <div class="sub">AI 生文 → 勾選平台 → 排程自動發布。先生成內容，再選發布時間。</div>
+
+  <div class="card">
+    <h2>1. 已連線平台</h2>
+    <div id="platList"><span class="status none">檢查中…</span></div>
+  </div>
+
+  <div class="card">
+    <h2>2. AI 生成推廣文</h2>
+    <div class="desc">用 GROQ 自動寫一篇可發布的貼文（免費先生成草稿，滿意再排程）</div>
+    <label>主題（可留空隨機選）</label>
+    <input id="topic" placeholder="例：如何用 AI 客服減少漏單">
+    <div class="chips" id="topicChips"></div>
+    <label>發布平台（勾選要發到哪）</label>
+    <div id="platPicker"></div>
+    <label>發布時間（當地時間 YYYY-MM-DD HH:MM，留空=立即）</label>
+    <input id="when" placeholder="例：2026-08-31 10:00">
+    <button class="btn" id="genBtn">✨ AI 生成＋排程</button>
+    <div class="msg" id="genMsg"></div>
+  </div>
+
+  <div class="card">
+    <h2>3. 已排程 / 已發布</h2>
+    <div id="history"><div class="desc">載入中…</div></div>
+  </div>
+</div>
+
+<script>
+const API = '';
+const $ = id => document.getElementById(id);
+let connected = {}, accounts = [], selected = {};
+
+(async function checkAdmin(){
+  try{
+    const r = await fetch(API + '/api/admin/check', {credentials:'include'});
+    const d = await r.json();
+    if(!d.admin){ alert('需要管理員權限'); location.href = '../login.html'; return; }
+  }catch(e){ location.href = '../login.html'; return; }
+  init();
+})();
+
+async function api(path, opts={}){
+  const r = await fetch(API + path, {headers:{'Content-Type':'application/json', ...opts.headers}, credentials:'include', ...opts});
+  if(!r.ok){ const e = await r.json().catch(()=>({})); throw new Error(e.detail || e.message || r.statusText); }
+  return r.json();
+}
+
+async function init(){
+  loadPlats();
+  loadHistory();
+  const chips = ['AI 客服如何省下你的深夜時間','一人公司用 AI 自動化的真相','遊戲業維運 11 年學到的事','免費工具做出 AI 短劇','客服漏單的三個地雷'];
+  $('topicChips').innerHTML = chips.map(c=>`<span class="chip" onclick="$('topic').value='${c}'">${c}</span>`).join('');
+}
+
+async function loadPlats(){
+  accounts = (await api('/api/accounts')).items;
+  connected = {};
+  accounts.forEach(a=>{
+    try{ const c = JSON.parse(a.credentials||'{}'); if(Object.values(c).some(v=>v&&v!=='***')) connected[a.platform]=true; }catch(e){}
+  });
+  const known = {telegram:'Telegram', line:'LINE', facebook:'FB', instagram:'IG', twitter:'X', threads:'Threads', dcard:'Dcard', xiaohongshu:'小紅書'};
+  const list = Object.keys(connected);
+  $('platList').innerHTML = list.length
+    ? list.map(p=>`<span class="status ready">● ${known[p]||p}</span>`).join(' ')
+    : '<span class="status none">尚無已連線平台 → 先到「平台連線設定」填認證</span>';
+  $('platPicker').innerHTML = Object.entries(known).map(([id,name])=>{
+    const on = connected[id];
+    selected[id] = on || false;
+    return `<span class="plat ${on?'on':'off'}" data-p="${id}" id="pick_${id}" onclick="toggle('${id}')">${on?'☑':'☐'} ${name}</span>`;
+  }).join('');
+  $('genBtn').disabled = list.length===0;
+}
+
+function toggle(id){
+  selected[id] = !selected[id];
+  const el = $('pick_'+id);
+  el.classList.toggle('on', selected[id]);
+  el.classList.toggle('off', !selected[id]);
+}
+
+async function generate(){
+  const msg = $('genMsg');
+  const topic = $('topic').value.trim();
+  const targets = Object.keys(selected).filter(k=>selected[k]);
+  msg.className='msg'; msg.textContent='⏳ AI 寫文中…約 10-20 秒';
+  $('genBtn').disabled = true;
+  try{
+    const ai = await fetch(API + '/api/auto-promote', {credentials:'include', headers:{'Content-Type':'application/json'}});
+    const ad = await ai.json();
+    let body = ad.body || '';
+    if(!body && topic){
+      const gen = await fetch(API + '/api/content/ai-generate', {method:'POST', credentials:'include', headers:{'Content-Type':'application/json'}, body: JSON.stringify({template:'社群貼文', variables:{topic, language:'zh-TW', style:'專業但有溫度', length:'180字'}})});
+      const gd = await gen.json();
+      body = gd.text || '';
+    }
+    if(!body) throw new Error('AI 沒產出內容');
+    msg.className='msg'; msg.textContent='📝 已生成（預覽請看下方）…排程中';
+    const when = $('when').value.trim() || null;
+    const res = await api('/api/content', {method:'POST', body: JSON.stringify({
+      title: topic || ad.topic || '自動推廣',
+      body, platforms: targets, scheduled_at: when, language:'zh-TW', category:'promo'
+    })});
+    msg.className='msg ok';
+    msg.textContent = `✅ 已排程 → ${targets.length} 平台` + (when?` 於 ${when}`:'（立即發布）') + '。發布後會出現在下方記錄。';
+    $('when').value='';
+    loadHistory();
+  }catch(e){
+    msg.className='msg err'; msg.textContent='❌ '+e.message;
+  }finally{
+    $('genBtn').disabled = false;
+  }
+}
+
+async function loadHistory(){
+  try{
+    const contents = (await api('/api/content?per_page=10')).items || (await api('/api/content')).items || [];
+    const rows = contents.map(c=>{
+      let plats = [];
+      try{ plats = JSON.parse(c.platforms||'[]'); }catch(e){}
+      const badges = plats.map(p=>`<span class="badge">${p}</span>`).join('');
+      const st = c.status==='published' ? '✅ 已發布' : c.status==='scheduled' ? '⏳ 已排程' : '📄 草稿';
+      return `<tr><td>${c.created_at||''}</td><td>${c.title||''}<br><div style="color:rgba(255,255,255,.5);font-size:.76rem;margin-top:.2rem">${(c.body||'').slice(0,80)}…</div></td><td>${badges}</td><td>${st}</td></tr>`;
+    }).join('');
+    $('history').innerHTML = rows
+      ? `<table><tr><th>建立</th><th>內容</th><th>平台</th><th>狀態</th></tr>${rows}</table>`
+      : '<div class="desc">尚無內容。上面先生成一篇吧。</div>';
+  }catch(e){ $('history').innerHTML = '<div class="err">載入失敗：'+e.message+'</div>'; }
+}
+
+$('genBtn').onclick = generate;
+</script>
+</body>
+</html>

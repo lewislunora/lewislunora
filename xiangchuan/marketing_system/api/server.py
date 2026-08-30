@@ -457,10 +457,16 @@ def create_account(data: AccountCreate):
 
 
 @app.get("/api/accounts")
-def list_accounts():
+def list_accounts(request: Request):
+    u = _current_user(request)
+    is_admin = False
+    if u:
+        full = fetch_one("SELECT is_admin FROM users WHERE id=?", (u["id"],))
+        is_admin = bool(full and full.get("is_admin"))
     rows = fetch("SELECT * FROM accounts ORDER BY created_at DESC")
-    for row in rows:
-        row["credentials"] = "***"
+    if not is_admin:
+        for row in rows:
+            row["credentials"] = "***"
     return {"items": rows}
 
 

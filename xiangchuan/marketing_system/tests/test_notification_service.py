@@ -11,13 +11,13 @@ from marketing_system.services.notification_service import (
 
 class TestSendTelegramNotification:
     def test_returns_false_without_chat_id(self):
-        with patch("marketing_system.services.notification_service.TELEGRAM_NOTIFY_CHAT_ID", ""):
-            with patch("marketing_system.services.notification_service.HARDCODED_BOT_TOKEN", ""):
+        with patch.dict(os.environ, {"TELEGRAM_NOTIFY_CHAT_ID": "", "TELEGRAM_BOT_TOKEN": ""}, clear=False):
+            with patch("marketing_system.services.notification_service.TELEGRAM_NOTIFY_CHAT_ID", ""):
                 result = send_telegram_notification({"姓名": "Test"})
                 assert result is False
 
     def test_returns_false_without_bot_token(self):
-        with patch("marketing_system.services.notification_service.HARDCODED_BOT_TOKEN", ""):
+        with patch.dict(os.environ, {"TELEGRAM_BOT_TOKEN": "", "TELEGRAM_NOTIFY_CHAT_ID": "123"}, clear=False):
             with patch("marketing_system.services.notification_service.TELEGRAM_NOTIFY_CHAT_ID", "123"):
                 result = send_telegram_notification({"姓名": "Test"})
                 assert result is False
@@ -25,8 +25,8 @@ class TestSendTelegramNotification:
     @patch("requests.post")
     def test_sends_message_successfully(self, mock_post):
         mock_post.return_value.json.return_value = {"ok": True}
-        with patch("marketing_system.services.notification_service.TELEGRAM_NOTIFY_CHAT_ID", "123"):
-            with patch("marketing_system.services.notification_service.HARDCODED_BOT_TOKEN", "bot:test"):
+        with patch.dict(os.environ, {"TELEGRAM_BOT_TOKEN": "bot:test", "TELEGRAM_NOTIFY_CHAT_ID": "123"}, clear=False):
+            with patch("marketing_system.services.notification_service.TELEGRAM_NOTIFY_CHAT_ID", "123"):
                 result = send_telegram_notification({
                     "姓名": "Alice",
                     "公司": "Test Corp",
@@ -42,22 +42,22 @@ class TestSendTelegramNotification:
     @patch("requests.post")
     def test_handles_api_error(self, mock_post):
         mock_post.return_value.json.return_value = {"ok": False, "description": "Bad token"}
-        with patch("marketing_system.services.notification_service.TELEGRAM_NOTIFY_CHAT_ID", "123"):
-            with patch("marketing_system.services.notification_service.HARDCODED_BOT_TOKEN", "bot:test"):
+        with patch.dict(os.environ, {"TELEGRAM_BOT_TOKEN": "bot:test", "TELEGRAM_NOTIFY_CHAT_ID": "123"}, clear=False):
+            with patch("marketing_system.services.notification_service.TELEGRAM_NOTIFY_CHAT_ID", "123"):
                 result = send_telegram_notification({"姓名": "Test"})
                 assert result is False
 
     @patch("requests.post")
     def test_handles_network_error(self, mock_post):
         mock_post.side_effect = Exception("Network error")
-        with patch("marketing_system.services.notification_service.TELEGRAM_NOTIFY_CHAT_ID", "123"):
-            with patch("marketing_system.services.notification_service.HARDCODED_BOT_TOKEN", "bot:test"):
+        with patch.dict(os.environ, {"TELEGRAM_BOT_TOKEN": "bot:test", "TELEGRAM_NOTIFY_CHAT_ID": "123"}, clear=False):
+            with patch("marketing_system.services.notification_service.TELEGRAM_NOTIFY_CHAT_ID", "123"):
                 result = send_telegram_notification({"姓名": "Test"})
                 assert result is False
 
     def test_empty_data_does_not_crash(self):
-        with patch("marketing_system.services.notification_service.TELEGRAM_NOTIFY_CHAT_ID", ""):
-            with patch("marketing_system.services.notification_service.HARDCODED_BOT_TOKEN", ""):
+        with patch.dict(os.environ, {"TELEGRAM_NOTIFY_CHAT_ID": "", "TELEGRAM_BOT_TOKEN": ""}, clear=False):
+            with patch("marketing_system.services.notification_service.TELEGRAM_NOTIFY_CHAT_ID", ""):
                 result = send_telegram_notification({})
                 assert result is False
 

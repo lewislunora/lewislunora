@@ -55,7 +55,7 @@ class TestContactFullPipeline:
 
     def test_smtp_not_configured_sends_telegram(self, client):
         """When SMTP_USER is empty, contact_form should fallback to Telegram notification"""
-        with patch.dict(os.environ, {"SMTP_USER": "", "SMTP_PASS": ""}, clear=False):
+        with patch.dict(os.environ, {"SMTP_USER": "", "SMTP_PASS": "", "TELEGRAM_BOT_TOKEN": "bot:test", "TELEGRAM_NOTIFY_CHAT_ID": "123"}, clear=False):
             with patch("requests.post") as mock_post:
                 mock_post.return_value.json.return_value = {"ok": True}
                 resp = client.post("/api/contact", json={
@@ -81,12 +81,13 @@ class TestContactFullPipeline:
                 mock_smtp.return_value.__enter__.return_value = MagicMock()
                 with patch("requests.post") as mock_req:
                     mock_req.return_value.json.return_value = {"ok": True}
-                    resp = client.post("/api/contact", json={
-                        "姓名": "Routing", "聯絡方式": "test",
-                    })
-                    assert resp.status_code == 200
-                    mock_req.assert_called()  # Telegram push fired
-                    assert mock_smtp.return_value.__enter__.return_value.starttls.called  # Email via SMTP
+                    with patch.dict(os.environ, {"TELEGRAM_BOT_TOKEN": "bot:test", "TELEGRAM_NOTIFY_CHAT_ID": "123"}, clear=False):
+                        resp = client.post("/api/contact", json={
+                            "姓名": "Routing", "聯絡方式": "test",
+                        })
+                        assert resp.status_code == 200
+                        mock_req.assert_called()  # Telegram push fired
+                        assert mock_smtp.return_value.__enter__.return_value.starttls.called  # Email via SMTP
 
     def test_contact_partial_fields(self, client):
         with patch.dict(os.environ, {"SMTP_USER": "", "SMTP_PASS": ""}, clear=False):
