@@ -48,6 +48,24 @@ h1{font-size:1.9rem;font-weight:800;background:linear-gradient(135deg,#00d4ff,#f
     ⚠️ <b>付款尚未串接完成。</b> 網站已把每個產品的<a href="#pricing">付費入口</a>準備好，等你申請金流帳號（建議<a href="#" onclick="return false">綠界 ECpay</a> 或 Stripe）後，把付款連結填進 <code>docs/data/payment-config.json</code>，對應的「立即付費」按鈕就會自動變為可點擊。
   </div>
 
+  <div class="sec" id="activate">
+    <h2>🔑 兌換開通碼，立即升級</h2>
+    <div class="sec-sub">已成功付款？輸入我們提供給你的開通碼，帳號立刻升級（尚未付款？見下方方案與付款方式）</div>
+    <div class="card" style="gap:.6rem" id="redeemCard">
+      <div id="loginState" style="font-size:.85rem;color:rgba(255,255,255,.6)">讀取登入狀態…</div>
+      <div id="planState" style="font-size:.9rem;color:#00d4ff;font-weight:700;display:none"></div>
+      <div style="display:flex;gap:.5rem;flex-wrap:wrap">
+        <input type="text" id="codeInput" placeholder="輸入開通碼，例：PRO-XXXX-XXXX" style="flex:1;min-width:200px;background:rgba(255,255,255,.06);border:1px solid rgba(0,212,255,.3);color:#fff;border-radius:10px;padding:.7rem .9rem;font-size:.95rem">
+        <button id="redeemBtn" style="background:linear-gradient(135deg,#00d4ff,#ff7b9c);color:#0a0e27;font-weight:800;border:none;padding:.7rem 1.4rem;border-radius:10px;cursor:pointer;font-size:.95rem">兌換開通</button>
+      </div>
+      <div id="redeemMsg" style="font-size:.85rem;min-height:1.4em"></div>
+      <details style="font-size:.82rem;color:rgba(255,255,255,.45)">
+        <summary style="cursor:pointer;color:rgba(255,255,255,.6)">還沒有開通碼？看看怎麼付款獲得</summary>
+        <p style="margin-top:.5rem;color:rgba(255,255,255,.6)">① 選下方方案（訂閱 / 課程 / 客製）→ ② 依「付款方式」完成轉帳或付款 → ③ 我們確認後寄開通碼給你 → ④ 回此頁輸入兌換。<br>若有任何付款問題，<a href="mailto:lewislunora@gmail.com" style="color:#00d4ff">Email 我</a>或<a href="../index.html#contact" style="color:#00d4ff">LINE 聯繫</a>。</p>
+      </details>
+    </div>
+  </div>
+
   <div class="sec">
     <h2>🧰 1. 免費試用工具</h2>
     <div class="sec-sub">不用註冊、不用付費，直接體驗核心功能</div>
@@ -147,6 +165,7 @@ h1{font-size:1.9rem;font-weight:800;background:linear-gradient(135deg,#00d4ff,#f
 
 <script>
 let CONFIG = null;
+const API = '/api';
 
 fetch('../data/payment-config.json').then(r=>r.json()).then(c=>{
   CONFIG = c;
@@ -186,6 +205,66 @@ function tagPlaceholder(name){
   s.textContent = `⏳ ${name} 付款待串接（申請金流後填入設定檔）`;
   return s;
 }
+
+/* ── 兌換開通碼 ───────────────────────── */
+const $ = id => document.getElementById(id);
+const loginState = $('loginState'), planState = $('planState');
+
+async function refreshStatus(){
+  try{
+    const r = await fetch(API+'/license/status', {credentials:'include'});
+    const d = await r.json();
+    if(d.logged_in){
+      const exp = d.expires_at ? `（${d.expires_at.slice(0,10)} 到期）` : '';
+      loginState.innerHTML = `已登入：<b>${d.name}</b>`;
+      planState.style.display='block';
+      planState.textContent = `目前方案：${d.plan==='pro'?'專業版 PRO':d.plan==='enterprise'?'企業版':d.plan==='free'?'免費版（今日短劇 0/'+d.usage.ai_story_limit+' 次）':'非會員'} ${exp}`;
+      $('redeemBtn').style.display = 'block';
+    } else {
+      loginState.innerHTML = '尚未登入。請先登入/註冊才能兌換開通碼。';
+      showLoginForm();
+    }
+  }catch(e){ loginState.textContent='無法讀取登入狀態，請重新整理。'; }
+}
+function showLoginForm(){
+  $('redeemBtn').style.display='none';
+  $('planState').style.display='none';
+  const w = document.createElement('div');
+  w.id='quickLogin';
+  w.style.cssText='display:flex;gap:.5rem;flex-wrap:wrap;margin-top:.3rem';
+  w.innerHTML = `
+    <input id="liEmail" placeholder="Email" style="flex:1;min-width:170px;background:rgba(255,255,255,.06);border:1px solid rgba(0,212,255,.3);color:#fff;border-radius:10px;padding:.7rem .9rem;font-size:.9rem">
+    <input id="liPass" type="password" placeholder="密碼" style="flex:1;min-width:140px;background:rgba(255,255,255,.06);border:1px solid rgba(0,212,255,.3);color:#fff;border-radius:10px;padding:.7rem .9rem;font-size:.9rem">
+    <button id="liGo" style="background:rgba(255,255,255,.1);border:1px solid rgba(0,212,255,.4);color:#00d4ff;border-radius:10px;padding:.7rem 1rem;cursor:pointer;font-size:.9rem;font-weight:700">登入</button>
+    <a id="liReg" href="register.html" style="align-self:center;color:#00d4ff;font-size:.85rem">還沒帳號？註冊 →</a>`;
+  loginState.insertAdjacentElement('afterend', w);
+  $('liGo').onclick = async ()=>{
+    const r = await fetch(API+'/auth/login', {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({email:$('liEmail').value, password:$('liPass').value}), credentials:'include'});
+    const d = await r.json();
+    if(d.token){ document.cookie='token='+d.token+';path=/;max-age=7776000;SameSite=Lax'; location.reload(); }
+    else alert(d.detail||'登入失敗');
+  };
+}
+async function redeem(){
+  const code = $('codeInput').value.trim();
+  if(!code) { $('redeemMsg').textContent='請輸入開通碼'; return; }
+  $('redeemMsg').style.color='rgba(255,255,255,.6)';
+  $('redeemMsg').textContent='兌換中…';
+  try{
+    const r = await fetch(API+'/license/redeem', {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({code}), credentials:'include'});
+    const d = await r.json();
+    if(r.ok){
+      $('redeemMsg').style.color='#7dffb0';
+      $('redeemMsg').textContent = `✅ 開通成功！你的帳號已升級為${d.plan==='pro'?'專業版 PRO':d.plan==='enterprise'?'企業版':'付費版'}（${d.expires_at.slice(0,10)} 到期）。`;
+      refreshStatus();
+    } else {
+      $('redeemMsg').style.color='#ff8a8a';
+      $('redeemMsg').textContent = '❌ '+(d.detail||'兌換失敗');
+    }
+  }catch(e){ $('redeemMsg').style.color='#ff8a8a'; $('redeemMsg').textContent='網路錯誤，請重試'; }
+}
+$('redeemBtn').onclick = redeem;
+document.addEventListener('DOMContentLoaded', refreshStatus);
 </script>
 </body>
 </html>

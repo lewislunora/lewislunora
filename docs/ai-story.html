@@ -78,8 +78,10 @@ textarea:focus{outline:none;border-color:#00d4ff}
     </select>
 
     <button class="btn" id="genBtn">🎬 開始生成</button>
-    <div class="status">由 GROQ AI 引擎驅動，無需額外付費</div>
+    <div class="status" id="planStatus">由 GROQ AI 引擎驅動，無需額外付費</div>
   </div>
+
+  <div class="loginbar" id="loginBar" style="margin:1rem 0;text-align:center;font-size:.9rem;color:rgba(255,255,255,.6)">檢查登入狀態…</div>
 
   <div class="loading" id="loading">⏳ AI 生成中，約需 10-30 秒…</div>
   <div class="output" id="output"></div>
@@ -89,6 +91,54 @@ textarea:focus{outline:none;border-color:#00d4ff}
 <script>
 const API = 'https://lewislunora.onrender.com/api';
 let action = 'short_drama';
+let loggedIn = false;
+
+async function checkLogin(){
+  const bar = document.getElementById('loginBar');
+  try{
+    const r = await fetch(API + '/license/status', {credentials:'include'});
+    const d = await r.json();
+    if(d.logged_in){
+      loggedIn = true;
+      const exp = d.expires_at ? `（${d.expires_at.slice(0,10)} 到期）` : '';
+      const planText = d.plan==='pro' ? '專業版 PRO'+exp : d.plan==='enterprise' ? '企業版'+exp : '免費版';
+      bar.innerHTML = `✅ 已登入：<b>${d.name}</b> ｜ 目前：<b>${planText}</b> ｜ 今日短劇 ${d.usage.ai_story}/${d.usage.ai_story_limit} 次`;
+      if(d.plan==='free'){
+        bar.innerHTML += ` ｜ <a href="pricing.html#activate" style="color:#ffd34d;font-weight:700">🔓 用開通碼升級 →</a>`;
+      }
+      if(d.usage.ai_story_limit && d.usage.ai_story >= d.usage.ai_story_limit) document.getElementById('genBtn').disabled = true;
+    } else {
+      loggedIn = false;
+      bar.innerHTML = `⚠️ AI 創作需<strong>註冊／登入</strong>才能使用（免費每天 ${3} 次，用開通碼無限）。<br>`
+        + `<button class="btn" style="margin-top:.6rem" onclick="quickLogin()">🚀 立即登入 / 註冊</button>`;
+      document.getElementById('genBtn').disabled = true;
+    }
+  }catch(e){ bar.textContent = '⚠️ 無法讀取狀態（請確認站台連線）'; }
+}
+
+function quickLogin(){
+  const email = prompt('Email（沒有帳號的話，輸入後連同密碼送出即完成註冊）：');
+  if(!email) return;
+  const password = prompt('密碼（至少 6 字）：');
+  if(!password) return;
+  fetch(API + '/auth/login', {
+    method:'POST', headers:{'Content-Type':'application/json'},
+    body: JSON.stringify({email, password}), credentials:'include'
+  }).then(async r=>{
+    const d = await r.json();
+    if(d.token){ document.cookie='token='+d.token+';path=/;max-age=7776000;SameSite=Lax'; checkLogin(); }
+    else if(r.status===401){
+      const reg = await fetch(API + '/auth/register', {
+        method:'POST', headers:{'Content-Type':'application/json'},
+        body: JSON.stringify({email, password}), credentials:'include'
+      });
+      const rd = await reg.json();
+      if(rd.token || reg.ok){ document.cookie='token='+(rd.token||'')+';path=/;max-age=7776000;SameSite=Lax'; checkLogin(); }
+      else alert('註冊失敗：'+(rd.detail||'未知錯誤'));
+    }
+    else alert(d.detail||'登入失敗');
+  });
+}
 
 document.querySelectorAll('.tab').forEach(t => {
   t.addEventListener('click', () => {
@@ -105,6 +155,7 @@ document.querySelectorAll('.chip').forEach(c => {
 });
 
 document.getElementById('genBtn').addEventListener('click', async () => {
+  if(!loggedIn){ alert('請先登入'); return; }
   const out = document.getElementById('output');
   const loading = document.getElementById('loading');
   const theme = document.getElementById('theme').value.trim();
@@ -117,20 +168,32 @@ document.getElementById('genBtn').addEventListener('click', async () => {
     const r = await fetch(API + '/ai/story', {
       method: 'POST',
       headers: {'Content-Type': 'application/json'},
-      body: JSON.stringify({ action, theme, tone, script })
+      body: JSON.stringify({ action, theme, tone, script }),
+      credentials: 'include'
     });
-    if (!r.ok) throw new Error('HTTP ' + r.status);
+    if (!r.ok){
+      const d = await r.json().catch(()=>({}));
+      if(r.status===401) { out.textContent='🔒 請先登入再使用（免費每天 3 次，升級開通碼無限次）。'; checkLogin(); }
+      else if(r.status===402) out.textContent='📈 今日免費額度已用完。使用開通碼升級 PRO 即無限次：<正上方「用開通碼升級」連結>'; 
+      else out.textContent = '⚠️ 呼叫失敗：' + (d.detail||r.statusText);
+      out.classList.add('show');
+      return;
+    }
     const data = await r.json();
     out.textContent = data.text || data.error || '（無輸出）';
     out.classList.add('show');
+    checkLogin();
   } catch (e) {
     out.textContent = '⚠️ 呼叫失敗：' + e.message + '\n\n若在 localhost 測試，請改用線上版 lewis_lunora.onrender.com/ai-story.html';
     out.classList.add('show');
   } finally {
     loading.classList.remove('show');
     document.getElementById('genBtn').disabled = false;
+    checkLogin();
   }
 });
+
+checkLogin();
 </script>
 </div>
 </body>

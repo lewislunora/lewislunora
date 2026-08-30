@@ -271,12 +271,36 @@ def init_db():
             created_at TEXT DEFAULT (datetime('now'))
         );
 
-        CREATE TABLE IF NOT EXISTS social_identities (
+CREATE TABLE IF NOT EXISTS social_identities (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             user_id INTEGER NOT NULL,
             provider TEXT NOT NULL,
             provider_id TEXT NOT NULL,
             UNIQUE(provider, provider_id)
+        );
+
+        CREATE TABLE IF NOT EXISTS licenses (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            code TEXT NOT NULL UNIQUE,
+            plan TEXT NOT NULL,
+            duration_days INTEGER NOT NULL DEFAULT 30,
+            max_uses INTEGER NOT NULL DEFAULT 1,
+            note TEXT DEFAULT '',
+            created_at TEXT DEFAULT (datetime('now')),
+            redeemed_by TEXT DEFAULT '',
+            redeemed_at TEXT DEFAULT NULL,
+            expires_at TEXT DEFAULT NULL
+        );
+
+        CREATE TABLE IF NOT EXISTS ai_usage (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            user_id INTEGER NOT NULL,
+            tool TEXT NOT NULL,
+            action TEXT DEFAULT '',
+            count INTEGER DEFAULT 0,
+            day TEXT DEFAULT '',
+            updated_at TEXT DEFAULT (datetime('now')),
+            UNIQUE(user_id, tool, day)
         );
 
         CREATE TABLE IF NOT EXISTS promo_queue (

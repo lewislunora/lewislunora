@@ -423,7 +423,11 @@ def ai_generate(data: AIGenerateRequest):
 
 
 @app.post("/api/ai/story")
-def ai_story(data: StoryRequest):
+def ai_story(data: StoryRequest, request: Request):
+    u = _current_user(request)
+    if not u:
+        raise HTTPException(401, "請先登入再使用 AI 創作（免費可登入即用）")
+    _check_quota(u["id"], "ai_story")
     story = AIStoryGenerator()
     if not story.is_available():
         return {"text": "⚠️ GROQ_API_KEY 未設定，請在 Render 設定環境變數。", "fallback": True}
@@ -437,6 +441,8 @@ def ai_story(data: StoryRequest):
         result = story.package_publish(data.theme, data.tone)
     else:
         return {"text": f"❌ 未知 action: {data.action}（可用：short_drama / anime / storyboard / package）"}
+    action = data.action
+    _bump_usage(u["id"], "ai_story", action)
     return {"text": result}
 
 
@@ -781,6 +787,21 @@ class AuthLogin(BaseModel):
     password: str
 
 
+class LicenseGenerateRequest(BaseModel):
+    plan: str = "pro"
+    count: int = 1
+    duration_days: int = 30
+    note: str = ""
+
+
+class LicenseRedeemRequest(BaseModel):
+    code: str
+
+
+class LicenseReturnRequest(BaseModel):
+    code: str
+
+
 @app.post("/api/auth/register")
 def auth_register(body: AuthRegister):
     email = body.email.strip().lower()
@@ -816,6 +837,136 @@ def auth_me(request: Request, token: str = ""):
     if not u:
         raise HTTPException(401, "未登入")
     return _user_dict(u)
+
+
+PLAN_LIMITS = {
+    "free": {"ai_story": 3, "ai_generate": 10},
+    "pro": {"ai_story": 100, "ai_generate": 500},
+    "enterprise": {"ai_story": 100000, "ai_generate": 1000000},
+}
+
+
+def _plan_of(u) -> str:
+    if not u:
+        return "free"
+    return (u.get("plan") or "free").lower()
+
+
+def _bump_usage(user_id: int, tool: str, action: str = ""):
+    day = time.strftime("%Y-%m-%d")
+    row = fetch_one("SELECT id, count FROM ai_usage WHERE user_id=? AND tool=? AND day=?",
+                    (user_id, tool, day))
+    if row:
+        execute("UPDATE ai_usage SET count=count+1, updated_at=datetime('now') WHERE id=?", (row["id"],))
+        return row["count"] + 1
+    execute("INSERT INTO ai_usage (user_id, tool, action, count, day) VALUES (?,?,?,1,?)",
+            (user_id, tool, action, day))
+    return 1
+
+
+def _usage_today(user_id: int, tool: str) -> int:
+    day = time.strftime("%Y-%m-%d")
+    row = fetch_one("SELECT count FROM ai_usage WHERE user_id=? AND tool=? AND day=?", (user_id, tool, day))
+    return (row["count"] if row else 0)
+
+
+def _check_quota(user_id: int, tool: str) -> None:
+    u = fetch_one("SELECT plan FROM users WHERE id=?", (user_id,))
+    plan = _plan_of(u)
+    limit = PLAN_LIMITS.get(plan, PLAN_LIMITS["free"]).get(tool, 0)
+    used = _usage_today(user_id, tool)
+    if used >= limit:
+        raise HTTPException(402, "今日免費額度已用完，請兌換開通碼升級，或明日再試")
+    return None
+
+
+def _license_code(plan: str, duration_days: int) -> str:
+    prefix = {"pro": "PRO", "enterprise": "ENT"}.get(plan, "LNC")
+    return f"{prefix}-{secrets.token_hex(3).upper()}-{secrets.token_hex(3).upper()}"
+
+
+@app.post("/api/license/generate")
+def license_generate(body: LicenseGenerateRequest, request: Request):
+    _require_admin(request)
+    if body.plan not in PLAN_LIMITS:
+        raise HTTPException(400, f"未知方案: {body.plan}，可用：{list(PLAN_LIMITS)}")
+    codes = []
+    for _ in range(max(1, min(body.count, 200))):
+        while True:
+            code = _license_code(body.plan, body.duration_days)
+            try:
+                execute("INSERT INTO licenses (code, plan, duration_days, note) VALUES (?,?,?,?)",
+                        (code, body.plan, body.duration_days, body.note))
+                codes.append(code)
+                break
+            except Exception:
+                continue
+    return {"status": "ok", "codes": codes}
+
+
+@app.post("/api/license/redeem")
+def license_redeem(body: LicenseRedeemRequest, request: Request):
+    u = _require_user(request)
+    code = body.code.strip().upper()
+    lic = fetch_one("SELECT id, plan, duration_days, redeemed_by, redeemed_at, expires_at FROM licenses WHERE code=?",
+                    (code,))
+    if not lic:
+        raise HTTPException(404, "開通碼不存在，請檢查是否輸入錯誤")
+    if lic.get("redeemed_by"):
+        raise HTTPException(400, "此開通碼已被使用")
+    expires = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime(time.time() + lic["duration_days"] * 86400))
+    execute("UPDATE licenses SET redeemed_by=?, redeemed_at=datetime('now'), expires_at=? WHERE id=?",
+            (u["email"], expires, lic["id"]))
+    execute("UPDATE users SET plan=? WHERE id=?", (lic["plan"], u["id"]))
+    return {"status": "ok", "plan": lic["plan"], "expires_at": expires}
+
+
+@app.post("/api/license/revoke")
+def license_revoke(body: LicenseReturnRequest, request: Request):
+    _require_admin(request)
+    code = body.code.strip().upper()
+    lic = fetch_one("SELECT id, redeemed_by FROM licenses WHERE code=?", (code,))
+    if not lic:
+        raise HTTPException(404, "找不到此開通碼")
+    if lic.get("redeemed_by"):
+        execute("UPDATE users SET plan='free' WHERE email=?", (lic["redeemed_by"],))
+    execute("UPDATE licenses SET redeemed_by='', redeemed_at=NULL, expires_at=NULL WHERE id=?", (lic["id"],))
+    return {"status": "ok", "revoked": True}
+
+
+@app.get("/api/license/list")
+def license_list(request: Request):
+    _require_admin(request)
+    rows = fetch("SELECT id, code, plan, duration_days, note, redeemed_by, redeemed_at, expires_at FROM licenses ORDER BY redeemed_at IS NULL DESC, redeemed_at DESC, id DESC LIMIT 100")
+    return {"codes": rows}
+
+
+@app.get("/api/license/status")
+def license_status(request: Request, token: str = ""):
+    u = _current_user(request, token)
+    if not u:
+        return {"logged_in": False, "plan": "free"}
+    lic = fetch_one("SELECT plan, expires_at, redeemed_by FROM licenses WHERE redeemed_by=? ORDER BY redeemed_at DESC LIMIT 1",
+                    (u["email"],))
+    plan = _plan_of(u)
+    expires = (lic or {}).get("expires_at") or ""
+    if plan != "free" and expires and expires < time.strftime("%Y-%m-%d %H:%M:%S"):
+        execute("UPDATE users SET plan='free' WHERE id=?", (u["id"],))
+        plan = "free"
+        expires = ""
+    today = time.strftime("%Y-%m-%d")
+    return {
+        "logged_in": True,
+        "email": u["email"],
+        "name": _user_dict(u)["name"],
+        "plan": plan,
+        "expires_at": expires,
+        "usage": {
+            "ai_story": _usage_today(u["id"], "ai_story"),
+            "ai_story_limit": PLAN_LIMITS.get(plan, PLAN_LIMITS["free"]).get("ai_story"),
+        },
+        "day": today,
+    }
 
 
 @app.get("/api/auth/providers")
@@ -1321,7 +1472,7 @@ def _current_user(request: Request, token: str = ""):
         token = request.cookies.get("token", "")
     if not token:
         return None
-    return fetch_one("SELECT id, username, email, name, avatar, bio FROM users WHERE token=? AND is_active=1", (token,))
+    return fetch_one("SELECT id, username, email, name, avatar, bio, plan FROM users WHERE token=? AND is_active=1", (token,))
 
 
 def _user_dict(u):
@@ -1330,7 +1481,8 @@ def _user_dict(u):
     email_prefix = u["email"].split("@")[0] if u["email"] else ""
     name = u["name"] or email_prefix or u["username"] or "使用者"
     return {"id": u["id"], "name": name,
-            "username": u["username"], "email": u["email"] or "", "avatar": u["avatar"] or "", "bio": u["bio"] or ""}
+            "username": u["username"], "email": u["email"] or "", "avatar": u["avatar"] or "", "bio": u["bio"] or "",
+            "plan": u.get("plan") or "free"}
 
 
 def _require_user(request: Request):

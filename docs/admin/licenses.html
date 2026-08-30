@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>開通碼管理 | 翔川 Neo Admin</title>
+<meta name="description" content="產生、檢視、撤銷會員開通碼。">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Noto Sans TC",system-ui,sans-serif;background:#0a0e27;color:#e6e6e6;min-height:100vh;padding:2rem}
+.wrap{max-width:860px;margin:0 auto}
+h1{font-size:1.5rem;color:#fff;margin-bottom:.3rem}
+.sub{color:rgba(255,255,255,.45);font-size:.9rem;margin-bottom:1.6rem}
+.card{background:linear-gradient(160deg,rgba(255,255,255,.05),rgba(255,255,255,.015));border:1px solid rgba(0,212,255,.14);border-radius:14px;padding:1.4rem;margin-bottom:1.4rem}
+.card h2{font-size:1.05rem;color:#fff;margin-bottom:.8rem}
+label{display:block;font-size:.83rem;color:rgba(255,255,255,.55);margin:.7rem 0 .3rem}
+input,select{background:rgba(255,255,255,.06);border:1px solid rgba(0,212,255,.3);color:#fff;border-radius:9px;padding:.6rem .8rem;font-size:.9rem;width:100%}
+.btn{display:inline-block;background:linear-gradient(135deg,#00d4ff,#ff7b9c);color:#0a0e27;font-weight:800;border:none;border-radius:10px;padding:.65rem 1.3rem;cursor:pointer;font-size:.9rem;margin-top:.9rem}
+.btn.ghost{background:rgba(255,255,255,.07);border:1px solid rgba(0,212,255,.3);color:#00d4ff}
+.row{display:flex;gap:.7rem;flex-wrap:wrap}
+.row>div{flex:1;min-width:130px}
+table{width:100%;border-collapse:collapse;font-size:.84rem}
+th,td{text-align:left;padding:.55rem .6rem;border-bottom:1px solid rgba(255,255,255,.07)}
+th{color:rgba(255,255,255,.45);font-weight:600}
+code{background:rgba(0,212,255,.1);border:1px solid rgba(0,212,255,.2);border-radius:6px;padding:.1rem .45rem;color:#7fe9ff;font-size:.82rem}
+.badge{display:inline-block;font-size:11px;font-weight:700;border-radius:99px;padding:.1rem .5rem}
+.badge.free{background:rgba(255,255,255,.08);color:rgba(255,255,255,.5)}
+.badge.pro{background:rgba(0,212,255,.15);color:#00d4ff}
+.badge.ent{background:rgba(255,123,156,.2);color:#ff7b9c}
+.badge.used{background:rgba(125,255,176,.14);color:#7dffb0}
+.used{color:rgba(255,255,255,.5)}
+.revoke{cursor:pointer;color:#ff8a8a;text-decoration:underline;font-size:.8rem;border:none;background:none}
+.copy{cursor:pointer;color:#00d4ff;text-decoration:underline;font-size:.8rem;border:none;background:none;margin-right:.5rem}
+.msg{font-size:.86rem;margin-top:.8rem;min-height:1.3em}
+.ok{color:#7dffb0}.err{color:#ff8a8a}
+.muted{color:rgba(255,255,255,.4);font-size:.8rem;margin-top:.5rem}
+.back{display:inline-block;color:#00d4ff;text-decoration:none;font-size:.85rem;margin-bottom:1rem}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <a class="back" href="panel.html">← 回管理後台</a>
+  <h1>🔑 開通碼管理</h1>
+  <div class="sub">客戶付款後 → 產生開通碼 → 寄給客戶 → 客戶在「付費開通」頁兌換。</div>
+
+  <div class="card">
+    <h2>產生新開通碼</h2>
+    <div class="row">
+      <div>
+        <label>方案</label>
+        <select id="plan"><option value="pro">專業版 PRO（無限短劇）</option><option value="enterprise">企業版（無限＋私有部署）</option></select>
+      </div>
+      <div><label>到期天數</label><input id="duration" type="number" value="30" min="1"></div>
+      <div><label>數量</label><input id="count" type="number" value="1" min="1" max="200"></div>
+      <div><label>備註（選擇性）</label><input id="note" placeholder="例：陳先生 8/30 轉帳"></div>
+    </div>
+    <button class="btn" id="genBtn">＋ 產生開通碼</button>
+    <div class="msg" id="genMsg"></div>
+    <div class="muted">產生後可一次複製全部，貼給客戶。</div>
+  </div>
+
+  <div class="card">
+    <h2>開通碼列表（未使用在前）</h2>
+    <div id="list"><div class="muted">載入中…</div></div>
+  </div>
+</div>
+
+<script>
+const API = '';
+let codes = [];
+
+(async function checkAdmin(){
+  try{
+    const r = await fetch(API + '/api/admin/check', {credentials:'include'});
+    const d = await r.json();
+    if(!d.admin){ alert('需要管理員權限'); location.href = '../login.html'; return; }
+  }catch(e){ location.href = '../login.html'; return; }
+  document.getElementById('genBtn').onclick = generate;
+  load();
+})();
+
+const $ = id => document.getElementById(id);
+async function api(path, opts={}){
+  const r = await fetch(API + path, {headers:{'Content-Type':'application/json', ...opts.headers}, credentials:'include', ...opts});
+  if(!r.ok){ const e = await r.json().catch(()=>({})); throw new Error(e.detail || e.message || r.statusText); }
+  return r.json();
+}
+
+async function generate(){
+  const msg = $('genMsg'); msg.className='msg'; msg.textContent='產生中…';
+  try{
+    const d = await api('/api/license/generate', {method:'POST', body: JSON.stringify({plan:$('plan').value, count:parseInt($('count').value)||1, duration_days:parseInt($('duration').value)||30, note:$('note').value})});
+    msg.className='msg ok';
+    msg.innerHTML = `✅ 產生 ${d.codes.length} 組：<br>` + d.codes.map(c=>`<code>[${c}]</code>`).join(' ') + `<br><button class="copy" onclick="copyAll()">複製全部</button>`;
+    window._latestCodes = d.codes;
+    $('note').value='';
+    load();
+  }catch(e){ msg.className='msg err'; msg.textContent='❌ '+e.message; }
+}
+
+function copyAll(){
+  const codes = window._latestCodes || [];
+  if(!codes.length) return;
+  const path = location.origin + '/';
+  const text = codes.map(c=>{
+    const plan = ($('plan').value==='enterprise')?'企業版':'專業版 PRO';
+    return `翔川 Neo ${plan} 開通碼：${c}\n兌換網址：${path}pricing.html#activate\n步驟：登入 → 貼上開通碼 → 兌換`;
+  }).join('\n\n');
+  navigator.clipboard.writeText(text).then(()=>alert('已複製！'));
+}
+
+async function load(){
+  try{
+    const d = await api('/api/license/list');
+    codes = d.codes || [];
+    render();
+  }catch(e){ $('list').innerHTML = `<div class="err">載入失敗：${e.message}</div>`; }
+}
+
+function render(){
+  const rows = codes.map(c=>{
+    const used = c.redeemed_by ? 'used' : '';
+    const badge = `<span class="badge ${c.plan==='enterprise'?'ent':'pro'} ${used}">${c.plan==='enterprise'?'企業':'PRO'}</span>`;
+    const status = c.redeemed_by
+      ? `<span class="badge used">${c.redeemed_by}</span><br><span class="muted">${(c.expires_at||'').slice(0,10)} 到期</span>`
+      : `<span class="badge free">未使用</span>`;
+    return `<tr><td><code>${c.code}</code></td><td>${badge}</td><td>${status}</td><td>${c.note||''}</td><td><button class="copy" onclick="copyCode(${c.id})">複製</button>${c.redeemed_by?'<button class="revoke" onclick="revoke('+c.id+')">撤銷</button>':''}</td></tr>`;
+  }).join('');
+  $('list').innerHTML = rows
+    ? `<table><tr><th>開通碼</th><th>方案</th><th>狀態</th><th>備註</th><th></th></tr>${rows}</table>`
+    : '<div class="muted">尚無開通碼。</div>';
+}
+
+async function copyCode(id){
+  const c = codes.find(x=>x.id===id);
+  if(!c) return;
+  await navigator.clipboard.writeText(c.code);
+  alert('已複製：'+c.code);
+}
+async function revoke(id){
+  const c = codes.find(x=>x.id===id);
+  if(!c) return;
+  if(!confirm('確定撤銷 '+c.code+'？該使用者將退回免費版。')) return;
+  try{ await api('/api/license/revoke', {method:'POST', body:JSON.stringify({code:c.code})}); load(); }
+  catch(e){ alert('❌ '+e.message); }
+}
+</script>
+</body>
+</html>
