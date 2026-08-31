@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>維運 DevOps 整包服務 | Lewis Lunora</title>
+<meta name="description" content="SLA 99.95% 營運體系、30 分鐘復原、CI/CD 自動化、AI 維運。11 年維運總監級專家，幫你把系統從『會當機』變成『穩定賺錢』。">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Noto Sans TC",system-ui,sans-serif;background:#070b1a;color:#ddd;line-height:1.7}
+.container{max-width:720px;margin:0 auto;padding:2.4rem 1.2rem 4rem}
+.hero{background:linear-gradient(135deg,rgba(0,212,255,.14),rgba(255,123,156,.08),transparent);border:1px solid rgba(0,212,255,.2);border-radius:18px;padding:2rem 1.6rem;margin-bottom:1.6rem}
+.hero h1{font-size:1.6rem;font-weight:800;background:linear-gradient(135deg,#00d4ff,#ff7b9c);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:.5rem}
+.hero .tagline{color:rgba(255,255,255,.7)}
+.badge{display:inline-block;background:rgba(0,212,255,.15);color:#7fe9ff;border:1px solid rgba(0,212,255,.25);border-radius:99px;padding:.15rem .6rem;font-size:.76rem;margin:.2rem .3rem .2rem 0}
+.card{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.09);border-radius:14px;padding:1.5rem;margin-bottom:1.4rem}
+.card h2{font-size:1.15rem;color:#fff;margin-bottom:.6rem}
+.card p{color:rgba(255,255,255,.75);font-size:.94rem;margin-bottom:.5rem}
+ul{list-style:none}
+ul li{padding:.32rem 0;font-size:.93rem;display:flex;gap:.5rem}
+ul li::before{content:'✓';color:#7dffb0;font-weight:700}
+table{width:100%;border-collapse:collapse;font-size:.9rem;margin-top:.5rem}
+th,td{text-align:left;padding:.7rem .7rem;border-bottom:1px solid rgba(255,255,255,.08);vertical-align:top}
+th{color:rgba(255,255,255,.5);font-weight:600}
+.price{font-size:1.2rem;font-weight:800;background:linear-gradient(135deg,#00d4ff,#ff7b9c);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.metric{display:inline-block;background:rgba(125,255,176,.1);border:1px solid rgba(125,255,176,.25);color:#7dffb0;border-radius:9px;padding:.35rem .7rem;font-size:.82rem;margin:.2rem}
+.cta{text-align:center;background:linear-gradient(135deg,rgba(0,212,255,.12),rgba(255,123,156,.06));border:1px solid rgba(0,212,255,.25);border-radius:16px;padding:1.8rem 1.4rem;margin-top:1.4rem}
+.btn{display:inline-block;background:linear-gradient(135deg,#00d4ff,#ff7b9c);color:#0a0e27;font-weight:800;text-decoration:none;padding:.85rem 1.8rem;border-radius:12px;margin-top:.7rem;transition:transform .18s}
+.btn:hover{transform:translateY(-2px)}
+.btn.line{background:#06c755;color:#fff}
+.small{font-size:.78rem;color:rgba(255,255,255,.4);margin-top:.6rem}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:.7rem}
+@media(max-width:560px){.two{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div class="container">
+  <div class="hero">
+    <h1>維運地獄終結者：讓你專心做生意</h1>
+    <div class="tagline">系統慢、半夜當機、資料備份不能復原、發版提心吊膽？</div>
+    <div style="margin-top:.6rem">
+      <span class="badge">SLA 99.95%</span><span class="badge">MTTR 30 分內</span><span class="badge">CI/CD 自動化</span><span class="badge">多雲（AWS/GCP/Azure/阿里雲）</span><span class="badge">K8s / Docker</span><span class="badge">監控告警</span>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>💼 我幫你的系統做到</h2>
+    <div class="two">
+      <div>
+        <ul>
+          <li>半夜當機 → 30 分鐘內復原</li>
+          <li>發版不用再拜拜，藍綠／Rolling 無痛上線</li>
+          <li>資料一定「試還原過」的備份</li>
+          <li>出問題先在監控看到，不是客戶跟你講</li>
+        </ul>
+      </div>
+      <div>
+        <span class="metric">↑ 可用性 99.95%</span>
+        <span class="metric">↓ MTTR 30 分鐘內</span>
+        <span class="metric">↑ 上線時程 12→6 個月</span>
+        <span class="metric">↓ 維運成本數千萬</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>🛠️ 我不只是會寫 script 的工程師</h2>
+    <p><strong style="color:#fff">11 年維運實務、7 年團隊管理（最多帶 12 人：DBA/SRE/DevOps/MIS/Security）</strong>。曾把專案上線時程從 12 個月壓到 6 個月、替公司省下數千萬成本。</p>
+    <ul>
+      <li>遊戲業營運維運（SLA 99.95% 服務體系、零缺陷上線）</li>
+      <li>企業級監控告警（Zabbix / Prometheus / Grafana / openobserve）</li>
+      <li>資料庫主從／讀寫分離／備份復原驗證（MSSQL/MySQL/PG/Mongo/Redis）</li>
+      <li>K8s／Docker／Nginx／CDN（CloudFlare/Akamai）高可用架構</li>
+      <li>AI 維運：Telegram Bot 告警∥自動化維運∥AI 客服串接</li>
+    </ul>
+  </div>
+
+  <div class="card">
+    <h2>📋 服務與報價（先健檢、後報價）</h2>
+    <table>
+      <tr><th>方案</th><th>內容</th><th>價格</th></tr>
+      <tr><td><b>系統健檢</b></td><td>30 分鐘把你系統的雷找出來：備份會不會還原？監控有沒有？發版怎麼發？</td><td class="price">免費</td></tr>
+      <tr><td><b>優化整包</b></td><td>監控告警＋備份復原＋CI/CD＋容錯架構改善</td><td class="price">NT$60,000 起</td></tr>
+      <tr><td><b>代管維運</b></td><td>每月固定：監控值守＋故障處理＋備份驗證＋安全加固</td><td class="price">NT$30,000~/月</td></tr>
+      <tr><td><b>到府總監顧問</b></td><td>月定期健檢＋重大問題列席＋團隊培訓</td><td class="price">NT$80,000~/月</td></tr>
+    </table>
+    <p class="small">以上皆可依需求拆案子，先談再報價。</p>
+  </div>
+
+  <div class="card">
+    <h2>🔗 可點開驗證（不是嘴砲）</h2>
+    <ul>
+      <li>已上線的 AI 產品：<a href="https://lewislunora.onrender.com/" style="color:#00d4ff">lewislunora.onrender.com</a> — 我自己從零維運、持續運行的系統</li>
+      <li>AI 客服（含知識庫＋真人轉接架構）：<a href="https://lewislunora.onrender.com/product/ai-customer-service" style="color:#00d4ff">直接看運作</a></li>
+      <li>自動化排程系統：我每天用它跨平台自動發布，<a href="https://lewislunora.onrender.com/guides/auto-publish-setup.html" style="color:#00d4ff">架構公開</a></li>
+    </ul>
+    <p class="small">＊企業客戶一律保密，因保密協議不揭露名稱。</p>
+  </div>
+
+  <div class="cta">
+    <h2 style="margin-bottom:.3rem">你先看不花錢：免費 30 分鐘系統健檢</h2>
+    <p style="color:rgba(255,255,255,.6);font-size:.9rem">我幫你找雷點跟省錢空間，值不值得做你再決定。</p>
+    <a class="btn" href="mailto:lewislunora@gmail.com">✉️ Email 約健檢</a>
+    <a class="btn line" href="https://t.me/lewislunora" target="_blank" rel="noopener">💬 Telegram 聯繫</a>
+    <div class="small">回覆通常 24 小時內｜目前可接受 3 個名額</div>
+    <div class="small" style="margin-top:1.2rem;border-top:1px solid rgba(255,255,255,.12);padding-top:1rem">另外服務｜電商的客人半夜問沒人回？→ <a href="ai-customer-service.html" style="color:#7fe9ff">AI 客服整包服務</a></div>
+  </div>
+</div>
+</body>
+</html>

@@ -1926,20 +1926,45 @@ PROMO_TOPICS = [
     "資料庫報表整理太花時間？把這個交給 AI",
     "一人公司最該外包的不是會計，是客服",
     "寫了 10 年 Code，我學到最重要的事：別自己扛全部",
+    "中小企業的備份真的能還原嗎？9 成的人沒試過",
+    "半夜系統當機，為什麼 MTTR 30 分鐘能做到？",
+    "發版還要拜拜？Blue/Green 部署讓上線無痛",
+    "SLA 99.95% 是什麼概念？你的系統離它多遠",
+    "維運總監級健檢：你最該先修的 3 個系統地雷",
+    "傳產上雲/上 ERP，最容易踩的 5 個維運坑",
+    "從帶 12 人團隊到自己創業：維運直覺教會我的事",
+    "監控裝了一堆但沒人看告警？問題出在這裡",
+    "遊戲/電商上線前，最貴的坑都在系統維運",
+    "為什麼我不賣技術，賣「你的生意半夜不當機」",
 ]
+PROMO_LANDING = {
+    "reference": "https://lewislunora.onrender.com/",
+    "ai": "https://lewislunora.onrender.com/proposals/ai-customer-service.html",
+    "ops": "https://lewislunora.onrender.com/proposals/ops-managed.html",
+}
+
+
+def _promo_landing(topic):
+    """Pick the right landing page for a generated promo topic."""
+    if any(k in topic for k in ("維運", "備份", "當機", "發版", "SLA", "MTTR", "上線", "告警", "ERP", "監控", "地雷", "雲")):
+        return PROMO_LANDING["ops"]
+    if any(k in topic for k in ("AI 客服", "客服")):
+        return PROMO_LANDING["ai"]
+    return PROMO_LANDING["reference"]
 
 @app.get("/api/auto-promote")
 def auto_promote():
     from ..config import GROQ_API_KEY, GROQ_MODEL
     import random
     topic = random.choice(PROMO_TOPICS)
+    landing = _promo_landing(topic)
     if not GROQ_API_KEY:
         return {"ok": False, "error": "GROQ_API_KEY not set", "body": "", "topic": topic}
 
     try:
         from groq import Groq
         client = Groq(api_key=GROQ_API_KEY)
-        prompt = f"""你是一個擅長在 Threads 上推廣 AI 自動化服務的文案高手。
+        prompt = f"""你是一個擅長在 Threads 上推廣 AI 自動化與系統維運服務的文案高手。
 請根據主題寫一篇 Threads 貼文（繁體中文，200 字內）。
 
 主題：{topic}
@@ -1948,7 +1973,7 @@ def auto_promote():
 結構：開頭一句話抓住注意 → 2-3 句說明痛點或方法 → 結尾引導到免費諮詢。
 不用 hashtag，不要 emoji 過多。
 結尾固定加這行：
-「👇 預約免費 30 分鐘 AI 盤點 👉 lewislunora.onrender.com/」"""
+「👇 免費 30 分鐘諮詢/健檢 👉 {landing}」"""
 
         resp = client.chat.completions.create(
             model=GROQ_MODEL,
