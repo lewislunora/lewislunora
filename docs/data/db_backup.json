@@ -244,6 +244,15 @@
       "error": "",
       "created_at": "2026-08-31 22:51:34",
       "posted_at": null
+    },
+    {
+      "id": 3,
+      "platform": "threads",
+      "body": "",
+      "status": "pending",
+      "error": "",
+      "created_at": "2026-09-01 13:41:22",
+      "posted_at": null
     }
   ],
   "social_identities": [],
