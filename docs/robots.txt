@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://lewislunora.onrender.com/sitemap.xml
