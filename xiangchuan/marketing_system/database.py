@@ -399,6 +399,7 @@ CREATE TABLE IF NOT EXISTS social_identities (
             text TEXT DEFAULT '',
             raw TEXT DEFAULT '{}',
             handled INTEGER DEFAULT 0,
+            is_spam INTEGER DEFAULT 0,
             created_at TEXT DEFAULT (datetime('now')),
             UNIQUE(platform, external_id)
         );
@@ -464,6 +465,11 @@ CREATE TABLE IF NOT EXISTS social_identities (
     # Admin role
     try:
         conn.execute("ALTER TABLE users ADD COLUMN is_admin INTEGER DEFAULT 0")
+    except sqlite3.OperationalError:
+        pass
+    # Incoming message spam flag
+    try:
+        conn.execute("ALTER TABLE incoming_messages ADD COLUMN is_spam INTEGER DEFAULT 0")
     except sqlite3.OperationalError:
         pass
     conn.commit()

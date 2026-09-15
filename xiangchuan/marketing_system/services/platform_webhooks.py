@@ -51,21 +51,54 @@ def verify_x(params: dict, secret: str = ""):
     return {"response_token": f"sha256={base64.b64encode(digest).decode('utf-8')}"}
 
 
+SPAM_MARKERS = [
+    # Russian/CIС probiv-style personal-data broker spam
+    "проб", "probiv", "телефон", "паспорт", "вин", "госномер",
+    "поиск человека", "данных", "взлом", "база", "утеч",
+    # common boilerplate spam
+    "продажа", "купить", "заработок", "биткоин", "крипто",
+    "個資代查", "查個資", "msg me", "telegram: @",
+]
+# Strong signals: a single hit is enough to classify as spam
+STRONG_SPAM_MARKERS = [
+    "裸聊", "裸體直播", "外約", "包養", "婚外情",
+    "六合彩", "博彩", "博弈", "現金版", "娛樂城",
+    "продажа баз", "база данных",
+]
+
+def _is_spam(text: str) -> bool:
+    """Heuristic spam detection for incoming DMs (data-broker, crypto, adult).
+    Conservative: only flags obvious patterns; real leads still notify."""
+    if not text:
+        return True
+    lowered = text.lower()
+    if any(m.lower() in lowered for m in STRONG_SPAM_MARKERS):
+        return True
+    hits = sum(1 for m in SPAM_MARKERS if m.lower() in lowered)
+    return hits >= 2
+
+
 def _store_incoming(platform: str, external_id: str, sender: str, text: str, raw: dict):
     from ..database import execute
+    is_spam = 1 if _is_spam(text) else 0
     try:
         execute(
-            "INSERT OR IGNORE INTO incoming_messages (platform, external_id, sender, text, raw) VALUES (?, ?, ?, ?, ?)",
+            "INSERT OR IGNORE INTO incoming_messages (platform, external_id, sender, text, raw, is_spam) VALUES (?, ?, ?, ?, ?, ?)",
             [
                 platform,
                 (external_id or sender)[:200],
                 (sender or "")[:200],
                 (text or "")[:2000],
                 json.dumps(raw, ensure_ascii=False, default=str)[:5000],
+                is_spam,
             ],
         )
     except Exception as e:
         logger.error(f"incoming_messages insert failed: {e}")
+
+    if is_spam:
+        logger.info(f"incoming spam filtered (platform={platform}, sender={sender})")
+        return
 
     from .notification_service import notify_owner
     try:
