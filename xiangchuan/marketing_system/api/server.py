@@ -2064,11 +2064,18 @@ PROMO_TOPICS = [
     "監控裝了一堆但沒人看告警？問題出在這裡",
     "遊戲/電商上線前，最貴的坑都在系統維運",
     "為什麼我不賣技術，賣「你的生意半夜不當機」",
+    "我讓 AI 每天寫一章小說，七天後它開始自己埋伏筆",
+    "追 AI 寫的連載小說是什麼體驗？每天一章，還真的會上癮",
+    "一台會說話的伺服器！AI 連載小說開局神器",
+    "用 GROQ 寫作，AI 連續劇般的章節每天都在更新",
+    "重生之我在維運部打雜的日子——AI 寫出了最懂工程師的梗",
+    "不只寫程式，AI 現在連小說都能每天連載不間斷",
 ]
 PROMO_LANDING = {
     "reference": "https://lewislunora.onrender.com/",
     "ai": "https://lewislunora.onrender.com/proposals/ai-customer-service.html",
     "ops": "https://lewislunora.onrender.com/proposals/ops-managed.html",
+    "novel": "https://lewislunora.onrender.com/novels.html",
 }
 
 
@@ -2078,6 +2085,8 @@ def _promo_landing(topic):
         return PROMO_LANDING["ops"]
     if any(k in topic for k in ("AI 客服", "客服")):
         return PROMO_LANDING["ai"]
+    if any(k in topic for k in ("小說", "連載", "寫作", "小說開局", "重生", "伺服器")):
+        return PROMO_LANDING["novel"]
     return PROMO_LANDING["reference"]
 
 @app.get("/api/auto-promote")
