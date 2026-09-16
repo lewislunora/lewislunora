@@ -47,26 +47,43 @@ class ThreadsConnector(BrowserAutomation):
 
     async def _async_post(self, text, media_urls=None):
         await self._ensure_browser()
-        context = await self.browser.new_context(storage_state=str(DATA_DIR / "threads_auth.json"))
+        auth_path = DATA_DIR / "threads_auth.json"
+        context_opts = {"storage_state": str(auth_path)} if auth_path.exists() else {}
+        context = await self.browser.new_context(**context_opts)
         page = await context.new_page()
 
         try:
-            await page.goto("https://www.threads.net/login", timeout=BROWSER_TIMEOUT)
-            if "login" in page.url:
-                await page.fill("input[name='username']", self.username)
-                await page.fill("input[name='password']", self.password)
-                await page.click("button[type='submit']")
-                await page.wait_for_timeout(5000)
-                await context.storage_state(path=str(DATA_DIR / "threads_auth.json"))
+            await page.goto("https://www.threads.com/login", timeout=BROWSER_TIMEOUT)
+            if "login" in page.url or "/accounts/login" in page.url:
+                # Threads 2026：輸入框用 placeholder 識別，非 name 欄位
+                await page.locator("input[type='text']").first.fill(self.username)
+                await page.locator("input[type='password']").first.fill(self.password)
+                # 登入按鈕可能是 <button> 或 <input type=submit>
+                submit = page.locator("div[role='button']:has-text('Log in')")
+                if await submit.count():
+                    await submit.first.click()
+                else:
+                    await page.locator("input[type='submit'], button[type='submit']").first.click()
+                await page.wait_for_timeout(6000)
+                if "login" in page.url:
+                    raise Exception("登入失敗：請確認帳號密碼（可能觸發驗證碼或 2FA）")
+                try:
+                    await context.storage_state(path=str(auth_path))
+                except Exception:
+                    pass
 
-            await page.goto("https://www.threads.net", timeout=BROWSER_TIMEOUT)
+            await page.goto("https://www.threads.com", timeout=BROWSER_TIMEOUT)
+            await page.wait_for_timeout(4000)
+            # Threads compose：一個 (或最近) 的 contenteditable 文字框
+            tb = page.locator("div[contenteditable='true'], div[role='textbox']").first
+            await tb.click()
+            await tb.fill(self.truncate(text, 500))
+            await page.wait_for_timeout(1500)
+            # 貼文按鈕：找含 Post 文字的 button
+            btn = page.locator("button:has-text('Post')").last
+            await btn.click()
             await page.wait_for_timeout(3000)
-            await page.click("div[role='textbox']")
-            await page.fill("div[role='textbox']", self.truncate(text, 500))
-            await page.wait_for_timeout(1000)
-            await page.click("button:has-text('Post')")
-            await page.wait_for_timeout(3000)
-            return {"success": True, "post_url": "https://www.threads.net/"}
+            return {"success": True, "post_url": "https://www.threads.com/"}
 
         except Exception as e:
             raise Exception(f"Threads post failed: {e}")
