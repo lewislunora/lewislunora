@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>小說創作管理 — 翔川 Neo</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#0a0e27;color:#e8ecf4;padding:2rem}
+h1{font-size:24px;margin-bottom:.5rem;background:linear-gradient(135deg,#f7971e,#ffd200);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.desc{color:rgba(255,255,255,.3);font-size:14px;margin-bottom:2rem}
+.card{background:rgba(255,255,255,.035);border:1px solid rgba(255,255,255,.07);border-radius:12px;padding:1.5rem;margin-bottom:1rem}
+.card h3{font-size:16px;font-weight:600;margin-bottom:.5rem}
+.btn{display:inline-flex;align-items:center;gap:.4rem;padding:.5rem 1rem;border-radius:8px;font-weight:600;font-size:13px;cursor:pointer;border:none;transition:all .2s;margin-right:.5rem}
+.btn-primary{background:linear-gradient(135deg,#f7971e,#ffd200);color:#1a1a2e}
+.btn-primary:hover{opacity:.9}
+.btn-outline{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);color:rgba(255,255,255,.6)}
+.btn-outline:hover{background:rgba(255,255,255,.08);color:#fff}
+.btn-sm{padding:.3rem .6rem;font-size:11px}
+input,textarea{width:100%;padding:.6rem;border-radius:8px;background:rgba(0,0,0,.2);border:1px solid rgba(255,255,255,.1);color:#e8ecf4;font-size:13px;font-family:inherit;margin:.4rem 0 1rem;resize:vertical}
+input:focus,textarea:focus{border-color:#ffd200;outline:none}
+label{font-size:12px;color:rgba(255,255,255,.4);font-weight:600}
+.book{background:rgba(255,255,255,.035);border:1px solid rgba(255,255,255,.07);border-radius:12px;padding:1.2rem;margin-bottom:1rem}
+.book h4{font-size:16px;margin-bottom:.3rem}
+.book .tag{display:inline-block;padding:.15rem .5rem;border-radius:4px;font-size:11px;font-weight:600;background:rgba(255,215,0,.12);color:#ffd200;margin-left:.5rem}
+.book .meta{font-size:12px;color:rgba(255,255,255,.3);margin:.3rem 0}
+.book .summary{font-size:13px;color:rgba(255,255,255,.5);line-height:1.6}
+#result{display:none;margin-top:1rem;padding:.8rem;border-radius:8px;font-size:13px;white-space:pre-wrap}
+#result.success{display:block;background:rgba(255,215,0,.1);color:#ffd200}
+#result.error{display:block;background:rgba(255,107,107,.1);color:#ff6b6b}
+.loading{text-align:center;padding:2rem;color:rgba(255,255,255,.2)}
+.grow{display:grid;grid-template-columns:1fr 1fr;gap:1rem}
+@media(max-width:700px){.grow{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<h1>📖 小說創作管理</h1>
+<div class="desc">開啟新連載、管理書籍、觀看章節進度。AI 每天每個連載自動產出一章。</div>
+
+<div class="card">
+  <h3>📝 開啟新連載</h3>
+  <div class="grow">
+    <div>
+      <label>書名（必填）</label>
+      <input id="title" placeholder="例如：我在系統當機的平行宇宙活了三次">
+    </div>
+    <div>
+      <label>分類</label>
+      <input id="genre" placeholder="都市 / 奇幻 / 玄幻 / 科幻 / 靈異…">
+    </div>
+  </div>
+  <label>故事簡介（給 AI 與讀者的開場白）</label>
+  <textarea id="summary" rows="4" placeholder="一句話抓住讀者：主角在做什麼、卡在哪裡、開局多慘…"></textarea>
+  <button class="btn btn-primary" onclick="createNovel()">🚀 建立並開始連載</button>
+</div>
+
+<div id="result"></div>
+
+<section>
+  <h2 style="font-size:18px;margin-bottom:1rem;color:rgba(255,255,255,.5)">📚 現有連載</h2>
+  <div id="books"><div class="loading">載入中...</div></div>
+</section>
+
+<script>
+var api=location.hostname.includes('github.io')?'https://lewislunora.onrender.com':'';
+function showResult(msg,type){
+  var r=document.getElementById('result');
+  r.textContent=msg;r.className=type;
+}
+async function createNovel(){
+  var btn=event.target;btn.textContent='⏳ 建立中...';btn.disabled=true;
+  showResult('AI 正在建立世界觀與第一章…','success');
+  try{
+    var res=await fetch(api+'/api/novels/create',{
+      method:'POST',
+      credentials:'include',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({
+        title:document.getElementById('title').value.trim(),
+        genre:document.getElementById('genre').value.trim()||'玄幻',
+        summary:document.getElementById('summary').value.trim()
+      })
+    });
+    var d=await res.json();
+    if(!res.ok){showResult('❌ 失敗：'+(d.detail||JSON.stringify(d)),'error');return;}
+    showResult('✅ 新書「'+d.title+'」已建立（ID '+d.novel_id+'）。第一章將在使用者第一次點閱時由 AI 自動寫出。','success');
+    document.getElementById('title').value='';
+    document.getElementById('genre').value='';
+    document.getElementById('summary').value='';
+    loadBooks();
+  }catch(e){showResult('❌ 連線錯誤：'+e.message,'error');}
+  finally{btn.textContent='🚀 建立並開始連載';btn.disabled=false;}
+}
+async function loadBooks(){
+  var el=document.getElementById('books');
+  try{
+    var res=await fetch(api+'/api/novels');
+    var d=await res.json();
+    var items=d.items||[];
+    if(!items.length){el.innerHTML='<div class="empty" style="text-align:center;padding:3rem;color:rgba(255,255,255,.15)">尚無小說</div>';return;}
+    el.innerHTML=items.map(function(b){
+      return '<div class="book">'+
+        '<h4>'+b.title+'<span class="tag">'+b.genre+'</span></h4>'+
+        '<div class="meta">共 '+b.chapter_count+' 章 ・ '+b.reads+' 次閱讀 ・ ID #'+b.id+'</div>'+
+        '<div class="summary">'+b.summary+'</div>'+
+        '</div>';
+    }).join('');
+  }catch(e){el.innerHTML='<div class="loading">載入失敗</div>';}
+}
+loadBooks();
+</script>
+</body>
+</html>
