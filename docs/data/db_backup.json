@@ -332,5 +332,41 @@
   "messages": [],
   "follows": [],
   "incoming_messages": [],
-  "pages": []
+  "pages": [],
+  "novels": [
+    {
+      "id": 1,
+      "title": "重生之我在維運部打雜的日子",
+      "summary": "被裁員的 45 歲維運總監，一覺醒來回到二十年前剛入行的第一天。這輩子的目標只有一個：先買對房子。",
+      "genre": "都市",
+      "status": "serializing",
+      "chapter_count": 0,
+      "last_summary": "",
+      "next_available_at": "2026-09-16 07:08:39",
+      "created_at": "2026-09-16 07:08:39"
+    },
+    {
+      "id": 2,
+      "title": "開局撿到一台會說話的伺服器",
+      "summary": "破產程式員老李在路上撿到一台會吐槽的伺服器，它知道所有股票的漲跌。但前提是：它每天要燒一個祕密。",
+      "genre": "奇幻",
+      "status": "serializing",
+      "chapter_count": 0,
+      "last_summary": "",
+      "next_available_at": "2026-09-16 07:08:39",
+      "created_at": "2026-09-16 07:08:39"
+    },
+    {
+      "id": 3,
+      "title": "我在電商帝國賣靈符",
+      "summary": "菜鳥網店老闆王小明，靠一張會自動回覆的 AI 符咒，從零開始把一家小店開成帝國。但有個道士警告他：這東西會吃夢。",
+      "genre": "玄幻",
+      "status": "serializing",
+      "chapter_count": 0,
+      "last_summary": "",
+      "next_available_at": "2026-09-16 07:08:39",
+      "created_at": "2026-09-16 07:08:39"
+    }
+  ],
+  "novel_chapters": []
 }
