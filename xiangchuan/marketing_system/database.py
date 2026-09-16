@@ -19,6 +19,7 @@ DB_TABLES = [
     "community_replies", "article_views", "promo_queue",
     "social_identities", "conversations", "messages", "follows",
     "incoming_messages", "pages",
+    "novels", "novel_chapters",
 ]
 
 
@@ -148,6 +149,29 @@ def init_db():
             ai_generated INTEGER DEFAULT 0,
             created_at TEXT DEFAULT (datetime('now')),
             published_at TEXT
+        );
+
+        CREATE TABLE IF NOT EXISTS novels (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            title TEXT NOT NULL,
+            summary TEXT DEFAULT '',
+            genre TEXT DEFAULT '玄幻',
+            status TEXT DEFAULT 'serializing',
+            chapter_count INTEGER DEFAULT 0,
+            last_summary TEXT DEFAULT '',
+            next_available_at TEXT DEFAULT (datetime('now')),
+            created_at TEXT DEFAULT (datetime('now')),
+            UNIQUE(title)
+        );
+
+        CREATE TABLE IF NOT EXISTS novel_chapters (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            novel_id INTEGER NOT NULL,
+            chapter_no INTEGER NOT NULL,
+            title TEXT DEFAULT '',
+            body TEXT DEFAULT '',
+            created_at TEXT DEFAULT (datetime('now')),
+            UNIQUE(novel_id, chapter_no)
         );
 
         CREATE TABLE IF NOT EXISTS schedules (
@@ -475,8 +499,31 @@ CREATE TABLE IF NOT EXISTS social_identities (
     conn.commit()
     conn.close()
 
+    # Seed: 開局連載小說（網站一上線就有內容，第一章由讀者首次瀏覽時 AI 續寫）
+    _seed_novels()
+
     # After init, dump seed data as backup
     _dump_to_json()
+
+
+def _seed_novels():
+    try:
+        conn = _conn()
+        cur = conn.execute("SELECT COUNT(*) FROM novels")
+        if cur.fetchone()[0] == 0:
+            conn.executemany(
+                "INSERT OR IGNORE INTO novels (title, summary, genre, status) VALUES (?,?,?, 'serializing')",
+                [
+                    ("重生之我在維運部打雜的日子", "被裁員的 45 歲維運總監，一覺醒來回到二十年前剛入行的第一天。這輩子的目標只有一個：先買對房子。", "都市"),
+                    ("開局撿到一台會說話的伺服器", "破產程式員老李在路上撿到一台會吐槽的伺服器，它知道所有股票的漲跌。但前提是：它每天要燒一個祕密。", "奇幻"),
+                    ("我在電商帝國賣靈符", "菜鳥網店老闆王小明，靠一張會自動回覆的 AI 符咒，從零開始把一家小店開成帝國。但有個道士警告他：這東西會吃夢。", "玄幻"),
+                ],
+            )
+            conn.commit()
+        conn.close()
+    except Exception as e:
+        import logging
+        logging.getLogger(__name__).warning(f"seed novels failed: {e}")
 
 
 def execute(sql, params=None):

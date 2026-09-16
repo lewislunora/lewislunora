@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI 連載小說 — 翔川 Neo</title>
+<meta name="description" content="每天自動更新的 AI 連載小說。重生、都市、玄幻——追更一族的最愛，看完下章在底下留言討論。">
+<meta property="og:title" content="AI 連載小說｜每天一章，追更一族集合">
+<meta property="og:description" content="重生之我在維運部打雜的日子、開局撿到一台會說話的伺服器、我在電商帝國賣靈符。每天新一章。">
+<meta property="og:image" content="https://lewislunora.onrender.com/assets/og-image.png">
+<meta property="og:url" content="https://lewislunora.onrender.com/novels.html">
+<meta name="twitter:card" content="summary_large_image">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','Noto Sans TC',system-ui,sans-serif;background:#0a0e27;color:#e8ecf4;line-height:1.7;-webkit-font-smoothing:antialiased}
+.header{text-align:center;padding:3rem 1.5rem 1.5rem;background:radial-gradient(ellipse at top,rgba(255,123,156,.10) 0%,transparent 55%)}
+.header h1{font-size:clamp(26px,4vw,44px);font-weight:800;background:linear-gradient(135deg,#00d4ff,#ff7b9c);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.header p{color:rgba(255,255,255,.45);margin-top:.4rem;font-size:clamp(13px,1.2vw,16px)}
+.container{max-width:760px;margin:0 auto;padding:0 1.2rem 4rem}
+.book{padding:1.2rem;border:1px solid rgba(255,255,255,.08);border-radius:16px;margin:1rem 0;background:rgba(255,255,255,.03);cursor:pointer;transition:all .2s}
+.book:hover{border-color:rgba(0,212,255,.4);transform:translateY(-2px)}
+.book .genre{display:inline-block;background:rgba(0,212,255,.12);color:#7fe9ff;font-size:11px;padding:.1rem .5rem;border-radius:99px;margin-bottom:.4rem}
+.book h2{font-size:clamp(17px,2.6vw,22px);font-weight:700;margin-bottom:.2rem}
+.book .summary{color:rgba(255,255,255,.55);font-size:clamp(13px,1.4vw,15px);margin:.3rem 0}
+.book .meta{color:rgba(255,255,255,.35);font-size:12px;display:flex;gap:1rem}
+.reader{max-width:720px}
+.reader .topbar{padding:1.2rem 0 .6rem;border-bottom:1px solid rgba(255,255,255,.08);display:flex;align-items:baseline;gap:.8rem;flex-wrap:wrap}
+.reader .topbar h2{font-size:clamp(18px,3vw,24px)}
+.chapter-nav{display:flex;gap:.5rem;margin:.8rem 0;flex-wrap:wrap}
+.chapter-nav button{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.12);color:#ccc;padding:.4rem .9rem;border-radius:8px;font-size:13px;cursor:pointer}
+.chapter-nav button.on{background:linear-gradient(135deg,#00d4ff,#ff7b9c);color:#0a0e27;font-weight:700}
+.article{white-space:pre-wrap;font-size:clamp(15px,1.6vw,17px);line-height:1.9;color:#dde;padding:1.2rem 0}
+.lock-banner{background:rgba(255,123,156,.08);border:1px solid rgba(255,123,156,.3);border-radius:12px;padding:1rem;color:#ffd;text-align:center;margin:1rem 0}
+.lock-banner a{color:#ff7b9c;font-weight:700}
+.cta-row{margin:1rem 0;display:flex;gap:.6rem;flex-wrap:wrap}
+.cta-row a{flex:1;min-width:150px;text-align:center;background:linear-gradient(135deg,#00d4ff,#ff7b9c);color:#0a0e27;font-weight:700;padding:.7rem;border-radius:10px;text-decoration:none}
+.cta-row a.ghost{background:transparent;border:1px solid rgba(0,212,255,.4);color:#7fe9ff}
+.comments{margin-top:2rem;border-top:1px solid rgba(255,255,255,.08);padding-top:1rem}
+.comments h3{font-size:15px;color:rgba(255,255,255,.7);margin-bottom:.6rem}
+.comments textarea{width:100%;background:#0d1330;border:1px solid rgba(255,255,255,.12);border-radius:10px;color:#eef;padding:.7rem;font-size:14px;min-height:70px;font-family:inherit}
+.comments .btn{background:linear-gradient(135deg,#00d4ff,#ff7b9c);color:#0a0e27;border:none;border-radius:8px;padding:.5rem 1.2rem;font-weight:700;cursor:pointer;margin-top:.5rem}
+.comment{margin:.7rem 0;border-bottom:1px dashed rgba(255,255,255,.06);padding-bottom:.6rem}
+.comment .who{color:#7fe9ff;font-size:12px;font-weight:600}
+.comment .when{color:rgba(255,255,255,.3);font-size:11px;margin-left:.4rem}
+.comment .text{color:#ccc;font-size:14px;margin-top:.15rem}
+.note{text-align:center;color:rgba(255,255,255,.3);font-size:12px;margin-top:2rem}
+</style>
+</head>
+<body>
+<div class="header">
+  <h1>📖 AI 連載小說</h1>
+  <p>每天自動更新一章・追更一族集合・看完下章留言討論</p>
+</div>
+<div class="container" id="app">
+  <div id="books-view"></div>
+  <div id="reader-view" style="display:none"></div>
+</div>
+<script>
+const API = "https://lewislunora.onrender.com";
+let currentNovel = null, currentChapter = null;
+
+async function api(path, opts) {
+  const o = opts || {};
+  o.headers = Object.assign({ "Content-Type": "application/json" }, o.headers || {});
+  const tk = localStorage.getItem("token");
+  if (tk) o.headers["X-Auth"] = tk;
+  const r = await fetch(API + path, o);
+  if (r.status === 401) { return { _401: true }; }
+  return r.json();
+}
+
+function esc(s){ return (s||"").replace(/[&<>]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;'}[c])); }
+
+async function loadBooks() {
+  const d = await fetch(API + "/api/novels").then(r => r.json());
+  const el = document.getElementById("books-view");
+  if (!d.items || !d.items.length) {
+    el.innerHTML = `<p style="color:rgba(255,255,255,.5)">書架補書中，敬請期待…</p>`;
+    return;
+  }
+  el.innerHTML = `<h2 style="font-size:20px;margin:1rem 0 .5rem;color:rgba(255,255,255,.8)">書架</h2>` +
+    d.items.map(b => `
+    <div class="book" onclick="openNovel(${b.id})">
+      <span class="genre">${esc(b.genre)}</span>
+      <h2>${esc(b.title)}</h2>
+      <div class="summary">${esc(b.summary)}</div>
+      <div class="meta"><span>已連載 ${b.chapter_count} 章</span><span>最新：${esc(b.latest_chapter_title || '-')}</span></div>
+    </div>`).join("");
+}
+
+async function openNovel(id) {
+  const d = await api(`/api/novels/${id}`);
+  if (!d.novel) { alert("小說載入失敗"); return; }
+  currentNovel = d.novel;
+  document.getElementById("books-view").style.display = "none";
+  document.getElementById("reader-view").style.display = "block";
+  renderReader();
+  await readChapter(0); // 最新一章
+}
+
+function renderReader() {
+  const n = currentNovel;
+  const lockedPast = n.reader_limit;
+  const nav = n.chapters || [];
+  const navHtml = nav.map(c =>
+      `<button class="${c.chapter_no === (currentChapter||{}).chapter_no ? 'on':''}" onclick="readChapter(${c.chapter_no})">${c.chapter_no}</button>`
+    ).join("");
+  document.getElementById("reader-view").innerHTML = `
+    <div class="topbar">
+      <h2>${esc(n.title)}</h2>
+      <span style="color:rgba(255,255,255,.4);font-size:13px">${esc(n.genre)} · 免費 ${n.free_chapters}+ 章</span>
+    </div>
+    <div class="chapter-nav">${navHtml}</div>
+    <div id="chapter-box"></div>
+    <div class="comments">
+      <h3>💬 這章討論</h3>
+      <textarea id="cmt" placeholder="看完發表看法…（需要登入）"></textarea>
+      <button class="btn" onclick="postComment()">送出留言</button>
+      <div id="cmt-list"></div>
+    </div>
+    <p class="note">追更提醒：每天新一章，明天記得回來</p>`;
+  loadComments();
+}
+
+async function readChapter(no) {
+  const d = await api(`/api/novels/read`, { method: "POST", body: JSON.stringify({ novel_id: currentNovel.id, chapter_no: no || 0 }), });
+  if (!d.chapter) { document.getElementById("chapter-box").innerHTML = `<p>章節尚未開放，明天再來。</p>`; return; }
+  currentChapter = d.chapter;
+  const box = document.getElementById("chapter-box");
+  if (d.locked) {
+    box.innerHTML = `
+      <div class="lock-banner">🔒 第 ${d.chapter.chapter_no} 章為 Pro 會員專屬。<br>每日免費可讀前 ${d.free_chapters} 章。
+        <div class="cta-row">
+          <a href="pricing.html#activate">兌換開通碼升 Pro</a>
+          <a class="ghost" href="register.html">註冊免費帳號</a>
+        </div>
+      </div>`;
+  } else {
+    box.innerHTML = `
+      <div class="topbar"><h3>第 ${d.chapter.chapter_no} 章</h3><span style="color:rgba(255,255,255,.35);font-size:12px">更新 ${d.chapter.created_at}</span></div>
+      <div class="article">${esc(d.chapter.body)}</div>
+      <div class="cta-row">
+        <a href="javascript:readChapter(${d.next_chapter_no || 0})">下一章</a>
+      </div>`;
+  }
+  // 更新切換高亮
+  document.querySelectorAll(".chapter-nav button").forEach(b => {
+    b.classList.toggle("on", parseInt(b.textContent,10) === d.chapter.chapter_no);
+  });
+}
+
+async function loadComments() {
+  const box = document.getElementById("cmt-list");
+  if (!box) return;
+  const path = `/novels/${currentNovel.id}/ch-${currentChapter?currentChapter.chapter_no:''}`;
+  const d = await fetch(`${API}/api/comments?path=${encodeURIComponent(path)}`).then(r => r.json());
+  box.innerHTML = (d.items||[]).map(c => `
+    <div class="comment">
+      <span class="who">${esc(c.author_name||'匿名')}</span><span class="when">${esc(c.created_at||'')}</span>
+      <div class="text">${esc(c.content)}</div>
+    </div>`).join("") || "<p style='color:rgba(255,255,255,.35);font-size:13px'>還沒人留言，搶個頭香？</p>";
+}
+
+async function postComment() {
+  const val = document.getElementById("cmt").value.trim();
+  if (!val) return;
+  const d = await api(`/api/comments`, { method: "POST", body: JSON.stringify({
+    page_path: `/novels/${currentNovel.id}/ch-${currentChapter.chapter_no}`,
+    author_name: localStorage.getItem("name") || "匿名",
+    content: val,
+    parent_id: null,
+  })});
+  document.getElementById("cmt").value = "";
+  loadComments();
+}
+
+loadBooks();
+</script>
+</body>
+</html>

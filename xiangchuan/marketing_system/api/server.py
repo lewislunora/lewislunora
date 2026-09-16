@@ -43,6 +43,7 @@ from ..services.openclaw_agent import _handle_command as openclaw_handle, _is_au
 from ..services.knowledge_base import get_kb_reply, save_unanswered, get_pending, auto_learn
 from ..services.analytics import track_async, summary as analytics_summary
 from ..services.story_generator import AIStoryGenerator
+from ..services.serial_novel import SerialNovelEngine, free_chapter_limit
 
 app = FastAPI(
     title="翔川 Neo｜曜科技 行銷自動化系統",
@@ -173,6 +174,21 @@ class StoryRequest(BaseModel):
     length: str = "60秒"
     style: str = "AI 奇幻"
     script: str = ""
+
+
+class NovelCreateRequest(BaseModel):
+    title: str
+    summary: str = ""
+    genre: str = "玄幻"
+
+
+class NovelReadRequest(BaseModel):
+    novel_id: int
+    chapter_no: int = 0
+
+
+class NovelListRequest(BaseModel):
+    detail: bool = False
 
 
 class AccountCreate(BaseModel):
@@ -973,6 +989,118 @@ def license_status(request: Request, token: str = ""):
         },
         "day": today,
     }
+
+
+# ---------- AI 連載小說 ----------
+_novel_engine = SerialNovelEngine()
+
+
+@app.get("/api/novels")
+def novels_list():
+    """列出所有連載中的小說（含最新章節標題）。"""
+    items = _novel_engine.list_novels()
+    return {"items": items}
+
+
+@app.get("/api/novels/{novel_id}")
+def novel_detail(novel_id: int, request: Request):
+    """小說目錄＋系列資訊。gates 判斷讀者資格。"""
+    n = _novel_engine.get_novel(novel_id)
+    if not n:
+        raise HTTPException(404, "小說不存在")
+    u = _current_user(request)
+    plan = _plan_of(u)
+    total = n["chapter_count"]
+    free = free_chapter_limit()
+    n["free_chapters"] = free
+    n["total_chapters"] = total
+    n["reader_plan"] = plan
+    n["reader_limit"] = total if plan != "free" else min(total, free)
+    return {"novel": n}
+
+
+@app.post("/api/novels/read")
+def novel_read(data: NovelReadRequest, request: Request):
+    """讀取指定章節；若是免費章節後的第 N 章，需 Pro 會員。
+
+    若 chapter_no==0 表示要求「最新一章」（並觸發今天若無新章則續寫）。
+    """
+    n = fetch_one("SELECT * FROM novels WHERE id=?", (data.novel_id,))
+    if not n:
+        raise HTTPException(404, "小說不存在")
+
+    u = _current_user(request)
+    plan = _plan_of(u)
+    free = free_chapter_limit()
+
+    target = data.chapter_no or 0
+    if target == 0:
+        # 觸發續寫（若當天沒有新章就產生）再回最新章
+        chap, is_new = _novel_engine.ensure_chapter(data.novel_id)
+        if not chap:
+            chap = fetch_one("SELECT * FROM novel_chapters WHERE novel_id=? ORDER BY chapter_no DESC LIMIT 1", (data.novel_id,))
+        if chap:
+            target = chap["chapter_no"]
+    else:
+        # 讀指定章：確保它存在（若超過既有章節數，視為要求續寫那一章，限一天一章）
+        existing = _novel_engine.get_chapter(data.novel_id, target)
+        if existing:
+            chap = existing
+            target = existing["chapter_no"]
+        else:
+            prev = fetch_one("SELECT MAX(chapter_no) m FROM novel_chapters WHERE novel_id=?", (data.novel_id,))
+            maxno = prev["m"] or 0
+            if target > maxno + 1:
+                raise HTTPException(404, "章節尚未開放（一次只能要求下一章）")
+            chap, _ = _novel_engine.ensure_chapter(data.novel_id, target)
+            if not chap:
+                chap = fetch_one("SELECT * FROM novel_chapters WHERE novel_id=? ORDER BY chapter_no DESC LIMIT 1", (data.novel_id,))
+            target = chap["chapter_no"]
+
+    if not chap:
+        return {"novel_id": data.novel_id, "chapter": None, "error": "尚未有章節，請稍後再試"}
+
+    # 門檻：免費讀前 free 章；超過需 Pro
+    locked = target > free and plan == "free"
+    body_out = ""
+    if not locked:
+        body_out = chap["body"] or ""
+
+    # 記錄瀏覽（級聯 page 計數，未來可在 analytics 統計）
+    try:
+        from ..services.analytics import track_async
+        track_async(page_path=f"/novels/{data.novel_id}/ch-{target}", device="novel")
+    except Exception:
+        pass
+
+    return {
+        "novel_id": data.novel_id,
+        "novel_title": n["title"],
+        "chapter": {
+            "id": chap["id"],
+            "chapter_no": target,
+            "title": chap["title"],
+            "body": body_out,
+            "created_at": chap["created_at"],
+        },
+        "locked": locked,
+        "reader_plan": plan,
+        "free_chapters": free,
+        "is_new": bool(is_new if "is_new" in dir() else False),
+        "next_chapter_no": target + 1,
+    }
+
+
+@app.post("/api/novels/create")
+def novel_create(data: NovelCreateRequest, request: Request):
+    """開啟一部新連載（僅 admin）。"""
+    _require_admin(request)
+    if not data.title.strip():
+        raise HTTPException(400, "請輸入書名")
+    cid = _novel_engine.create_novel(data.title.strip(), data.summary.strip(), data.genre.strip() or "玄幻")
+    if not cid:
+        raise HTTPException(400, "書名重複或建立失敗")
+    return {"status": "ok", "novel_id": cid, "title": data.title}
 
 
 @app.get("/api/auth/providers")
