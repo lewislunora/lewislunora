@@ -132,7 +132,11 @@ def auto_short_daily(max_per_day=2):
     today = fetch(
         "SELECT COUNT(*) AS c FROM feed_posts WHERE post_type='short' AND date(created_at)=date('now')"
     )[0]["c"]
-    if today >= max_per_day:
+    total = fetch("SELECT COUNT(*) AS c FROM feed_posts")[0]["c"]
+    # 網站完全沒有任何貼文時，跳過每日上限（但每 tick 仍只產一篇，逐步暖機）
+    if today >= max_per_day and total > 0:
+        return {"ok": True, "skipped": True, "today": today}
+    if total == 0 and today >= 1:
         return {"ok": True, "skipped": True, "today": today}
     result = generate_and_publish()
     return result
