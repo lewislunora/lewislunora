@@ -2173,6 +2173,29 @@ def post_promo(promo_id: int):
         return {"ok": False, "error": str(e)}
 
 
+@app.post("/api/short-content/generate")
+def short_content_generate(request: Request):
+    """產一篇 IG/Threads 風格短文 → 進網站 feed → 同步發布外部平台（admin）。"""
+    _require_admin(request)
+    from ..services.short_content import generate_and_publish
+    result = generate_and_publish()
+    if not result.get("ok"):
+        raise HTTPException(502, result.get("error", "產生失敗"))
+    return result
+
+
+@app.post("/api/short-content/publish/{post_id}")
+def short_content_publish(post_id: int, request: Request):
+    """把一篇 feed 短文同步發布到外部平台（admin）。"""
+    _require_admin(request)
+    from ..services.short_content import _publish_to_platforms
+    row = fetch_one("SELECT id, content FROM feed_posts WHERE id=?", (post_id,))
+    if not row:
+        raise HTTPException(404, "貼文不存在")
+    published = _publish_to_platforms(row["content"])
+    return {"ok": True, "published": published}
+
+
 # ── Scheduler auto-promote task ─────────────────────────────────────────
 def _register_promo_task():
     if not scheduler:
@@ -2200,6 +2223,16 @@ def _register_promo_task():
         except Exception:
             pass
 
+    def short_feed_tick():
+        from ..config import GROQ_API_KEY
+        if not GROQ_API_KEY:
+            return
+        try:
+            from ..services.short_content import auto_short_daily
+            auto_short_daily(max_per_day=2)
+        except Exception:
+            pass
+
     original_loop = scheduler._loop
 
     def patched_loop():
@@ -2213,6 +2246,9 @@ def _register_promo_task():
                     scheduler._auto_learn_kb()
                 if scheduler._ping_count % 1440 == minute:
                     daily_promo()
+                # AI 短內容引擎：每 6 小時試一次，若當日 <2 篇且有話題就補
+                if scheduler._ping_count % 360 == 0:
+                    short_feed_tick()
             except Exception:
                 pass
             time.sleep(60)

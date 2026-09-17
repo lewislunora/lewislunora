@@ -498,6 +498,15 @@ footer .wrap{display:flex;flex-wrap:wrap;gap:.8rem;justify-content:space-between
   .footer-labs{text-align:left;min-width:auto;width:100%}
   .footer-wrap{flex-direction:column}
 }
+.feed-mini{max-width:760px;margin:0 auto}
+.feed-mini .feed-item{background:rgba(255,255,255,.035);border:1px solid rgba(255,255,255,.08);border-radius:16px;padding:1.2rem 1.4rem;margin-bottom:.9rem;transition:all .2s}
+.feed-mini .feed-item:hover{background:rgba(255,255,255,.06);border-color:rgba(0,212,255,.25)}
+.feed-mini .feed-head{display:flex;align-items:center;gap:.6rem;margin-bottom:.6rem;font-size:13px;color:rgba(255,255,255,.45)}
+.feed-mini .feed-head .autor{font-weight:700;color:rgba(255,255,255,.75)}
+.feed-mini .feed-head .ago{margin-left:auto}
+.feed-mini .feed-body{font-size:15px;line-height:1.7;color:#e8ecf4;white-space:pre-wrap;word-break:break-word}
+.feed-mini .feed-foot{display:flex;gap:1.2rem;margin-top:.9rem;padding-top:.8rem;border-top:1px solid rgba(255,255,255,.06);font-size:13px;color:rgba(255,255,255,.4)}
+.feed-empty{text-align:center;padding:2rem;color:rgba(255,255,255,.25);font-size:14px}
 </style>
 </head>
 <body>
@@ -516,6 +525,7 @@ footer .wrap{display:flex;flex-wrap:wrap;gap:.8rem;justify-content:space-between
       <a href="#about">關於我</a>
       <a href="#contact" style="color:#00d4ff;font-weight:600">預約諮詢</a>
       <a href="novels.html" style="color:#ffcc00;font-weight:600">📖 追小說</a>
+      <a href="social/">🔥 短內容</a>
       <a href="games/">遊戲</a>
       <a href="guides/">知識</a>
       <a href="matching.html">AI 配對</a>
@@ -632,6 +642,19 @@ footer .wrap{display:flex;flex-wrap:wrap;gap:.8rem;justify-content:space-between
         <p>網站慢、系統掛、資料丟，你不是在修 bug 就是在怕 bug。10+ 年 DevOps 專家幫你搞定。</p>
         <span class="sol">→ 技術架構顧問服務</span>
       </div>
+    </div>
+  </div>
+</section>
+
+<!-- Short feed -->
+<section class="section" id="feed">
+  <div class="wrap">
+    <div class="section-label">持續運作中</div>
+    <h2 class="section-title">🔥 現在大家在聊什麼</h2>
+    <p class="section-sub" style="max-width:640px;margin:0 auto 1.4rem;text-align:center">這裡每一天都有新的短內容——AI 短想、小說更新、維運日常。跟 IG / Threads 一樣，滑一滑，順手留個言。</p>
+    <div class="feed-mini" id="homeFeed"><div class="feed-empty">載入中…</div></div>
+    <div style="text-align:center;margin-top:1.2rem">
+      <a class="work-link" href="social/" style="font-size:14px">✨ 去整頁短內容流刷刷 →</a>
     </div>
   </div>
 </section>
@@ -1134,6 +1157,33 @@ function handleContact(e){
   });
   return false;
 }
+
+/* Home short-feed */
+(function(){
+  var box=document.getElementById('homeFeed');
+  if(!box) return;
+  var apiBase = location.hostname.includes('github.io')
+    ? 'https://lewislunora.onrender.com' : '';
+  fetch(apiBase + '/api/feed?page=1&per_page=4')
+  .then(function(r){return r.json()})
+  .then(function(d){
+    var items=(d.items||[]).filter(function(p){return p && p.content});
+    if(!items.length){ box.innerHTML='<div class="feed-empty">第一篇短文就要誕生了…</div>'; return; }
+    box.innerHTML=items.map(function(p){
+      var a=p.author||{name:'翔川'};
+      var name=a.name||'翔川';
+      var ago=(p.created_at||'').replace('T',' ').slice(0,16);
+      return '<div class="feed-item">'+
+        '<div class="feed-head"><span class="autor">'+name.replace(/[<>&"]/g,'')+'</span><span class="tag" style="color:#00d4ff">'+ (p.post_type==='short'?'AI 短想':'短貼文') +'</span><span class="ago">'+ago+'</span></div>'+
+        '<div class="feed-body">'+p.content.replace(/[<>&]/g,function(c){return{'<':'&lt;','>':'&gt;','&':'&amp;'}[c]})+'</div>'+
+        '<div class="feed-foot"><span>❤ '+(p.like_count||0)+'</span><span>💬 '+(p.comment_count||0)+'</span><span>↻ '+(p.author&&p.id?'可留言':'')+'</span></div>'+
+      '</div>';
+    }).join('');
+  })
+  .catch(function(){
+    box.innerHTML='<div class="feed-empty">動態載入失敗</div>';
+  });
+})();
 </script>
 <script>
 /* Service Worker — auto-updates without clearing cache */
