@@ -2240,8 +2240,8 @@ def _register_promo_task():
             try:
                 scheduler._process_pending()
                 scheduler._ping_count += 1
-                # 首次啟動 30 分鐘內立刻產第一篇（讓首頁短內容流馬上不空）
-                if scheduler._ping_count == 30:
+                # 短內容引擎：每 15 分鐘試一次（auto_short_daily 內部有每日上限與冷啟動守門）
+                if scheduler._ping_count % 15 == 0:
                     short_feed_tick()
                 if scheduler._ping_count % 1440 == 0:
                     scheduler._daily_backup()
@@ -2249,9 +2249,6 @@ def _register_promo_task():
                     scheduler._auto_learn_kb()
                 if scheduler._ping_count % 1440 == minute:
                     daily_promo()
-                # AI 短內容引擎：每 6 小時試一次，若當日 <2 篇且有話題就補
-                if scheduler._ping_count % 360 == 0:
-                    short_feed_tick()
             except Exception:
                 pass
             time.sleep(60)
