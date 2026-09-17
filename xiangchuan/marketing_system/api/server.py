@@ -2240,6 +2240,9 @@ def _register_promo_task():
             try:
                 scheduler._process_pending()
                 scheduler._ping_count += 1
+                # 首次啟動 30 分鐘內立刻產第一篇（讓首頁短內容流馬上不空）
+                if scheduler._ping_count == 30:
+                    short_feed_tick()
                 if scheduler._ping_count % 1440 == 0:
                     scheduler._daily_backup()
                 if scheduler._ping_count % 60 == 0:
