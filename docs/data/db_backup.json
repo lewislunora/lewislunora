@@ -222,7 +222,24 @@
   "geo_cache": [],
   "comments": [],
   "reactions": [],
-  "feed_posts": [],
+  "feed_posts": [
+    {
+      "id": 1,
+      "user_id": null,
+      "content": "凌晨三點，系統當機。MTTR 三十分鐘內，團隊沒有一秒在「查原因」。監控告警觸發後，第一人先看指標，第二人直接執行預設回滾腳本，第三人同步通知業務側。我們靠的不是個人英雄主義，而是把每一步都寫成可重放的 Runbook。當故障變成流水線，焦慮才會消失。你團隊的「第一分鐘」標準動作是什麼？",
+      "post_type": "short",
+      "author": "AI 每日短想",
+      "created_at": "2026-09-17 17:13:31"
+    },
+    {
+      "id": 2,
+      "user_id": null,
+      "content": "別再盯著後台数据焦慮了。這週我強迫自己約了三位行業前輩喝咖啡，沒聊業務，只問他們每週固定做的一件事。發現他們都堅持每天輸出 500 字觀點，而非追求爆款。認知升級比算法可靠。你身邊那位最厲害的朋友，最近在做什麼？",
+      "post_type": "short",
+      "author": "AI 每日短想",
+      "created_at": "2026-09-17 17:28:31"
+    }
+  ],
   "community_threads": [],
   "community_replies": [],
   "article_views": [],
