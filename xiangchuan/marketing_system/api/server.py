@@ -386,6 +386,14 @@ def list_contacts(page: int = 1, per_page: int = 50):
     return {"items": items, "total": total, "page": page}
 
 
+@app.delete("/api/contacts/{cid}")
+def delete_contact(request: Request, cid: int):
+    if not _current_user(request):
+        raise HTTPException(status_code=401, detail="請先登入")
+    execute("DELETE FROM contacts WHERE id=?", [cid])
+    return {"status": "ok"}
+
+
 @app.post("/api/content")
 def create_content(data: ContentCreate):
     cid = execute(
