@@ -63,13 +63,29 @@ SPAM_MARKERS = [
 STRONG_SPAM_MARKERS = [
     "裸聊", "裸體直播", "外約", "包養", "婚外情",
     "六合彩", "博彩", "博弈", "現金版", "娛樂城",
-    "продажа баз", "база данных",
+    "продажа баз", "база данных", "оживи фотку", "оживить фото",
 ]
+
+# Cyrillic script detection: a legit visitor never writes Russian.
+CYRILLIC_UNICODE_RANGES = [
+    (0x0400, 0x04FF),  # Cyrillic block
+    (0x0500, 0x052F),  # Cyrillic Supplement
+]
+
+def _has_cyrillic(text: str) -> bool:
+    for ch in text:
+        cp = ord(ch)
+        if any(lo <= cp <= hi for lo, hi in CYRILLIC_UNICODE_RANGES):
+            return True
+    return False
+
 
 def _is_spam(text: str) -> bool:
     """Heuristic spam detection for incoming DMs (data-broker, crypto, adult).
     Conservative: only flags obvious patterns; real leads still notify."""
     if not text:
+        return True
+    if _has_cyrillic(text):
         return True
     lowered = text.lower()
     if any(m.lower() in lowered for m in STRONG_SPAM_MARKERS):
