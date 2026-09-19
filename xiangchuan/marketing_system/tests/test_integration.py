@@ -68,11 +68,11 @@ class TestContactFullPipeline:
         with patch("smtplib.SMTP") as mock_smtp:
             mock_smtp.return_value.__enter__.return_value = MagicMock()
             client.post("/api/contact", json={
-                "姓名": "Carol", "聯絡方式": "carol@test.com",
+                "姓名": "Carol", "聯絡方式": "0912-888-888",
             })
         rows = fetch("SELECT * FROM contacts WHERE name=?", ["Carol"])
         assert len(rows) == 1
-        assert rows[0]["contact"] == "carol@test.com"
+        assert rows[0]["contact"] == "0912-888-888"
 
     def test_contact_fans_out_to_all_channels(self, client):
         """Contact events fan out to Telegram + LINE + Email regardless of SMTP."""
@@ -83,7 +83,7 @@ class TestContactFullPipeline:
                     mock_req.return_value.json.return_value = {"ok": True}
                     with patch.dict(os.environ, {"TELEGRAM_BOT_TOKEN": "bot:test", "TELEGRAM_NOTIFY_CHAT_ID": "123"}, clear=False):
                         resp = client.post("/api/contact", json={
-                            "姓名": "Routing", "聯絡方式": "test",
+                            "姓名": "Routing", "聯絡方式": "@routing_ops",
                         })
                         assert resp.status_code == 200
                         mock_req.assert_called()  # Telegram push fired
@@ -93,7 +93,7 @@ class TestContactFullPipeline:
         with patch.dict(os.environ, {"SMTP_USER": "", "SMTP_PASS": ""}, clear=False):
             with patch("requests.post"):
                 resp = client.post("/api/contact", json={
-                    "姓名": "Partial", "聯絡方式": "@partial",
+                    "姓名": "Partial", "聯絡方式": "0912-345-678",
                 })
                 assert resp.status_code == 200
                 rows = fetch("SELECT * FROM contacts WHERE name=?", ["Partial"])

@@ -42,12 +42,50 @@ class TestContact:
             assert data["status"] == "ok"
 
     def test_contact_missing_name(self, client):
-        resp = client.post("/api/contact", json={"聯絡方式": "test@test.com"})
+        resp = client.post("/api/contact", json={"聯絡方式": "0912-345-678"})
         assert resp.status_code == 400
 
     def test_contact_missing_contact(self, client):
-        resp = client.post("/api/contact", json={"姓名": "Test"})
+        resp = client.post("/api/contact", json={"姓名": "王小明"})
         assert resp.status_code == 400
+
+    def test_contact_spam_test_user_blocked(self, client):
+        """垃圾：Test User / test@example.com 必須被擋且不寫入、不通知"""
+        with patch("marketing_system.api.server.send_contact_email") as mock_email:
+            mock_email.return_value = {"status": "sent"}
+            resp = client.post("/api/contact", json={
+                "姓名": "Test User", "公司": "Test Corp",
+                "聯絡方式": "test@example.com", "Email": "test@example.com",
+                "行業別": "tech", "備註": "I want to know more about the professional plan.",
+            })
+            assert resp.status_code == 200
+            assert resp.json().get("filtered") is True
+            mock_email.assert_not_called()
+        total = fetch("SELECT COUNT(*) AS c FROM contacts")[0]["c"]
+        assert total == 0
+
+    def test_contact_bad_email_rejected(self, client):
+        resp = client.post("/api/contact", json={
+            "姓名": "李四", "聯絡方式": "0912-345-678", "Email": "not-an-email",
+        })
+        assert resp.status_code == 400
+
+    def test_contact_rate_limited_after_burst(self, client):
+        """同 IP 連發 5 筆：前 3 筆過，之後被頻率限制擋下又不漏進 DB"""
+        with patch("marketing_system.api.server.send_contact_email") as mock_email:
+            mock_email.return_value = {"status": "sent"}
+            results = []
+            for i in range(5):
+                r = client.post("/api/contact", json={
+                    "姓名": "客戶金" + str(i),
+                    "聯絡方式": "0912-100-00" + str(i),
+                    "Email": "gold" + str(i) + "@yahoo.com.tw",
+                })
+                results.append(r.json())
+            assert [r.get("filtered") for r in results].count(True) >= 2
+            assert [r.get("filtered") for r in results].count(None) >= 3
+            total = fetch("SELECT COUNT(*) AS c FROM contacts")[0]["c"]
+            assert total >= 1
 
     def test_list_contacts(self, client, sample_contact):
         with patch("marketing_system.api.server.send_contact_email") as mock_email:
@@ -60,10 +98,18 @@ class TestContact:
         assert len(data["items"]) >= 1
 
     def test_contacts_with_pagination(self, client, sample_contact):
-        with patch("marketing_system.api.server.send_contact_email") as mock_email:
-            mock_email.return_value = {"status": "sent"}
-            for _ in range(5):
-                client.post("/api/contact", json=sample_contact)
+        # 直接插入 5 筆（繞過 API 的 rate limit，專測 pagination 邏輯）
+        execute(
+            "INSERT INTO contacts (name, company, contact, email, industry, message) VALUES (?, ?, ?, ?, ?, ?)",
+            [sample_contact["姓名"], sample_contact["公司"], sample_contact["聯絡方式"],
+             sample_contact["Email"], sample_contact["行業別"], sample_contact["備註"]],
+        )
+        for _ in range(4):
+            execute(
+                "INSERT INTO contacts (name, company, contact, email, industry, message) VALUES (?, ?, ?, ?, ?, ?)",
+                [sample_contact["姓名"] + str(_), sample_contact["公司"], sample_contact["聯絡方式"],
+                 sample_contact["Email"], sample_contact["行業別"], sample_contact["備註"]],
+            )
         resp = client.get("/api/contacts?per_page=2")
         data = resp.json()
         assert len(data["items"]) == 2

@@ -34,6 +34,9 @@ def setup_db():
         if p.exists():
             p.unlink()
     init_db()
+    # 重置諮詢表單頻率限制，避免同 IP 連續測試（127.0.0.1）互相干擾
+    from marketing_system.api.server import _contact_hits
+    _contact_hits.clear()
     yield
 
 
@@ -56,12 +59,12 @@ def sample_content():
 @pytest.fixture
 def sample_contact():
     return {
-        "姓名": "Test User",
-        "公司": "Test Corp",
-        "聯絡方式": "test@example.com",
-        "Email": "test@example.com",
-        "行業別": "tech",
-        "備註": "I want to know more about the professional plan.",
+        "姓名": "王小明",
+        "公司": "新創有限公司",
+        "聯絡方式": "0912-345-678",
+        "Email": "wang@gmail.com",
+        "行業別": "電商",
+        "備註": "想了解 AI 客服方案",
     }
 
 

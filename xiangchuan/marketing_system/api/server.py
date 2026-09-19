@@ -2,6 +2,7 @@ import os
 import json
 import hashlib
 import hmac
+import re
 import secrets
 import threading
 import time
@@ -70,6 +71,10 @@ scheduler = ContentScheduler()
 ai_generator = AIContentGenerator()
 
 connectors = {}
+
+
+# 諮詢表單頻率限制：ip -> 上次成功送出的時間戳
+_contact_hits = {}
 
 
 def get_connectors(account_id=None):
@@ -322,6 +327,31 @@ def _notify_contact(data: dict):
 @app.post("/api/contact")
 async def contact_form(request: Request):
     data = await request.json()
+
+    # ── 防垃圾：機器人/測試表單過濾 + 頻率限制 ──
+    # 1) 明顯的測試/無效聯絡人
+    global _contact_hits
+    name = (data.get("姓名") or "").strip()
+    email = (data.get("Email") or "").strip()
+    contact = (data.get("聯絡方式") or "").strip()
+    joined = (name + " " + email + " " + contact).lower()
+    for bad in ("test", "example.com", "test.com", "试用", "測試"):
+        if bad in joined:
+            return JSONResponse(status_code=200, content={"status": "ok", "id": None, "filtered": True})
+    if email and not re.match(r"^[^@\s]+@[^@\s]+\.[^@\s]+$", email):
+        return JSONResponse(status_code=400, content={"status": "error", "message": "Email 格式不正確"})
+
+    # 2) 頻率限制：同 IP 10 分鐘內「成功送出」超過 3 筆才擋（bot 狂刷才觸發）
+    ip = (request.headers.get("x-forwarded-for", request.client.host if request.client else "") or "").split(",")[0].strip()
+    now = time.time()
+    recent = [t for t in _contact_hits.get(ip, []) if now - t < 600]
+    if len(recent) >= 3:
+        return JSONResponse(status_code=200, content={"status": "ok", "id": None, "filtered": True, "message": "頻率限制"})
+    _contact_hits[ip] = recent
+    # 清理老紀錄，避免記憶體長大
+    if len(_contact_hits) > 500:
+        _contact_hits.clear()
+
     required = ["姓名", "聯絡方式"]
     for field in required:
         if not data.get(field, "").strip():
@@ -340,6 +370,7 @@ async def contact_form(request: Request):
             data.get("備註", ""),
         ],
     )
+    _contact_hits[ip] = recent + [now]
     threading.Thread(target=_notify_contact, args=[data], daemon=True).start()
     return {"status": "ok", "id": cid}
 
