@@ -100,6 +100,39 @@ class TestContactFullPipeline:
                 assert rows[0]["company"] == ""
                 assert rows[0]["email"] == ""
 
+    def test_russian_spam_blocked_across_all_entry_points(self, client):
+        """俄語垃圾 bot 無論走 contact/comments/threads/reply 都必須被擋且不留 DB"""
+        russian = "💥 НАЙДИ и РАЗЫГРАЙ SMS-BOOM Пранк-Звонок"
+        # contact
+        r = client.post("/api/contact", json={"姓名": "bot", "聯絡方式": russian})
+        assert r.json().get("filtered") is True
+        # comments
+        r = client.post("/api/comments", json={"page_path": "/", "author_name": "bot", "content": russian})
+        assert r.json().get("filtered") is True
+        # threads
+        r = client.post("/api/community/threads", json={"title": "bot", "content": russian, "author_name": "bot", "is_anonymous": True})
+        assert r.json().get("filtered") is True
+        # reply 到一個正常 thread
+        tid = client.post("/api/community/threads", json={
+            "title": "正常問題", "content": "線斷了怎麼救", "author_name": "阿明", "is_anonymous": False,
+        }).json()["thread"]["id"]
+        r = client.post(f"/api/community/threads/{tid}/reply", json={"content": russian, "author_name": "bot", "is_anonymous": True})
+        assert r.json().get("filtered") is True
+        # 垃圾不留任何 DB 痕跡
+        assert fetch("SELECT COUNT(*) c FROM contacts")[0]["c"] == 0
+        assert fetch("SELECT COUNT(*) c FROM comments")[0]["c"] == 0
+        assert fetch("SELECT COUNT(*) c FROM community_threads")[0]["c"] == 1  # 只有正常那篇
+
+    def test_test_user_contact_blocked(self, client):
+        """Test User / example.com 這類開發殘留或 bot 示範資金必須被擋"""
+        r = client.post("/api/contact", json={
+            "姓名": "Test User", "公司": "Test Corp",
+            "聯絡方式": "test@example.com", "Email": "test@example.com",
+            "行業別": "tech", "備註": "I want to know more about the professional plan.",
+        })
+        assert r.json().get("filtered") is True
+        assert fetch("SELECT COUNT(*) c FROM contacts")[0]["c"] == 0
+
 
 class TestWebhookFullFlow:
     """Test the full webhook processing pipeline with KB matching"""

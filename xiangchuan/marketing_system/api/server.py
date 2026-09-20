@@ -77,6 +77,22 @@ connectors = {}
 _contact_hits = {}
 
 
+def _is_user_input_spam(text: str) -> bool:
+    """統一防垃圾：所有使用者輸入入口共用。
+    1) platform_webhooks 規則：俄語字母、裸聊/博彩/個資等垃圾關鍵字
+    2) 示範/測試網域字樣（test/example/測試）——開發殘留與 bot 常使用
+    """
+    if not text:
+        return False
+    if platform_webhooks._is_spam(text):
+        return True
+    lowered = text.lower()
+    for bad in ("test", "example.com", "test.com", "測試", "试用", "проб", "база"):
+        if bad in lowered:
+            return True
+    return False
+
+
 def get_connectors(account_id=None):
     if account_id:
         acct = fetch_one("SELECT * FROM accounts WHERE id=?", [account_id])
@@ -329,15 +345,13 @@ async def contact_form(request: Request):
     data = await request.json()
 
     # ── 防垃圾：機器人/測試表單過濾 + 頻率限制 ──
-    # 1) 明顯的測試/無效聯絡人
+    # 1) 明顯的測試/無效/俄語垃圾聯絡人
     global _contact_hits
     name = (data.get("姓名") or "").strip()
     email = (data.get("Email") or "").strip()
     contact = (data.get("聯絡方式") or "").strip()
-    joined = (name + " " + email + " " + contact).lower()
-    for bad in ("test", "example.com", "test.com", "试用", "測試"):
-        if bad in joined:
-            return JSONResponse(status_code=200, content={"status": "ok", "id": None, "filtered": True})
+    if _is_user_input_spam(name + " " + email + " " + contact):
+        return JSONResponse(status_code=200, content={"status": "ok", "id": None, "filtered": True})
     if email and not re.match(r"^[^@\s]+@[^@\s]+\.[^@\s]+$", email):
         return JSONResponse(status_code=400, content={"status": "error", "message": "Email 格式不正確"})
 
@@ -1493,6 +1507,8 @@ class FeedCommentCreate(BaseModel):
 
 @app.post("/api/comments")
 def create_comment(data: CommentCreate):
+    if _is_user_input_spam(data.content) or _is_user_input_spam(data.author_name):
+        return JSONResponse(status_code=200, content={"status": "ok", "comment": None, "filtered": True})
     cid = execute(
         "INSERT INTO comments (page_path, author_name, content, parent_id) VALUES (?, ?, ?, ?)",
         [data.page_path, data.author_name.strip() or "匿名", data.content, data.parent_id],
@@ -1565,6 +1581,8 @@ def get_reactions(path: str = ""):
 
 @app.post("/api/community/threads")
 def create_thread(data: ThreadCreate):
+    if _is_user_input_spam(data.title) or _is_user_input_spam(data.content):
+        return JSONResponse(status_code=200, content={"status": "ok", "thread": None, "filtered": True})
     tid = execute(
         "INSERT INTO community_threads (title, content, author_name, is_anonymous) VALUES (?, ?, ?, ?)",
         [data.title, data.content, data.author_name.strip() or "匿名", int(data.is_anonymous)],
@@ -1615,6 +1633,8 @@ def reply_to_thread(thread_id: int, data: ThreadReplyCreate):
     thread = fetch_one("SELECT id FROM community_threads WHERE id=?", [thread_id])
     if not thread:
         raise HTTPException(404, "Thread not found")
+    if _is_user_input_spam(data.content) or _is_user_input_spam(data.author_name):
+        return JSONResponse(status_code=200, content={"status": "ok", "id": None, "filtered": True})
     rid = execute(
         "INSERT INTO community_replies (thread_id, content, author_name, is_anonymous) VALUES (?, ?, ?, ?)",
         [thread_id, data.content, data.author_name.strip() or "匿名", int(data.is_anonymous)],
@@ -1733,6 +1753,8 @@ def chat_send(data: MessageSend, request: Request):
     me = _require_user(request)
     if not data.body.strip():
         raise HTTPException(400, "訊息不能為空")
+    if _is_user_input_spam(data.body):
+        return JSONResponse(status_code=200, content={"status": "ok", "message": None, "filtered": True})
     body = data.body.strip()[:2000]
     if data.conversation_id:
         conv = fetch_one("SELECT * FROM conversations WHERE id=?", (data.conversation_id,))
@@ -1963,6 +1985,8 @@ def comment_feed_post(pid: int, data: FeedCommentCreate, request: Request):
     content = (data.content or "").strip()[:500]
     if not content:
         raise HTTPException(400, "留言不能為空")
+    if _is_user_input_spam(content):
+        return JSONResponse(status_code=200, content={"status": "ok", "filtered": True})
     cid = execute(
         "INSERT INTO comments (page_path, author_name, content, user_id) VALUES (?, ?, ?, ?)",
         (f"feed:{pid}", me["name"] or me["username"] or "匿名", content, me["id"]),
