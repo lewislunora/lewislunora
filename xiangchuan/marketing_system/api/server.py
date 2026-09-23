@@ -226,9 +226,12 @@ def startup():
     scheduler.start()
     try:
         import requests as http
-        base = os.getenv("RENDER_EXTERNAL_URL", f"https://lewislunora.onrender.com")
-        webhook_url = f"{base}/api/telegram/webhook"
-        http.get(f"https://api.telegram.org/bot{TELEGRAM_BOT_TOKEN}/setWebhook?url={webhook_url}", timeout=10)
+        # 僅在正式部署環境（有 RENDER_EXTERNAL_URL）才設定 Telegram webhook，
+        # 避免本機啟動 server / 跑測試時把 bot 的 webhook 搶指到 localhost。
+        base = os.getenv("RENDER_EXTERNAL_URL", "")
+        if base and TELEGRAM_BOT_TOKEN:
+            webhook_url = f"{base}/api/telegram/webhook"
+            http.get(f"https://api.telegram.org/bot{TELEGRAM_BOT_TOKEN}/setWebhook?url={webhook_url}", timeout=10)
     except Exception:
         pass
 
