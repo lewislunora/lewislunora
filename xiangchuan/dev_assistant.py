@@ -13,7 +13,7 @@ import requests
 logging.basicConfig(level=logging.INFO, format="%(asctime)s [%(levelname)s] %(message)s")
 log = logging.getLogger("devbot")
 
-BOT_TOKEN = os.environ.get("TELEGRAM_BOT_TOKEN", "8653211794:AAG08xDDj0UDkX18TE60BQSVs-bwwVh8AH8")
+BOT_TOKEN = os.environ.get("TELEGRAM_BOT_TOKEN", "")
 ALLOWED_USERS = os.environ.get("DEV_BOT_USERS", "626453598").split(",")
 RENDER_API = os.environ.get("RENDER_API_URL", "https://lewislunora.onrender.com")
 PROJECT_DIR = Path(__file__).parent.parent

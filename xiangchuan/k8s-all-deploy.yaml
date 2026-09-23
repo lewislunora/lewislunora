@@ -46,7 +46,7 @@ metadata:
   name: telegram-secret
 type: Opaque
 stringData:
-  token: "8653211794:AAG08xDDj0UDkX18TE60BQSVs-bwwVh8AH8"
+  token: "${TELEGRAM_BOT_TOKEN}"   # 勿寫死 token，部署時由環境注入（已泄露的舊值請先 /revoke）
 ---
 apiVersion: apps/v1
 kind: Deployment

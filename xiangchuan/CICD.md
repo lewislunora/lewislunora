@@ -42,8 +42,9 @@ k3d image import telegram-bot:latest -c mycluster
 
 ### 步骤3：创建 Secret
 ```bash
+# ⚠️ 请先在 @BotFather 用 /revoke 重生 token，别用已泄露的值！
 kubectl create secret generic telegram-secret \
-  --from-literal=token="8653211794:AAG08xDDj0UDkX18TE60BQSVs-bwwVh8AH8"
+  --from-literal=token="$TELEGRAM_BOT_TOKEN"   # 从环境变量读取，勿写死在仓库
 ```
 
 ### 步骤4：部署到 k3s
