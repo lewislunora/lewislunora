@@ -16,6 +16,8 @@ log = logging.getLogger("devbot")
 BOT_TOKEN = os.environ.get("TELEGRAM_BOT_TOKEN", "")
 ALLOWED_USERS = os.environ.get("DEV_BOT_USERS", "626453598").split(",")
 RENDER_API = os.environ.get("RENDER_API_URL", "https://lewislunora.onrender.com")
+# DEV_BOT_ENABLE=1 才啟動 polling；預設關閉，避免本機 getUpdates 與 Render webhook 打架
+DEV_BOT_ENABLE = os.environ.get("DEV_BOT_ENABLE", "0") == "1"
 PROJECT_DIR = Path(__file__).parent.parent
 XIANGCHUAN_DIR = PROJECT_DIR / "xiangchuan"
 API_URL = f"https://api.telegram.org/bot{BOT_TOKEN}"
@@ -273,6 +275,14 @@ def handle_message(chat_id, text):
 
 def main():
     log.info("🤖 開發助理啟動中...")
+    if not BOT_TOKEN:
+        log.error("❌ 未設定 TELEGRAM_BOT_TOKEN（請在 .env 設定 @ailunora_bot 的新 token）")
+        return
+    if not DEV_BOT_ENABLE:
+        log.warning("⏸  DEV_BOT_ENABLE 未設為 1，Polling 模式停用（避免與 Render webhook 打架）。")
+        log.warning("     @ailunora_bot 目前由線上網站以 webhook 模式處理訊息。")
+        log.warning("     若確定要在本機跑 polling，請設 DEV_BOT_ENABLE=1。")
+        return
     last_offset = 0
     tg_send(ALLOWED_USERS[0], "🤖 <b>開發助理已啟動</b>\n輸入 /help 查看指令")
 
