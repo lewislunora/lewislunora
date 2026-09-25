@@ -117,7 +117,8 @@ def generate_seo_article(skip_existing: bool = True) -> dict | None:
     if slug in existing_slugs:
         slug = f"{slug}-{int(__import__('time').time())}"
     html = _markdown_to_html(body)
-    summary = html[:120].replace("<p>", "").replace("</p>", "") + "…"
+    plain = re.sub(r"<[^>]+>", "", html).strip()
+    summary = plain[:120] + ("…" if len(plain) > 120 else "")
 
     cid = execute(
         "INSERT INTO seo_articles (slug, title, category, summary, content_html, keyword) "
