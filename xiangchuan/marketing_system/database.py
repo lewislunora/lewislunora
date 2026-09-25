@@ -20,6 +20,7 @@ DB_TABLES = [
     "social_identities", "conversations", "messages", "follows",
     "incoming_messages", "pages",
     "novels", "novel_chapters",
+    "seo_articles",
 ]
 
 
@@ -164,14 +165,29 @@ def init_db():
             UNIQUE(title)
         );
 
-        CREATE TABLE IF NOT EXISTS novel_chapters (
+CREATE TABLE IF NOT EXISTS novel_chapters (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             novel_id INTEGER NOT NULL,
-            chapter_no INTEGER NOT NULL,
+            chapter_number INTEGER NOT NULL,
             title TEXT DEFAULT '',
-            body TEXT DEFAULT '',
+            content TEXT DEFAULT '',
+            tokens INTEGER DEFAULT 0,
             created_at TEXT DEFAULT (datetime('now')),
-            UNIQUE(novel_id, chapter_no)
+            UNIQUE(novel_id, chapter_number)
+        );
+
+        CREATE TABLE IF NOT EXISTS seo_articles (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            slug TEXT UNIQUE,
+            title TEXT NOT NULL,
+            category TEXT DEFAULT '維運',
+            summary TEXT DEFAULT '',
+            content_html TEXT DEFAULT '',
+            keyword TEXT DEFAULT '',
+            status TEXT DEFAULT 'published',
+            view_count INTEGER DEFAULT 0,
+            created_at TEXT DEFAULT (datetime('now')),
+            updated_at TEXT DEFAULT (datetime('now'))
         );
 
         CREATE TABLE IF NOT EXISTS schedules (

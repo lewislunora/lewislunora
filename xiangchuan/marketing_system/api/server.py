@@ -1424,6 +1424,119 @@ for _sp in ["dashboard", "tasks", "rewards", "history", "profile", "admin"]:
     _make_student_route(_sp)
 
 
+# ── SEO 長尾文章（自動量產、進 sitemap，Google 收錄引流）──
+@app.get("/thoughts")
+@app.get("/thoughts/")
+async def serve_thoughts():
+    from ..services.seo_articles import list_articles
+    arts = list_articles(50)
+    cards = "".join(
+        f'<a class="card" href="/thoughts/{a["slug"]}">'
+        f'<div class="tag">{a["category"]}</div>'
+        f"<h3>{a['title']}</h3>"
+        f"<p>{a['summary']}</p>"
+        f"<div class='meta'>🔖 {a['keyword']} · 👁 {a['view_count']}</div>"
+        "</a>"
+        for a in arts
+    ) or "<p style='opacity:.6'>文章生成中，第一個小時後自動出現…</p>"
+    return HTMLResponse(f"""<!DOCTYPE html><html lang="zh-Hant"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>職人筆記｜維運實戰長文</title>
+<meta name="description" content="伺服器維運、資料庫備份、雲端帳單自保——認真做過的人寫的實戰文章。">
+<style>
+ body{{font-family:-apple-system,'PingFang TC',sans-serif;max-width:820px;margin:0 auto;padding:24px;color:#222;background:#fafafa}}
+ h1{{font-size:1.6rem}} nav a{{margin-right:12px;color:#2563eb;text-decoration:none;font-size:.9rem}}
+ .card{{display:block;background:#fff;border:1px solid #e5e7eb;border-radius:12px;padding:18px;margin:14px 0;text-decoration:none;color:inherit;transition:.15s}}
+ .card:hover{{border-color:#2563eb;box-shadow:0 4px 14px rgba(37,99,235,.12)}}
+ .card h3{{margin:6px 0;font-size:1.05rem}}
+ .card p{{margin:4px 0;font-size:.9rem;opacity:.75}}
+ .tag{{display:inline-block;background:#eef2ff;color:#4338ca;font-size:.72rem;padding:2px 8px;border-radius:999px}}
+ .meta{{font-size:.75rem;opacity:.55;margin-top:6px}}
+</style></head><body>
+<nav><a href="/">← 回首頁</a><a href="/novels.html">📖 追小說</a><a href="/community/">按讚聊聊</a></nav>
+<h1>🧰 職人筆記</h1>
+<p style="opacity:.7">伺服器維運、備份、雲端帳單、工程職涯——真實做過的人寫的實戰文。每天更新。</p>
+{cards}
+</body></html>""")
+
+
+@app.get("/thoughts/{slug}")
+async def serve_thought(slug: str):
+    from ..services.seo_articles import get_article
+    execute("UPDATE seo_articles SET view_count=view_count+1 WHERE slug=?", [slug])
+    a = get_article(slug)
+    if not a:
+        raise HTTPException(404, "文章不存在")
+    return HTMLResponse(f"""<!DOCTYPE html><html lang="zh-Hant"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>{a['title']}｜翔川 Neo</title>
+<meta name="description" content="{a['summary'][:140]}">
+<link rel="canonical" href="https://lewislunora.onrender.com/thoughts/{a['slug']}">
+<style>
+ body{{font-family:-apple-system,'PingFang TC',serif;max-width:720px;margin:0 auto;padding:24px;color:#2b2b2b;line-height:1.75}}
+ h1{{font-size:1.5rem;line-height:1.35}} h2{{margin-top:1.6em;font-size:1.2rem}}
+ nav a{{color:#2563eb;text-decoration:none;font-size:.85rem;margin-right:14px}}
+ ul{{padding-left:20px}} pre{{background:#f5f5f4;padding:12px;border-radius:8px;overflow-x:auto}}
+ .footer{{margin-top:3em;padding-top:1em;border-top:1px solid #eee;font-size:.8rem;opacity:.6}}
+ .cta{{background:#eef2ff;border-radius:12px;padding:14px 18px;margin-top:2em;font-size:.95rem}}
+ .cta a{{color:#4338ca;font-weight:600}}
+</style></head><body>
+<nav><a href="/">← 首頁</a><a href="/thoughts/">🧰 職人筆記</a><a href="/contacts.html">諮詢</a></nav>
+<article>{a['content_html']}</article>
+<div class="footer">翔川 Neo｜曜科技 · 由 AI 協助整理的實戰筆記 · 若內容有誤歡迎指正</div>
+<div class="cta">💡 這類工程疑難，歡迎<a href="/contacts.html">找我聊聊</a>——維運顧問與 AI 客服方案。</div>
+</body></html>""")
+
+
+@app.get("/api/thoughts")
+@app.get("/api/seo-articles")
+def api_list_seo():
+    from ..services.seo_articles import list_articles
+    return {"items": list_articles()}
+
+
+@app.get("/sitemap.xml")
+def serve_sitemap():
+    from ..services.seo_articles import build_sitemap_entries
+    base = "https://lewislunora.onrender.com"
+    static_pages = [
+        ("/", "1.0"), ("/pricing.html", "0.9"), ("/novels.html", "0.8"),
+        ("/proposals/ops-managed.html", "0.9"), ("/proposals/ai-customer-service.html", "0.9"),
+        ("/index.html", "0.8"), ("/ai-story.html", "0.7"), ("/ai-chat.html", "0.7"),
+        ("/thoughts/", "0.8"), ("/guides/", "0.7"), ("/community/", "0.7"),
+    ]
+    urls = "".join(
+        f"<url><loc>{base}{p}</loc><priority>{pr}</priority></url>"
+        for p, pr in static_pages
+    )
+    for a in build_sitemap_entries():
+        urls += (
+            f'<url><loc>{base}/thoughts/{a["slug"]}</loc>'
+            "<lastmod>" + (a.get("updated_at") or "")[:10] + "</lastmod>"
+            f'<priority>0.7</priority></url>'
+        )
+    xml = (
+        '<?xml version="1.0" encoding="UTF-8"?>\n'
+        '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">'
+        f"{urls}</urlset>"
+    )
+    return Response(content=xml, media_type="application/xml")
+
+
+class SEOGenerateRequest(BaseModel):
+    pass
+
+
+@app.post("/api/seo-articles/generate")
+def api_generate_seo(request: Request, body: SEOGenerateRequest):
+    _require_admin(request)
+    from ..services.seo_articles import generate_seo_article
+    art = generate_seo_article()
+    if not art:
+        return JSONResponse({"status": "error", "message": "生成失敗或無可用主題"}, status_code=429)
+    return {"status": "ok", "article": art}
+
+
 class GameQuestion(BaseModel):
     topic: str
     question: str
@@ -2299,6 +2412,16 @@ def _register_promo_task():
         except Exception:
             pass
 
+    def seo_article_tick():
+        from ..config import GROQ_API_KEY
+        if not GROQ_API_KEY:
+            return
+        try:
+            from ..services.seo_articles import auto_seo_daily
+            auto_seo_daily(max_per_day=1)
+        except Exception:
+            pass
+
     original_loop = scheduler._loop
 
     def patched_loop():
@@ -2309,6 +2432,9 @@ def _register_promo_task():
                 # 短內容引擎：每 15 分鐘試一次（auto_short_daily 內部有每日上限與冷啟動守門）
                 if scheduler._ping_count % 15 == 0:
                     short_feed_tick()
+                # SEO 長尾文章：每 15 分鐘試（auto_seo_daily 內部每天 1 篇＋冷啟動首篇）
+                if scheduler._ping_count % 15 == 0:
+                    seo_article_tick()
                 if scheduler._ping_count % 1440 == 0:
                     scheduler._daily_backup()
                 if scheduler._ping_count % 60 == 0:
