@@ -106,6 +106,8 @@ a{color:inherit;text-decoration:none}
   #particle-canvas{opacity:.4}
   .nav-brand{color:rgba(26,26,46,.5)}.nav-links a{color:rgba(26,26,46,.45)}.nav-links a:hover{color:#1a1a2e}
   .nav-links a::after{background:#1a1a2e}
+  nav{background:rgba(255,255,255,.78)!important;border-bottom-color:rgba(0,212,255,.25)!important;box-shadow:0 8px 30px rgba(0,0,0,.08)!important}
+  nav::before{background:linear-gradient(90deg,transparent,rgba(0,212,255,.5),rgba(123,104,238,.5),transparent)}
   .lang-select{background:rgba(0,0,0,.03);border-color:rgba(0,0,0,.06);color:rgba(26,26,46,.45)}
   .hero h1 .line1{background:linear-gradient(135deg,#1a1a2e 0%,rgba(26,26,46,.3) 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
   .hero p,.section-sub,.pain-card p,.svc-card p,.plan-desc,.plan-feats li,.founder-info p,.cta-form-wrap .desc{color:rgba(26,26,46,.45)!important}
@@ -131,6 +133,23 @@ a{color:inherit;text-decoration:none}
   .btn-outline:hover{background:rgba(0,0,0,.02);border-color:rgba(0,212,255,.3);color:#1a1a2e}
   .btn-line{background:#06c755;color:#fff}
   .faq-a{color:rgba(26,26,46,.4)!important}
+  /* ── 補齊所有在亮色模式殘留白字的元素（原本是深底白字，切淺底後不可見）── */
+  .hero h1 .line1{background:linear-gradient(135deg,#1a1a2e 0%,rgba(26,26,46,.35) 100%)!important;-webkit-background-clip:text!important;-webkit-text-fill-color:transparent!important}
+  .hero-badge{color:rgba(26,26,46,.6)!important;background:rgba(0,212,255,.1)!important;border-color:rgba(0,212,255,.3)!important}
+  .bento-stat-label{color:rgba(26,26,46,.45)!important}
+  .bento-stat:first-child .bento-stat-num{-webkit-text-fill-color:#1a1a2e!important}
+  .svc-card .svc-meta{color:rgba(26,26,46,.35)!important}
+  .result-label{color:rgba(26,26,46,.45)!important}
+  .achieve-label{color:rgba(26,26,46,.45)!important}
+  .case-prob{color:rgba(26,26,46,.5)!important}
+  .case-sol{color:rgba(26,26,46,.6)!important}
+  .case-sol strong{color:#6d5bd0}
+  .work-desc{color:rgba(26,26,46,.55)!important}
+  .process-step p{color:rgba(26,26,46,.55)!important}
+  .feed-mini .feed-head{color:rgba(26,26,46,.5)!important}
+  .feed-mini .feed-head .autor{color:#1a1a2e!important}
+  .feed-mini .feed-body{color:#2b3345!important}
+  .feed-empty{color:rgba(26,26,46,.45)!important}
 }
 @media(max-width:768px){
   :root{--fs-mega:clamp(28px,7vw,44px);--fs-hero:clamp(22px,5.5vw,36px);--fs-lg:clamp(18px,4vw,28px);--fs-base:clamp(15px,3.5vw,18px)}
