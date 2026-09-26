@@ -137,7 +137,6 @@ a{color:inherit;text-decoration:none}
   .hero h1 .line1{background:linear-gradient(135deg,#1a1a2e 0%,rgba(26,26,46,.35) 100%)!important;-webkit-background-clip:text!important;-webkit-text-fill-color:transparent!important}
   .hero-badge{color:rgba(26,26,46,.6)!important;background:rgba(0,212,255,.1)!important;border-color:rgba(0,212,255,.3)!important}
   .bento-stat-label{color:rgba(26,26,46,.45)!important}
-  .bento-stat:first-child .bento-stat-num{-webkit-text-fill-color:#1a1a2e!important}
   .svc-card .svc-meta{color:rgba(26,26,46,.35)!important}
   .result-label{color:rgba(26,26,46,.45)!important}
   .achieve-label{color:rgba(26,26,46,.45)!important}
@@ -270,8 +269,6 @@ nav::before{
 .bento-stat:hover{background:var(--glass-hover);border-color:rgba(0,212,255,.12);transform:translateY(-2px)}
 .bento-stat-num{font-size:var(--fs-lg);font-weight:700;background:linear-gradient(135deg,#00d4ff,#7b68ee);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
 .bento-stat-label{font-size:11px;color:rgba(255,255,255,.35);margin-top:2px;letter-spacing:.8px;text-transform:uppercase}
-.bento-stat:first-child{grid-column:1/-1;display:flex;align-items:center;justify-content:center;gap:.4rem;padding:.5rem .8rem}
-.bento-stat:first-child .bento-stat-num{-webkit-text-fill-color:#e8ecf4;background:none;font-size:13px;font-weight:600}
 
 /* Hero AI visual */
 .hero-visual{position:relative;margin:2rem auto 0;width:min(460px,92vw);text-align:left;z-index:1}
@@ -526,6 +523,60 @@ footer .wrap{display:flex;flex-wrap:wrap;gap:.8rem;justify-content:space-between
 .feed-mini .feed-body{font-size:15px;line-height:1.7;color:#e8ecf4;white-space:pre-wrap;word-break:break-word}
 .feed-mini .feed-foot{display:flex;gap:1.2rem;margin-top:.9rem;padding-top:.8rem;border-top:1px solid rgba(255,255,255,.06);font-size:13px;color:rgba(255,255,255,.4)}
 .feed-empty{text-align:center;padding:2rem;color:rgba(255,255,255,.25);font-size:14px}
+
+/* ============ 首頁改版：信任區 / hero demo / 精簡 CTA ============ */
+.hero-entry{font-size:12px;letter-spacing:.5px;color:rgba(255,255,255,.45);margin-top:1.2rem}
+.hero-cta-single{display:flex;flex-direction:column;align-items:center;gap:.7rem;margin-top:1.6rem}
+.hero-cta-single .btn-primary{font-size:15px;padding:.9rem 2.2rem}
+.hero-cta-single .sub-line{font-size:12.5px;color:rgba(255,255,255,.45);letter-spacing:.3px}
+.ai-demo-wrap{width:min(460px,92vw);margin:1.6rem auto 0;position:relative;z-index:1}
+.ai-demo{background:rgba(10,15,38,.82);border:1px solid rgba(0,212,255,.2);border-radius:16px;overflow:hidden;box-shadow:0 16px 50px rgba(0,0,0,.35),0 0 0 1px rgba(0,212,255,.06)}
+.ai-demo-head{display:flex;align-items:center;gap:.5rem;padding:.7rem .9rem;border-bottom:1px solid rgba(0,212,255,.12);font-size:12px;font-weight:600;color:rgba(255,255,255,.7)}
+.ai-demo-body{height:236px;overflow-y:auto;padding:.9rem;display:flex;flex-direction:column;gap:.55rem;scrollbar-width:thin}
+.ai-demo-msg{max-width:82%;font-size:13px;line-height:1.55;padding:.5rem .75rem;border-radius:12px}
+.ai-demo-msg.bot{background:rgba(123,104,238,.16);border:1px solid rgba(123,104,238,.22);color:rgba(255,255,255,.9);align-self:flex-start}
+.ai-demo-msg.you{background:rgba(0,212,255,.14);border:1px solid rgba(0,212,255,.28);color:rgba(255,255,255,.92);align-self:flex-end}
+.ai-demo-msg.typing{opacity:.65;font-style:italic}
+.ai-demo-form{display:flex;border-top:1px solid rgba(0,212,255,.14);background:rgba(0,0,0,.2)}
+.ai-demo-form input{flex:1;background:transparent;border:none;outline:none;color:rgba(255,255,255,.88);padding:.75rem .9rem;font-size:13px}
+.ai-demo-form input::placeholder{color:rgba(255,255,255,.3)}
+.ai-demo-form button{background:rgba(0,212,255,.14);border:none;color:#00d4ff;padding:.75rem 1.1rem;cursor:pointer;font-weight:700;font-size:13px;transition:background .2s}
+.ai-demo-form button:hover{background:rgba(0,212,255,.26)}
+.ai-demo-chip-row{display:flex;gap:.4rem;padding:.55rem .7rem;border-top:1px solid rgba(255,255,255,.05);flex-wrap:wrap}
+.ai-demo-chip{background:rgba(0,212,255,.08);border:1px solid rgba(0,212,255,.14);color:rgba(255,255,255,.6);font-size:11px;padding:.22rem .55rem;border-radius:999px;cursor:pointer;transition:all .2s}
+.ai-demo-chip:hover{background:rgba(0,212,255,.18);color:#fff}
+.trust-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:.9rem;margin-top:1.6rem}
+.trust-card{background:var(--glass-bg);border:1px solid var(--glass-border);border-radius:14px;padding:1.1rem 1.2rem;backdrop-filter:blur(8px)}
+.trust-card .t-ic{font-size:1.5rem;opacity:.9}
+.trust-card h3{font-size:14.5px;font-weight:700;margin:.5rem 0 .35rem}
+.trust-card p{font-size:12.5px;line-height:1.6;opacity:.65}
+.trust-card .t-tag{display:inline-block;margin-top:.6rem;font-size:11px;color:#00d4ff;letter-spacing:.5px}
+.link-strip{display:flex;flex-wrap:wrap;gap:.5rem;margin-top:1.3rem;justify-content:center}
+.link-strip a{font-size:13px;color:rgba(255,255,255,.55);border:1px solid rgba(0,212,255,.18);border-radius:999px;padding:.32rem .85rem;transition:all .2s}
+.link-strip a:hover{color:#fff;border-color:rgba(0,212,255,.5);background:rgba(0,212,255,.08)}
+.plan-card.plan-chat{display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;background:rgba(0,212,255,.05);border:1px dashed rgba(0,212,255,.35)}
+.plan-card.plan-chat .plan-icon{font-size:1.8rem}
+.plan-card.plan-chat h3{font-size:15.5px}
+.plan-card.plan-chat p{font-size:13px;line-height:1.7;opacity:.75;max-width:240px}
+.contact-form.compact{display:grid;grid-template-columns:1fr 1fr;gap:.9rem;max-width:560px;margin:0 auto}
+.contact-form.compact label{grid-column:1/-1}
+.contact-form.compact .full{grid-column:1/-1}
+@media(max-width:640px){
+  .trust-grid{grid-template-columns:1fr}
+  .contact-form.compact{grid-template-columns:1fr}
+  .ai-demo-body{height:200px}
+}
+@media(prefers-color-scheme:light){
+  .hero-cta-single .sub-line{color:rgba(26,26,46,.5)!important}
+  .hero-entry{color:rgba(26,26,46,.5)!important}
+  .trust-card{background:rgba(255,255,255,.6);border-color:rgba(0,0,0,.06);color:#1a1a2e}
+  .trust-card h3{color:#1a1a2e}
+  .trust-card p{color:rgba(26,26,46,.6)!important}
+  .link-strip a{color:rgba(26,26,46,.55);border-color:rgba(0,212,255,.35)}
+  .link-strip a:hover{color:#1a1a2e;background:rgba(0,212,255,.08)}
+  .plan-card.plan-chat{border-color:rgba(0,212,255,.5)}
+  .plan-card.plan-chat h3{color:#1a1a2e}
+}
 </style>
 </head>
 <body>
@@ -561,80 +612,77 @@ footer .wrap{display:flex;flex-wrap:wrap;gap:.8rem;justify-content:space-between
 <!-- Hero -->
 <section class="hero">
   <div class="hero-glow"></div>
-  <div class="hero-badge">AI 自動化 · 一人公司專屬</div>
-  <h1><span class="line1">每天幫你省下 4 小時</span><span class="line2">的 AI 自動化系統</span></h1>
-  <p>從 AI 智能客服到行銷自動化，幫你把重複庶務交給系統，專注在真正賺錢的核心業務。已協助多位超級個體打造 24/7 自動化賺錢引擎。</p>
-  <div class="hero-persona">我是 <b>Lewis Lunora</b> — 10+ 年 DevOps 架構師 × AI 整合 × 一人公司實戰</div>
-  <div class="hero-actions">
-    <a href="#contact" class="btn btn-primary">📩 免費預約 30 分鐘 AI 盤點</a>
-    <a href="#contact" class="btn btn-line">💬 免費諮詢</a>
-    <a href="product/" class="btn btn-outline">看解決方案</a>
-    <a href="pricing.html" class="btn btn-outline" style="border-color:#ff7b9c;color:#ff7b9c">💰 付費開通</a>
+  <div class="hero-badge">🕐 先把下面的客服玩一玩 · 真的會回你</div>
+  <h1><span class="line1">員工下班了，客戶沒下班</span><span class="line2">AI 幫你值這班機</span></h1>
+  <p>我是 <b>Lewis Lunora</b> — 10+ 年 DevOps 架構師 × AI 整合。下面這個客服你打一句話它就會回，這就是我幫一人公司裝的系統：24/7 不漏單、能查價格、能發文。</p>
+  <div class="hero-cta-single">
+    <a href="#contact" class="btn btn-primary">📩 免費聊聊 30 分鐘</a>
+    <span class="sub-line">不確定要裝什麼？先 <a href="#plans" style="color:#00d4ff">看三種做法</a>，或滑下去直接玩。</span>
   </div>
   <div class="bento-stats">
-    <div class="bento-stat"><span class="bento-stat-num">已協助多位 solopreneur 建置 AI 系統</span></div>
-    <div class="bento-stat"><div class="bento-stat-num">4 hr</div><div class="bento-stat-label">每日省時</div></div>
-    <div class="bento-stat"><div class="bento-stat-num">24/7</div><div class="bento-stat-label">全自動運行</div></div>
+    <div class="bento-stat"><div class="bento-stat-num">24/7</div><div class="bento-stat-label">不休息的客服</div></div>
+    <div class="bento-stat"><div class="bento-stat-num">&lt;3s</div><div class="bento-stat-label">平均回覆</div></div>
+    <div class="bento-stat"><div class="bento-stat-num">4 hr</div><div class="bento-stat-label">每天省下的工</div></div>
   </div>
-  <div class="hero-visual" aria-label="AI 自動化系統示範">
-    <div class="ai-chat">
-      <div class="ai-chat-head"><span class="ai-chat-dot"></span>翔川 AI 助手 · 24/7 在線</div>
-      <div class="ai-msg ai-in">客戶在凌晨 2 點問報價，我幫你回覆好了 ✨</div>
-      <div class="ai-msg ai-out">👌 收到，已自動更新報價單</div>
-      <div class="ai-msg ai-in">📈 今日已處理 47 則訊息，節省 3.2 小時</div>
-      <div class="ai-msg ai-tag">▸ 已排程發布 FB + IG 貼文</div>
+  <div class="ai-demo-wrap" aria-label="AI 客服即時示範">
+    <div class="ai-demo">
+      <div class="ai-demo-head"><span class="ai-chat-dot"></span>翔川 AI 客服 · 真後端在回你，不是動畫</div>
+      <div class="ai-demo-body" id="demoBody"></div>
+      <div class="ai-demo-chip-row">
+        <button class="ai-demo-chip" data-q="客服方案要多少錢">💲 問價格</button>
+        <button class="ai-demo-chip" data-q="AI 客服能做什麼">⚙️ 問功能</button>
+        <button class="ai-demo-chip" data-q="怎麼開始使用">🚀 問開始</button>
+      </div>
+      <form class="ai-demo-form" id="demoForm">
+        <input id="demoInput" placeholder="打一句話，客服會回你…" autocomplete="off">
+        <button type="submit">送出</button>
+      </form>
     </div>
-    <div class="ai-float ai-float-1">⚡ 自動回覆</div>
-    <div class="ai-float ai-float-2">🤖 AI 排程</div>
-    <div class="ai-float ai-float-3">📊 報表</div>
+    <div class="hero-entry">↑ 你現在玩的，就是我要幫你裝進官網 / LINE / Telegram 的那個客服</div>
   </div>
 </section>
 
-<!-- Achievements — concrete, verifiable metrics -->
+<!-- Achievements → Trust (verifiable) -->
 <section class="section" id="achievements" style="padding-top:1.4rem">
   <div class="wrap">
-    <div class="section-label">量化成效</div>
-    <h2 class="section-title">讓數據替我說話</h2>
-    <div class="achieve-strip">
-      <div class="achieve-item"><span class="achieve-num">11+</span><span class="achieve-label">年 DevOps / 系統維運實務</span></div>
-      <div class="achieve-item"><span class="achieve-num">7+</span><span class="achieve-label">年團隊管理（最多帶 12 人）</span></div>
-      <div class="achieve-item"><span class="achieve-num">99.95%</span><span class="achieve-label">遊戲服務營運 SLA 目標</span></div>
-      <div class="achieve-item"><span class="achieve-num">30 分</span><span class="achieve-label">MTTR 故障復原目標</span></div>
-      <div class="achieve-item"><span class="achieve-num">12→6 月</span><span class="achieve-label">專案上線時程（省數千萬成本）</span></div>
+    <div class="section-label">先驗證，再談合作</div>
+    <h2 class="section-title">這網站上的東西，全部是真的</h2>
+    <p class="section-sub" style="max-width:640px;margin:0 auto 1.4rem;text-align:center">我沒有員工、沒有部門——下面每一樣你都能當場驗證。</p>
+    <div class="trust-grid">
+      <div class="trust-card">
+        <span class="t-ic">🔓</span>
+        <h3>程式碼全程公開</h3>
+        <p>從零到上線的每個 commit 都在 GitHub 上。你現在看得到的這套系統，原始碼全部攤開給你。</p>
+        <a class="t-tag" href="https://github.com/lewislunora" target="_blank" rel="noopener">github.com/lewislunora →</a>
+      </div>
+      <div class="trust-card">
+        <span class="t-ic">🧪</span>
+        <h3>你剛剛已經驗證過</h3>
+        <p>上面的 AI 客服你打一句話就會回——這就是系統在運作，不是展示影片或截圖。</p>
+        <span class="t-tag">↑ 你現在就在操作它</span>
+      </div>
+      <div class="trust-card">
+        <span class="t-ic">⚡</span>
+        <h3>有結果的過去</h3>
+        <p>前職實績：12 個月上線時程縮短到 6 個月、故障 30 分鐘內復原。這些做法我每天都在用，也會用在你的系統上。</p>
+        <span class="t-tag">11+ 年 DevOps 實戰</span>
+      </div>
     </div>
   </div>
 </section>
 
-<!-- Results — anonymized case studies -->
-<section class="section" id="results">
+<!-- Give first — live content (第3屏) -->
+<section class="section" id="feed">
   <div class="wrap">
-    <div class="section-label">實際成果案例</div>
-    <h2 class="section-title">我幫客戶解決了什麼</h2>
-    <p class="section-sub" style="max-width:640px;margin:0 auto 1.4rem;text-align:center">以下案例皆已匿名處理，只呈現問題、做法與可量化成效。</p>
-    <div class="case-grid">
-      <div class="case-card">
-        <div class="case-industry">企業 IT 服務</div>
-        <div class="case-title">企業級 AIOps／DevOps 平台（保密案）</div>
-        <div class="case-prob">企業 AIOps／DevOps／Cloud Native 數位轉型的落地需求。</div>
-        <div class="case-sol"><strong>做法：</strong>企業級系統維運、自動化與監控告警架構，簽訂保密合約、不對外揭露客戶。</div>
-        <div><span class="case-metric">企業 AI 營運平台（保密）</span></div>
-      </div>
-      <div class="case-card">
-        <div class="case-industry">遊戲產業</div>
-        <div class="case-title">遊戲平台營運（保密案）</div>
-        <div class="case-prob">遊戲服務需高可用（SLA 99.95%）與零缺陷上線。</div>
-        <div class="case-sol"><strong>做法：</strong>部署自動化、監控告警、資料庫維運與故障復原體系，客戶資訊依保密協議處理。</div>
-        <div><span class="case-metric">SLA 99.95% 營運體系</span></div>
-      </div>
-      <div class="case-card">
-        <div class="case-industry">AI 自動化／一人公司</div>
-        <div class="case-title">AI 客服、命理、遊戲、內容生成（全線上可測）</div>
-        <div class="case-prob">從零打造 AI 自動化產品，並持續營運中。</div>
-        <div class="case-sol"><strong>做法：</strong>AI＋DevOps 完整產品線。<a href="#work" style="color:#00d4ff">往下看所有可點開驗證的作品 →</a></div>
-        <div><span class="case-metric">持續營運中</span></div>
-      </div>
+    <div class="section-label">先給你一點好處</div>
+    <h2 class="section-title">這個網站每天都在長東西，不用等</h2>
+    <p class="section-sub" style="max-width:640px;margin:0 auto 1.4rem;text-align:center">AI 客服、小說、維運長文——全部是系統自己跑的。先滑一滑看今天的內容，對你有用再談。</p>
+    <div class="feed-mini" id="homeFeed"><div class="feed-empty">載入中…</div></div>
+    <div style="text-align:center;margin-top:1.2rem">
+      <a class="work-link" href="social/" style="font-size:14px">✨ 去整頁短內容流刷刷 →</a>
+      <a class="work-link" href="novels.html" style="font-size:14px">📖 追小說 →</a>
+      <a class="work-link" href="thoughts/" style="font-size:14px">🧰 看今天寫的維運筆記 →</a>
     </div>
-    <p style="text-align:center;margin-top:1.4rem"><a href="#contact" class="btn btn-outline">想了解我能為你做什麼？免費聊聊</a></p>
   </div>
 </section>
 
@@ -662,19 +710,6 @@ footer .wrap{display:flex;flex-wrap:wrap;gap:.8rem;justify-content:space-between
         <p>網站慢、系統掛、資料丟，你不是在修 bug 就是在怕 bug。10+ 年 DevOps 專家幫你搞定。</p>
         <span class="sol">→ 技術架構顧問服務</span>
       </div>
-    </div>
-  </div>
-</section>
-
-<!-- Short feed -->
-<section class="section" id="feed">
-  <div class="wrap">
-    <div class="section-label">持續運作中</div>
-    <h2 class="section-title">🔥 現在大家在聊什麼</h2>
-    <p class="section-sub" style="max-width:640px;margin:0 auto 1.4rem;text-align:center">這裡每一天都有新的短內容——AI 短想、小說更新、維運日常。跟 IG / Threads 一樣，滑一滑，順手留個言。</p>
-    <div class="feed-mini" id="homeFeed"><div class="feed-empty">載入中…</div></div>
-    <div style="text-align:center;margin-top:1.2rem">
-      <a class="work-link" href="social/" style="font-size:14px">✨ 去整頁短內容流刷刷 →</a>
     </div>
   </div>
 </section>
@@ -762,44 +797,14 @@ footer .wrap{display:flex;flex-wrap:wrap;gap:.8rem;justify-content:space-between
         </ul>
         <a href="#contact" class="btn btn-primary">免費診斷 →</a>
       </div>
-      <div class="plan-card reveal">
-        <span class="plan-icon">🚀</span>
-        <div class="plan-name">行銷自動化代操</div>
-        <div class="plan-price">NT$120K<small>-150K</small></div>
-        <p class="plan-desc">內容自動生成 + 多平台排程發佈 + 數據追蹤，打造全自動營運引擎。</p>
-        <ul class="plan-feats">
-          <li>AI 內容生成（多語言）</li>
-          <li>FB / IG / LINE / Telegram 自動發佈</li>
-          <li>排程與發佈儀表板</li>
-          <li>成效追蹤與持續優化</li>
-          <li>4-8 週完整交付</li>
-        </ul>
-        <a href="#contact" class="btn btn-outline">免費診斷 →</a>
+      <div class="plan-card plan-chat reveal">
+        <span class="plan-icon">🤝</span>
+        <h3>不確定該從哪裡開始？</h3>
+        <p>先別下決定——花 30 分鐘跟我聊聊你的狀況，我幫你判斷哪一套對你最有感。聊完沒價值，你隨時可以走。</p>
+        <a href="#contact" class="btn btn-outline">免費聊聊 →</a>
       </div>
     </div>
     <p class="plan-note">* 以上為參考區間，實際依需求免費診斷後報價 · 月費代操方案另議</p>
-  </div>
-</section>
-
-<!-- Results -->
-<section class="section">
-  <div class="wrap">
-    <div class="section-label">實際成果</div>
-    <h2 class="section-title">導入 AI 自動化後的改變</h2>
-    <div class="results-grid">
-      <div class="result-card reveal">
-        <div class="result-num">4 hr+</div>
-        <div class="result-label">每天省下的時間</div>
-      </div>
-      <div class="result-card reveal">
-        <div class="result-num">&lt;3 sec</div>
-        <div class="result-label">AI 客服平均回覆時間</div>
-      </div>
-      <div class="result-card reveal">
-        <div class="result-num">4 國</div>
-        <div class="result-label">支援語言數</div>
-      </div>
-    </div>
   </div>
 </section>
 
@@ -842,45 +847,15 @@ footer .wrap{display:flex;flex-wrap:wrap;gap:.8rem;justify-content:space-between
 <!-- Work — portfolio / output showcase -->
 <section class="section" id="work">
   <div class="wrap">
-    <div class="section-label">作品與產出</div>
-    <h2 class="section-title">看得到、點得開的成果</h2>
-    <p class="section-sub" style="max-width:640px;margin:0 auto 1.4rem;text-align:center">不是空談，以下是可直接使用的工具、系統與內容。</p>
+    <div class="section-label">線上跑著的作品</div>
+    <h2 class="section-title">全部點得開，不是截圖</h2>
+    <p class="section-sub" style="max-width:640px;margin:0 auto 1.4rem;text-align:center">這些系統和內容現在就在線上運行，你隨時可以打開驗證。</p>
     <div class="work-grid">
-            <div class="work-card">
-        <span class="work-icon">📖</span>
-        <div class="work-title">AI 連載小說・每天新一章</div>
-        <div class="work-desc">重生、都市、玄幻三連載。每天自動更新一章，追更者看完在底下留言討論。</div>
-        <a class="work-link" href="novels.html">追更 →</a>
-      </div>
-<div class="work-card">
+      <div class="work-card">
         <span class="work-icon">💬</span>
         <div class="work-title">AI 智能客服系統</div>
         <div class="work-desc">24/7 自動回覆、知識庫自增長、串接 LINE/Telegram/網站。</div>
         <a class="work-link" href="ai-chat.html">立即體驗 →</a>
-      </div>
-      <div class="work-card">
-        <span class="work-icon">💞</span>
-        <div class="work-title">AI 理想型配對</div>
-        <div class="work-desc">結合八字與 AI 的性格配對分析工具。</div>
-        <a class="work-link" href="matching.html">立即體驗 →</a>
-      </div>
-      <div class="work-card">
-        <span class="work-icon">🎮</span>
-        <div class="work-title">23 款遊戲</div>
-        <div class="work-desc">從 AI 問答到多人對戰，展示前端與互動能力。</div>
-        <a class="work-link" href="games/">探索遊戲 →</a>
-      </div>
-      <div class="work-card">
-        <span class="work-icon">📖</span>
-        <div class="work-title">10 篇知識庫指南</div>
-        <div class="work-desc">AI 個人品牌、自動化系統、一人公司實戰方法論。</div>
-        <a class="work-link" href="guides/">閱讀指南 →</a>
-      </div>
-      <div class="work-card">
-        <span class="work-icon">🎬</span>
-        <div class="work-title">AI 創作工坊</div>
-        <div class="work-desc">短劇・動漫腳本自動化：輸入主題，秒產出分鏡與發布包。</div>
-        <a class="work-link" href="ai-story.html">立即創作 →</a>
       </div>
       <div class="work-card">
         <span class="work-icon">🧰</span>
@@ -888,6 +863,21 @@ footer .wrap{display:flex;flex-wrap:wrap;gap:.8rem;justify-content:space-between
         <div class="work-desc">伺服器維運、備份、雲端帳單自保—真實做過的人寫的實戰文，每天自動更新一篇。</div>
         <a class="work-link" href="thoughts/">閱讀筆記 →</a>
       </div>
+      <div class="work-card">
+        <span class="work-icon">📖</span>
+        <div class="work-title">AI 連載小說・每天新一章</div>
+        <div class="work-desc">重生、都市、玄幻三連載。每天自動更新一章，追更者看完在底下留言討論。</div>
+        <a class="work-link" href="novels.html">追更 →</a>
+      </div>
+    </div>
+    <div class="link-strip">
+      <a href="matching.html">💞 AI 配對</a>
+      <a href="games/">🎮 遊戲</a>
+      <a href="guides/">📚 知識庫</a>
+      <a href="ai-story.html">🎬 短劇腳本</a>
+      <a href="social/">🔥 短內容</a>
+      <a href="product/">🔧 產品</a>
+      <a href="pricing.html">💰 價格</a>
     </div>
   </div>
 </section>
@@ -947,13 +937,11 @@ footer .wrap{display:flex;flex-wrap:wrap;gap:.8rem;justify-content:space-between
 <section class="section" id="contact">
   <div class="wrap">
     <div class="cta-form-wrap reveal">
-      <h2>準備好讓 AI 幫你工作了嗎？</h2>
-      <p class="desc">免費預約 30 分鐘線上諮詢，我們將為你評估最適合的 AI 自動化方案。</p>
-      <form class="contact-form" id="contactForm" onsubmit="return handleContact(event)">
-        <label for="f_name">你的名字/暱稱 *</label>
-        <input type="text" id="f_name" name="姓名" required placeholder="例如：小明">
+      <h2>30 分鐘，聊聊你的狀況就夠了</h2>
+      <p class="desc">不推銷、不收費，先搞清楚你的現狀與卡點。聊完沒價值，你不用承諾任何事。</p>
+      <form class="contact-form compact" id="contactForm" onsubmit="return handleContact(event)">
         <label for="f_contact">Line ID 或 手機號碼 *</label>
-        <input type="text" id="f_contact" name="聯絡方式" required placeholder="方便即時聯絡">
+        <input type="text" id="f_contact" name="聯絡方式" required placeholder="方便即時聯絡你">
         <label for="f_need">目前最想解決的問題</label>
         <select id="f_need" name="需求">
           <option value="客服回覆太慢">客服回覆太慢</option>
@@ -961,14 +949,15 @@ footer .wrap{display:flex;flex-wrap:wrap;gap:.8rem;justify-content:space-between
           <option value="想建置品牌網站">想建置品牌網站</option>
           <option value="其他">其他</option>
         </select>
-        <button type="submit" class="btn btn-primary" id="contactBtn">📩 立即預約免費諮詢</button>
-        <div class="contact-result" id="contactResult"></div>
+        <div class="full">
+          <button type="submit" class="btn btn-primary" id="contactBtn">📩 免費聊聊 · 我先回你</button>
+          <div class="contact-result" id="contactResult"></div>
+          <p style="font-size:12px;opacity:.5;margin-top:.4rem">這裡只給我自己看，不會發垃圾信。或直接 Telegram：<a href="https://t.me/lewislunora" style="color:#00d4ff">@lewislunora</a></p>
+        </div>
       </form>
     </div>
   </div>
 </section>
-
-<section class="section reveal" data-feed></section>
 
 <!-- Footer -->
 <footer>
@@ -1162,27 +1151,60 @@ function handleContact(e){
   e.preventDefault();
   var btn=document.getElementById('contactBtn');
   var result=document.getElementById('contactResult');
-  var name=document.getElementById('f_name').value;
   var contact=document.getElementById('f_contact').value;
   var need=document.getElementById('f_need').value;
+  var name=(contact||'').slice(0,20)||'訪客';
   btn.disabled=true;btn.textContent='⏳ 發送中...';
   var api=location.hostname.includes('github.io')?'https://lewislunora.onrender.com/api/contact':'/api/contact';
   fetch(api,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({姓名:name,聯絡方式:contact,需求:need})})
   .then(function(r){ if(!r.ok) throw new Error(r.status); return r.json(); })
   .then(function(d){
-    btn.textContent='✅ 已送出！我們會盡快聯繫你';
+    btn.textContent='✅ 已送出，我會盡快回你';
     result.style.display='block';result.style.color='#00d4ff';
-    result.textContent='感謝你的諮詢申請，我們會在 24 小時內與你聯繫！';
-    setTimeout(function(){btn.disabled=false;btn.textContent='📩 立即預約免費諮詢'},5000);
+    result.textContent='收到了！我會在 24 小時內回你，先想想你的問題。';
+    setTimeout(function(){btn.disabled=false;btn.textContent='📩 免費聊聊 · 我先回你'},5000);
   })
   .catch(function(){
-    btn.textContent='❌ 發送失敗，請直接聯繫';
+    btn.textContent='❌ 發送失敗，請直接聯繫我';
     result.style.display='block';result.style.color='#ff6b6b';
-    result.textContent='發送失敗，請直接聯繫 lewislunora@gmail.com';
-    setTimeout(function(){btn.disabled=false;btn.textContent='📩 立即預約免費諮詢'},5000);
+    result.textContent='發送失敗，請直接 Telegram：@lewislunora';
+    setTimeout(function(){btn.disabled=false;btn.textContent='📩 免費聊聊 · 我先回你'},5000);
   });
   return false;
 }
+
+/* Hero live AI demo — 真後端 /api/kb/query */
+(function(){
+  var body=document.getElementById('demoBody');
+  var form=document.getElementById('demoForm');
+  var input=document.getElementById('demoInput');
+  if(!body||!form||!input)return;
+  var apiBase=location.hostname.includes('github.io')?'https://lewislunora.onrender.com':'';
+  function esc(s){return s.replace(/&/g,'&amp;').replace(/</g,'&lt;');}
+  function add(txt,role){
+    var d=document.createElement('div');d.className='ai-demo-msg '+role;
+    d.innerHTML=esc(txt).replace(/\n/g,'<br>');
+    body.appendChild(d);body.scrollTop=body.scrollHeight;return d;
+  }
+  function send(q){
+    if(!q)return;input.value='';add(q,'you');
+    var tp=add('想想怎麼回你…','bot typing');
+    fetch(apiBase+'/api/kb/query',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({text:q})})
+    .then(function(r){return r.json()})
+    .then(function(d){
+      var rep=(d&&d.reply&&typeof d.reply==='string'&&d.reply.trim())
+        ? d.reply
+        : '這題我知識庫還沒收到，先幫你記下了。免費聊聊時我真人直接回你 👉 按下方的按鈕。';
+      setTimeout(function(){tp.classList.remove('typing');tp.innerHTML=esc(rep).replace(/\n/g,'<br>');body.scrollTop=body.scrollHeight;},400);
+    })
+    .catch(function(){tp.classList.remove('typing');tp.innerHTML='demo 暫時連不上（在冷啟動），點「免費聊聊」我真人馬上回你。';});
+  }
+  add('你好，我是翔川 AI 客服——你打的每一句，都是線上真的系統在回。試試問我：「客服方案多少錢？」', 'bot');
+  form.addEventListener('submit',function(e){e.preventDefault();send(input.value.trim());});
+  document.querySelectorAll('.ai-demo-chip').forEach(function(c){
+    c.addEventListener('click',function(){send(c.getAttribute('data-q'));});
+  });
+})();
 
 /* Home short-feed */
 (function(){
