@@ -2422,6 +2422,22 @@ def _register_promo_task():
         except Exception:
             pass
 
+    def novel_daily_tick():
+        from ..config import GROQ_API_KEY
+        if not GROQ_API_KEY:
+            return
+        try:
+            from ..services.serial_novel import SerialNovelEngine
+            eng = SerialNovelEngine()
+            novels = fetch("SELECT id FROM novels WHERE status='serializing'")
+            for n in novels:
+                try:
+                    eng.ensure_chapter(n["id"])
+                except Exception:
+                    pass
+        except Exception:
+            pass
+
     original_loop = scheduler._loop
 
     def patched_loop():
@@ -2435,6 +2451,9 @@ def _register_promo_task():
                 # SEO 長尾文章：每 15 分鐘試（auto_seo_daily 內部每天 1 篇＋冷啟動首篇）
                 if scheduler._ping_count % 15 == 0:
                     seo_article_tick()
+                # 小說：每 15 分鐘試（ensure_chapter 內部有每日限速，每部一天一章）
+                if scheduler._ping_count % 15 == 0:
+                    novel_daily_tick()
                 if scheduler._ping_count % 1440 == 0:
                     scheduler._daily_backup()
                 if scheduler._ping_count % 60 == 0:
