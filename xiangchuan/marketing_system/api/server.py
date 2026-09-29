@@ -1054,8 +1054,13 @@ _novel_engine = SerialNovelEngine()
 @app.get("/api/novels")
 def novels_list():
     """列出所有連載中的小說（含最新章節標題）。"""
-    items = _novel_engine.list_novels()
-    return {"items": items}
+    try:
+        items = _novel_engine.list_novels()
+        return {"items": items}
+    except Exception as e:
+        import traceback
+        tb = traceback.format_exc().splitlines()
+        return {"items": [], "error": str(e), "trace": tb[-8:]}
 
 
 @app.get("/api/novels/{novel_id}")
@@ -1094,24 +1099,24 @@ def novel_read(data: NovelReadRequest, request: Request):
         # 觸發續寫（若當天沒有新章就產生）再回最新章
         chap, is_new = _novel_engine.ensure_chapter(data.novel_id)
         if not chap:
-            chap = fetch_one("SELECT * FROM novel_chapters WHERE novel_id=? ORDER BY chapter_no DESC LIMIT 1", (data.novel_id,))
+            chap = fetch_one("SELECT * FROM novel_chapters WHERE novel_id=? ORDER BY chapter_number DESC LIMIT 1", (data.novel_id,))
         if chap:
-            target = chap["chapter_no"]
+            target = chap["chapter_number"]
     else:
         # 讀指定章：確保它存在（若超過既有章節數，視為要求續寫那一章，限一天一章）
         existing = _novel_engine.get_chapter(data.novel_id, target)
         if existing:
             chap = existing
-            target = existing["chapter_no"]
+            target = existing["chapter_number"]
         else:
-            prev = fetch_one("SELECT MAX(chapter_no) m FROM novel_chapters WHERE novel_id=?", (data.novel_id,))
+            prev = fetch_one("SELECT MAX(chapter_number) m FROM novel_chapters WHERE novel_id=?", (data.novel_id,))
             maxno = prev["m"] or 0
             if target > maxno + 1:
                 raise HTTPException(404, "章節尚未開放（一次只能要求下一章）")
             chap, _ = _novel_engine.ensure_chapter(data.novel_id, target)
             if not chap:
-                chap = fetch_one("SELECT * FROM novel_chapters WHERE novel_id=? ORDER BY chapter_no DESC LIMIT 1", (data.novel_id,))
-            target = chap["chapter_no"]
+                chap = fetch_one("SELECT * FROM novel_chapters WHERE novel_id=? ORDER BY chapter_number DESC LIMIT 1", (data.novel_id,))
+            target = chap["chapter_number"]
 
     if not chap:
         return {"novel_id": data.novel_id, "chapter": None, "error": "尚未有章節，請稍後再試"}
@@ -1120,7 +1125,7 @@ def novel_read(data: NovelReadRequest, request: Request):
     locked = target > free and plan == "free"
     body_out = ""
     if not locked:
-        body_out = chap["body"] or ""
+        body_out = chap["content"] or ""
 
     # 記錄瀏覽（級聯 page 計數，未來可在 analytics 統計）
     try:

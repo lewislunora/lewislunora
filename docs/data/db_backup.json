@@ -10,7 +10,7 @@
       "prompt_template": "以{language}寫一篇關於{topic}的社群貼文，語氣{style}，長度約{length}字。加入3-5個相關hashtag。",
       "platform": "facebook",
       "category": "social",
-      "created_at": "2026-08-24 11:02:11"
+      "created_at": "2026-09-20 17:31:00"
     },
     {
       "id": 2,
@@ -18,7 +18,7 @@
       "prompt_template": "以{language}寫一篇關於{topic}的品牌部落格文章，字數約{length}字，語氣{style}。包含引言、主體和結語。",
       "platform": "blog",
       "category": "content",
-      "created_at": "2026-08-24 11:02:11"
+      "created_at": "2026-09-20 17:31:00"
     },
     {
       "id": 3,
@@ -26,7 +26,7 @@
       "prompt_template": "以{language}寫一段關於{product}的產品推廣文案，字數約{length}字。強調{benefits}。",
       "platform": "instagram",
       "category": "sales",
-      "created_at": "2026-08-24 11:02:11"
+      "created_at": "2026-09-20 17:31:00"
     },
     {
       "id": 4,
@@ -34,7 +34,7 @@
       "prompt_template": "以{language}創作一個關於{topic}的短劇劇本，約{length}字。包含場景描述、對白和情感節奏。",
       "platform": "drama",
       "category": "creative",
-      "created_at": "2026-08-24 11:02:11"
+      "created_at": "2026-09-20 17:31:00"
     }
   ],
   "kb_entries": [
@@ -43,228 +43,219 @@
       "keywords": "[\"方案\",\"價格\",\"費用\",\"多少錢\",\"pricing\",\"plan\",\"price\",\"cost\"]",
       "answer": "我們提供三種方案：\\n\\n① 入門版：免費，50次/天\\n② 專業版：NT$890/月，無限次數\\n③ 企業版：NT$5,990/月，無限次數+私有部署\\n\\n詳細比較請看 👉 https://lewislunora.onrender.com/product/#pricing",
       "language": "zh-TW",
-      "created_at": "2026-08-24 11:02:11",
-      "updated_at": "2026-08-24 11:02:11"
+      "created_at": "2026-09-20 17:31:00",
+      "updated_at": "2026-09-20 17:31:00"
     },
     {
       "id": 2,
       "keywords": "[\"方案\",\"價格\",\"費用\",\"多少錢\",\"pricing\",\"plan\",\"price\",\"cost\"]",
       "answer": "We offer 3 plans:\\n① Starter: Free, 50 chats/day\\n② Pro: $29/mo, unlimited\\n③ Enterprise: $199/mo, unlimited+private deployment\\n\\nSee details 👉 https://lewislunora.onrender.com/product/#pricing",
       "language": "en",
-      "created_at": "2026-08-24 11:02:11",
-      "updated_at": "2026-08-24 11:02:11"
+      "created_at": "2026-09-20 17:31:00",
+      "updated_at": "2026-09-20 17:31:00"
     },
     {
       "id": 3,
       "keywords": "[\"功能\",\"能做什麼\",\"features\",\"capabilities\"]",
       "answer": "主要功能包括：\\n• AI 智能客服（24/7）\\n• 自動內容生成（文章+社群）\\n• 知識庫自增長\\n• 多平台分發\\n• 數據驅動優化\\n• AI 短劇創作",
       "language": "zh-TW",
-      "created_at": "2026-08-24 11:02:11",
-      "updated_at": "2026-08-24 11:02:11"
+      "created_at": "2026-09-20 17:31:00",
+      "updated_at": "2026-09-20 17:31:00"
     },
     {
       "id": 4,
       "keywords": "[\"功能\",\"能做什麼\",\"features\",\"capabilities\"]",
       "answer": "Key features:\\n• AI Customer Service (24/7)\\n• Auto Content Generation\\n• Self-Growing Knowledge Base\\n• Multi-Platform Distribution\\n• Data-Driven Optimization",
       "language": "en",
-      "created_at": "2026-08-24 11:02:11",
-      "updated_at": "2026-08-24 11:02:11"
+      "created_at": "2026-09-20 17:31:00",
+      "updated_at": "2026-09-20 17:31:00"
     },
     {
       "id": 5,
       "keywords": "[\"平台\",\"支援\",\"platform\",\"support\",\"整合\"]",
       "answer": "目前已支援：Telegram、Line、Facebook、Instagram。更多平台持續新增中。",
       "language": "zh-TW",
-      "created_at": "2026-08-24 11:02:11",
-      "updated_at": "2026-08-24 11:02:11"
+      "created_at": "2026-09-20 17:31:00",
+      "updated_at": "2026-09-20 17:31:00"
     },
     {
       "id": 6,
       "keywords": "[\"平台\",\"支援\",\"platform\",\"support\",\"整合\"]",
       "answer": "Supported platforms: Telegram, Line, Facebook, Instagram. More coming soon.",
       "language": "en",
-      "created_at": "2026-08-24 11:02:11",
-      "updated_at": "2026-08-24 11:02:11"
+      "created_at": "2026-09-20 17:31:00",
+      "updated_at": "2026-09-20 17:31:00"
     },
     {
       "id": 7,
       "keywords": "[\"開始\",\"試用\",\"註冊\",\"start\",\"trial\",\"begin\",\"signup\"]",
       "answer": "開始很簡單：\\n1. 點擊「免費試用」按鈕\\n2. 加入我們的 Telegram 頻道\\n3. 設定你的知識庫\\n4. AI 立即上線\\n\\n立即開始 👉 https://lewislunora.onrender.com/product/",
       "language": "zh-TW",
-      "created_at": "2026-08-24 11:02:11",
-      "updated_at": "2026-08-24 11:02:11"
+      "created_at": "2026-09-20 17:31:00",
+      "updated_at": "2026-09-20 17:31:00"
     },
     {
       "id": 8,
       "keywords": "[\"開始\",\"試用\",\"註冊\",\"start\",\"trial\",\"begin\",\"signup\"]",
       "answer": "Getting started:\\n1. Click \"Free Trial\"\\n2. Join our Telegram\\n3. Set up your knowledge base\\n4. AI goes live instantly",
       "language": "en",
-      "created_at": "2026-08-24 11:02:11",
-      "updated_at": "2026-08-24 11:02:11"
+      "created_at": "2026-09-20 17:31:00",
+      "updated_at": "2026-09-20 17:31:00"
     },
     {
       "id": 9,
       "keywords": "[\"客服\",\"customer service\",\"support\"]",
       "answer": "AI 客服可以 24/7 自動回覆客戶問題。支援多語言、知識庫自增長、串接多平台。專業版每月只要 NT$890。企業版含私有部署。",
       "language": "zh-TW",
-      "created_at": "2026-08-24 11:02:11",
-      "updated_at": "2026-08-24 11:02:11"
+      "created_at": "2026-09-20 17:31:00",
+      "updated_at": "2026-09-20 17:31:00"
     },
     {
       "id": 10,
       "keywords": "[\"客服\",\"customer service\",\"support\"]",
       "answer": "AI customer service works 24/7. Multi-language, self-growing KB, multi-platform. Pro $29/mo. Enterprise includes private deployment.",
       "language": "en",
-      "created_at": "2026-08-24 11:02:11",
-      "updated_at": "2026-08-24 11:02:11"
+      "created_at": "2026-09-20 17:31:00",
+      "updated_at": "2026-09-20 17:31:00"
     },
     {
       "id": 11,
       "keywords": "[\"內容\",\"content\",\"文章\",\"生成\"]",
       "answer": "自動內容生成系統可以產出：品牌文章、社群貼文、行銷文案、電子報、短劇劇本。支援中英雙語。",
       "language": "zh-TW",
-      "created_at": "2026-08-24 11:02:11",
-      "updated_at": "2026-08-24 11:02:11"
+      "created_at": "2026-09-20 17:31:00",
+      "updated_at": "2026-09-20 17:31:00"
     },
     {
       "id": 12,
       "keywords": "[\"內容\",\"content\",\"文章\",\"生成\"]",
       "answer": "Auto content system generates: blog posts, social posts, marketing copy, newsletters, drama scripts. Chinese + English.",
       "language": "en",
-      "created_at": "2026-08-24 11:02:11",
-      "updated_at": "2026-08-24 11:02:11"
+      "created_at": "2026-09-20 17:31:00",
+      "updated_at": "2026-09-20 17:31:00"
     },
     {
       "id": 13,
       "keywords": "[\"知識庫\",\"knowledge base\",\"kb\"]",
       "answer": "知識庫是 AI 客服的核心。好的回答會自動保存，不好的會被淘汰。支援 👍/👎 回饋機制，越用越聰明。你現在就可以在 Dashboard 中編輯知識庫內容。",
       "language": "zh-TW",
-      "created_at": "2026-08-24 11:02:11",
-      "updated_at": "2026-08-24 11:02:11"
+      "created_at": "2026-09-20 17:31:00",
+      "updated_at": "2026-09-20 17:31:00"
     },
     {
       "id": 14,
       "keywords": "[\"知識庫\",\"knowledge base\",\"kb\"]",
       "answer": "The knowledge base is the core. Good answers auto-save, bad ones get淘汰. 👍/👎 feedback system. You can edit KB entries in the Dashboard.",
       "language": "en",
-      "created_at": "2026-08-24 11:02:11",
-      "updated_at": "2026-08-24 11:02:11"
+      "created_at": "2026-09-20 17:31:00",
+      "updated_at": "2026-09-20 17:31:00"
     },
     {
       "id": 15,
       "keywords": "[\"品牌\",\"brand\",\"app\",\"應用\"]",
       "answer": "品牌 App 使用 Flutter 開發，同時支援 iOS、Android 和 Web。內容從 JSON 讀取，無需後端即可更新。",
       "language": "zh-TW",
-      "created_at": "2026-08-24 11:02:11",
-      "updated_at": "2026-08-24 11:02:11"
+      "created_at": "2026-09-20 17:31:00",
+      "updated_at": "2026-09-20 17:31:00"
     },
     {
       "id": 16,
       "keywords": "[\"品牌\",\"brand\",\"app\",\"應用\"]",
       "answer": "Brand app built with Flutter. iOS + Android + Web. Content from JSON, no backend needed.",
       "language": "en",
-      "created_at": "2026-08-24 11:02:11",
-      "updated_at": "2026-08-24 11:02:11"
+      "created_at": "2026-09-20 17:31:00",
+      "updated_at": "2026-09-20 17:31:00"
     },
     {
       "id": 17,
       "keywords": "[\"聯絡\",\"contact\",\"email\",\"電話\",\"line\"]",
       "answer": "歡迎聯絡我們：\\n📧 lewislunora@gmail.com\\n✈️ Telegram 頻道：https://t.me/+QgAyWlVyIxFjNmRl\\n🤖 客服機器人：@ailunora_bot",
       "language": "zh-TW",
-      "created_at": "2026-08-24 11:02:11",
-      "updated_at": "2026-08-24 11:02:11"
+      "created_at": "2026-09-20 17:31:00",
+      "updated_at": "2026-09-20 17:31:00"
     },
     {
       "id": 18,
       "keywords": "[\"聯絡\",\"contact\",\"email\",\"電話\",\"line\"]",
       "answer": "Contact us:\\n📧 lewislunora@gmail.com\\n✈️ Telegram: https://t.me/+QgAyWlVyIxFjNmRl\\n🤖 Bot: @ailunora_bot",
       "language": "en",
-      "created_at": "2026-08-24 11:02:11",
-      "updated_at": "2026-08-24 11:02:11"
+      "created_at": "2026-09-20 17:31:00",
+      "updated_at": "2026-09-20 17:31:00"
     },
     {
       "id": 19,
       "keywords": "[\"展示\",\"demo\",\"演示\"]",
       "answer": "觀看即時展示 👉 前往商品頁 https://lewislunora.onrender.com/product/ 直接體驗 AI 客服回覆。",
       "language": "zh-TW",
-      "created_at": "2026-08-24 11:02:11",
-      "updated_at": "2026-08-24 11:02:11"
+      "created_at": "2026-09-20 17:31:00",
+      "updated_at": "2026-09-20 17:31:00"
     },
     {
       "id": 20,
       "keywords": "[\"展示\",\"demo\",\"演示\"]",
       "answer": "Live demo 👉 Visit https://lewislunora.onrender.com/product/ to try AI customer service.",
       "language": "en",
-      "created_at": "2026-08-24 11:02:11",
-      "updated_at": "2026-08-24 11:02:11"
+      "created_at": "2026-09-20 17:31:00",
+      "updated_at": "2026-09-20 17:31:00"
     },
     {
       "id": 21,
       "keywords": "[\"ai\",\"llm\",\"groq\",\"人工智慧\"]",
       "answer": "系統使用 Groq Llama 3 LLM 驅動，支援智慧對話、內容生成、情感分析等功能。",
       "language": "zh-TW",
-      "created_at": "2026-08-24 11:02:11",
-      "updated_at": "2026-08-24 11:02:11"
+      "created_at": "2026-09-20 17:31:00",
+      "updated_at": "2026-09-20 17:31:00"
     },
     {
       "id": 22,
       "keywords": "[\"ai\",\"llm\",\"groq\",\"人工智慧\"]",
       "answer": "Powered by Groq Llama 3 LLM. Smart conversations, content generation, sentiment analysis.",
       "language": "en",
-      "created_at": "2026-08-24 11:02:11",
-      "updated_at": "2026-08-24 11:02:11"
+      "created_at": "2026-09-20 17:31:00",
+      "updated_at": "2026-09-20 17:31:00"
     }
   ],
   "kb_pending": [],
-  "contacts": [],
+  "contacts": [
+    {
+      "id": 1,
+      "name": "王小明",
+      "company": "",
+      "contact": "0912-345-678",
+      "email": "wang@gmail.com",
+      "industry": "",
+      "message": "想了解方案",
+      "created_at": "2026-09-20 17:31:02"
+    }
+  ],
   "users": [],
   "page_views": [],
   "geo_cache": [],
-  "comments": [],
-  "reactions": [],
-  "feed_posts": [
+  "comments": [
     {
       "id": 1,
+      "page_path": "/",
+      "author_name": "林小妹",
+      "content": "這篇好有用",
+      "parent_id": null,
       "user_id": null,
-      "content": "凌晨三點，系統當機。MTTR 三十分鐘內，團隊沒有一秒在「查原因」。監控告警觸發後，第一人先看指標，第二人直接執行預設回滾腳本，第三人同步通知業務側。我們靠的不是個人英雄主義，而是把每一步都寫成可重放的 Runbook。當故障變成流水線，焦慮才會消失。你團隊的「第一分鐘」標準動作是什麼？",
-      "post_type": "short",
-      "author": "AI 每日短想",
-      "created_at": "2026-09-17 17:13:31"
-    },
-    {
-      "id": 2,
-      "user_id": null,
-      "content": "別再盯著後台数据焦慮了。這週我強迫自己約了三位行業前輩喝咖啡，沒聊業務，只問他們每週固定做的一件事。發現他們都堅持每天輸出 500 字觀點，而非追求爆款。認知升級比算法可靠。你身邊那位最厲害的朋友，最近在做什麼？",
-      "post_type": "short",
-      "author": "AI 每日短想",
-      "created_at": "2026-09-17 17:28:31"
-    },
-    {
-      "id": 3,
-      "user_id": null,
-      "content": "很多人誤以為一人公司省錢就該自己報稅，直到你發現回覆訊息比做產品還累。我試過三月不外包，結果因為回應\tdelay 氣跑兩個大客戶，光損失就賠掉整年會計費。把重複性溝通交給專業，你才能專心在只有你能做的事上。你覺得哪類工作最該早期就丟出去？",
-      "post_type": "short",
-      "author": "AI 每日短想",
-      "created_at": "2026-09-18 01:11:16"
-    },
-    {
-      "id": 4,
-      "user_id": null,
-      "content": "重生回 2004，本以為能躲過維運地獄，結果凌晨三點的警報還是響了。看著螢幕上飄紅的 Error Log，他苦笑，原來無論哪個年代，運維人的命都由那些看不見的日誌決定。直到他發現當年的災難源頭，竟藏在那個被忽略的備份檔裡。",
-      "post_type": "short",
-      "author": "AI 每日短想",
-      "created_at": "2026-09-18 15:54:35"
-    },
-    {
-      "id": 5,
-      "user_id": null,
-      "content": "機房撿到的伺服器跟我說：你的備份上週起就沒成功過。\n\n我愣了一下，回想那塊閃爍紅燈的硬碟，原來它一直在低聲吶喊。數據就像過期的牛奶，表面看來沒事，喝下去才知道早就腐爛了。\n\n別等災難降臨才想起檢查日誌，你上次真正驗證備份還原，是哪一天？",
-      "post_type": "short",
-      "author": "AI 每日短想",
-      "created_at": "2026-09-19 12:36:29"
+      "created_at": "2026-09-20 17:31:02"
     }
   ],
-  "community_threads": [],
+  "reactions": [],
+  "feed_posts": [],
+  "community_threads": [
+    {
+      "id": 1,
+      "title": "求救",
+      "content": "線斷了",
+      "author_name": "阿明",
+      "is_anonymous": 0,
+      "view_count": 0,
+      "reply_count": 0,
+      "created_at": "2026-09-20 17:31:20"
+    }
+  ],
   "community_replies": [],
   "article_views": [],
   "promo_queue": [
@@ -274,124 +265,7 @@
       "body": "",
       "status": "pending",
       "error": "",
-      "created_at": "2026-08-29 15:28:11",
-      "posted_at": null
-    },
-    {
-      "id": 2,
-      "platform": "threads",
-      "body": "",
-      "status": "pending",
-      "error": "",
-      "created_at": "2026-08-31 22:51:34",
-      "posted_at": null
-    },
-    {
-      "id": 3,
-      "platform": "threads",
-      "body": "",
-      "status": "pending",
-      "error": "",
-      "created_at": "2026-09-01 13:41:22",
-      "posted_at": null
-    },
-    {
-      "id": 4,
-      "platform": "threads",
-      "body": "",
-      "status": "pending",
-      "error": "",
-      "created_at": "2026-09-02 00:44:02",
-      "posted_at": null
-    },
-    {
-      "id": 5,
-      "platform": "threads",
-      "body": "",
-      "status": "pending",
-      "error": "",
-      "created_at": "2026-09-05 21:20:37",
-      "posted_at": null
-    },
-    {
-      "id": 6,
-      "platform": "threads",
-      "body": "",
-      "status": "pending",
-      "error": "",
-      "created_at": "2026-09-08 05:53:15",
-      "posted_at": null
-    },
-    {
-      "id": 7,
-      "platform": "threads",
-      "body": "",
-      "status": "pending",
-      "error": "",
-      "created_at": "2026-09-09 04:20:39",
-      "posted_at": null
-    },
-    {
-      "id": 8,
-      "platform": "threads",
-      "body": "",
-      "status": "pending",
-      "error": "",
-      "created_at": "2026-09-10 14:37:21",
-      "posted_at": null
-    },
-    {
-      "id": 9,
-      "platform": "threads",
-      "body": "",
-      "status": "pending",
-      "error": "",
-      "created_at": "2026-09-11 06:23:10",
-      "posted_at": null
-    },
-    {
-      "id": 10,
-      "platform": "threads",
-      "body": "",
-      "status": "pending",
-      "error": "",
-      "created_at": "2026-09-12 08:01:49",
-      "posted_at": null
-    },
-    {
-      "id": 11,
-      "platform": "threads",
-      "body": "",
-      "status": "pending",
-      "error": "",
-      "created_at": "2026-09-13 17:58:43",
-      "posted_at": null
-    },
-    {
-      "id": 12,
-      "platform": "threads",
-      "body": "",
-      "status": "pending",
-      "error": "",
-      "created_at": "2026-09-17 07:12:55",
-      "posted_at": null
-    },
-    {
-      "id": 13,
-      "platform": "threads",
-      "body": "",
-      "status": "pending",
-      "error": "",
-      "created_at": "2026-09-18 01:06:15",
-      "posted_at": null
-    },
-    {
-      "id": 14,
-      "platform": "threads",
-      "body": "",
-      "status": "pending",
-      "error": "",
-      "created_at": "2026-09-24 18:29:30",
+      "created_at": "2026-09-20 17:31:03",
       "posted_at": null
     }
   ],
@@ -408,10 +282,10 @@
       "summary": "被裁員的 45 歲維運總監，一覺醒來回到二十年前剛入行的第一天。這輩子的目標只有一個：先買對房子。",
       "genre": "都市",
       "status": "serializing",
-      "chapter_count": 0,
+      "chapter_count": 1,
       "last_summary": "",
-      "next_available_at": "2026-09-16 07:08:39",
-      "created_at": "2026-09-16 07:08:39"
+      "next_available_at": "2026-09-30 00:43:20",
+      "created_at": "2026-09-20 17:31:00"
     },
     {
       "id": 2,
@@ -421,8 +295,8 @@
       "status": "serializing",
       "chapter_count": 0,
       "last_summary": "",
-      "next_available_at": "2026-09-16 07:08:39",
-      "created_at": "2026-09-16 07:08:39"
+      "next_available_at": "2026-09-20 17:31:00",
+      "created_at": "2026-09-20 17:31:00"
     },
     {
       "id": 3,
@@ -432,10 +306,19 @@
       "status": "serializing",
       "chapter_count": 0,
       "last_summary": "",
-      "next_available_at": "2026-09-16 07:08:39",
-      "created_at": "2026-09-16 07:08:39"
+      "next_available_at": "2026-09-20 17:31:00",
+      "created_at": "2026-09-20 17:31:00"
     }
   ],
-  "novel_chapters": [],
+  "novel_chapters": [
+    {
+      "id": 1,
+      "novel_id": 1,
+      "chapter_number": 1,
+      "title": "（續）",
+      "content": "我在公司大廳的自助咖啡機前，剛倒好第一杯熱騰騰的黑咖啡，手機螢幕卻突然閃出一條訊息：「你被裁員了，明天起別再來上班。」我愣住，手裡的咖啡滴滴答答地往地上流。就在同時，身後的玻璃門「砰」地一聲被推開，一個穿著格子襯衫、背著舊背包的二十歲少年站在那兒，抬頭盯著我，眼神裡寫滿了「今天是我人生第一天」的期待。\n\n我抬眼望去，眼前的景象竟像是被時光倒流的電影片段：牆上的海報還是十年前的「2006 年全國資訊大會」宣傳，桌上的舊式鍵盤還在冒著淡淡的灰塵，甚至那台還未換過顏色的 IBM ThinkPad，正靜靜地躺在我的腳邊。我深吸一口氣，腦中翻湧的不是裁員的怒火，而是久違的青春熱血。我的名字是林浩然，四十五歲，曾是某大型科技公司維運部的總監，因為一次不明原因的裁員，一夜回到二十年前——也就是二零零七年，我剛從大學資訊工程系畢業、拿著實習證書，踏入這間叫做「星光資訊」的公司，成為一名「維運小妹」的第一天。\n\n回到過去的感覺比我想像的還要真實。手上的手機顯示的還是去年才換的 iPhone 13，卻被系統提示「無法辨識的設備」；口袋裡的信用卡仍然是那張即將到期的金卡，卡面上的名字依舊是「林浩然」。我試著把這些現代的資訊藏起來，卻發現自己的腦袋裡竟清晰記得每一個系統的漏洞、每一次宕機的根源，甚至知道公司裡哪個老闆最怕被問及的財務數字。這一次，我不再是那個只能被動接受裁員通知的老闆手下的棋子，我有了先知的優勢，唯一的目標只有一個：先買對房子，讓未來的自己不再被迫搬家、被迫接受別人的安排。\n\n我把咖啡杯遞給站在我身後的少年，說道：「小兄弟，先把這杯咖啡喝了，我帶你去看看我們的工作站。」少年抬頭，眼裡的光亮比我當年更炙熱，「謝謝前輩！」他說，聲音裡帶著未來的期待。走進維運部的走廊，牆上貼滿了當年的專案計畫表，最顯眼的是一張大大的海報——「2025 年全公司最值得投資的住宅區——天璽城」。我心頭一震，這正是我在未來十年裡不斷追逐、卻始終錯過的那塊寶地。若此時就能掌握資訊，未來的投資失敗或許能被改寫。\n\n就在我低聲對少年說：「等會兒帶你去看看天璽城的樣本屋，這裡的房子未來會大賣。」的同時，辦公室的門被一把重重的鐵門關上，裡面傳來一陣急促的敲門聲。「林總，您快下來，系統又出問題了！」聲音是那位我熟悉的資深工程師阿偉，語氣裡充滿焦慮。我的心跳瞬間加速，這是命運的呼喚，還是另一場災難的前兆？\n\n我轉身想要衝向機房，卻發現少年已經把手伸向自己的背包，從裡面掏出一張泛黃的紙條，上面寫著：「如果你真的想改變未來，先把今天的第一筆投資做好——在天璽城的第七層，號碼 708。」我抬頭望向門外，門口站著一位穿著黑色西裝、手持公文包的陌生男子，正用冷峻的目光掃視整個辦公室，彷彿在尋找什麼人。\n\n我深吸一口氣，心裡的計算器已經開始運轉：是先解決眼前的系統宕機，還是立即去天璽城的樣本屋？就在我還在猶豫的瞬間，手機再度震動，訊息顯示：「今晚 9 點，星光資訊舉辦內部投資說明會，千萬別錯過。」而那位黑西裝男子的腳步聲，正一步步逼近我的辦公桌。\n\n我抬眼，看到少年手中的紙條突然燃起微光，像是被什麼力量激活。我的腦海裡浮現出未來的自己——在天璽城的高層陽台上，俯瞰城市的燈火，手裡捧著一杯早已冷卻的咖啡，臉上寫滿了從未有過的平靜。\n\n就在此時，門外傳來一聲巨響，整棟大樓的燈光瞬間閃爍，警報聲大作。黑西裝男子的手機螢幕亮起，一行字映入眼簾：「系統已被入侵，所有資料即將被刪除，唯一的備份在第 708 號房間。」我看向少年，他的眼神已不再是單純的好奇，而是充滿了決心。\n\n我知道，今天不僅是我重生的第一天，更是改寫未來的唯一機會。就在我伸手欲抓住那張紙條的瞬間，門外的警報聲中夾雜著一聲刺耳的金屬撞擊聲——門被強行推開，一雙手伸進了辦公室……\n\n我還沒來得及說出什麼，少年已經把紙條塞進我的手心，低聲說：「快走，這裡不安全。」而那雙伸進來的手，竟然是……？ \n\n（未完待續）",
+      "created_at": "2026-09-29 00:43:20"
+    }
+  ],
   "seo_articles": []
 }

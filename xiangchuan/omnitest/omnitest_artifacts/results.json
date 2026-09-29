@@ -1,0 +1,94 @@
+{
+  "timestamp": "2026-09-27T22:07:17+0800",
+  "modules": [
+    {
+      "module": "vuln",
+      "elapsed_s": 14.47,
+      "status": "WARN",
+      "metrics": {},
+      "artifacts": [],
+      "findings": [
+        {
+          "check": "TLS certificate",
+          "status": "PASS",
+          "detail": "TLSv1.3, expires in 116d (Jan 21 23:59:59 2027 GMT)"
+        },
+        {
+          "check": "header:strict-transport-security",
+          "status": "WARN",
+          "detail": "HSTS missing"
+        },
+        {
+          "check": "header:content-security-policy",
+          "status": "WARN",
+          "detail": "CSP missing (XSS risk ↑)"
+        },
+        {
+          "check": "header:x-content-type-options",
+          "status": "WARN",
+          "detail": "X-Content-Type-Options missing"
+        },
+        {
+          "check": "header:x-frame-options",
+          "status": "WARN",
+          "detail": "X-Frame-Options/CSP frame-ancestors missing (clickjack)"
+        },
+        {
+          "check": "header:referrer-policy",
+          "status": "WARN",
+          "detail": "Referrer-Policy missing"
+        },
+        {
+          "check": "cors",
+          "status": "PASS",
+          "detail": "no ACAO reflection"
+        },
+        {
+          "check": "sqli-probe:home",
+          "status": "PASS",
+          "detail": "no DB error leakage"
+        },
+        {
+          "check": "sqli-probe:game-list",
+          "status": "PASS",
+          "detail": "no DB error leakage"
+        },
+        {
+          "check": "sqli-probe:game-filters",
+          "status": "PASS",
+          "detail": "no DB error leakage"
+        },
+        {
+          "check": "sqli-probe:game-detail",
+          "status": "PASS",
+          "detail": "no DB error leakage"
+        },
+        {
+          "check": "sqli-probe:game-url",
+          "status": "PASS",
+          "detail": "no DB error leakage"
+        },
+        {
+          "check": "sqli-probe:popular",
+          "status": "PASS",
+          "detail": "no DB error leakage"
+        },
+        {
+          "check": "sqli-probe:top-wins",
+          "status": "PASS",
+          "detail": "no DB error leakage"
+        },
+        {
+          "check": "sqli-probe:news",
+          "status": "PASS",
+          "detail": "no DB error leakage"
+        },
+        {
+          "check": "scope-notice",
+          "status": "WARN",
+          "detail": "OMNITEST vuln module performs light checks only; pair with full authenticated pentest per signed scope for compliance-grade assessment."
+        }
+      ]
+    }
+  ]
+}

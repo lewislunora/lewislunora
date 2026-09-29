@@ -1,0 +1,17 @@
+timestamp,module,check,status,detail
+2026-09-27T22:07:17+0800,vuln,TLS certificate,PASS,"TLSv1.3, expires in 116d (Jan 21 23:59:59 2027 GMT)"
+2026-09-27T22:07:17+0800,vuln,header:strict-transport-security,WARN,HSTS missing
+2026-09-27T22:07:17+0800,vuln,header:content-security-policy,WARN,CSP missing (XSS risk ↑)
+2026-09-27T22:07:17+0800,vuln,header:x-content-type-options,WARN,X-Content-Type-Options missing
+2026-09-27T22:07:17+0800,vuln,header:x-frame-options,WARN,X-Frame-Options/CSP frame-ancestors missing (clickjack)
+2026-09-27T22:07:17+0800,vuln,header:referrer-policy,WARN,Referrer-Policy missing
+2026-09-27T22:07:17+0800,vuln,cors,PASS,no ACAO reflection
+2026-09-27T22:07:17+0800,vuln,sqli-probe:home,PASS,no DB error leakage
+2026-09-27T22:07:17+0800,vuln,sqli-probe:game-list,PASS,no DB error leakage
+2026-09-27T22:07:17+0800,vuln,sqli-probe:game-filters,PASS,no DB error leakage
+2026-09-27T22:07:17+0800,vuln,sqli-probe:game-detail,PASS,no DB error leakage
+2026-09-27T22:07:17+0800,vuln,sqli-probe:game-url,PASS,no DB error leakage
+2026-09-27T22:07:17+0800,vuln,sqli-probe:popular,PASS,no DB error leakage
+2026-09-27T22:07:17+0800,vuln,sqli-probe:top-wins,PASS,no DB error leakage
+2026-09-27T22:07:17+0800,vuln,sqli-probe:news,PASS,no DB error leakage
+2026-09-27T22:07:17+0800,vuln,scope-notice,WARN,OMNITEST vuln module performs light checks only; pair with full authenticated pentest per signed scope for compliance-grade assessment.

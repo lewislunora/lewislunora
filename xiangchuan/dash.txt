@@ -1,0 +1,22 @@
+=== 本地檔案存在性 ===
+ls: marketing_system/data/frontend/: No such file or directory
+ls: marketing_system/data/auth-guard.js: No such file or directory
+ls: marketing_system/data/widget.css: No such file or directory
+ls: marketing_system/data/widget.js: No such file or directory
+
+=== 實測 /dashboard ===
+HTTP 200
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<script src="/auth-guard.js"></script>
+<link rel="stylesheet" href="/widget.css">
+<script src="/widget.js"></script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>翔川 Neo｜曜科技 行銷自動化�
+
+=== 實測 /auth-guard.js ===
+HTTP 200
+=== 實測 /api/debug ===
+{"cwd":"/opt/render/project/src","docs_dir":"/opt/render/project/src/docs","docs_exists":true,"99u_exists":true,"ai_brand_exists":true,"files":["/opt/render/project/src/docs/guides/ai-personal-brand-positioning.html","/opt/render/project/src/docs/guides/index.html","/opt/render/project/src/docs/guides/knowledge-to-product.html","/opt/render/project/src/docs/guides/no-face-personal-brand.html","/opt/render/project/src/docs/guides/solopreneur-ai-system.html","/opt/render/project/src/docs/index.htm

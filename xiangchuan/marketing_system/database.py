@@ -36,6 +36,25 @@ def _backup_exists():
     return DATABASE_BACKUP_PATH.exists() and DATABASE_BACKUP_PATH.stat().st_size > 10
 
 
+RENAMED_COLS = {"chapter_no": "chapter_number", "body": "content"}
+
+
+def _migrate_novel_chapters(conn):
+    """novel_chapters 曾以 chapter_no/body 命名欄位；統一為 chapter_number/content。
+
+    CREATE TABLE IF NOT EXISTS 不會改舊表，故需手動遷移既有資料庫（本機＋線上）。
+    SQLite RENAME COLUMN 會同步更新 composite UNIQUE(index) 裡的欄名。
+    """
+    try:
+        cols = {r[1] for r in conn.execute("PRAGMA table_info(novel_chapters)").fetchall()}
+        if "chapter_number" not in cols and "chapter_no" in cols:
+            conn.execute("ALTER TABLE novel_chapters RENAME COLUMN chapter_no TO chapter_number")
+        if "content" not in cols and "body" in cols:
+            conn.execute("ALTER TABLE novel_chapters RENAME COLUMN body TO content")
+    except Exception as e:
+        logger.warning(f"novel_chapters migrate failed: {e}")
+
+
 def _restore_from_backup():
     logger.info("Restoring database from backup JSON...")
     data = json.loads(DATABASE_BACKUP_PATH.read_text("utf-8"))
@@ -50,7 +69,7 @@ def _restore_from_backup():
         except sqlite3.OperationalError as e:
             logger.warning(f"Skipping table {table} during restore: {e}")
             continue
-        cols = list(rows[0].keys()) if rows else []
+        cols = [RENAMED_COLS.get(c, c) for c in (list(rows[0].keys()) if rows else [])]
         if not cols:
             continue
         placeholders = ",".join("?" for _ in cols)
@@ -477,6 +496,7 @@ CREATE TABLE IF NOT EXISTS social_identities (
         ('產品文案', '以{language}寫一段關於{product}的產品推廣文案，字數約{length}字。強調{benefits}。', 'instagram', 'sales'),
         ('短劇劇本', '以{language}創作一個關於{topic}的短劇劇本，約{length}字。包含場景描述、對白和情感節奏。', 'drama', 'creative');
     """)
+    _migrate_novel_chapters(conn)
     conn.commit()
 
     if restore:

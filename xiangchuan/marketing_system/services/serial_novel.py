@@ -34,7 +34,7 @@ class SerialNovelEngine:
             "FROM novels ORDER BY created_at DESC"
         )
         for r in rows:
-            last = fetch_one("SELECT title FROM novel_chapters WHERE novel_id=? ORDER BY chapter_no DESC LIMIT 1", (r["id"],))
+            last = fetch_one("SELECT title FROM novel_chapters WHERE novel_id=? ORDER BY chapter_number DESC LIMIT 1", (r["id"],))
             r["latest_chapter_title"] = last["title"] if last else ""
         return rows
 
@@ -43,7 +43,7 @@ class SerialNovelEngine:
         if not n:
             return None
         chapters = fetch(
-            "SELECT id, novel_id, chapter_no, title, created_at FROM novel_chapters WHERE novel_id=? ORDER BY chapter_no ASC",
+            "SELECT id, novel_id, chapter_number AS chapter_no, title, created_at FROM novel_chapters WHERE novel_id=? ORDER BY chapter_number ASC",
             (novel_id,),
         )
         n["chapters"] = chapters
@@ -51,21 +51,21 @@ class SerialNovelEngine:
 
     def get_chapter(self, novel_id: int, chapter_no: int):
         return fetch_one(
-            "SELECT * FROM novel_chapters WHERE novel_id=? AND chapter_no=?",
+            "SELECT * FROM novel_chapters WHERE novel_id=? AND chapter_number=?",
             (novel_id, chapter_no),
         )
 
     def _last_summary(self, novel_id: int, chapter_no: int, tail: int = 3) -> str:
         """取該章之前最多 tail 章做摘要。抓全文最後 800 字維持連續性。"""
         rows = fetch(
-            "SELECT chapter_no, title, body FROM novel_chapters WHERE novel_id=? AND chapter_no<? ORDER BY chapter_no DESC LIMIT ?",
+            "SELECT chapter_number, title, content FROM novel_chapters WHERE novel_id=? AND chapter_number<? ORDER BY chapter_number DESC LIMIT ?",
             (novel_id, chapter_no, tail),
         )
         parts = []
         for r in reversed(rows):
-            body = (r["body"] or "")
+            body = (r["content"] or "")
             snippet = body[-700:] if len(body) > 700 else body
-            parts.append(f"第{r['chapter_no']}章《{r['title']}》結尾：{snippet}")
+            parts.append(f"第{r['chapter_number']}章《{r['title']}》結尾：{snippet}")
         return "\n\n".join(parts)
 
     def continue_novel(self, novel: dict, chapter_no: int):
@@ -144,7 +144,7 @@ class SerialNovelEngine:
 
         # 每日限速：只有在當天還沒產出新章時才續寫（chapter_no 超過既有章節數）
         last_row = fetch_one(
-            "SELECT created_at FROM novel_chapters WHERE novel_id=? ORDER BY chapter_no DESC LIMIT 1",
+            "SELECT created_at FROM novel_chapters WHERE novel_id=? ORDER BY chapter_number DESC LIMIT 1",
             (novel_id,),
         )
         now = time.strftime("%Y-%m-%d")
@@ -156,7 +156,7 @@ class SerialNovelEngine:
         title, body = self.continue_novel(novel, chapter_no)
         try:
             execute(
-                "INSERT INTO novel_chapters (novel_id, chapter_no, title, body) VALUES (?,?,?,?)",
+                "INSERT INTO novel_chapters (novel_id, chapter_number, title, content) VALUES (?,?,?,?)",
                 (novel_id, chapter_no, title, body),
             )
             execute(

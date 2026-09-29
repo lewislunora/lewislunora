@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>網路測速</title>
+<style>
+  :root {
+    --bg: #0b1220;
+    --card: rgba(255,255,255,0.05);
+    --border: rgba(255,255,255,0.10);
+    --text: #e8eef7;
+    --muted: #8b98ab;
+    --accent: #3b82f6;
+    --green: #22c55e;
+    --yellow: #eab308;
+    --orange: #f97316;
+    --red: #ef4444;
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang TC", "Microsoft JhengHei", sans-serif;
+    background: radial-gradient(1200px 800px at 80% -10%, #16233d 0%, var(--bg) 55%);
+    color: var(--text);
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+  }
+  .card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 40px 44px;
+    width: 100%;
+    max-width: 640px;
+    backdrop-filter: blur(12px);
+    box-shadow: 0 20px 60px rgba(0,0,0,0.45);
+  }
+  h1 { font-size: 22px; font-weight: 700; letter-spacing: 0.5px; }
+  .sub { color: var(--muted); font-size: 13px; margin-top: 6px; }
+  .meter {
+    margin: 28px 0 8px;
+    padding: 24px;
+    border-radius: 16px;
+    background: rgba(0,0,0,0.25);
+    border: 1px solid var(--border);
+    text-align: center;
+  }
+  .phase { font-size: 13px; color: var(--muted); letter-spacing: 2px; margin-bottom: 14px; }
+  .big {
+    font-size: 52px;
+    font-weight: 800;
+    line-height: 1;
+    font-variant-numeric: tabular-nums;
+  }
+  .unit { font-size: 16px; color: var(--muted); font-weight: 500; }
+  .bar-wrap { height: 8px; border-radius: 4px; background: rgba(255,255,255,0.08); margin: 20px 0 6px; overflow: hidden; }
+  .bar { height: 100%; width: 0%; border-radius: 4px; background: linear-gradient(90deg, var(--accent), #60a5fa); transition: width 0.25s ease; }
+  .stats {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+    margin: 24px 0;
+  }
+  .stat {
+    padding: 16px 12px;
+    border-radius: 14px;
+    background: rgba(0,0,0,0.2);
+    border: 1px solid var(--border);
+    text-align: center;
+  }
+  .stat .label { font-size: 12px; color: var(--muted); }
+  .stat .value { font-size: 22px; font-weight: 700; margin-top: 6px; font-variant-numeric: tabular-nums; }
+  .stat .extra { font-size: 12px; color: var(--muted); margin-top: 3px; }
+  button {
+    width: 100%;
+    padding: 15px;
+    border: none;
+    border-radius: 12px;
+    font-size: 16px;
+    font-weight: 700;
+    color: #fff;
+    background: linear-gradient(135deg, #2563eb, #3b82f6);
+    cursor: pointer;
+    transition: transform 0.1s ease, opacity 0.2s;
+  }
+  button:hover { opacity: 0.92; }
+  button:active { transform: scale(0.98); }
+  button:disabled { opacity: 0.45; cursor: not-allowed; }
+  .grade { margin-top: 16px; text-align: center; font-size: 14px; color: var(--muted); }
+  .grade strong { font-size: 16px; }
+  .note { margin-top: 14px; text-align:center; font-size: 12px; color: var(--muted); line-height: 1.6; }
+  @media (max-width: 480px) {
+    .card { padding: 28px 20px; }
+    .big { font-size: 40px; }
+    .stats { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+  <div class="card">
+    <h1>⚡ 網路測速</h1>
+    <div class="sub">透過 Cloudflare 全球節點測試 · 建議使用有線網路</div>
+
+    <div class="meter">
+      <div class="phase" id="phase">準備就緒</div>
+      <div class="big"><span id="speed">0</span><span class="unit"> Mbps</span></div>
+      <div class="bar-wrap"><div class="bar" id="bar"></div></div>
+      <div id="detail" class="sub" style="margin-top:10px"></div>
+    </div>
+
+    <div class="stats">
+      <div class="stat">
+        <div class="label">延遲 (Ping)</div>
+        <div class="value" id="ping">–</div>
+        <div class="extra" id="jitter">–</div>
+      </div>
+      <div class="stat">
+        <div class="label">下載</div>
+        <div class="value" id="down">–</div>
+        <div class="extra" id="downJ">–</div>
+      </div>
+      <div class="stat">
+        <div class="label">上傳</div>
+        <div class="value" id="up">–</div>
+        <div class="extra" id="upJ">–</div>
+      </div>
+    </div>
+
+    <button id="go">開始測速</button>
+    <div class="grade" id="grade"></div>
+    <div class="note">測速約需 10~15 秒。為求準確：關閉其他下載/串流，並建議接上實體網路線。</div>
+  </div>
+
+<script>
+const $ = (id) => document.getElementById(id);
+const CF_DOWN = (n) => `https://speed.cloudflare.com/__down?bytes=${n}`;
+const CF_UP = "https://speed.cloudflare.com/__up";
+
+let running = false;
+
+const speedColor = (mbps) => {
+  if (mbps >= 500)  return "var(--green)";
+  if (mbps >= 200)  return "var(--accent)";
+  if (mbps >= 100)  return "var(--yellow)";
+  if (mbps >= 30)   return "var(--orange)";
+  return "var(--red)";
+};
+
+const gradeFor = (mbps) => {
+  if (mbps >= 900)  return "🏆 旗艦等級 (接近 1G)";
+  if (mbps >= 500)  return "🥇 極速 (Gigabit Wi-Fi)";
+  if (mbps >= 200)  return "🥈 很快 (光纖)";
+  if (mbps >= 100)  return "🥉 良好 (光纖入門)";
+  if (mbps >= 30)   return "⚠️ 普通 (適合日常瀏覽)";
+  return "❌ 偏慢，建議檢查網路";
+};
+
+const formatMbps = (n) => (n >= 100 ? n.toFixed(0) : n.toFixed(1));
+
+async function pingTest() {
+  const times = [];
+  for (let i = 0; i < 6; i++) {
+    const t0 = performance.now();
+    try { await fetch(CF_DOWN(1024), { cache: "no-store", mode: "cors" }); } catch (e) {}
+    times.push(performance.now() - t0);
+  }
+  times.sort((a, b) => a - b);
+  const best = times.slice(0, 4);
+  const avg = best.reduce((a, b) => a + b, 0) / best.length;
+  const jitter = best.reduce((a, b) => a + Math.abs(b - avg), 0) / best.length;
+  return { ping: avg, jitter };
+}
+
+async function downloadTest() {
+  const CONCURRENCY = 4;
+  const CHUNK = 25000000; // 25 MB per stream
+  let total = 0;
+  const t0 = performance.now();
+  const last = { bytes: 0, time: t0 };
+
+  const worker = async () => {
+    while (performance.now() - t0 < 6000) {
+      const resp = await fetch(CF_DOWN(CHUNK), { cache: "no-store" });
+      const reader = resp.body.getReader();
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+        total += value.length;
+      }
+    }
+  };
+
+  const pool = Array.from({ length: CONCURRENCY }, worker);
+  await Promise.all(pool);
+  const elapsed = (performance.now() - t0) / 1000;
+  const mbps = (total * 8) / elapsed / 1e6;
+  return mbps;
+}
+
+async function uploadTest() {
+  const CONCURRENCY = 4;
+  const CHUNK = 1024 * 1024 * 5; // 5 MB per request
+  const payload = new Uint8Array(CHUNK).fill(0x41);
+  const blob = new Blob([payload]);
+  const t0 = performance.now();
+  let total = 0;
+
+  const worker = async () => {
+    while (performance.now() - t0 < 4000) {
+      try {
+        const resp = await fetch(CF_UP, {
+          method: "POST",
+          mode: "cors",
+          cache: "no-store",
+          headers: { "Content-Type": "application/octet-stream" },
+          body: blob,
+        });
+        if (resp.ok) total += CHUNK;
+      } catch (e) {}
+    }
+  };
+
+  const pool = Array.from({ length: CONCURRENCY }, worker);
+  await Promise.all(pool);
+  const elapsed = (performance.now() - t0) / 1000;
+  const mbps = (total * 8) / elapsed / 1e6;
+  return mbps;
+}
+
+async function runTest() {
+  if (running) return;
+  running = true;
+  $("go").disabled = true;
+  $("go").textContent = "測速中…";
+  $("grade").innerHTML = "";
+  $("ping").textContent = "–";
+  $("jitter").textContent = "";
+  $("down").textContent = "–";
+  $("downJ").textContent = "";
+  $("up").textContent = "–";
+  $("upJ").textContent = "";
+
+  try {
+    // Ping
+    $("phase").textContent = "測試延遲中…";
+    $("bar").style.background = "linear-gradient(90deg, var(--accent), #60a5fa)";
+    $("bar").style.width = "10%";
+    const { ping, jitter } = await pingTest();
+    $("ping").textContent = `${ping.toFixed(0)} ms`;
+    $("jitter").textContent = `jitter ${jitter.toFixed(1)} ms`;
+    $("bar").style.width = "25%";
+
+    // Download
+    $("phase").textContent = "下載測試中…";
+    $("speed").textContent = "0";
+    $("bar").style.background = "linear-gradient(90deg, #2563eb, #60a5fa)";
+    const down = await downloadTest();
+    $("down").textContent = `${formatMbps(down)} Mbps`;
+    $("downJ").textContent = "4 線程並行";
+    $("speed").textContent = formatMbps(down);
+    $("speed").style.color = speedColor(down);
+    $("bar").style.width = "60%";
+    $("detail").textContent = `下載 ${formatMbps(down)} Mbps`;
+
+    // Upload
+    $("phase").textContent = "上傳測試中…";
+    const up = await uploadTest();
+    $("up").textContent = `${formatMbps(up)} Mbps`;
+    $("upJ").textContent = "4 線程並行";
+    $("detail").textContent = `下載 ${formatMbps(down)} Mbps · 上傳 ${formatMbps(up)} Mbps`;
+    $("bar").style.width = "100%";
+    $("bar").style.background = "linear-gradient(90deg, var(--green), #4ade80)";
+    $("phase").textContent = "測試完成";
+
+    $("grade").innerHTML = `下載評級：<strong>${gradeFor(down)}</strong>`;
+  } catch (e) {
+    $("phase").textContent = "測試失敗";
+    $("detail").textContent = "發生錯誤，請檢查網路連線後重試";
+  } finally {
+    running = false;
+    $("go").disabled = false;
+    $("go").textContent = "重新測速";
+  }
+}
+
+$("go").addEventListener("click", runTest);
+</script>
+</body>
+</html>
