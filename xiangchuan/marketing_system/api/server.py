@@ -254,6 +254,7 @@ def status():
         "database_type": "sqlite",
         "scheduler": scheduler.get_status_summary(),
         "platforms": {k: (k in scheduler.connectors) for k in PLATFORMS},
+        "build_fingerprint": "novel-fix-2026-09-29-a",
     }
 
 
