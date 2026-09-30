@@ -109,7 +109,7 @@ def generate_seo_article(skip_existing: bool = True) -> dict | None:
     except Exception as e:
         logger.error(f"GROQ SEO article failed: {e}")
         return None
-    if "<" not in body or len(body) < 200:
+    if not body or len(body) < 200:
         return None
 
     title = body.splitlines()[0].lstrip("# ").strip()[:50] or topic
