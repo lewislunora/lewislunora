@@ -106,10 +106,14 @@ class SerialNovelEngine:
                 max_tokens=2400,
             )
             body = (resp.choices[0].message.content or "").strip()
+            if not body:
+                msg = resp.choices[0].message
+                extra = getattr(msg, "reasoning_content", None) or getattr(msg, "content", "") or ""
+                return "（續）", f"⚠️ [AI 空回傳] reasoning={str(extra)[:400]}\n"
             return self._extract_title(body), self._strip_title(body)
         except Exception as e:
             logger.error(f"GROQ novel continue failed: {e}")
-            return "第N章", f"⚠️ AI 續寫失敗（{e}），請稍後再試。"
+            return "第N章", f"⚠️ [AI 診斷] {type(e).__name__}: {e}\n"
 
     def _extract_title(self, body: str):
         line = body.splitlines()[0].strip()[:40]
@@ -137,11 +141,17 @@ class SerialNovelEngine:
 
         existing = self.get_chapter(novel_id, chapter_no)
         if existing:
-            # 滯留計數自癒：章節存在但 novels.chapter_count 停滯時，同步回去避免卡死
-            if chapter_no > novel["chapter_count"]:
-                execute("UPDATE novels SET chapter_count=? WHERE id=?", [chapter_no, novel_id])
-                logger.info(f"heal novel {novel_id} chapter_count -> {chapter_no}")
-            return existing, False
+            _c = existing.get("content") or ""
+            if not _c.strip() or _c.lstrip().startswith("⚠"):
+                # 壞章/空章/診斷殘章：刪掉重寫，不留卡點
+                execute("DELETE FROM novel_chapters WHERE id=?", [existing["id"]])
+                existing = None
+            else:
+                # 滯留計數自癒：章節存在但 novels.chapter_count 停滯時，同步回去避免卡死
+                if chapter_no > novel["chapter_count"]:
+                    execute("UPDATE novels SET chapter_count=? WHERE id=?", [chapter_no, novel_id])
+                    logger.info(f"heal novel {novel_id} chapter_count -> {chapter_no}")
+                return existing, False
 
         if not self.is_available():
             return None, False
