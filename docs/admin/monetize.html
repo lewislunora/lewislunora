@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>變現設定 | 翔川 Neo Admin</title>
+<meta name="description" content="聯盟連結與斗內收款方式後台編輯，存檔即生效。">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Noto Sans TC",system-ui,sans-serif;background:#0a0e27;color:#e6e6e6;min-height:100vh;padding:2rem}
+.wrap{max-width:780px;margin:0 auto}
+h1{font-size:1.5rem;color:#fff;margin-bottom:.3rem}
+.sub{color:rgba(255,255,255,.45);font-size:.9rem;margin-bottom:1.6rem}
+.card{background:linear-gradient(160deg,rgba(255,255,255,.05),rgba(255,255,255,.015));border:1px solid rgba(0,212,255,.14);border-radius:14px;padding:1.4rem;margin-bottom:1.2rem}
+.card h2{font-size:1.02rem;color:#fff;margin-bottom:.5rem;display:flex;align-items:center;gap:.5rem;flex-wrap:wrap}
+.desc{color:rgba(255,255,255,.4);font-size:.82rem;margin-bottom:.7rem}
+label{display:block;font-size:.8rem;color:rgba(255,255,255,.55);margin:.6rem 0 .25rem}
+input,textarea{background:rgba(255,255,255,.06);border:1px solid rgba(0,212,255,.3);color:#fff;border-radius:9px;padding:.6rem .8rem;font-size:.88rem;width:100%}
+textarea{resize:vertical;min-height:90px;line-height:1.7}
+input::placeholder,textarea::placeholder{color:rgba(255,255,255,.3)}
+.hint{font-size:.75rem;color:rgba(255,255,255,.35);margin-top:.2rem}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+@media(max-width:600px){.row2{grid-template-columns:1fr}}
+.btn{display:inline-block;background:linear-gradient(135deg,#00d4ff,#ff7b9c);color:#0a0e27;font-weight:800;border:none;border-radius:10px;padding:.55rem 1.2rem;cursor:pointer;font-size:.86rem;margin-top:.7rem}
+.btn:disabled{opacity:.4;cursor:not-allowed}
+.msg{font-size:.82rem;margin-top:.5rem;min-height:1.2em}
+.ok{color:#7dffb0}.err{color:#ff8a8a}
+.back{display:inline-block;color:#00d4ff;text-decoration:none;font-size:.85rem;margin-bottom:1rem}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <a class="back" href="panel.html">← 回管理後台</a>
+  <h1>💰 變現設定</h1>
+  <div class="sub">聯盟連結、斗內收款方式與感謝牆。存檔立即生效，頁面會自動讀取。</div>
+
+  <div class="card">
+    <h2>🛠 聯盟連結</h2>
+    <div class="desc">在對應平台申請聯盟後把專屬網址貼進來（含 ref / tag 參數）。留空＝夥伴頁該卡維持「樣板」狀態。</div>
+
+    <div id="aff-fields"></div>
+  </div>
+
+  <div class="card">
+    <h2>☕ 斗內收款</h2>
+    <div class="desc">填任一收款連結（PayPal.me / 綠界 / LINE Pay 連結）。感謝牆每行一筆：<b>名字 · 金額 · 日期</b>。</div>
+    <div class="row2">
+      <div>
+        <label>PayPal.me 連結</label>
+        <input id="paypal" placeholder="https://paypal.me/你的帳號">
+        <div class="hint">例：https://paypal.me/lewislunora</div>
+      </div>
+      <div>
+        <label>綠界 / LINE Pay 連結</label>
+        <input id="gateway" placeholder="https://payment.ecpay.com.tw/...">
+        <div class="hint">貼上你的收款小舖或捐款連結</div>
+      </div>
+    </div>
+    <label>贊助感謝牆（每行一筆）</label>
+    <textarea id="thanks" placeholder="匿名朋友 · $300 · 2026-09"></textarea>
+    <div class="hint">支援 UTF-8，一筆一行；留空則不顯示該區。</div>
+  </div>
+
+  <button class="btn" id="save">💾 儲存全部</button>
+  <div class="msg" id="msg"></div>
+</div>
+
+<script>
+const API = '';
+const $ = id => document.getElementById(id);
+const AFF = [
+  ['vultr','🖥 Vultr 雲端主機'],
+  ['do','🐳 DigitalOcean'],
+  ['cloudflare','☁️ Cloudflare'],
+  ['namecheap','🌐 Namecheap 網域'],
+  ['uptimerobot','🛰 UptimeRobot 監控'],
+  ['porkbun','🐷 Porkbun 網域'],
+];
+
+(async function checkAdmin(){
+  try{
+    const r = await fetch(API + '/api/admin/check', {credentials:'include'});
+    const d = await r.json();
+    if(!d.admin){ alert('需要管理員權限'); location.href = '../login.html'; return; }
+  }catch(e){ location.href = '../login.html'; return; }
+  await load();
+})();
+
+async function api(path, opts={}){
+  const r = await fetch(API + path, {headers:{'Content-Type':'application/json', ...opts.headers}, credentials:'include', ...opts});
+  if(!r.ok){ const e = await r.json().catch(()=>({})); throw new Error(e.detail || e.message || r.statusText); }
+  return r.json();
+}
+
+async function load(){
+  const d = await api('/api/site-settings/monetize').catch(()=>({}));
+  const aff = d.affiliate || {};
+  $('aff-fields').innerHTML = AFF.map(([id,label])=>
+    `<label>${label}</label>
+     <input data-aff="${id}" value="${esc(aff[id]||'')}" placeholder="https://...（該平台聯盟網址）">
+     <div class="hint">填入後夥伴頁該卡片會自動掛上此連結。</div>`).join('');
+  $('paypal').value = esc((d.support||{}).paypal||'');
+  $('gateway').value = esc((d.support||{}).gateway||'');
+  $('thanks').value = esc(((d.support||{}).thanks||[]).join('\n'));
+}
+
+function esc(s){
+  return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/"/g,'&quot;');
+}
+
+$('save').onclick = async function(){
+  const b = this; b.disabled = true; $('msg').textContent = '';
+  const affiliate = {};
+  document.querySelectorAll('[data-aff]').forEach(el=>{
+    const v = el.value.trim(); if(v) affiliate[el.dataset.aff] = v;
+  });
+  const thanks = $('thanks').value.split('\n').map(x=>x.trim()).filter(Boolean);
+  const payload = {
+    affiliate,
+    support: { paypal: $('paypal').value.trim(), gateway: $('gateway').value.trim(), thanks },
+  };
+  try{
+    await api('/api/site-settings', {method:'PUT', body:JSON.stringify({key:'monetize', value:JSON.stringify(payload)})});
+    $('msg').className = 'ok'; $('msg').textContent = '✅ 已儲存，頁面立即生效';
+  }catch(e){ $('msg').className = 'err'; $('msg').textContent = '❌ '+e.message; }
+  b.disabled = false;
+};
+</script>
+</body>
+</html>

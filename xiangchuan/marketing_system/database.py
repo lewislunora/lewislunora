@@ -21,6 +21,7 @@ DB_TABLES = [
     "incoming_messages", "pages",
     "novels", "novel_chapters",
     "seo_articles",
+    "site_settings",
 ]
 
 
@@ -431,6 +432,12 @@ CREATE TABLE IF NOT EXISTS social_identities (
             error TEXT DEFAULT '',
             created_at TEXT DEFAULT (datetime('now')),
             posted_at TEXT DEFAULT NULL
+        );
+
+        CREATE TABLE IF NOT EXISTS site_settings (
+            key TEXT PRIMARY KEY,
+            value TEXT DEFAULT '',
+            updated_at TEXT DEFAULT (datetime('now'))
         );
 
         CREATE TABLE IF NOT EXISTS comments (

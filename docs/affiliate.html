@@ -40,42 +40,42 @@
 </div>
 
 <div class="grid">
-  <a class="card" href="#" data-ref="發光字：Vultr（請貼上你的聯盟網址）" target="_blank" rel="sponsored noopener">
+  <a class="card" href="#" data-program="vultr" target="_blank" rel="sponsored noopener">
     <div class="tag">雲端主機 · 我們每台機器都跑在它上面</div>
     <h3><span class="ico">🖥</span>Vultr</h3>
     <p>SSD VPS / 東京大阪低延遲，維運接案與網站主機首選。常有三個月免費試用碼。</p>
     <div class="go">領取試用額度 →</div>
   </a>
 
-  <a class="card" href="#" data-ref="發光字：DigitalOcean（請貼上你的聯盟網址）" target="_blank" rel="sponsored noopener">
+  <a class="card" href="#" data-program="do" target="_blank" rel="sponsored noopener">
     <div class="tag">雲端主機 · App Platform 一站佈署</div>
     <h3><span class="ico">🐳</span>DigitalOcean</h3>
     <p>Droplet 與 App Platform，文件齊全，適合把專案從免費層搬上線時升級。</p>
     <div class="go">拿 $200 新戶額度 →</div>
   </a>
 
-  <a class="card" href="#" data-ref="發光字：Cloudflare（請貼上你的聯盟網址）" target="_blank" rel="sponsored noopener">
+  <a class="card" href="#" data-program="cloudflare" target="_blank" rel="sponsored noopener">
     <div class="tag">CDN / DNS / 抗攻擊 · 本網站也在其後</div>
     <h3><span class="ico">☁️</span>Cloudflare</h3>
     <p>免費 CDN 就夠大部分網站用了；進階版（Pro）才有聯盟回饋。</p>
     <div class="go">開始使用 →</div>
   </a>
 
-  <a class="card" href="#" data-ref="發光字：Namecheap（請貼上你的聯盟網址）" target="_blank" rel="sponsored noopener">
+  <a class="card" href="#" data-program="namecheap" target="_blank" rel="sponsored noopener">
     <div class="tag">網域註冊 · 便宜且附免費 WHOIS 隱私</div>
     <h3><span class="ico">🌐</span>Namecheap</h3>
     <p>買網域、SSL、郵箱一站搞定，年費低，續約價誠實。</p>
     <div class="go">查詢你的網域 →</div>
   </a>
 
-  <a class="card" href="#" data-ref="發光字：UptimeRobot（請貼上你的聯盟網址）" target="_blank" rel="sponsored noopener">
+  <a class="card" href="#" data-program="uptimerobot" target="_blank" rel="sponsored noopener">
     <div class="tag">網站監控 · 每天幫你盯 24 小時</div>
     <h3><span class="ico">🛰</span>UptimeRobot</h3>
     <p>免費 50 個監控端點，掛掉 30 秒內通知你——比告警郵件自己看還省心。</p>
     <div class="go">免費監控 →</div>
   </a>
 
-  <a class="card" href="#" data-ref="發光字：Porkbun（請貼上你的聯盟網址）" target="_blank" rel="sponsored noopener">
+  <a class="card" href="#" data-program="porkbun" target="_blank" rel="sponsored noopener">
     <div class="tag">網域註冊 · 介面乾淨、客服快</div>
     <h3><span class="ico">🐷</span>Porkbun</h3>
     <p>平價網域＋免費 SSL，個人接案常用來幫客戶買域名。</p>
@@ -86,7 +86,24 @@
 <div class="foot">
   想用你管線上的好工具換更多內容？歡迎 <a href="mailto:lewislunora@gmail.com?subject=夥伴合作">寫信提案</a>。
   <br>© 2026 翔川 Neo｜曜科技 · 隱私 <a href="/privacy.html">privacy</a>
-  <br><i>備註：卡片連結現為樣板，站長填上聯盟網址後自動生效；未填之前點擊會留在原頁。</i>
+  <br><i id="placeholder-note">備註：卡片連結現為樣板，站長填上聯盟網址後自動生效。</i>
 </div>
 </body>
 </html>
+<script>
+(function(){
+  const noteEl = document.getElementById('placeholder-note');
+  fetch('/api/site-settings/monetize', {credentials:'include'})
+    .then(function(r){ return r.ok ? r.json() : {}; })
+    .then(function(d){
+      const aff = (d && d.affiliate) || {};
+      let filled = 0;
+      document.querySelectorAll('[data-program]').forEach(function(a){
+        const url = aff[a.dataset.program];
+        if(url){ a.setAttribute('href', url); filled++; }
+      });
+      if(filled){ noteEl.textContent = '🎉 本站與以下工具為合作關係：你透過連結購買、本站獲得小額回饋，價格不變。'; }
+    })
+    .catch(function(){});
+})();
+</script>

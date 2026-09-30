@@ -8,3 +8,5 @@ venv/
 *.db
 xiangchuan/marketing_system/data/test_backup.json
 xiangchuan/work/
+
+xiangchuan/marketing_system/data/backup_*.json

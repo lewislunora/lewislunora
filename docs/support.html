@@ -48,10 +48,10 @@
     <div class="amount" onclick="pick(this)"><b>$1000</b><span>一個月咖啡金</span></div>
   </div>
   <div class="payrow">
-    <a class="btn" href="#" data-pay>PayPal / 綠界（站長填入收款連結後生效）</a>
+    <a class="btn" id="paybtn" href="#" data-pay>💳 前往付款（站長設定中）</a>
     <a class="btn" href="mailto:lewislunora@gmail.com?subject=想支持翔川" data-other>直接用 Email 聯絡我</a>
   </div>
-  <div class="note">💡 收款方式設定中：站長把 PayPal.me／綠界／Line Pay 連結貼進本頁後，按鈕會自動變可點。</div>
+  <div class="note" id="pay-note">💡 收款方式設定中：站長把 PayPal.me／綠界／Line Pay 連結貼進<a href="/admin/monetize.html">後台</a>後，按鈕即自動變可點。</div>
 </div>
 
 <div class="panel">
@@ -65,12 +65,8 @@
 
 <div class="panel">
   <h2>🙏 贊助感謝</h2>
-  <small>站長手動更新區（暫時為示範前三筆）。</small>
-  <div class="thanks">
-    <span>匿名朋友 · $300 · 2026-09</span>
-    <span>阿 K · $100 · 2026-09</span>
-    <span>SolarWinds 讀者 · $1000 · 2026-09</span>
-  </div>
+  <small>最近一位默默支持翔川的你（後台可編輯）。</small>
+  <div class="thanks" id="thanks-list"><span style="opacity:.5">等待第一杯咖啡…</span></div>
 </div>
 
 <div class="panel join">
@@ -87,9 +83,33 @@
     document.querySelectorAll('.amount').forEach(x=>x.classList.remove('sel'));
     el.classList.add('sel');
   }
-  document.querySelectorAll('[data-pay]').forEach(function(a){
-    if(a.getAttribute('href')==='#'){ a.addEventListener('click',function(e){ if(a.dataset.flagflag){return;} e.preventDefault(); }); }
-  });
+  fetch('/api/site-settings/monetize', {credentials:'include'})
+    .then(function(r){ return r.ok ? r.json() : {}; })
+    .then(function(d){
+      const s = (d && d.support) || {};
+      const btn = document.getElementById('paybtn');
+      const url = s.gateway || s.paypal;
+      if(url){ btn.setAttribute('href', url); btn.textContent = '💳 前往付款'; btn.classList.remove('dull'); }
+      if(s.gateway && s.paypal){
+        btn.textContent = '💳 前往付款（綠界）';
+      }
+      if(s.paypal){
+        const p = document.createElement('a');
+        p.className = 'btn';
+        p.href = s.paypal;
+        p.rel = 'noopener';
+        p.textContent = 'PayPal';
+        btn.after(p);
+      }
+      if(url){ document.getElementById('pay-note').style.display = 'none'; }
+      if(s.thanks && s.thanks.length){
+        document.getElementById('thanks-list').innerHTML =
+          s.thanks.map(function(x){
+            return '<span>' + (x||'').replace(/</g,'&lt;') + '</span>';
+          }).join('');
+      }
+    })
+    .catch(function(){});
 </script>
 </body>
 </html>

@@ -1405,6 +1405,15 @@ async def serve_admin_panel():
     raise HTTPException(404, "Not found")
 
 
+@app.get("/admin/monetize")
+@app.get("/admin/monetize/")
+async def serve_admin_monetize():
+    fp = DOCS_DIR / "admin" / "monetize.html"
+    if fp.exists():
+        return HTMLResponse(fp.read_text(encoding="utf-8"))
+    raise HTTPException(404, "Not found")
+
+
 @app.get("/student")
 @app.get("/student/")
 async def serve_student():
@@ -2813,6 +2822,35 @@ def admin_check(request: Request):
         return {"admin": False}
     full = fetch_one("SELECT is_admin FROM users WHERE id=?", (u["id"],))
     return {"admin": bool(full and full.get("is_admin")), "user": _user_dict(u)}
+
+
+class SiteSettingsBody(BaseModel):
+    key: str
+    value: str
+
+
+@app.get("/api/site-settings/{key}")
+def get_site_settings(key: str):
+    row = fetch_one("SELECT value FROM site_settings WHERE key=?", [key])
+    if not row or not row.get("value"):
+        return {}
+    try:
+        return json.loads(row["value"])
+    except Exception:
+        return {"_raw": row["value"]}
+
+
+@app.put("/api/site-settings")
+def put_site_settings(request: Request, body: SiteSettingsBody):
+    _require_admin(request)
+    if not body.key.strip():
+        raise HTTPException(400, "key required")
+    execute(
+        "INSERT INTO site_settings(key, value, updated_at) VALUES(?, ?, datetime('now')) "
+        "ON CONFLICT(key) DO UPDATE SET value=excluded.value, updated_at=excluded.updated_at",
+        [body.key.strip(), body.value],
+    )
+    return {"status": "ok", "key": body.key.strip()}
 
 
 @app.post("/api/admin/set-admin")
