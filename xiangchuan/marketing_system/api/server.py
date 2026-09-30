@@ -1486,9 +1486,12 @@ async def serve_thought(slug: str):
  .footer{{margin-top:3em;padding-top:1em;border-top:1px solid #eee;font-size:.8rem;opacity:.6}}
  .cta{{background:#eef2ff;border-radius:12px;padding:14px 18px;margin-top:2em;font-size:.95rem}}
  .cta a{{color:#4338ca;font-weight:600}}
+ .aff{{background:#fffbeb;border:1px solid #fde68a;border-radius:10px;padding:10px 14px;font-size:.78rem;color:#78350f;margin-top:1.4em}}
+ .aff a{{color:#b45309;font-weight:600}}
 </style></head><body>
-<nav><a href="/">← 首頁</a><a href="/thoughts/">🧰 職人筆記</a><a href="/contacts.html">諮詢</a></nav>
+<nav><a href="/">← 首頁</a><a href="/thoughts/">🧰 職人筆記</a><a href="/affiliate.html">🛠 夥伴</a><a href="/support.html">☕ 支持</a><a href="/contacts.html">諮詢</a></nav>
 <article>{a['content_html']}</article>
+<div class="aff">⚡ 本文若有<b>聯盟連結</b>（工具推薦）——你一樣價錢、我拿小額回饋，透明說明見<a href="/affiliate.html">夥伴計畫</a>。</div>
 <div class="footer">翔川 Neo｜曜科技 · 由 AI 協助整理的實戰筆記 · 若內容有誤歡迎指正</div>
 <div class="cta">💡 這類工程疑難，歡迎<a href="/contacts.html">找我聊聊</a>——維運顧問與 AI 客服方案。</div>
 </body></html>""")
@@ -1510,6 +1513,7 @@ def serve_sitemap():
         ("/proposals/ops-managed.html", "0.9"), ("/proposals/ai-customer-service.html", "0.9"),
         ("/index.html", "0.8"), ("/ai-story.html", "0.7"), ("/ai-chat.html", "0.7"),
         ("/thoughts/", "0.8"), ("/guides/", "0.7"), ("/community/", "0.7"),
+        ("/affiliate.html", "0.6"), ("/support.html", "0.6"),
     ]
     urls = "".join(
         f"<url><loc>{base}{p}</loc><priority>{pr}</priority></url>"
