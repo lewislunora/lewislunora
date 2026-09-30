@@ -39,6 +39,49 @@ def _backup_exists():
 RENAMED_COLS = {"chapter_no": "chapter_number", "body": "content"}
 
 
+CONTENT_LIKE_TABLES = (
+    "feed_posts", "seo_articles", "novels", "novel_chapters",
+    "community_threads", "community_replies", "kb_pending", "contacts",
+)
+
+
+def _content_score(conn) -> int:
+    """內容型資料表的 row 總數；用於判斷「現在這個 DB 值不值得留/寫」。"""
+    total = 0
+    for t in CONTENT_LIKE_TABLES:
+        try:
+            total += conn.execute(f"SELECT COUNT(*) FROM {t}").fetchone()[0]
+        except Exception:
+            pass
+    return total
+
+
+def _backup_content_score() -> int:
+    try:
+        data = json.loads(DATABASE_BACKUP_PATH.read_text("utf-8"))
+    except Exception:
+        return 0
+    return sum(len(data.get(t, [])) for t in CONTENT_LIKE_TABLES)
+
+
+def _backup_has_more_content(conn) -> bool:
+    """backup 是否在任一內容表比現 DB 多？任一 true 就表示現 DB 缺內容，應守備份/回填。"""
+    try:
+        data = json.loads(DATABASE_BACKUP_PATH.read_text("utf-8"))
+    except Exception:
+        return False
+    for t in CONTENT_LIKE_TABLES:
+        bak = len(data.get(t, []) or [])
+        cur = 0
+        try:
+            cur = conn.execute(f"SELECT COUNT(*) FROM {t}").fetchone()[0]
+        except Exception:
+            pass
+        if bak > cur:
+            return True
+    return False
+
+
 def _migrate_novel_chapters(conn):
     """novel_chapters 曾以 chapter_no/body 命名欄位；統一為 chapter_number/content。
 
@@ -69,16 +112,27 @@ def _restore_from_backup():
         except sqlite3.OperationalError as e:
             logger.warning(f"Skipping table {table} during restore: {e}")
             continue
-        cols = [RENAMED_COLS.get(c, c) for c in (list(rows[0].keys()) if rows else [])]
+        try:
+            table_cols = {r[1] for r in conn.execute(f"PRAGMA table_info({table})").fetchall()}
+        except Exception:
+            continue
+        # 只搬 backup 與現表都有的欄位（避免不同時期 schema 差異直接炸掉整表）
+        raw_cols = list(rows[0].keys())
+        mapped = [RENAMED_COLS.get(c, c) for c in raw_cols]
+        cols = [m for m in mapped if m in table_cols]
         if not cols:
             continue
+        src_idx = {m: raw_cols[i] for i, m in enumerate(mapped)}
         placeholders = ",".join("?" for _ in cols)
         colnames = ",".join(f'"{c}"' for c in cols)
         for row in rows:
-            conn.execute(
-                f"INSERT INTO {table} ({colnames}) VALUES ({placeholders})",
-                [row.get(c) for c in cols],
-            )
+            try:
+                conn.execute(
+                    f"INSERT INTO {table} ({colnames}) VALUES ({placeholders})",
+                    [row.get(src_idx[col]) for col in cols],
+                )
+            except Exception as e:
+                logger.warning(f"restore skip row {table}: {e}")
     conn.commit()
     conn.close()
     logger.info(f"Restored {sum(len(v) for v in data.values())} rows from backup")
@@ -86,6 +140,12 @@ def _restore_from_backup():
 
 def _dump_to_json():
     conn = sqlite3.connect(str(DATABASE_PATH))
+    # 保護：只要 backup 在任一內容表比現 DB 多，就表示現 DB 缺內容
+    # （比如剛 deploy／sleep 後檔案系統重置的新空庫），不得覆寫備份。
+    if _backup_has_more_content(conn):
+        conn.close()
+        logger.info("skip dump: backup holds content missing from current db")
+        return
     conn.row_factory = sqlite3.Row
     data = {}
     for table in DB_TABLES:
@@ -139,9 +199,10 @@ def _try_git_push():
 
 def init_db():
     db_exists = DATABASE_PATH.exists() and DATABASE_PATH.stat().st_size > 100
-    restore = not db_exists and _backup_exists()
-
+    backup_ok = _backup_exists()
     conn = _conn()
+    # 只要 backup 存在且「任一內容表比現 DB 多」，就還原（含檔案被重置後的新空 DB）
+    restore = backup_ok and (not db_exists or _backup_has_more_content(conn))
 
     if restore:
         conn.execute("PRAGMA foreign_keys=OFF")
