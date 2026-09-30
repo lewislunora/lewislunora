@@ -110,7 +110,11 @@ class SerialNovelEngine:
                 msg = resp.choices[0].message
                 extra = getattr(msg, "reasoning_content", None) or getattr(msg, "content", "") or ""
                 return "（續）", f"⚠️ [AI 空回傳] reasoning={str(extra)[:400]}\n"
-            return self._extract_title(body), self._strip_title(body)
+            stripped = self._strip_title(body)
+            if not stripped:
+                # 模型只回單行短字（例如只有標題）：診斷化，避免存下空章
+                return "（續）", f"⚠️ [AI 回傳過短] body={body[:400]!r}\n"
+            return self._extract_title(body), stripped
         except Exception as e:
             logger.error(f"GROQ novel continue failed: {e}")
             return "第N章", f"⚠️ [AI 診斷] {type(e).__name__}: {e}\n"
@@ -178,9 +182,10 @@ class SerialNovelEngine:
                 "INSERT INTO novel_chapters (novel_id, chapter_number, title, content) VALUES (?,?,?,?)",
                 (novel_id, chapter_no, title, body),
             )
+            new_count = max(novel["chapter_count"] or 0, chapter_no)
             execute(
                 "UPDATE novels SET chapter_count=?, next_available_at=datetime('now', '+1 day') WHERE id=?",
-                (chapter_no, novel_id),
+                (new_count, novel_id),
             )
             chap = self.get_chapter(novel_id, chapter_no)
             return chap, True
