@@ -137,6 +137,10 @@ class SerialNovelEngine:
 
         existing = self.get_chapter(novel_id, chapter_no)
         if existing:
+            # 滯留計數自癒：章節存在但 novels.chapter_count 停滯時，同步回去避免卡死
+            if chapter_no > novel["chapter_count"]:
+                execute("UPDATE novels SET chapter_count=? WHERE id=?", [chapter_no, novel_id])
+                logger.info(f"heal novel {novel_id} chapter_count -> {chapter_no}")
             return existing, False
 
         if not self.is_available():
@@ -149,9 +153,14 @@ class SerialNovelEngine:
         )
         now = time.strftime("%Y-%m-%d")
         if last_row and last_row["created_at"] >= now and chapter_no >= novel["chapter_count"] + 1:
-            # 今天已產過新章，直接回最新章
-            cur = self.get_chapter(novel_id, novel["chapter_count"])
-            return cur, False
+            # 今天已產過新章，直接回最新章（並同步滯留計數）
+            latest = fetch_one(
+                "SELECT * FROM novel_chapters WHERE novel_id=? ORDER BY chapter_number DESC LIMIT 1",
+                (novel_id,),
+            )
+            if latest and latest["chapter_number"] != novel["chapter_count"]:
+                execute("UPDATE novels SET chapter_count=? WHERE id=?", [latest["chapter_number"], novel_id])
+            return latest, False
 
         title, body = self.continue_novel(novel, chapter_no)
         try:
@@ -184,3 +193,30 @@ class SerialNovelEngine:
 
 def free_chapter_limit():
     return FREE_CHAPTERS
+
+
+def repair_novel_state():
+    """自癒：清掉「佔位壞章」（AI 失敗留下的空章 / ⚠ 佔位），並把 chapter_count 校正為實際最高章。
+
+    先前某次失敗可能留下 chapter_number=1 的空章卻沒更新 chapter_count，
+    之後引擎每次都撞 UNIQUE 失敗、靜默卡死（如：重生之我在維運部打雜的日子卡 0 章）。
+    每輪 tick 前呼叫，讓狀態永久自癒。
+    """
+    novels = fetch("SELECT id, chapter_count FROM novels")
+    for n in novels:
+        try:
+            execute(
+                "DELETE FROM novel_chapters WHERE novel_id=? "
+                "AND (content IS NULL OR TRIM(content)='' OR content LIKE '⚠%')",
+                [n["id"]],
+            )
+            m = fetch_one(
+                "SELECT MAX(chapter_number) m FROM novel_chapters WHERE novel_id=?",
+                (n["id"],),
+            )
+            cur = (m["m"] or 0) if m else 0
+            if cur != n["chapter_count"]:
+                execute("UPDATE novels SET chapter_count=? WHERE id=?", [cur, n["id"]])
+                logger.info(f"healed novel {n['id']} chapter_count {n['chapter_count']}->{cur}")
+        except Exception:
+            logger.exception(f"repair novel {n.get('id')} failed")

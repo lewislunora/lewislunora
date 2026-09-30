@@ -2446,8 +2446,9 @@ def _register_promo_task():
         if not GROQ_API_KEY:
             return
         try:
-            from ..services.serial_novel import SerialNovelEngine
+            from ..services.serial_novel import SerialNovelEngine, repair_novel_state
             eng = SerialNovelEngine()
+            repair_novel_state()
             novels = fetch("SELECT id FROM novels WHERE status='serializing'")
             for n in novels:
                 try:
