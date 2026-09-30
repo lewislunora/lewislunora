@@ -149,7 +149,7 @@ def get_article(slug: str):
 
 def list_articles(limit: int = 50):
     return fetch(
-        "SELECT id, slug, title, category, summary, view_count, created_at "
+        "SELECT id, slug, title, category, summary, keyword, view_count, created_at "
         "FROM seo_articles ORDER BY id DESC LIMIT ?",
         (limit,),
     )

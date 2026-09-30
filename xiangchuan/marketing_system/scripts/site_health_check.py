@@ -252,8 +252,8 @@ def main():
     print(f"  當天自動產出  : feed +{content['feed_today']}　SEO +{content['seo_today']}")
 
     if not args.fast:
-        ok = sum(1 for s in pageload.values() if s == 200)
-        print("\n【3】頁面健康  {ok}/{len(pageload)} 頁要求通過")
+        _okn = sum(1 for s in pageload.values() if s == 200)
+        print(f"\n【3】頁面健康  {_okn}/{len(pageload)} 頁要求通過")
         bad_shown = 0
         for p, s in pageload.items():
             if s != 200:
