@@ -113,6 +113,19 @@ def notify_owner(event_type: str, data: dict, url: str = ""):
     return results
 
 
+def notify_owner_async(event_type: str, data: dict, url: str = ""):
+    """背景執行 notify_owner，不阻塞 API 回應（SMTP/LINE 慢也可能花 30s+）。"""
+    import threading
+
+    def _run():
+        try:
+            notify_owner(event_type, data, url)
+        except Exception:
+            pass
+
+    threading.Thread(target=_run, daemon=True).start()
+
+
 def _subject_for(event_type: str) -> str:
     return {
         "contact": "🔔 新預約諮詢 - 翔川 Neo",

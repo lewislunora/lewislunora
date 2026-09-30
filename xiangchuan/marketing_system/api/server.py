@@ -34,7 +34,7 @@ from ..config import (
     LINE_CHANNEL_ACCESS_TOKEN, FACEBOOK_PAGE_TOKEN, INSTAGRAM_ACCESS_TOKEN,
 )
 from ..services.email_service import send_contact_email, is_configured as smtp_configured
-from ..services.notification_service import notify_owner, send_telegram_notification
+from ..services.notification_service import notify_owner_async, send_telegram_notification
 from ..services import platform_webhooks
 from ..services.social_auth import (
     is_configured, configured_providers, authorize_url, exchange_and_profile,
@@ -318,7 +318,7 @@ def analytics_summary_endpoint(since: int = 24):
 
 def _notify_contact(data: dict):
     try:
-        notify_owner("contact", data, url="https://lewislunora.onrender.com/")
+        notify_owner_async("contact", data, url="https://lewislunora.onrender.com/")
     except Exception as e:
         logger.error(f"Contact notification failed: {e}")
 
@@ -1637,7 +1637,7 @@ def create_comment(data: CommentCreate):
     )
     row = fetch_one("SELECT * FROM comments WHERE id=?", [cid])
     try:
-        notify_owner("comment", {
+        notify_owner_async("comment", {
             "author_name": data.author_name.strip() or "匿名",
             "content": data.content,
             "page_path": data.page_path,
@@ -1711,7 +1711,7 @@ def create_thread(data: ThreadCreate):
     )
     row = fetch_one("SELECT * FROM community_threads WHERE id=?", [tid])
     try:
-        notify_owner("thread", {
+        notify_owner_async("thread", {
             "title": data.title,
             "content": data.content,
             "author_name": data.author_name.strip() or "匿名",
@@ -1763,7 +1763,7 @@ def reply_to_thread(thread_id: int, data: ThreadReplyCreate):
     )
     execute("UPDATE community_threads SET reply_count = reply_count + 1 WHERE id=?", [thread_id])
     try:
-        notify_owner("reply", {
+        notify_owner_async("reply", {
             "content": data.content,
             "author_name": data.author_name.strip() or "匿名",
         }, url=f"https://lewislunora.onrender.com/community/?thread={thread_id}")
