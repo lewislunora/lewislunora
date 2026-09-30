@@ -1,0 +1,33 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: platform-ingress
+  namespace: platform
+  annotations:
+    traefik.ingress.kubernetes.io/router.entrypoints: web
+spec:
+  rules:
+    - host: PLACEHOLDER_HOST
+      http:
+        paths:
+          - path: /sse
+            pathType: Prefix
+            backend:
+              service:
+                name: platform-mcp
+                port:
+                  number: 8001
+          - path: /messages
+            pathType: Prefix
+            backend:
+              service:
+                name: platform-mcp
+                port:
+                  number: 8001
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: platform-app
+                port:
+                  number: 8742

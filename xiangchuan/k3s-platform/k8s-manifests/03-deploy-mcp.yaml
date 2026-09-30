@@ -1,0 +1,62 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: platform-mcp
+  namespace: platform
+spec:
+  replicas: 1
+  revisionHistoryLimit: 3
+  selector:
+    matchLabels:
+      app: platform-mcp
+  template:
+    metadata:
+      labels:
+        app: platform-mcp
+    spec:
+      containers:
+        - name: mcp
+          image: platform-app:latest
+          imagePullPolicy: IfNotPresent
+          command:
+            - python
+            - mcp_server.py
+            - --transport
+            - sse
+            - --host
+            - 0.0.0.0
+            - --port
+            - "8001"
+          env:
+            - name: MCP_APP_URL
+              value: http://platform-app:8742
+          envFrom:
+            - secretRef:
+                name: platform-env
+                optional: true
+          ports:
+            - containerPort: 8001
+          volumeMounts:
+            - name: data
+              mountPath: /app/marketing_system/data
+          resources:
+            requests:
+              cpu: 50m
+              memory: 128Mi
+            limits:
+              cpu: 300m
+              memory: 384Mi
+          readinessProbe:
+            tcpSocket:
+              port: 8001
+            initialDelaySeconds: 10
+            periodSeconds: 15
+          livenessProbe:
+            tcpSocket:
+              port: 8001
+            initialDelaySeconds: 30
+            periodSeconds: 30
+      volumes:
+        - name: data
+          persistentVolumeClaim:
+            claimName: platform-data
