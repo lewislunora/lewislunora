@@ -577,9 +577,204 @@ footer .wrap{display:flex;flex-wrap:wrap;gap:.8rem;justify-content:space-between
   .plan-card.plan-chat{border-color:rgba(0,212,255,.5)}
   .plan-card.plan-chat h3{color:#1a1a2e}
 }
+/* ════════════════════════════════════════════════════════════════
+   Mood System 3.0 — 色調隨「一天24小時 × 季節 × 節日」自動變換
+   由 <script id="moodEngine"> 依時段注入 --accent/--bg-top/... 變數
+   ════════════════════════════════════════════════════════════════ */
+:root{
+  --accent:#00d4ff;--accent2:#7b68ee;
+  --bg-top:rgba(123,104,238,.16);--bg-mid:rgba(0,212,255,.08);
+  --bg-deep:#0a0e27;--bg-light-deep:#f3f6fc;
+  --orb:rgba(0,212,255,.1);
+  --grid:rgba(0,212,255,.045);
+  --nav-line:rgba(0,212,255,.12);--nav-glow:rgba(0,212,255,.05);
+  --accent-glow:rgba(0,212,255,.5);--accent2-glow:rgba(123,104,238,.5);--accent2-soft:rgba(123,104,238,.15);
+  --btn-glow:rgba(0,212,255,.15);
+  --badge-bg:rgba(0,212,255,.06);--badge-bc:rgba(0,212,255,.22);--badge-txt:rgba(255,255,255,.6);
+  --badge-bg-l:rgba(0,212,255,.1);--badge-bc-l:rgba(0,212,255,.3);--badge-txt-l:rgba(26,26,46,.6);
+  --beam1:rgba(0,212,255,.12);--beam2:rgba(123,104,238,.08);
+  --moon-a:#f5f7ff;--moon-b:#8fa0ff;--moon-glow:rgba(160,175,255,.5);--moon-in:rgba(200,180,255,.35);
+  --muted:rgba(255,255,255,.5);
+  --chip-bg:rgba(0,212,255,.05);--chip-bc:rgba(0,212,255,.18);--chip-txt:rgba(255,255,255,.65);--chip-glow:rgba(0,212,255,.14);
+  --chip-bg-l:rgba(255,255,255,.6);--chip-bc-l:rgba(0,0,0,.07);--chip-txt-l:rgba(26,26,46,.6);--chip-glow-l:rgba(0,212,255,.12);
+  --nav-sub-bg-d:rgba(9,13,34,.96);--nav-sub-bg-l:rgba(255,255,255,.97)
+}
+html[data-mood="dark"]{color-scheme:dark}
+html[data-mood="light"]{color-scheme:light}
+html[data-mood="dark"] body{
+  background:
+    radial-gradient(ellipse 60% 45% at 50% -5%,var(--bg-top),transparent 70%),
+    radial-gradient(ellipse 45% 35% at 85% 15%,var(--bg-mid),transparent 70%),
+    radial-gradient(ellipse 50% 40% at 8% 40%,var(--bg-mid),transparent 70%),
+    var(--bg-deep);
+  color:#e8ecf4}
+html[data-mood="light"] body{
+  background:
+    radial-gradient(ellipse 60% 45% at 50% -5%,var(--bg-top-l,var(--bg-top)),transparent 70%),
+    radial-gradient(ellipse 45% 35% at 85% 15%,var(--bg-mid),transparent 70%),
+    var(--bg-light-deep);
+  color:#1a1a2e}
+html[data-mood="dark"] body::before{background-image:linear-gradient(var(--grid) 1px,transparent 1px),linear-gradient(90deg,var(--grid) 1px,transparent 1px)}
+html[data-mood="light"] body::before{background-image:linear-gradient(rgba(8,145,178,.06) 1px,transparent 1px),linear-gradient(90deg,rgba(8,145,178,.06) 1px,transparent 1px)}
+body::after{background:radial-gradient(circle,var(--orb),transparent 60%)}
+html[data-mood="dark"] nav{background:rgba(9,13,34,.78);backdrop-filter:blur(32px) saturate(1.4);-webkit-backdrop-filter:blur(32px) saturate(1.4);border-bottom-color:var(--nav-line)!important;box-shadow:0 1px 0 var(--nav-glow),0 8px 30px rgba(0,0,0,.25)!important}
+html[data-mood="light"] nav{background:rgba(255,255,255,.85)!important;border-bottom-color:var(--nav-line)!important;box-shadow:0 8px 30px rgba(0,0,0,.08)!important}
+html[data-mood="dark"] nav::before{background:linear-gradient(90deg,transparent,var(--accent-glow),var(--accent2-glow),transparent)!important}
+html[data-mood="light"] nav::before{background:linear-gradient(90deg,transparent,var(--accent-glow),var(--accent2-glow),transparent)!important}
+html[data-mood="dark"] .nav-brand{color:rgba(255,255,255,.8)}
+html[data-mood="light"] .nav-brand{color:rgba(26,26,46,.5)}
+.nav-brand em{background:linear-gradient(135deg,var(--accent),var(--accent2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;text-fill-color:transparent}
+html[data-mood="dark"] .nav-links a{color:rgba(255,255,255,.55)}
+html[data-mood="light"] .nav-links a{color:rgba(26,26,46,.55)}
+.nav-links a::after{background:var(--accent)}
+.nav-links a:hover{color:var(--accent)}
+.nav-hot{color:var(--accent)!important;font-weight:600}
+/* 主排連結 + CTA 鈕不爆版 */
+.nav-cta{font-size:12.5px;padding:.5rem 1.05rem;border-radius:100px;align-items:center;gap:.35rem;display:inline-flex;width:auto!important;white-space:nowrap}
+.btn-primary{background:linear-gradient(135deg,var(--accent),var(--accent2));box-shadow:0 4px 20px var(--btn-glow),0 0 0 1px var(--accent-glow),0 0 30px var(--accent2-soft)}
+.btn-primary:hover{box-shadow:0 8px 30px var(--btn-glow),0 0 0 1px var(--accent),0 0 40px var(--accent2-soft)}
+/* 第二排入口：遊戲 / 知識 / AI 配對 / 社群 */
+.nav-sub-links{position:absolute;left:50%;top:100%;transform:translateX(-50%);display:flex;gap:.9rem;align-items:center;padding:.55rem 1.2rem;border:1px solid var(--glass-border);border-top:none;border-radius:0 0 14px 14px;backdrop-filter:blur(22px) saturate(1.3);-webkit-backdrop-filter:blur(22px) saturate(1.3);white-space:nowrap;z-index:99;font-size:12.5px;letter-spacing:.3px;box-shadow:0 12px 30px rgba(0,0,0,.18)}
+html[data-mood="dark"] .nav-sub-links{background:var(--nav-sub-bg-d)}
+html[data-mood="light"] .nav-sub-links{background:var(--nav-sub-bg-l)}
+@media(max-width:1024px){.nav-sub-links{display:none}}
+.nav-sub-label{color:var(--muted);letter-spacing:1px;font-weight:500;text-transform:uppercase;font-size:11px}
+.nav-sub-links a{color:var(--muted);transition:.25s;padding:.28rem .5rem;border-radius:8px}
+.nav-sub-links a:hover{color:var(--accent);background:var(--chip-bg)}
+html[data-mood="light"] .nav-sub-links a:hover{background:rgba(0,0,0,.05)}
+/* Hero 熱門內容入口磁貼 */
+.portal-row{display:flex;flex-wrap:wrap;gap:.5rem;justify-content:center;margin:-.5rem 0 1.5rem;position:relative;z-index:1;max-width:860px}
+.portal-chip{display:inline-flex;align-items:center;gap:.4rem;padding:.42rem .8rem;border:1px solid var(--chip-bc);border-radius:100px;background:var(--chip-bg);backdrop-filter:blur(6px);color:var(--chip-txt);font-size:12.5px;letter-spacing:.3px;transition:transform .25s,border-color .25s,box-shadow .25s,color .25s;cursor:pointer}
+.portal-chip span{font-size:14px;line-height:1}
+.portal-chip b{font-weight:700}
+.portal-chip small{opacity:.55;margin-left:.1rem}
+.portal-chip:hover{transform:translateY(-2px);border-color:var(--accent);box-shadow:0 6px 18px var(--chip-glow);color:var(--accent)}
+html[data-mood="light"] .portal-chip{background:var(--chip-bg-l);border-color:var(--chip-bc-l);color:var(--chip-txt-l)}
+html[data-mood="light"] .portal-chip:hover{border-color:var(--accent);box-shadow:0 6px 18px var(--chip-glow-l);color:var(--accent)}
+/* 重點數值／光暈跟著色調走 */
+.bento-stat-num{background:linear-gradient(135deg,var(--accent),var(--accent2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;text-fill-color:transparent}
+.hero-badge{color:var(--badge-txt);border-color:var(--badge-bc);background:var(--badge-bg)}
+html[data-mood="light"] .hero-badge{color:var(--badge-txt-l)!important;background:var(--badge-bg-l)!important;border-color:var(--badge-bc-l)!important}
+.hero-glow{background:radial-gradient(circle at 35% 35%,var(--moon-a) 0%,var(--moon-b) 40%,var(--accent2-soft) 62%,transparent 75%);box-shadow:0 0 40px var(--moon-glow),0 0 120px var(--accent2-soft),inset -8px -6px 18px var(--moon-in)}
+.hero::before{background:radial-gradient(ellipse 50% 60% at 50% 0%,var(--beam1),transparent 70%),radial-gradient(ellipse 40% 50% at 50% 0%,var(--beam2),transparent 70%)}
+/* 亮色模式的互動元件同步 */
+html[data-mood="light"] .trust-card{background:rgba(255,255,255,.6);border-color:rgba(0,0,0,.06);color:#1a1a2e}
+html[data-mood="light"] .trust-card p{color:rgba(26,26,46,.6)}
+html[data-mood="light"] .link-strip a{color:rgba(26,26,46,.55);border-color:var(--badge-bc-l)}
+html[data-mood="light"] .link-strip a:hover{color:#1a1a2e;background:rgba(0,212,255,.08)}
+html[data-mood="light"] .hero-cta-single .sub-line{color:rgba(26,26,46,.5)}
+html[data-mood="light"] .hero-entry{color:rgba(26,26,46,.5)}
+html[data-mood="light"] .ai-demo{background:rgba(255,255,255,.55);border-color:var(--chip-bc-l);box-shadow:0 16px 50px rgba(0,0,0,.1)}
+html[data-mood="light"] .ai-demo-head{color:rgba(26,26,46,.72);border-bottom-color:var(--chip-bc-l)}
+html[data-mood="light"] .ai-demo-msg.bot{background:rgba(123,104,238,.12);color:rgba(26,26,46,.85);border-color:rgba(123,104,238,.2)}
+html[data-mood="light"] .ai-demo-msg.you{background:rgba(0,212,255,.12);color:rgba(26,26,46,.9);border-color:rgba(0,212,255,.25)}
+html[data-mood="light"] .ai-demo-form{background:rgba(0,0,0,.02);border-top-color:var(--chip-bc-l)}
+html[data-mood="light"] .ai-demo-form input{color:rgba(26,26,46,.85)}
+html[data-mood="light"] .ai-demo-form input::placeholder{color:rgba(26,26,46,.3)}
+@media(max-width:1024px){
+  .nav-links{gap:.6rem}
+  .nav-links a{font-size:12px;letter-spacing:.3px}
+}
+@media(max-width:820px){
+  .lang-select{display:none}
+  .nav-cta{padding:.45rem .75rem;font-size:11.5px}
+  .portal-chip small{display:none}
+  .portal-chip{padding:.38rem .7rem}
+}
 </style>
 </head>
 <body>
+<script id="moodEngine">
+/* Mood System 3.0 — 色調隨「一天24小時 × 季節 × 節日」自動變換 */
+(function(){
+  var hexA=function(hex,a){
+    if(!/^#/.test(hex))return hex;
+    var h=hex.replace('#','');
+    return 'rgba('+parseInt(h.substr(0,2),16)+','+parseInt(h.substr(2,2),16)+','+parseInt(h.substr(4,2),16)+','+a+')';
+  };
+  var d=new Date(), mm=d.getMonth()+1;
+  var h=d.getHours();
+  /* 24 小時：6:00–17:59 亮色，其餘深色 */
+  var mood=(h>=6&&h<18)?'light':'dark';
+  document.documentElement.setAttribute('data-mood',mood);
+
+  /* 季節 */
+  var seasons=[
+    {m:[3,4,5],label:'春季',accent:'#2dd4bf',accent2:'#a7f3d0'},
+    {m:[6,7,8],label:'夏季',accent:'#22d3ee',accent2:'#4ade80'},
+    {m:[9,10,11],label:'秋季',accent:'#f59e0b',accent2:'#fb923c'},
+    {m:[12,1,2],label:'冬季',accent:'#818cf8',accent2:'#38bdf8'}
+  ];
+  var season=seasons.filter(function(s){return s.m.indexOf(mm)>=0})[0]||seasons[0];
+
+  /* 節日（台灣／重要節日，以 2026 近似日期） */
+  var holidays=[
+    {d:[1,1],    icon:'🎊',label:'元旦',   accent:'#fbbf24',accent2:'#f59e0b',msg:'新年快樂，今年穩穩起步'},
+    {d:[2,17],   icon:'🧧',label:'農曆新年',accent:'#ef4444',accent2:'#f59e0b',msg:'新年快樂，開工大吉'},
+    {d:[5,10],   icon:'🌷',label:'母親節', accent:'#f472b6',accent2:'#fb7185',msg:'把時間還給媽媽，AI 顧店'},
+    {d:[6,19],   icon:'🐲',label:'端午',   accent:'#22c55e',accent2:'#a3e635',msg:'端午安康，系統照常值班'},
+    {d:[8,8],    icon:'🦸',label:'父親節', accent:'#60a5fa',accent2:'#38bdf8',msg:'爸爸節快樂'},
+    {d:[9,25],   icon:'🌕',label:'中秋',   accent:'#fbbf24',accent2:'#f97316',msg:'中秋連假，AI 替你看家'},
+    {d:[10,10],  icon:'🇹🇼',label:'雙十',   accent:'#ef4444',accent2:'#fbbf24',msg:'雙十連假，AI 不放假'},
+    {d:[12,25],  icon:'🎄',label:'聖誕',   accent:'#f87171',accent2:'#fbbf24',msg:'Merry Christmas'},
+    {d:[12,31],  icon:'🎆',label:'跨年',   accent:'#c084fc',accent2:'#fbbf24',msg:'跨年倒數，AI 陪你守夜'}
+  ];
+  var today=new Date(2026,mm-1,d.getDate());
+  var holiday=null;
+  for(var i=0;i<holidays.length;i++){
+    var H=holidays[i],Hd=new Date(2026,H.d[0]-1,H.d[1]);
+    var diff=Math.round((today-Hd)/86400000);
+    if(diff>=-1&&diff<=0){holiday=H;break;}   /* 節日當天與前一天就切換 */
+  }
+  var accent=holiday?holiday.accent:season.accent;
+  var accent2=holiday?holiday.accent2:season.accent2;
+
+  /* 時段問候 */
+  var greetMsg=
+    (holiday?holiday.msg+' ':(''))+
+    [ '晨起一杯咖啡，AI 先幫你把站點跑著',
+      '白天正忙，瑣事丟給 AI',
+      '下午茶時間，AI 繼續盯哨',
+      '下班了，客戶交給 AI，你休息',
+      '夜貓子的系統，AI 徹夜守護',
+      '夜深了 AI 在，0 點不當機'
+    ][h<6?5:h<11?0:h<14?1:h<17?2:h<19?3:h<23?4:5];
+  var badgeText=((holiday?(holiday.icon+' '+holiday.label+' · '):'')
+      +greetMsg
+      +(season.label==='夏季'||season.label==='冬季'?'':' · '+season.label)).replace(/undefined|NaN/g,'');
+  function updateBadge(){
+    var badge=document.getElementById('heroBadge');
+    if(!badge)return;
+    badge.textContent=badgeText;
+  }
+  if(document.readyState!=='loading')updateBadge();
+  else document.addEventListener('DOMContentLoaded',updateBadge);
+
+  /* 注入配色變數 */
+  var css=document.createElement('style');css.id='moodVars';css.textContent=':root{'+
+    '--accent:'+accent+';--accent2:'+accent2+';'+
+    '--accent-glow:'+hexA(accent,.5)+';--accent2-glow:'+hexA(accent2,.5)+';--accent2-soft:'+hexA(accent2,.16)+';'+
+    '--btn-glow:'+hexA(accent,.2)+';'+
+    '--badge-bg:'+hexA(accent,.06)+';--badge-bc:'+hexA(accent,.22)+';--badge-txt:'+(mood==='dark'?'rgba(255,255,255,.6)':'rgba(26,26,46,.65)')+';'+
+    '--badge-bg-l:'+hexA(accent,.1)+';--badge-bc-l:'+hexA(accent,.3)+';--badge-txt-l:rgba(26,26,46,.65);'+
+    '--bg-top:'+hexA(accent2,mood==='dark'?.18:.12)+';--bg-mid:'+hexA(accent,mood==='dark'?.08:.06)+';'+
+    '--orb:'+hexA(accent,.1)+';--grid:'+hexA(accent,mood==='dark'?.045:.05)+';'+
+    '--nav-line:'+hexA(accent,.2)+';--nav-glow:'+hexA(accent,.06)+';'+
+    '--beam1:'+hexA(accent,.12)+';--beam2:'+hexA(accent2,.08)+';'+
+    '--moon-a:'+(mood==='dark'?'#f5f7ff':'#ffffff')+';--moon-b:'+accent2+';--moon-glow:'+hexA(accent2,.4)+';--moon-in:'+hexA(accent2,.3)+';'+
+    '--chip-bg:'+hexA(accent,mood==='dark'?.05:.06)+';--chip-bc:'+hexA(accent,.22)+';--chip-txt:'+(mood==='dark'?'rgba(255,255,255,.65)':'rgba(26,26,46,.6)')+';--chip-glow:'+hexA(accent,.14)+';'+
+    '--muted:'+(mood==='dark'?'rgba(255,255,255,.5)':'rgba(26,26,46,.55)')+';'+
+    '}';
+  document.head.appendChild(css);
+
+  /* 每 15 分鐘重算（跨時段／午夜自動換色），不重載網頁 */
+  setInterval(function(){
+    var nh=new Date().getHours();
+    var nm=(nh>=6&&nh<18)?'light':'dark';
+    if(nm!==mood)location.reload();
+  },15*60*1000);
+})();
+</script>
 <div class="cursor" id="cursor"></div>
 
 <nav>
@@ -588,31 +783,40 @@ footer .wrap{display:flex;flex-wrap:wrap;gap:.8rem;justify-content:space-between
     <div class="nav-links">
       <a href="#achievements">成效</a>
       <a href="#results">案例</a>
-      <a href="#work">作品</a>
       <a href="product/">方案</a>
-      <a href="pricing.html">付費開通</a>
       <a href="ai-code-review/">AI 審碼</a>
-      <a href="#about">關於我</a>
-      <a href="#contact" style="color:#00d4ff;font-weight:600">預約諮詢</a>
-      <a href="novels.html" style="color:#ffcc00;font-weight:600">📖 追小說</a>
-      <a href="social/">🔥 短內容</a>
-      <a href="games/">遊戲</a>
-      <a href="guides/">知識</a>
       <a href="thoughts/">🧰 職人筆記</a>
-      <a href="matching.html">AI 配對</a>
-      <select class="lang-select" onchange="switchLang(this.value)">
-        <option value="zh-TW">繁中</option>
-        <option value="en">EN</option>
-      </select>
+      <a href="novels.html" class="nav-hot">📖 追小說</a>
+      <a href="social/">🔥 短內容</a>
+      <a href="#contact" class="btn btn-primary nav-cta">🎯 免費聊聊 30 分</a>
     </div>
+    <select class="lang-select" onchange="switchLang(this.value)">
+      <option value="zh-TW">繁中</option>
+      <option value="en">EN</option>
+    </select>
     <div class="gsi-container" id="gsi-user-area"></div>
+  </div>
+  <div class="nav-sub-links">
+    <span class="nav-sub-label">不知道逛哪？</span>
+    <a href="games/">🎮 遊戲</a>
+    <a href="guides/">🗂 知識庫</a>
+    <a href="matching.html">⚡ AI 配對</a>
+    <a href="community/">💬 社群串</a>
   </div>
 </nav>
 
 <!-- Hero -->
 <section class="hero">
   <div class="hero-glow"></div>
-  <div class="hero-badge">🕐 先把下面的客服玩一玩 · 真的會回你</div>
+  <div class="hero-badge" id="heroBadge">🕐 先把下面的客服玩一玩 · 真的會回你</div>
+  <div class="portal-row" id="portalRow">
+    <a href="novels.html" class="portal-chip"><span>📖</span><b>追小說</b><small>每天一章</small></a>
+    <a href="social/" class="portal-chip"><span>🔥</span><b>短內容</b><small>每日兩則</small></a>
+    <a href="thoughts/" class="portal-chip"><span>🧰</span><b>職人筆記</b><small>每天一篇</small></a>
+    <a href="community/" class="portal-chip"><span>💬</span><b>社群串</b><small>誰都能發</small></a>
+    <a href="matching.html" class="portal-chip"><span>⚡</span><b>AI 配對</b><small>人 + AI 創業</small></a>
+    <a href="guides/" class="portal-chip"><span>🚀</span><b>創業起步</b><small>免費工具</small></a>
+  </div>
   <h1><span class="line1">員工下班了，客戶沒下班</span><span class="line2">AI 幫你值這班機</span></h1>
   <p>我是 <b>Lewis Lunora</b> — 10+ 年 DevOps 架構師 × AI 整合。下面這個客服你打一句話它就會回，這就是我幫一人公司裝的系統：24/7 不漏單、能查價格、能發文。</p>
   <div class="hero-cta-single">
