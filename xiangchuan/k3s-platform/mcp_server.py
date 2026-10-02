@@ -142,6 +142,25 @@ def publish_feed(content: str, author: str = "MCP") -> dict:
         return {"ok": False, "error": str(e)}
 
 
+@mcp.tool()
+def govdata_query(query: str) -> dict:
+    """查詢台灣政府開放資料目錄（data.gov.tw）。回傳與 query 最相關的資料集清單。"""
+    try:
+        from marketing_system.services.govdata import search
+        found = search(query, per_page=5)
+        return {
+            "query": query,
+            "total": found["total"],
+            "datasets": [
+                {"nid": it["nid"], "title": it["title"], "agency": it["agency"],
+                 "format": it["formats"], "url": it["dl_url"], "qty": it["qty"]}
+                for it in found["items"]
+            ],
+        }
+    except Exception as e:
+        return {"error": str(e)}
+
+
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("--transport", choices=["stdio", "sse"], default="stdio")

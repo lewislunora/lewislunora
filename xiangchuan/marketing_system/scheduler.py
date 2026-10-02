@@ -39,6 +39,8 @@ class ContentScheduler:
                     self._daily_backup()
                 if self._ping_count % 60 == 0:
                     self._auto_learn_kb()
+                if self._ping_count % 480 == 0:
+                    self._govdata_sync()
             except Exception as e:
                 logger.error(f"Scheduler error: {e}")
             time.sleep(60)
@@ -49,6 +51,14 @@ class ContentScheduler:
             auto_learn()
         except Exception as e:
             logger.warning(f"Auto-learn KB failed: {e}")
+
+    def _govdata_sync(self):
+        try:
+            from ..services.govdata import sync_catalog
+            result = sync_catalog(max_pages=200)
+            logger.info(f"Govdata catalog sync: {result}")
+        except Exception as e:
+            logger.warning(f"Govdata sync failed: {e}")
 
     def _daily_backup(self):
         try:

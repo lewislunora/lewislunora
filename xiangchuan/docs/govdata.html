@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>政府開放資料分析儀表板｜翔川 Neo</title>
+<meta name="description" content="自動爬取 data.gov.tw 全部開放資料目錄，搜尋、下載、分析台灣政府開放資料。">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',system-ui,sans-serif;background:#0a0e27;color:#fff;min-height:100vh}
+header{position:sticky;top:0;z-index:20;background:rgba(10,14,39,.92);backdrop-filter:blur(12px);border-bottom:1px solid rgba(255,255,255,.08);padding:14px 22px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px}
+.logo{font-weight:800;letter-spacing:.5px}
+.logo span{color:#5eead4}
+main{max-width:1100px;margin:0 auto;padding:26px 18px 60px}
+.stat-wrap{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin:18px 0}
+.stat{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:14px;padding:14px}
+.stat .num{font-size:24px;font-weight:800;color:#5eead4}
+.stat .lbl{font-size:13px;color:#94a3b8;margin-top:4px}
+.searchbar{display:flex;gap:10px;margin:6px 0 14px}
+input[type=text],input[type=number]{flex:1;background:#161b3d;border:1px solid rgba(255,255,255,.14);border-radius:10px;color:#fff;padding:12px 14px;font-size:15px;outline:none}
+input:focus{border-color:#5eead4}
+button{background:linear-gradient(135deg,#0d9488,#14b8a6);border:none;color:#042f2e;font-weight:700;border-radius:10px;padding:12px 20px;cursor:pointer;font-size:15px}
+button.secondary{background:#1e293b;color:#fff}
+table{width:100%;border-collapse:collapse;font-size:14px}
+th,td{text-align:left;padding:10px 12px;border-bottom:1px solid rgba(255,255,255,.07);vertical-align:top}
+th{color:#64748b;font-weight:600;font-size:12px;text-transform:uppercase;letter-spacing:.4px}
+tr:hover td{background:rgba(255,255,255,.03)}
+a{color:#5eead4;text-decoration:none;word-break:break-all}
+.tag{display:inline-block;background:rgba(20,184,166,.15);color:#5eead4;border-radius:6px;padding:2px 8px;font-size:12px;margin-right:4px}
+.pill{display:inline-block;background:rgba(255,255,255,.08);border-radius:6px;padding:2px 8px;font-size:12px;margin:2px}
+.panel{background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.1);border-radius:16px;padding:18px;margin-top:18px}
+.panel h3{font-size:18px;margin-bottom:12px}
+.hidden{display:none}
+.muted{color:#94a3b8;font-size:13px}
+.ok{color:#34d399}.fail{color:#f87171}
+details{background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.08);border-radius:12px;padding:10px 14px;margin:8px 0}
+summary{cursor:pointer;font-weight:600}
+.chip-row{display:flex;flex-wrap:wrap;gap:8px}
+h2{font-size:22px;margin:26px 0 8px}
+</style>
+</head>
+<body>
+<header>
+  <div class="logo">翔川 <span>Neo</span>｜政府開放資料分析</div>
+  <div class="muted">資料來源：政府資料開放平臺 data.gov.tw（自動爬取全目錄）</div>
+</header>
+<main>
+  <h2>開放資料全目錄</h2>
+  <div class="stat-wrap" id="stats"></div>
+  <div class="searchbar">
+    <input type="text" id="q" placeholder="搜尋資料集，例如：育兒津貼、空氣品質、人口…">
+    <button onclick="doSearch()">搜尋</button>
+    <button class="secondary" onclick="doAsk()">AI 問答</button>
+  </div>
+  <div class="panel hidden" id="askbox"><pre id="askout" style="white-space:pre-wrap;font-size:14px"></pre></div>
+  <table id="tbl">
+    <thead><tr><th>資料集</th><th>提供機關</th><th>分類</th><th>格式</th><th>更新</th><th>資料量</th><th> </th></tr></thead>
+    <tbody id="rows"></tbody>
+  </table>
+  <div class="muted" id="pageinfo" style="margin-top:10px"></div>
+  <div id="detail"></div>
+</main>
+<script>
+let PAGE = 1, CUR_Q = "";
+const $ = s => document.querySelector(s);
+const api = (p, o) => fetch(p, o).then(r => r.json()).then(d => { if (d.error) throw new Error(d.error); return d; });
+
+function fmt(n){ if(n==null||isNaN(n))return "-"; if(n>=10000) return (n/10000).toFixed(1)+"萬"; return String(n); }
+
+async function refreshStats(){
+  try { const s = await api("/api/govdata/status");
+    $("#stats").innerHTML = [
+      ["目錄資料集", fmt(s.catalog_total)], ["已匯入分析", fmt(s.ingested)],
+      ["存放列數", fmt(s.rows_stored)], ["匯入失敗", fmt(s.failed)]
+    ].map(([l,n])=>`<div class="stat"><div class="num">${n}</div><div class="lbl">${l}</div></div>`).join("");
+  }catch(e){}
+}
+
+async function doSearch(p){ PAGE = p||1; if(!CUR_Q) CUR_Q = $("#q").value.trim();
+  const d = await api(`/api/govdata/search?q=${encodeURIComponent(CUR_Q||" ")}&page=${PAGE}&per_page=20`);
+  CUR_Q = d.q;
+  const t = d.items.map(it => `<tr>
+    <td>${it.title}<div class="muted">${it.view_times? "瀏覽 "+fmt(it.view_times):""}</div></td>
+    <td>${it.agency}</td><td>${it.category||"-"}</td>
+    <td>${(it.formats||"").split(/[,;，]/).filter(Boolean).map(f=>`<span class="pill">${f}</span>`).join("")}</td>
+    <td>${it.freq||"-"}</td><td>${it.qty||"-"}</td>
+    <td><button class="secondary" style="padding:6px 12px;font-size:13px" onclick="openDetail('${it.nid}')">分析</button></td></tr>`).join("");
+  $("#rows").innerHTML = t || `<tr><td colspan="7" class="muted">沒有符合的資料集</td></tr>`;
+  const total = Math.ceil(d.total/20);
+  $("#pageinfo").innerHTML = `共 ${fmt(d.total)} 筆 | 第 ${d.page}/${total||1} 頁 ${PAGE>1?`<a href="javascript:doSearch(${PAGE-1})">上一頁</a>`:""} ${PAGE<total?`<a href="javascript:doSearch(${PAGE+1})">下一頁</a>`:""}`;
+}
+
+async function doAsk(){ const q=$("#q").value.trim(); if(!q)return;
+  const d = await api("/api/govdata/ask?q="+encodeURIComponent(q));
+  $("#askbox").classList.remove("hidden");
+  const rel = (d.datasets||[]).slice(0,3).map(x=>`• ${x.title}（${x.agency}）`).join("\n");
+  $("#askout").textContent = d.answer + (rel?"\n\n相關資料集：\n"+rel:"");
+}
+
+async function openDetail(nid){
+  const d = await api("/api/govdata/datasets/"+nid);
+  const c = d.catalog||{};
+  const ds = d.dataset||{};
+  const statusHtml = ds.status==="ok" ? `<span class="ok">已匯入 ${fmt(ds.row_count)} 列</span>` :
+    ds.status==="failed" ? `<span class="fail">匯入失敗：${ds.note||""}</span>` : `<span class="muted">尚未匯入</span>`;
+  $("#detail").innerHTML = `<div class="panel">
+    <h3>${c.title||"(無標題)"}</h3>
+    <div class="muted" style="margin-bottom:8px">${c.agency||""} ｜ ${c.category||""} ｜ ${c.freq||""} 更新 ｜ ${c.license||""}</div>
+    <div style="margin-bottom:10px">${(c.description||"").slice(0,300)}</div>
+    <div class="chip-row">
+      <span class="tag">${ds.status?statusHtml:""}</span>
+      ${(c.formats||"").split(/[,;，]/).filter(Boolean).map(f=>`<span class="pill">${f}</span>`).join("")}
+    </div>
+    <div style="margin-top:12px">
+      <button style="padding:8px 16px;font-size:14px" onclick="ingest('${nid}')">下載並分析這筆資料</button>
+      <button class="secondary" style="padding:8px 16px;font-size:14px" onclick="renderSample()">檢視樣本</button>
+    </div>
+    <div id="sample" style="margin-top:12px"></div>
+  </div>`;
+  renderSample();
+}
+
+async function renderSample(){ document.getElementById("sample").innerHTML=""; }
+
+async function ingest(nid){
+  const el=document.querySelector("#detail button"); if(el){el.disabled=true;el.textContent="下載中…";}
+  const r = await api("/api/govdata/ingest", {method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({nid})});
+  if(!r.ok){ document.querySelector(".tag").innerHTML=`<span class="fail">${r.note||"失敗"}</span>`; return; }
+  const a = await api("/api/govdata/analyze/"+nid);
+  renderAnalysis(nid, a);
+  refreshStats();
+}
+
+function renderAnalysis(nid, a){
+  if(!a.analyzed){ document.querySelector(".tag").innerHTML=`<span class="fail">${a.note||"無資料"}</span>`; return; }
+  const statRows = a.columns.map(c=>{ const s=a.column_stats[c];
+    return `<tr><td>${c}</td><td>${s.type==="number"?"<span class='ok'>數字</span>":"text"}</td><td>${fmt(s.count)}</td><td>${s.unique}</td><td>${s.type==="number"?("min "+s.min+" / max "+s.max+"<br>sum "+fmt(s.sum)+" / avg "+s.avg):(s.sample||[]).slice(0,3).join(", ")||"-"}</td></tr>`;}).join("");
+  const topHtml = a.top_group? a.top_group.map(g=>`<span class="pill">${g.value}：${fmt(g.count)}</span>`).join("") : "—";
+  const sampleHtml = a.sample||[]; // sample not in analyze; fetch via datasets
+  document.querySelector(".tag").innerHTML=`<span class="ok">已匯入 ${fmt(a.rows)} 列、${a.columns.length} 欄</span>`;
+  document.querySelector("#detail").insertAdjacentHTML("beforeend", `<div class="panel">
+    <h3>分析結果</h3><table><thead><tr><th>欄位</th><th>型別</th><th>非空</th><th>唯一</th><th>摘要</th></tr></thead><tbody>${statRows}</tbody></table>
+    ${a.top_group_column?`<h3 style="margin-top:16px">最大群組分類（${a.top_group_column}）</h3><div class="chip-row">${topHtml}</div>`:""}
+  </div>`);
+  api("/api/govdata/datasets/"+nid).then(d=>{
+    const sm = d.sample||[];
+    if(sm.length){ const keys=Object.keys(sm[0]);
+      document.querySelector("#detail").insertAdjacentHTML("beforeend", `<div class="panel"><h3>前 ${sm.length} 筆樣本</h3><table><thead><tr>${keys.map(k=>`<th>${k}</th>`).join("")}</tr></thead><tbody>${sm.map(r=>`<tr>${keys.map(k=>`<td>${(r[k]||"").slice(0,40)}</td>`).join("")}</tr>`).join("")}</tbody></table></div>`);
+    }
+  });
+}
+
+refreshStats();
+$("#q").addEventListener("keydown", e=>{ if(e.key==="Enter"){ CUR_Q=""; PAGES=1; doSearch(1);} });
+doSearch(1);
+</script>
+</body>
+</html>

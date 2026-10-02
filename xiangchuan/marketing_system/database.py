@@ -22,6 +22,7 @@ DB_TABLES = [
     "novels", "novel_chapters",
     "seo_articles",
     "site_settings",
+    "gov_catalog", "gov_datasets", "gov_rows",
 ]
 
 
@@ -150,6 +151,8 @@ def _dump_to_json():
     conn.row_factory = sqlite3.Row
     data = {}
     for table in DB_TABLES:
+        if table in ("gov_catalog", "gov_datasets", "gov_rows"):
+            continue
         try:
             rows = conn.execute(f"SELECT * FROM {table}").fetchall()
             data[table] = [dict(r) for r in rows]
@@ -438,6 +441,43 @@ CREATE TABLE IF NOT EXISTS social_identities (
             key TEXT PRIMARY KEY,
             value TEXT DEFAULT '',
             updated_at TEXT DEFAULT (datetime('now'))
+        );
+
+        CREATE TABLE IF NOT EXISTS gov_catalog (
+            nid TEXT PRIMARY KEY,
+            title TEXT DEFAULT '',
+            agency TEXT DEFAULT '',
+            category TEXT DEFAULT '',
+            topic TEXT DEFAULT '',
+            freq TEXT DEFAULT '',
+            charge TEXT DEFAULT '',
+            license TEXT DEFAULT '',
+            formats TEXT DEFAULT '',
+            dl_url TEXT DEFAULT '',
+            qty TEXT DEFAULT '',
+            description TEXT DEFAULT '',
+            view_times INTEGER DEFAULT 0,
+            synced_at TEXT DEFAULT (datetime('now'))
+        );
+
+        CREATE TABLE IF NOT EXISTS gov_datasets (
+            nid TEXT PRIMARY KEY,
+            title TEXT DEFAULT '',
+            agency TEXT DEFAULT '',
+            columns_json TEXT DEFAULT '[]',
+            row_count INTEGER DEFAULT 0,
+            status TEXT DEFAULT '',
+            note TEXT DEFAULT '',
+            sample_json TEXT DEFAULT '[]',
+            ingested_at TEXT DEFAULT (datetime('now'))
+        );
+
+        CREATE TABLE IF NOT EXISTS gov_rows (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            nid TEXT NOT NULL,
+            row_idx INTEGER NOT NULL,
+            payload TEXT NOT NULL,
+            UNIQUE(nid, row_idx)
         );
 
         CREATE TABLE IF NOT EXISTS comments (

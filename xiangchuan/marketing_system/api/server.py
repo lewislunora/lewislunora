@@ -1414,6 +1414,24 @@ async def serve_admin_monetize():
     raise HTTPException(404, "Not found")
 
 
+@app.get("/govdata")
+@app.get("/govdata/")
+async def serve_govdata():
+    fp = DOCS_DIR / "govdata.html"
+    if fp.exists():
+        return HTMLResponse(fp.read_text(encoding="utf-8"))
+    raise HTTPException(404, "Not found")
+
+
+@app.get("/admin/govdata")
+@app.get("/admin/govdata/")
+async def serve_admin_govdata():
+    fp = DOCS_DIR / "admin" / "govdata.html"
+    if fp.exists():
+        return HTMLResponse(fp.read_text(encoding="utf-8"))
+    raise HTTPException(404, "Not found")
+
+
 @app.get("/student")
 @app.get("/student/")
 async def serve_student():
@@ -2901,6 +2919,65 @@ async def security_and_cache_headers(request, call_next):
         del response.headers["server"]
 
     return response
+
+
+@app.get("/api/govdata/search")
+def govdata_search(q: str = "", page: int = 1, per_page: int = 20):
+    from ..services.govdata import search
+    return search(q, min(max(page, 1), 1000), min(max(per_page, 1), 50))
+
+
+@app.get("/api/govdata/status")
+def govdata_status():
+    from ..services.govdata import status as gov_status
+    return gov_status()
+
+
+@app.post("/api/govdata/sync")
+async def govdata_sync(request: Request):
+    _require_admin(request)
+    from ..services.govdata import sync_catalog
+    body = await request.json()
+    pages = int((body or {}).get("pages", 150))
+    return sync_catalog(min(max(pages, 1), 2000))
+
+
+@app.post("/api/govdata/ingest")
+async def govdata_ingest(request: Request):
+    from ..services.govdata import ingest
+    body = await request.json() or {}
+    nid = str(body.get("nid", "")).strip()
+    force = bool(body.get("force"))
+    if not nid:
+        raise HTTPException(400, "缺少 nid")
+    return ingest(nid, force=force)
+
+
+@app.get("/api/govdata/datasets/{nid}")
+def govdata_dataset(nid: str):
+    from ..database import fetch_one
+    cat = fetch_one("SELECT * FROM gov_catalog WHERE nid=?", (nid,))
+    ds = fetch_one("SELECT * FROM gov_datasets WHERE nid=?", (nid,))
+    import json
+    return {
+        "catalog": dict(cat) if cat else None,
+        "dataset": dict(ds) if ds else None,
+        "sample": json.loads(ds["sample_json"]) if ds and ds.get("sample_json") else [],
+    }
+
+
+@app.get("/api/govdata/analyze/{nid}")
+def govdata_analyze(nid: str):
+    from ..services.govdata import analyze
+    return analyze(nid)
+
+
+@app.get("/api/govdata/ask")
+def govdata_ask(q: str = ""):
+    from ..services.govdata import ask
+    if not q.strip():
+        raise HTTPException(400, "缺少 q")
+    return ask(q)
 
 
 app.mount("/", StaticFiles(directory=str(DOCS_DIR), html=True), name="site")
