@@ -26,6 +26,8 @@ MAX_DOWNLOAD_BYTES = 40 * 1024 * 1024
 MAX_ROWS = 60000
 MAX_COLS = 200
 COOLDOWN_SECONDS = 600
+GLOBAL_ROW_BUDGET = 400000
+FAIL_RETRY_DAYS = 7
 
 _INGEST_META = {}
 
@@ -414,3 +416,114 @@ def status() -> dict:
         "top_orgs": top_orgs,
         "top_formats": [{"fmt": k, "count": v} for k, v in by_format.most_common(8)],
     }
+
+
+def _total_rows() -> int:
+    return fetch_one("SELECT COUNT(*) AS c FROM gov_rows")["c"]
+
+
+def pick_candidates(limit: int = 5) -> list:
+    """挑選「還沒成功匯入」或「失敗超過一段時間可重試」的資料集。
+
+    優先把高瀏覽次數、格式友善（CSV/JSON/ZIP）者排前面，全自動管線的輸入。
+    """
+    from datetime import datetime, timedelta
+    retry_before = (datetime.now() - timedelta(days=FAIL_RETRY_DAYS)).strftime("%Y-%m-%d %H:%M:%S")
+    rows = fetch(
+        "SELECT c.nid AS nid, c.title AS title, c.agency AS agency, c.formats AS formats, "
+        "c.qty AS qty, c.view_times AS view_times, d.status AS status "
+        "FROM gov_catalog c "
+        "LEFT JOIN gov_datasets d ON d.nid = c.nid "
+        "WHERE d.nid IS NULL OR (d.status = 'failed' AND d.ingested_at < ?) "
+        "ORDER BY c.view_times DESC",
+        [retry_before],
+    )
+    items = []
+    for r in rows:
+        formats = (r["formats"] or "").lower()
+        try:
+            qty = int(r["qty"])
+        except (TypeError, ValueError):
+            qty = 0
+        items.append({
+            "nid": r["nid"],
+            "title": r["title"],
+            "agency": r["agency"],
+            "formats": r["formats"],
+            "qty": qty,
+            "view_times": r["view_times"] or 0,
+            "preferred": any(x in formats for x in ("csv", "json", "zip")),
+        })
+    items.sort(key=lambda x: (-bool(x["preferred"]), -int(x["view_times"])))
+    return items[:limit]
+
+
+def auto_pipeline(batch: int = 3) -> dict:
+    """全自動管線：挑熱門未匯入資料集 → 依序下載入庫 → 分析；超容量自動汰舊。"""
+    result = {"candidates": 0, "ingested": 0, "analyzed": 0, "skipped": 0, "errors": 0}
+    candidates = pick_candidates(limit=batch)
+    result["candidates"] = len(candidates)
+    for c in candidates:
+        ing = ingest(c["nid"], force=False)
+        if ing.get("ok"):
+            result["ingested"] += 1
+            try:
+                analyze(c["nid"])
+                result["analyzed"] += 1
+            except Exception as e:
+                logger.warning(f"govdata auto analyze {c['nid']} failed: {e}")
+        else:
+            note = str(ing.get("note", ""))
+            if "冷卻" in note:
+                result["skipped"] += 1
+            else:
+                result["errors"] += 1
+    result["pruned"] = prune_if_needed()["pruned"]
+    result["rows_total"] = _total_rows()
+    return result
+
+
+def prune_if_needed(budget: int = GLOBAL_ROW_BUDGET, target_ratio: float = 0.8) -> dict:
+    """gov_rows 超過容量預算時，由最舊開始汰除資料集，維持可承載量。"""
+    total = _total_rows()
+    if total <= budget:
+        return {"pruned": 0, "total": total}
+    target = int(budget * target_ratio)
+    pruned = 0
+    datasets = fetch(
+        "SELECT nid, row_count FROM gov_datasets WHERE status='ok' "
+        "ORDER BY ingested_at ASC"
+    )
+    for ds in datasets:
+        if total <= target:
+            break
+        rc = ds["row_count"] or 0
+        if rc <= 0:
+            continue
+        execute("DELETE FROM gov_rows WHERE nid=?", (ds["nid"],))
+        execute(
+            "UPDATE gov_datasets SET status='pruned', row_count=0 WHERE nid=?",
+            (ds["nid"],),
+        )
+        total -= rc
+        pruned += 1
+    return {"pruned": pruned, "total": _total_rows()}
+
+
+def recent_analyzed(limit: int = 8) -> list:
+    rows = fetch(
+        "SELECT nid, title, agency, columns_json, row_count, ingested_at "
+        "FROM gov_datasets WHERE status='ok' ORDER BY ingested_at DESC LIMIT ?",
+        [limit],
+    )
+    return [
+        {
+            "nid": r["nid"],
+            "title": r["title"],
+            "agency": r["agency"],
+            "columns": json.loads(r["columns_json"] or "[]")[:MAX_COLS],
+            "row_count": r["row_count"],
+            "ingested_at": r["ingested_at"],
+        }
+        for r in rows
+    ]

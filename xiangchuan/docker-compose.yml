@@ -9,5 +9,4 @@ services:
     volumes:
       - ./work:/root/work
     working_dir: /root/work
-    network_mode: host
     command: /bin/bash

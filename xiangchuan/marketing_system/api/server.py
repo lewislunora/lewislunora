@@ -2972,6 +2972,12 @@ def govdata_analyze(nid: str):
     return analyze(nid)
 
 
+@app.get("/api/govdata/recent")
+def govdata_recent(limit: int = 8):
+    from ..services.govdata import recent_analyzed
+    return {"items": recent_analyzed(limit=min(limit, 30))}
+
+
 @app.get("/api/govdata/ask")
 def govdata_ask(q: str = ""):
     from ..services.govdata import ask

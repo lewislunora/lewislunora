@@ -47,6 +47,10 @@ h2{font-size:22px;margin:26px 0 8px}
 <main>
   <h2>開放資料全目錄</h2>
   <div class="stat-wrap" id="stats"></div>
+  <div class="panel">
+    <h3>自動分析報告 <span class="muted">（每日排程自動挑熱門資料集匯入＋分析）</span></h3>
+    <div class="chip-row" id="auto"></div>
+  </div>
   <div class="searchbar">
     <input type="text" id="q" placeholder="搜尋資料集，例如：育兒津貼、空氣品質、人口…">
     <button onclick="doSearch()">搜尋</button>
@@ -74,6 +78,14 @@ async function refreshStats(){
       ["存放列數", fmt(s.rows_stored)], ["匯入失敗", fmt(s.failed)]
     ].map(([l,n])=>`<div class="stat"><div class="num">${n}</div><div class="lbl">${l}</div></div>`).join("");
   }catch(e){}
+}
+
+async function renderAuto(){
+  try { const d = await api("/api/govdata/recent?limit=8");
+    $("#auto").innerHTML = d.items.length ? d.items.map(it => `<span class="pill" style="cursor:pointer;max-width:240px;line-height:1.5" onclick="openDetail('${it.nid}')">
+        <b>${it.title.slice(0,24)}</b><br><span class="muted">${it.agency}｜${fmt(it.row_count)} 列｜${(it.ingested_at||"").slice(0,10)}</span></span>`).join("")
+      : `<span class="muted">排程尚在累積中，之後每日自動新增。也可以在下方搜尋任一資料集手動分析。</span>`;
+  }catch(e){ $("#auto").innerHTML = `<span class="muted">—</span>`; }
 }
 
 async function doSearch(p){ PAGE = p||1; if(!CUR_Q) CUR_Q = $("#q").value.trim();
@@ -151,7 +163,8 @@ function renderAnalysis(nid, a){
 }
 
 refreshStats();
-$("#q").addEventListener("keydown", e=>{ if(e.key==="Enter"){ CUR_Q=""; PAGES=1; doSearch(1);} });
+renderAuto();
+$("#q").addEventListener("keydown", e=>{ if(e.key==="Enter"){ CUR_Q=""; PAGE=1; doSearch(1);} });
 doSearch(1);
 </script>
 </body>

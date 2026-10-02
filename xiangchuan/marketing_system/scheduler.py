@@ -53,10 +53,16 @@ class ContentScheduler:
             logger.warning(f"Auto-learn KB failed: {e}")
 
     def _govdata_sync(self):
+        # 背景執行，避免大檔下載阻塞主迴圈（每 ~8h 觸發一次）
+        t = threading.Thread(target=self._govdata_pipeline_job, daemon=True)
+        t.start()
+
+    def _govdata_pipeline_job(self):
         try:
-            from ..services.govdata import sync_catalog
+            from ..services.govdata import sync_catalog, auto_pipeline
             result = sync_catalog(max_pages=200)
-            logger.info(f"Govdata catalog sync: {result}")
+            pipe = auto_pipeline(batch=3)
+            logger.info(f"Govdata pipeline: sync={result} auto={pipe}")
         except Exception as e:
             logger.warning(f"Govdata sync failed: {e}")
 
