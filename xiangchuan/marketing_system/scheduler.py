@@ -17,6 +17,29 @@ class ContentScheduler:
         self.thread = None
         self.connectors = platform_connectors or {}
         self._ping_count = 0
+        # (every, name, fn)：由 server 註冊的排程鉤子（內容引擎等）
+        self.hooks = []
+        self.last_ticks = {}
+
+    def add_hook(self, every: int, name: str, fn):
+        """註冊排程鉤子：每 every 次迴圈（1 次 ≈ 60 秒）執行一次。"""
+        self.hooks.append((int(every), name, fn))
+
+    def _run_hooks(self):
+        for every, name, fn in self.hooks:
+            if self._ping_count % every != 0:
+                continue
+            at = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+            try:
+                fn()
+                self.last_ticks[name] = {"ok": True, "at": at}
+            except Exception as e:
+                logger.warning(f"hook {name} failed: {e}")
+                self.last_ticks[name] = {"ok": False, "at": at, "error": str(e)[:200]}
+
+    def auto_status(self) -> dict:
+        return {"pings": self._ping_count, "hooks": [h[1] for h in self.hooks],
+                "ticks": dict(self.last_ticks)}
 
     def start(self):
         self.running = True
@@ -35,15 +58,27 @@ class ContentScheduler:
                 self._ping_count += 1
                 if self._ping_count % 5 == 0:
                     self._keep_alive()
-                if self._ping_count % 1440 == 0:
-                    self._daily_backup()
                 if self._ping_count % 60 == 0:
                     self._auto_learn_kb()
                 if self._ping_count % 480 == 0:
                     self._govdata_sync()
+                if self._ping_count % 30 == 0:
+                    self._dump_backup_snapshot()
+                if self._ping_count % 1440 == 0:
+                    self._daily_backup()
+                self._run_hooks()
             except Exception as e:
                 logger.error(f"Scheduler error: {e}")
             time.sleep(60)
+
+    def _dump_backup_snapshot(self):
+        """定期把 DB 快照寫回 docs/data/db_backup.json，讓 GitHub Action 抓得到
+        （否則快照只在部署時更新，兩次部署之間的流量/內容會隨 ephemeral 磁碟消失）。"""
+        try:
+            from .database import _dump_to_json
+            _dump_to_json()
+        except Exception as e:
+            logger.warning(f"Backup snapshot failed: {e}")
 
     def _auto_learn_kb(self):
         try:

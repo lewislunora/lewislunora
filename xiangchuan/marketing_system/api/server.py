@@ -253,6 +253,7 @@ def status():
         "platform_webhooks": platform_webhooks.status(),
         "database_type": "sqlite",
         "scheduler": scheduler.get_status_summary(),
+        "auto_engine": scheduler.auto_status(),
         "platforms": {k: (k in scheduler.connectors) for k in PLATFORMS},
         "build_fingerprint": "novel-fix-2026-09-29-a",
     }
@@ -2414,10 +2415,14 @@ def short_content_publish(post_id: int, request: Request):
 
 # ── Scheduler auto-promote task ─────────────────────────────────────────
 def _register_promo_task():
+    """把內容引擎（短文／SEO／小說日更／促銷）註冊成 scheduler 鉤子。
+
+    舊實作是 monkey-patch scheduler._loop，結果把 _loop 裡的 _keep_alive()
+    （Render 免費層保活）與其他鉤子一起覆蓋掉，導致排程睡著、內容停產。
+    現在改用 add_hook，_loop 本體保持單一來源。
+    """
     if not scheduler:
         return
-    import random
-    minute = random.randint(0, 59)
 
     def daily_promo():
         from ..config import GROQ_API_KEY
@@ -2436,8 +2441,8 @@ def _register_promo_task():
                 row = fetch_one("SELECT id FROM promo_queue ORDER BY id DESC LIMIT 1")
                 if row:
                     post_promo(row["id"])
-        except Exception:
-            pass
+        except Exception as e:
+            logger.warning(f"tick promo failed: {e}")
 
     def short_feed_tick():
         from ..config import GROQ_API_KEY
@@ -2445,9 +2450,11 @@ def _register_promo_task():
             return
         try:
             from ..services.short_content import auto_short_daily
-            auto_short_daily(max_per_day=2)
-        except Exception:
-            pass
+            r = auto_short_daily(max_per_day=2)
+            if not r.get("ok"):
+                logger.warning(f"tick short_feed: {r.get('error')}")
+        except Exception as e:
+            logger.warning(f"tick short_feed failed: {e}")
 
     def seo_article_tick():
         from ..config import GROQ_API_KEY
@@ -2455,9 +2462,11 @@ def _register_promo_task():
             return
         try:
             from ..services.seo_articles import auto_seo_daily
-            auto_seo_daily(max_per_day=1)
-        except Exception:
-            pass
+            r = auto_seo_daily(max_per_day=1)
+            if not r.get("ok"):
+                logger.warning(f"tick seo_article: {r.get('error')}")
+        except Exception as e:
+            logger.warning(f"tick seo_article failed: {e}")
 
     def novel_daily_tick():
         from ..config import GROQ_API_KEY
@@ -2471,39 +2480,17 @@ def _register_promo_task():
             for n in novels:
                 try:
                     eng.ensure_chapter(n["id"])
-                except Exception:
-                    pass
-        except Exception:
-            pass
+                except Exception as e:
+                    logger.warning(f"tick novel {n['id']} failed: {e}")
+        except Exception as e:
+            logger.warning(f"tick novel_daily failed: {e}")
 
-    original_loop = scheduler._loop
-
-    def patched_loop():
-        while scheduler.running:
-            try:
-                scheduler._process_pending()
-                scheduler._ping_count += 1
-                # 短內容引擎：每 15 分鐘試一次（auto_short_daily 內部有每日上限與冷啟動守門）
-                if scheduler._ping_count % 15 == 0:
-                    short_feed_tick()
-                # SEO 長尾文章：每 15 分鐘試（auto_seo_daily 內部每天 1 篇＋冷啟動首篇）
-                if scheduler._ping_count % 15 == 0:
-                    seo_article_tick()
-                # 小說：每 15 分鐘試（ensure_chapter 內部有每日限速，每部一天一章）
-                if scheduler._ping_count % 15 == 0:
-                    novel_daily_tick()
-                if scheduler._ping_count % 1440 == 0:
-                    scheduler._daily_backup()
-                if scheduler._ping_count % 60 == 0:
-                    scheduler._auto_learn_kb()
-                if scheduler._ping_count % 1440 == minute:
-                    daily_promo()
-            except Exception:
-                pass
-            time.sleep(60)
-
-    scheduler._loop = patched_loop
-
+    # 每 15 分鐘一輪：短內容／SEO／小說日更（各自服務內有每日上限守門）
+    scheduler.add_hook(15, "short_feed", short_feed_tick)
+    scheduler.add_hook(15, "seo_article", seo_article_tick)
+    scheduler.add_hook(15, "novel_chapter", novel_daily_tick)
+    # 促銷文案：每天一輪（daily_promo 內部有「當天已有就不重複」守門）
+    scheduler.add_hook(1440, "promo", daily_promo)
 
 # ── Web Roamer ──────────────────────────────────────────────────────────
 @app.get("/api/roam/search")
