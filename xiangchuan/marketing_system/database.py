@@ -3,6 +3,7 @@ import json
 import sqlite3
 import logging
 import threading
+import time
 from datetime import datetime
 from pathlib import Path
 from .config import DATABASE_PATH, DATABASE_BACKUP_PATH, DATA_DIR
@@ -670,6 +671,43 @@ def _seed_novels():
         logging.getLogger(__name__).warning(f"seed novels failed: {e}")
 
 
+_dump_lock = threading.Lock()
+_last_dump_at = {"ts": 0.0}
+DUMP_DEBOUNCE_SECONDS = 60
+
+
+def _maybe_dump(force: bool = False):
+    """寫入後節流地更新備份快照。
+
+    原本每次 execute() 都整份 dump，寫入量大時（例如 gov_rows 逐列寫入）
+    會變成 O(n²) 並拖垮請求；這裡改成最長每 60 秒 dump 一次，
+    30 分鐘的 GitHub Action 抓檔時仍拿到接近最新的內容。
+    """
+    now = time.time()
+    with _dump_lock:
+        if not force and now - _last_dump_at["ts"] < DUMP_DEBOUNCE_SECONDS:
+            return
+        _last_dump_at["ts"] = now
+    try:
+        _dump_to_json()
+    except Exception as e:
+        logger.warning(f"dump to json failed: {e}")
+
+
+def execute_many(sql, seq_of_params):
+    """批次寫入：整批只 commit 一次、只 dump 一次（給大量列的匯入用）。"""
+    rows = list(seq_of_params)
+    if not rows:
+        return 0
+    with _commit_lock:
+        conn = _conn()
+        cur = conn.executemany(sql, rows)
+        conn.commit()
+        conn.close()
+    _maybe_dump()
+    return cur.rowcount
+
+
 def execute(sql, params=None):
     with _commit_lock:
         conn = _conn()
@@ -677,10 +715,10 @@ def execute(sql, params=None):
         conn.commit()
         last_id = cur.lastrowid
         conn.close()
-        is_write = sql.strip().upper().startswith(("INSERT", "UPDATE", "DELETE"))
-        if is_write:
-            _dump_to_json()
-        return last_id
+    is_write = sql.strip().upper().startswith(("INSERT", "UPDATE", "DELETE"))
+    if is_write:
+        _maybe_dump()
+    return last_id
 
 
 def fetch(sql, params=None):

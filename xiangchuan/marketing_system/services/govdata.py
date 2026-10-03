@@ -14,7 +14,7 @@ import zipfile
 import requests
 
 from ..config import GROQ_API_KEY, GROQ_MODEL
-from ..database import execute, fetch, fetch_one
+from ..database import execute, execute_many, fetch, fetch_one
 
 logger = logging.getLogger(__name__)
 
@@ -246,12 +246,13 @@ def ingest(nid: str, force: bool = False) -> dict:
                     cols.append(k)
         cols = cols[:MAX_COLS]
         execute("DELETE FROM gov_rows WHERE nid=?", (nid,))
-        for idx, row in enumerate(rows):
-            slim = {c: (row.get(c) or "") for c in cols}
-            execute(
-                "INSERT INTO gov_rows (nid, row_idx, payload) VALUES (?,?,?)",
-                [nid, idx, json.dumps(slim, ensure_ascii=False, default=str)],
-            )
+        execute_many(
+            "INSERT INTO gov_rows (nid, row_idx, payload) VALUES (?,?,?)",
+            [
+                [nid, idx, json.dumps({c: (row.get(c) or "") for c in cols}, ensure_ascii=False, default=str)]
+                for idx, row in enumerate(rows)
+            ],
+        )
         execute(
             "INSERT INTO gov_datasets (nid, title, agency, columns_json, row_count, status, "
             "sample_json, ingested_at) VALUES (?,?,?,?,?,?,?, datetime('now')) "
