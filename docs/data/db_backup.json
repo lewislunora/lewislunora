@@ -283,9 +283,25 @@
       "ip": "127.0.0.1",
       "country": "",
       "visited_at": "2026-09-30 02:31:11"
+    },
+    {
+      "id": 7,
+      "page": "/lewislunora/product/",
+      "referrer": "",
+      "user_agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Trae/1.107.1 Chrome/142.0.7444.235 Electron/39.2.7 Safari/537.36",
+      "ip": "119.14.79.43",
+      "country": "Taiwan",
+      "visited_at": "2026-10-04 12:58:51"
     }
   ],
-  "geo_cache": [],
+  "geo_cache": [
+    {
+      "ip": "119.14.79.43",
+      "country": "Taiwan",
+      "city": "Taipei",
+      "cached_at": "2026-10-04 12:58:51"
+    }
+  ],
   "comments": [
     {
       "id": 1,
