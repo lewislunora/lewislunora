@@ -31,7 +31,7 @@ PAGES = [
     "/ai-brand/", "/register.html", "/login.html", "/tos.html",
     "/privacy.html", "/service-terms.html", "/security-portfolio.html",
     "/student/", "/stock-trading/", "/sitemap.xml",
-    "/govdata",
+    "/govdata", "/guides/google-indexing.html",
 ]
 
 PUBLIC_GET = [

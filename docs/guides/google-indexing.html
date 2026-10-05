@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>免費讓 Google 收錄你的網站｜Search Console 索引指南｜翔川 Neo</title>
+<meta name="description" content="免費的搜尋引擎收錄步驟：Google Search Console 驗證 sitemap、提交網址、免費索引。台灣一人公司也能做完，10 分鐘內完成設定。">
+<link rel="canonical" href="/guides/google-indexing.html">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang TC',system-ui,sans-serif;background:#0a0e27;color:#e8ecf4;line-height:1.85;padding:0 18px 80px}
+.wrap{max-width:760px;margin:0 auto}
+nav a{color:#00d4ff;text-decoration:none;font-size:14px;margin-right:16px;display:inline-block;margin:20px 0}
+h1{font-size:28px;margin:34px 0 10px;line-height:1.4}
+h2{font-size:20px;margin:38px 0 12px;padding-left:12px;border-left:3px solid #00d4ff}
+h3{font-size:16px;margin:22px 0 8px;color:#9fe8ff}
+p{color:rgba(232,236,244,.78);margin:12px 0}
+ol,ul{margin:12px 0 12px 22px;color:rgba(232,236,244,.78)}
+li{margin:7px 0}
+code{background:rgba(0,212,255,.1);border:1px solid rgba(0,212,255,.2);border-radius:5px;padding:2px 7px;font-size:13px;color:#7fe3ff;word-break:break-all}
+.box{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);border-radius:14px;padding:18px 20px;margin:20px 0}
+.warn{border-color:rgba(255,180,60,.35);background:rgba(255,180,60,.06)}
+.ok{border-color:rgba(52,211,153,.35);background:rgba(52,211,153,.06)}
+table{width:100%;border-collapse:collapse;margin:16px 0;font-size:14px}
+th,td{border:1px solid rgba(255,255,255,.1);padding:9px 11px;text-align:left}
+th{background:rgba(255,255,255,.04);color:#9fe8ff}
+a{color:#00d4ff}
+.kbd{display:inline-block;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.15);border-radius:6px;padding:1px 7px;font-size:13px}
+</style>
+</head>
+<body>
+<div class="wrap">
+<nav><a href="/">← 回首頁</a><a href="/guides/">← 全部指南</a><a href="/sitemap.xml">sitemap</a></nav>
+
+<h1>免費讓 Google 收錄你的網站</h1>
+<p>這是所有免費推廣裡<b>唯一會累積、不會歸零</b>的一條路：別人在 Google 搜到你，你不用再花錢買流量。這篇是給台灣一人公司的 10 分鐘設定步驟，不需要寫程式、也不用花錢。</p>
+
+<div class="box ok">
+<b>先講結論：</b>搜尋引擎不會自己知道你的網站存在。你要做兩件事——<b>①證明這站是你的</b>（Search Console 驗證）、<b>②交出入口地圖</b>（sitemap）。做完之後，新文章與新頁面會被自動發現。
+</div>
+
+<h2>第 1 步：新增網站資源（免費）</h2>
+<ol>
+<li>開啟 <a href="https://search.google.com/search-console" target="_blank" rel="noopener">search.google.com/search-console</a>，用 Google 帳號登入。</li>
+<li>左側選「網址前綴」型別，輸入 <code>https://lewislunora.onrender.com/</code>（<b>要有 https 與尾斜線</b>）。</li>
+<li>Google 會給你一個驗證方式。選<b>「HTML 標記」</b>最簡單：把整行 <code>&lt;meta name="google-site-verification" content="…"&gt;</code> 貼進首頁 <code>&lt;head&gt;</code>。</li>
+</ol>
+<div class="box">
+把上面那行 meta 交給我，我可以直接幫你插到首頁，10 秒完成。也可以自己貼在 <code>&lt;title&gt;</code> 下方第一行。
+</div>
+
+<h2>第 2 步：提交 sitemap（關鍵動作）</h2>
+<ol>
+<li>Search Console 左側「網站資訊檢索」→「Sitemap」。</li>
+<li>輸入 <code>https://lewislunora.onrender.com/sitemap.xml</code> 按提交。</li>
+<li>狀態顯示「成功」就完成了。之後你每次新增頁面（例如新的職人筆記），都會被這份 sitemap 帶進來。</li>
+</ol>
+<div class="box warn">
+<b>為什麼這步最重要：</b>沒有 sitemap，Google 只能靠連結自己爬，而你的網站是單頁應用（內容由 API 動態產生），爬蟲看不到那些內頁。sitemap 是你把入口一次交清楚的方式。
+</div>
+
+<h2>第 3 步：讓重要頁面單獨被收錄</h2>
+<p>「網站資訊檢索」→「網址檢查」→貼上網址 →按「要求索引」。優先順序：</p>
+<table>
+<tr><th>優先</th><th>網址</th><th>為什麼</th></tr>
+<tr><td>1</td><td><code>/</code></td><td>品牌主頁，決定你被點進來的標題與摘錄</td></tr>
+<tr><td>2</td><td><code>/guides/</code></td><td>長文集中處，最容易被搜到「維運／備份／AI 自動化」這類關鍵字</td></tr>
+<tr><td>3</td><td><code>/thoughts/</code></td><td>每日更新的職人筆記，長尾流量來源</td></tr>
+<tr><td>4</td><td><code>/govdata</code></td><td>政府開放資料分析，屬低競爭關鍵字</td></tr>
+<tr><td>5</td><td><code>/novels.html</code></td><td>每日連載小說，帶回 daily readers</td></tr>
+</table>
+
+<h2>第 4 步：免費再加速（Bing / IndexNow）</h2>
+<p>Bing 也接受同一份 sitemap，而且索引速度通常比 Google 快。它們的免費即時通知協定叫 IndexNow：</p>
+<ul>
+<li>申請一組 IndexNow key（免費、信箱驗證即可）。</li>
+<li>把 key 檔放到網站根目錄，之後每次發布新文章就 POST 通知 Bing，幾分鐘內可被收錄。</li>
+</ul>
+<p>想要我接上 IndexNow 就跟我說（需要你提供 key，其餘我寫）。</p>
+
+<h2>第 5 步：確認有被收錄（1～3 天）</h2>
+<ul>
+<li>Search Console 左側「成效」→ 用「查詢」看曝光與點擊。</li>
+<li>或在 Google 搜尋 <code>site:lewislunora.onrender.com</code>，列出已被收錄的頁面。</li>
+</ul>
+
+<h2>常見卡關點</h2>
+<table>
+<tr><th>症狀</th><th>原因</th><th>解法</th></tr>
+<tr><td>驗證一直失敗</td><td>meta 貼錯位置或被快取</td><td>確認在 <code>&lt;head&gt;</code> 內、加cache-busting 參數重整</td></tr>
+<tr><td>Sitemap「已發現但未索引」</td><td>頁面內容由 JS 產生，爬蟲看不到文字</td><td>本站已為主要頁面預先產生靜態 HTML，長文另有獨立網址頁</td></tr>
+<tr><td>沒有曝光</td><td>頁面沒有被排在前面</td><td>正常，收錄後要靠標題／摘要關鍵字佈局，見下面第 6 步</td></tr>
+</table>
+
+<h2>第 6 步：讓被收錄的頁面真的排得上（關鍵字）</h2>
+<p>每個頁面的 <code>&lt;title&gt;</code> 與 <code>meta description</code> 要像「有人在搜這句話」，而不是像公司公告。例：</p>
+<ul>
+<li>❌「翔川 Neo｜AI 自動化解決方案」</li>
+<li>✅「資料庫備份還原失敗怎麼辦｜完整排查步驟｜翔川 Neo」</li>
+</ul>
+<p>本站的職人筆記就是照這個原則命名（一篇一個明確搜尋詞），這是免費自然流量最快累積的內容來源。</p>
+
+<div class="box">
+<b>一句話總結：</b>先做第 1、2 步（10 分鐘、免費），之後每篇新文章都會被自動發現。這是所有免費管道裡唯一「做一次、一直有效」的。
+</div>
+<p style="margin-top:26px"><a href="/guides/">看更多免費指南 →</a>　<a href="/">回首頁試用 →</a></p>
+</div>
+</body>
+</html>

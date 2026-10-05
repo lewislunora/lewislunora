@@ -473,9 +473,16 @@ footer .wrap{display:flex;flex-wrap:wrap;gap:.8rem;justify-content:space-between
   <h1><span class="line1">每天幫你省下 4 小時</span><span class="line2">的 AI 自動化系統</span></h1>
   <p>從 AI 智能客服到行銷自動化，幫你把重複庶務交給系統，專注在真正賺錢的核心業務。已協助多位超級個體打造 24/7 自動化賺錢引擎。</p>
   <div class="hero-actions">
-    <a href="#contact" class="btn btn-primary">📩 免費預約 30 分鐘 AI 盤點</a>
-    <a href="https://line.me/oa/p/YOUR_LINE_OA_ID/" class="btn btn-line">💬 LINE 直接諮詢</a>
-    <a href="product/" class="btn btn-outline">看解決方案</a>
+    <a href="ai-chat.html" class="btn btn-primary">🤖 立刻試用（免費、不用註冊）</a>
+    <a href="#contact" class="btn btn-outline">📩 免費預約 30 分鐘 AI 盤點</a>
+  </div>
+  <div class="hero-entry" style="text-align:center;font-size:13px;opacity:.65;margin-top:1rem;line-height:2">
+    不想聊天也行，直接用：<a href="ai-chat.html">AI 助理</a> ・
+    <a href="govdata">政府開放資料問答</a> ・ <a href="novels.html">每日連載小說</a> ・
+    <a href="thoughts/">每日職人筆記</a>
+  </div>
+  <div class="hero-live" id="heroLive" style="text-align:center;font-size:12px;opacity:.45;margin-top:.6rem">
+    本站內容每天由 AI 自動產生 ↓
   </div>
   <div class="bento-stats">
     <div class="bento-stat"><span class="bento-stat-num">已協助多位 solopreneur 建置 AI 系統</span></div>
@@ -967,6 +974,26 @@ function handleContact(e){
 </script>
 <script>
 /* Service Worker — auto-updates without clearing cache */
+/* 首頁即時數字：證明本站每天真的在自動產出（不用假數字） */
+(function(){
+  var el=document.getElementById('heroLive');
+  if(!el) return;
+  Promise.all([
+    fetch('/api/status').then(function(r){return r.json();}).catch(function(){return null;}),
+    fetch('/api/novels').then(function(r){return r.json();}).catch(function(){return null;})
+  ]).then(function(res){
+    var st=res[0], nv=res[1];
+    if(!st||!st.auto_engine) return;
+    var t=st.auto_engine.ticks||{};
+    var ok=Object.keys(t).filter(function(k){return t[k]&&t[k].ok;}).length;
+    var chapters=((nv&&nv.items)||[]).reduce(function(a,n){return a+(n.chapter_count||0);},0);
+    var parts=['⏱ 自動引擎 '+Object.keys(t).length+' 個，'+ok+' 個最近一次執行成功'];
+    if(chapters) parts.push('📖 小說已自動連載 '+chapters+' 章');
+    el.textContent=parts.join('｜');
+  });
+})();
+</script>
+<script>
 if ('serviceWorker' in navigator) {
   navigator.serviceWorker.register('sw.js?v=20260801').catch(function(){});
 }

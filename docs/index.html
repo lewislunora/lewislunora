@@ -529,7 +529,11 @@ footer .wrap{display:flex;flex-wrap:wrap;gap:.8rem;justify-content:space-between
 .hero-entry{font-size:12px;letter-spacing:.5px;color:rgba(255,255,255,.45);margin-top:1.2rem}
 .hero-cta-single{display:flex;flex-direction:column;align-items:center;gap:.7rem;margin-top:1.6rem}
 .hero-cta-single .btn-primary{font-size:15px;padding:.9rem 2.2rem}
-.hero-cta-single .sub-line{font-size:12.5px;color:rgba(255,255,255,.45);letter-spacing:.3px}
+.hero-cta-single .sub-line{font-size:12.5px;color:rgba(255,255,255,.45);letter-spacing:.3px;text-align:center;line-height:1.9}
+.hero-cta-single .sub-line a{color:#00d4ff;text-decoration:none}
+.hero-cta-single .sub-line a:hover{text-decoration:underline}
+.hero-secondary{font-size:13px;padding:.7rem 1.6rem}
+.hero-live{font-size:12px;color:rgba(255,255,255,.4);letter-spacing:.2px;margin-top:.3rem}
 .ai-demo-wrap{width:min(460px,92vw);margin:1.6rem auto 0;position:relative;z-index:1}
 .ai-demo{background:rgba(10,15,38,.82);border:1px solid rgba(0,212,255,.2);border-radius:16px;overflow:hidden;box-shadow:0 16px 50px rgba(0,0,0,.35),0 0 0 1px rgba(0,212,255,.06)}
 .ai-demo-head{display:flex;align-items:center;gap:.5rem;padding:.7rem .9rem;border-bottom:1px solid rgba(0,212,255,.12);font-size:12px;font-weight:600;color:rgba(255,255,255,.7)}
@@ -824,15 +828,21 @@ html[data-mood="light"] .ai-demo-form input::placeholder{color:rgba(26,26,46,.3)
   <h1><span class="line1">員工下班了，客戶沒下班</span><span class="line2">AI 幫你值這班機</span></h1>
   <p>我是 <b>Lewis Lunora</b> — 10+ 年 DevOps 架構師 × AI 整合。下面這個客服你打一句話它就會回，這就是我幫一人公司裝的系統：24/7 不漏單、能查價格、能發文。</p>
   <div class="hero-cta-single">
-    <a href="#contact" class="btn btn-primary">📩 免費聊聊 30 分鐘</a>
-    <span class="sub-line">不確定要裝什麼？先 <a href="#plans" style="color:#00d4ff">看三種做法</a>，或滑下去直接玩。</span>
+    <a href="#demo" class="btn btn-primary">🤖 立刻試用（免費、不用註冊）</a>
+    <div class="sub-line">
+      不想聊天也行，直接用：<a href="ai-chat.html" style="color:#00d4ff">AI 助理</a> ・
+      <a href="govdata" style="color:#00d4ff">政府開放資料問答</a> ・
+      <a href="novels.html" style="color:#00d4ff">每日連載小說</a>
+    </div>
+    <a href="#contact" class="btn btn-outline hero-secondary">📩 免費聊聊 30 分鐘（要我幫你裝）</a>
+    <div class="hero-live" id="heroLive">本站的內容每天由 AI 自動產生 ↓</div>
   </div>
   <div class="bento-stats">
     <div class="bento-stat"><div class="bento-stat-num">24/7</div><div class="bento-stat-label">不休息的客服</div></div>
     <div class="bento-stat"><div class="bento-stat-num">&lt;3s</div><div class="bento-stat-label">平均回覆</div></div>
     <div class="bento-stat"><div class="bento-stat-num">4 hr</div><div class="bento-stat-label">每天省下的工</div></div>
   </div>
-  <div class="ai-demo-wrap" aria-label="AI 客服即時示範">
+  <div class="ai-demo-wrap" id="demo" aria-label="AI 客服即時示範">
     <div class="ai-demo">
       <div class="ai-demo-head"><span class="ai-chat-dot"></span>翔川 AI 客服 · 真後端在回你，不是動畫</div>
       <div class="ai-demo-body" id="demoBody"></div>
@@ -1440,6 +1450,27 @@ function handleContact(e){
   })
   .catch(function(){
     box.innerHTML='<div class="feed-empty">動態載入失敗</div>';
+  });
+})();
+</script>
+<script>
+/* 首頁即時數字：證明本站每天真的在自動產出（不用假數字） */
+(function(){
+  var el=document.getElementById('heroLive');
+  if(!el) return;
+  Promise.all([
+    fetch('/api/status').then(function(r){return r.json();}).catch(function(){return null;}),
+    fetch('/api/novels').then(function(r){return r.json();}).catch(function(){return null;})
+  ]).then(function(res){
+    var st=res[0], nv=res[1];
+    if(!st) return;
+    var t=(st.auto_engine&&st.auto_engine.ticks)||{};
+    var ok=Object.keys(t).filter(function(k){return t[k]&&t[k].ok;}).length;
+    var chapters=(nv&&nv.items||[]).reduce(function(a,n){return a+(n.chapter_count||0);},0);
+    var parts=['⏱ 排程運作中：短文／SEO／小說／推播 共 '+Object.keys(t).length+' 個引擎，'
+      +ok+' 個最近一次執行成功'];
+    if(chapters) parts.push('📖 小說已自動連載 '+chapters+' 章');
+    el.textContent=parts.join('｜');
   });
 })();
 </script>
