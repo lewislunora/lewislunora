@@ -165,8 +165,16 @@ class SerialNovelEngine:
             "SELECT created_at FROM novel_chapters WHERE novel_id=? ORDER BY chapter_number DESC LIMIT 1",
             (novel_id,),
         )
-        now = time.strftime("%Y-%m-%d")
-        if last_row and last_row["created_at"] >= now and chapter_no >= novel["chapter_count"] + 1:
+        # 每日可產兩更（上午／傍晚兩個時段），以台灣日界計算
+        from .dayparts import now_tw
+        today = now_tw().strftime("%Y-%m-%d")
+        today_count = fetch_one(
+            "SELECT COUNT(*) AS c FROM novel_chapters WHERE novel_id=? "
+            "AND date(created_at,'+8 hours')=date('now','+8 hours')",
+            [novel_id],
+        )["c"]
+        if (last_row and today_count >= 2
+                and chapter_no >= novel["chapter_count"] + 1):
             # 今天已產過新章，直接回最新章（並同步滯留計數）
             latest = fetch_one(
                 "SELECT * FROM novel_chapters WHERE novel_id=? ORDER BY chapter_number DESC LIMIT 1",

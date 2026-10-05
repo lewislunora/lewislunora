@@ -450,6 +450,14 @@ CREATE TABLE IF NOT EXISTS social_identities (
         CREATE UNIQUE INDEX IF NOT EXISTS idx_channel_pushes_key
             ON channel_pushes(item_key, channel);
 
+        CREATE TABLE IF NOT EXISTS daily_slots (
+            kind TEXT NOT NULL,
+            slot TEXT NOT NULL,
+            day TEXT NOT NULL,
+            at TEXT DEFAULT (datetime('now')),
+            PRIMARY KEY (kind, slot, day)
+        );
+
         CREATE TABLE IF NOT EXISTS site_settings (
             key TEXT PRIMARY KEY,
             value TEXT DEFAULT '',

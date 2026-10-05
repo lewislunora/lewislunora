@@ -39,7 +39,7 @@
   }
 }
 </script>
-<link rel="stylesheet" href="widget.css?v=20260801">
+<link rel="stylesheet" href="widget.css?v=20261005">
 <style>
 *{margin:0;padding:0;box-sizing:border-box;scroll-behavior:smooth}
 :root{
@@ -534,6 +534,8 @@ footer .wrap{display:flex;flex-wrap:wrap;gap:.8rem;justify-content:space-between
 .hero-cta-single .sub-line a:hover{text-decoration:underline}
 .hero-secondary{font-size:13px;padding:.7rem 1.6rem}
 .hero-live{font-size:12px;color:rgba(255,255,255,.4);letter-spacing:.2px;margin-top:.3rem}
+.hero-partchip{display:inline-block;font-size:11.5px;letter-spacing:.6px;padding:.28rem .7rem;border-radius:999px;margin-bottom:.9rem;border:1px solid var(--accent-glow);color:var(--accent);background:var(--accent-soft)}
+html[data-mood="light"] .hero-partchip{color:#0e7490;border-color:rgba(2,132,199,.3);background:rgba(2,132,199,.07)}
 .ai-demo-wrap{width:min(460px,92vw);margin:1.6rem auto 0;position:relative;z-index:1}
 .ai-demo{background:rgba(10,15,38,.82);border:1px solid rgba(0,212,255,.2);border-radius:16px;overflow:hidden;box-shadow:0 16px 50px rgba(0,0,0,.35),0 0 0 1px rgba(0,212,255,.06)}
 .ai-demo-head{display:flex;align-items:center;gap:.5rem;padding:.7rem .9rem;border-bottom:1px solid rgba(0,212,255,.12);font-size:12px;font-weight:600;color:rgba(255,255,255,.7)}
@@ -703,6 +705,18 @@ html[data-mood="light"] .ai-demo-form input::placeholder{color:rgba(26,26,46,.3)
   var mood=(h>=6&&h<18)?'light':'dark';
   document.documentElement.setAttribute('data-mood',mood);
 
+  /* 時段配色：清晨／上午／中午／下午／傍晚／夜晚各有色調，讓「一天的變化」看得見 */
+  var dayparts=[
+    {k:'dawn',      label:'清晨', accent:'#38bdf8', accent2:'#a5b4fc'},
+    {k:'morning',   label:'上午', accent:'#22d3ee', accent2:'#34d399'},
+    {k:'noon',      label:'中午', accent:'#facc15', accent2:'#fb923c'},
+    {k:'afternoon', label:'下午', accent:'#60a5fa', accent2:'#818cf8'},
+    {k:'evening',   label:'傍晚', accent:'#fb7185', accent2:'#c084fc'},
+    {k:'night',     label:'夜晚', accent:'#818cf8', accent2:'#22d3ee'}
+  ];
+  var partKey=h<5?'night':h<8?'dawn':h<12?'morning':h<14?'noon':h<18?'afternoon':h<21?'evening':'night';
+  var part=dayparts.filter(function(p){return p.k===partKey})[0];
+
   /* 季節 */
   var seasons=[
     {m:[3,4,5],label:'春季',accent:'#2dd4bf',accent2:'#a7f3d0'},
@@ -731,8 +745,8 @@ html[data-mood="light"] .ai-demo-form input::placeholder{color:rgba(26,26,46,.3)
     var diff=Math.round((today-Hd)/86400000);
     if(diff>=-1&&diff<=0){holiday=H;break;}   /* 節日當天與前一天就切換 */
   }
-  var accent=holiday?holiday.accent:season.accent;
-  var accent2=holiday?holiday.accent2:season.accent2;
+  var accent=holiday?holiday.accent:part.accent;
+  var accent2=holiday?holiday.accent2:part.accent2;
 
   /* 時段問候 */
   var greetMsg=
@@ -747,10 +761,18 @@ html[data-mood="light"] .ai-demo-form input::placeholder{color:rgba(26,26,46,.3)
   var badgeText=((holiday?(holiday.icon+' '+holiday.label+' · '):'')
       +greetMsg
       +(season.label==='夏季'||season.label==='冬季'?'':' · '+season.label)).replace(/undefined|NaN/g,'');
+  /* 時段指示（固定顯示，讓人看得出現在是早/中/晚哪一段） */
+  var partChip=document.createElement('div');
+  partChip.className='hero-partchip';
+  partChip.textContent=part.label+'時段 · 每天 '+dayparts.map(function(d){return d.label;}).join('／');
   function updateBadge(){
     var badge=document.getElementById('heroBadge');
     if(!badge)return;
     badge.textContent=badgeText;
+    var old=document.querySelector('.hero-partchip');
+    if(old)old.remove();
+    var hero=document.querySelector('.hero');
+    if(hero)hero.insertBefore(partChip,hero.firstChild.nextSibling);
   }
   if(document.readyState!=='loading')updateBadge();
   else document.addEventListener('DOMContentLoaded',updateBadge);
@@ -776,8 +798,11 @@ html[data-mood="light"] .ai-demo-form input::placeholder{color:rgba(26,26,46,.3)
   setInterval(function(){
     var nh=new Date().getHours();
     var nm=(nh>=6&&nh<18)?'light':'dark';
-    if(nm!==mood)location.reload();
-  },15*60*1000);
+    if(nm!==mood){location.reload();return;}
+    /* 時段切換（清晨→上午…）只換色與指示，不重載頁面 */
+    var nk=nh<5?'night':nh<8?'dawn':nh<12?'morning':nh<14?'noon':nh<18?'afternoon':nh<21?'evening':'night';
+    if(nk!==partKey){location.reload();}
+  },60*1000);
 })();
 </script>
 <div class="cursor" id="cursor"></div>
@@ -1243,10 +1268,10 @@ html[data-mood="light"] .ai-demo-form input::placeholder{color:rgba(26,26,46,.3)
 </div>
 
 <script src="https://accounts.google.com/gsi/client" async defer></script>
-<script src="share.js?v=20260801"></script>
-<script src="widget.js?v=20260801"></script>
-<script src="js/feed.js?v=20260801"></script>
-<script src="js/features.js?v=20260801"></script>
+<script src="share.js?v=20261005"></script>
+<script src="widget.js?v=20261005"></script>
+<script src="js/feed.js?v=20261005"></script>
+<script src="js/features.js?v=20261005"></script>
 <script>
 /* Cross-platform auto-detection */
 (function(){
@@ -1477,7 +1502,7 @@ function handleContact(e){
 <script>
 /* Service Worker — auto-updates without clearing cache */
 if ('serviceWorker' in navigator) {
-  navigator.serviceWorker.register('sw.js?v=20260801').catch(function(){});
+  navigator.serviceWorker.register('sw.js?v=20261005').catch(function(){});
 }
 </script>
 </body>

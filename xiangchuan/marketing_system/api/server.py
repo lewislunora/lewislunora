@@ -2462,26 +2462,46 @@ def _register_promo_task():
             logger.warning(f"tick promo failed: {e}")
 
     def short_feed_tick():
+        """短文：清晨／中午／傍晚各一篇（台灣時段）。"""
         from ..config import GROQ_API_KEY
         if not GROQ_API_KEY:
             return
         try:
+            from ..services.dayparts import mark_slot, should_run
+            gate = should_run("short")
+            if not gate["run"]:
+                return
             from ..services.short_content import auto_short_daily
-            r = auto_short_daily(max_per_day=2)
+            r = auto_short_daily(max_per_day=4)
+            if r.get("skipped"):
+                return
             if not r.get("ok"):
                 logger.warning(f"tick short_feed: {r.get('error')}")
+                return
+            mark_slot("short", gate["slot"])
+            logger.info(f"tick short_feed: 產出完成（{gate['reason']}）")
         except Exception as e:
             logger.warning(f"tick short_feed failed: {e}")
 
     def seo_article_tick():
+        """長文：每天上午一篇（台灣時段）。"""
         from ..config import GROQ_API_KEY
         if not GROQ_API_KEY:
             return
         try:
+            from ..services.dayparts import mark_slot, should_run
+            gate = should_run("seo")
+            if not gate["run"]:
+                return
             from ..services.seo_articles import auto_seo_daily
-            r = auto_seo_daily(max_per_day=1)
+            r = auto_seo_daily(max_per_day=3)
+            if r.get("skipped"):
+                return
             if not r.get("ok"):
                 logger.warning(f"tick seo_article: {r.get('error')}")
+                return
+            mark_slot("seo", gate["slot"])
+            logger.info(f"tick seo_article: 產出完成（{gate['reason']}）")
         except Exception as e:
             logger.warning(f"tick seo_article failed: {e}")
 
@@ -2490,15 +2510,24 @@ def _register_promo_task():
         if not GROQ_API_KEY:
             return
         try:
+            from ..services.dayparts import mark_slot, should_run
+            gate = should_run("novel")
+            if not gate["run"]:
+                return
             from ..services.serial_novel import SerialNovelEngine, repair_novel_state
             eng = SerialNovelEngine()
             repair_novel_state()
             novels = fetch("SELECT id FROM novels WHERE status='serializing'")
+            wrote = 0
             for n in novels:
                 try:
-                    eng.ensure_chapter(n["id"])
+                    _ch, is_new = eng.ensure_chapter(n["id"])
+                    wrote += 1 if is_new else 0
                 except Exception as e:
                     logger.warning(f"tick novel {n['id']} failed: {e}")
+            if wrote:
+                mark_slot("novel", gate["slot"])
+                logger.info(f"tick novel_chapter: {wrote} 部有新章（{gate['reason']}）")
         except Exception as e:
             logger.warning(f"tick novel_daily failed: {e}")
 
@@ -2993,6 +3022,13 @@ def govdata_analyze(nid: str):
 def govdata_recent(limit: int = 8):
     from ..services.govdata import recent_analyzed
     return {"items": recent_analyzed(limit=min(limit, 30))}
+
+
+@app.get("/api/dayparts")
+def api_dayparts():
+    """每日內容的時段排程狀態（台灣時間）。"""
+    from ..services.dayparts import overview
+    return overview()
 
 
 @app.get("/api/promo/channels")

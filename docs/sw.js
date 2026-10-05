@@ -1,6 +1,6 @@
 /* Service Worker: network-first for pages, stale-while-revalidate for assets.
    Prevents users from seeing stale versions after deploys (no manual cache clearing). */
-const VERSION = 'v20260801';
+const VERSION = 'v20261005';
 const CACHE_NAME = 'lewis-' + VERSION;
 
 self.addEventListener('install', function(e) {

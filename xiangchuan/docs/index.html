@@ -13,11 +13,33 @@
 <link rel="alternate" type="application/rss+xml" title="翔川 Neo RSS" href="/feed.xml">
 <meta property="og:title" content="翔川 Neo｜AI 自動化幫一人公司每天省 4 小時">
 <meta property="og:description" content="專為一人公司設計的 AI 自動化系統。AI 客服 + 行銷自動化 + 技術架構，讓你專注賺錢。">
-<meta property="og:image" content="/assets/og-image.svg">
-<meta property="og:url" content="/">
+<meta property="og:image" content="https://lewislunora.onrender.com/assets/og-image.png">
+<meta property="og:url" content="https://lewislunora.onrender.com/">
 <meta property="og:type" content="website">
 <meta name="twitter:card" content="summary_large_image">
-<link rel="stylesheet" href="widget.css?v=20260801">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Person",
+  "name": "Lewis Lunora",
+  "alternateName": "翔川 Neo",
+  "jobTitle": "Founder · Chief Architect · AI Automation Consultant",
+  "description": "10+ 年 DevOps、Kubernetes、GCP 雲端架構與 AI 系統整合。協助一人公司建置 24/7 AI 自動化系統。",
+  "knowsAbout": ["Kubernetes", "Docker", "GCP", "CI/CD", "AI integration", "AI automation", "solopreneur systems"],
+  "url": "https://lewislunora.onrender.com/",
+  "sameAs": [
+    "https://github.com/lewislunora",
+    "https://t.me/lewislunora"
+  ],
+  "worksFor": {
+    "@type": "ProfessionalService",
+    "name": "翔川 Neo",
+    "description": "AI 自動化與技術架構服務，專為一人公司與超級個體設計",
+    "priceRange": "NT$30K - NT$150K"
+  }
+}
+</script>
+<link rel="stylesheet" href="widget.css?v=20261005">
 <style>
 *{margin:0;padding:0;box-sizing:border-box;scroll-behavior:smooth}
 :root{
@@ -85,6 +107,8 @@ a{color:inherit;text-decoration:none}
   #particle-canvas{opacity:.4}
   .nav-brand{color:rgba(26,26,46,.5)}.nav-links a{color:rgba(26,26,46,.45)}.nav-links a:hover{color:#1a1a2e}
   .nav-links a::after{background:#1a1a2e}
+  nav{background:rgba(255,255,255,.78)!important;border-bottom-color:rgba(0,212,255,.25)!important;box-shadow:0 8px 30px rgba(0,0,0,.08)!important}
+  nav::before{background:linear-gradient(90deg,transparent,rgba(0,212,255,.5),rgba(123,104,238,.5),transparent)}
   .lang-select{background:rgba(0,0,0,.03);border-color:rgba(0,0,0,.06);color:rgba(26,26,46,.45)}
   .hero h1 .line1{background:linear-gradient(135deg,#1a1a2e 0%,rgba(26,26,46,.3) 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
   .hero p,.section-sub,.pain-card p,.svc-card p,.plan-desc,.plan-feats li,.founder-info p,.cta-form-wrap .desc{color:rgba(26,26,46,.45)!important}
@@ -110,6 +134,22 @@ a{color:inherit;text-decoration:none}
   .btn-outline:hover{background:rgba(0,0,0,.02);border-color:rgba(0,212,255,.3);color:#1a1a2e}
   .btn-line{background:#06c755;color:#fff}
   .faq-a{color:rgba(26,26,46,.4)!important}
+  /* ── 補齊所有在亮色模式殘留白字的元素（原本是深底白字，切淺底後不可見）── */
+  .hero h1 .line1{background:linear-gradient(135deg,#1a1a2e 0%,rgba(26,26,46,.35) 100%)!important;-webkit-background-clip:text!important;-webkit-text-fill-color:transparent!important}
+  .hero-badge{color:rgba(26,26,46,.6)!important;background:rgba(0,212,255,.1)!important;border-color:rgba(0,212,255,.3)!important}
+  .bento-stat-label{color:rgba(26,26,46,.45)!important}
+  .svc-card .svc-meta{color:rgba(26,26,46,.35)!important}
+  .result-label{color:rgba(26,26,46,.45)!important}
+  .achieve-label{color:rgba(26,26,46,.45)!important}
+  .case-prob{color:rgba(26,26,46,.5)!important}
+  .case-sol{color:rgba(26,26,46,.6)!important}
+  .case-sol strong{color:#6d5bd0}
+  .work-desc{color:rgba(26,26,46,.55)!important}
+  .process-step p{color:rgba(26,26,46,.55)!important}
+  .feed-mini .feed-head{color:rgba(26,26,46,.5)!important}
+  .feed-mini .feed-head .autor{color:#1a1a2e!important}
+  .feed-mini .feed-body{color:#2b3345!important}
+  .feed-empty{color:rgba(26,26,46,.45)!important}
 }
 @media(max-width:768px){
   :root{--fs-mega:clamp(28px,7vw,44px);--fs-hero:clamp(22px,5.5vw,36px);--fs-lg:clamp(18px,4vw,28px);--fs-base:clamp(15px,3.5vw,18px)}
@@ -140,6 +180,7 @@ nav::before{
 .nav-brand{font-size:20px;font-weight:800;letter-spacing:1px;color:rgba(255,255,255,.8)}
 .nav-brand em{font-style:normal;background:linear-gradient(135deg,#00d4ff,#7b68ee);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
 .nav-links{display:flex;gap:1.5rem;align-items:center}
+.nav-right{display:flex;align-items:center;gap:1rem}
 .nav-links a{color:rgba(255,255,255,.5);font-size:13px;transition:color .3s;letter-spacing:.5px;position:relative}
 .nav-links a::after{content:'';position:absolute;bottom:-3px;left:0;width:0;height:1.5px;background:#00d4ff;transition:width .3s}
 .nav-links a:hover{color:#fff}
@@ -229,8 +270,6 @@ nav::before{
 .bento-stat:hover{background:var(--glass-hover);border-color:rgba(0,212,255,.12);transform:translateY(-2px)}
 .bento-stat-num{font-size:var(--fs-lg);font-weight:700;background:linear-gradient(135deg,#00d4ff,#7b68ee);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
 .bento-stat-label{font-size:11px;color:rgba(255,255,255,.35);margin-top:2px;letter-spacing:.8px;text-transform:uppercase}
-.bento-stat:first-child{grid-column:1/-1;display:flex;align-items:center;justify-content:center;gap:.4rem;padding:.5rem .8rem}
-.bento-stat:first-child .bento-stat-num{-webkit-text-fill-color:#e8ecf4;background:none;font-size:13px;font-weight:600}
 
 /* Hero AI visual */
 .hero-visual{position:relative;margin:2rem auto 0;width:min(460px,92vw);text-align:left;z-index:1}
@@ -342,8 +381,7 @@ nav::before{
 .plan-note{text-align:center;color:rgba(255,255,255,.3);font-size:var(--fs-xs);margin-top:1.2rem;letter-spacing:.3px}
 
 /* Results — concrete metrics */
-.results-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:.7rem;max-width:800px;margin:0 auto}
-.result-card{background:linear-gradient(160deg,rgba(255,255,255,.05),rgba(255,255,255,.015));border:1px solid rgba(0,212,255,.09);border-radius:var(--radius-md);padding:1.5rem;text-align:center;transition:all .3s;backdrop-filter:blur(8px);box-shadow:inset 0 1px 0 rgba(255,255,255,.06)}
+.results-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:.7rem;max-width:800px;margin:0 auto}.result-card{background:linear-gradient(160deg,rgba(255,255,255,.05),rgba(255,255,255,.015));border:1px solid rgba(0,212,255,.09);border-radius:var(--radius-md);padding:1.5rem;text-align:center;transition:all .3s;backdrop-filter:blur(8px);box-shadow:inset 0 1px 0 rgba(255,255,255,.06)}
 .result-card:hover{background:linear-gradient(160deg,rgba(0,212,255,.08),rgba(123,104,238,.04));border-color:rgba(0,212,255,.2);transform:translateY(-3px);box-shadow:0 8px 24px rgba(0,212,255,.08)}
 .result-num{font-size:var(--fs-hero);font-weight:800;background:linear-gradient(135deg,#00d4ff,#7b68ee);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:.3rem}
 .result-label{font-size:var(--fs-xs);color:rgba(255,255,255,.3);letter-spacing:.5px}
@@ -360,6 +398,43 @@ nav::before{
 .founder-chips{display:flex;gap:.35rem;flex-wrap:wrap}
 .founder-chips .chip{display:inline-flex;align-items:center;gap:3px;background:var(--glass-bg);border:1px solid var(--glass-border);border-radius:6px;padding:.3rem .8rem;font-size:12px;color:rgba(255,255,255,.4);letter-spacing:.3px;backdrop-filter:blur(4px);transition:all .2s}
 .founder-chips .chip:hover{background:var(--glass-hover);border-color:rgba(0,212,255,.12);color:#fff}
+
+/* ─── Personal Brand Showcase ─── */
+/* Achievement metric strip */
+.achieve-strip{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:.7rem;max-width:960px;margin:1.2rem auto 0}
+.achieve-item{background:linear-gradient(160deg,rgba(0,212,255,.07),rgba(123,104,238,.04));border:1px solid rgba(0,212,255,.12);border-radius:var(--radius-md);padding:1.1rem 1.2rem;text-align:center;backdrop-filter:blur(10px);box-shadow:inset 0 1px 0 rgba(255,255,255,.06);transition:all .3s}
+.achieve-item:hover{transform:translateY(-3px);border-color:rgba(0,212,255,.28)}
+.achieve-num{font-size:1.7rem;font-weight:800;background:linear-gradient(135deg,#00d4ff,#7b68ee);-webkit-background-clip:text;-webkit-text-fill-color:transparent;display:block;line-height:1.1}
+.achieve-label{font-size:11px;color:rgba(255,255,255,.4);letter-spacing:.3px;margin-top:.25rem;display:block}
+/* Case study cards */
+.case-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:.9rem;max-width:960px;margin:0 auto}
+.case-card{background:var(--glass-bg);border:1px solid var(--glass-border);border-radius:var(--radius-lg);padding:1.5rem;display:flex;flex-direction:column;position:relative;backdrop-filter:blur(10px);box-shadow:inset 0 1px 0 rgba(255,255,255,.06);transition:all .3s}
+.case-card:hover{transform:translateY(-4px);border-color:rgba(0,212,255,.25);box-shadow:0 8px 30px rgba(0,212,255,.08)}
+.case-industry{font-size:11px;font-weight:700;letter-spacing:1px;color:#00d4ff;text-transform:uppercase;margin-bottom:.4rem}
+.case-title{font-size:var(--fs-base);font-weight:600;margin-bottom:.3rem}
+.case-prob{font-size:var(--fs-xs);color:rgba(255,255,255,.35);margin-bottom:.8rem;line-height:1.5}
+.case-sol{font-size:var(--fs-xs);color:rgba(255,255,255,.45);margin-bottom:1rem;line-height:1.6;flex-grow:1}
+.case-sol strong{color:#7b68ee}
+.case-metric{display:inline-flex;align-items:center;gap:.4rem;background:linear-gradient(135deg,rgba(0,212,255,.12),rgba(123,104,238,.1));border:1px solid rgba(0,212,255,.15);border-radius:8px;padding:.35rem .7rem;font-size:12px;color:#00d4ff;font-weight:700;margin-right:.4rem;margin-bottom:.3rem}
+/* Work / portfolio cards */
+.work-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:.8rem;max-width:960px;margin:0 auto}
+.work-card{background:linear-gradient(160deg,rgba(255,255,255,.04),rgba(255,255,255,.01));border:1px solid rgba(0,212,255,.1);border-radius:var(--radius-md);padding:1.3rem;display:flex;flex-direction:column;gap:.5rem;backdrop-filter:blur(8px);transition:all .3s;box-shadow:inset 0 1px 0 rgba(255,255,255,.05)}
+.work-card:hover{transform:translateY(-3px);border-color:rgba(0,212,255,.28);background:linear-gradient(160deg,rgba(0,212,255,.07),rgba(123,104,238,.04))}
+.work-icon{font-size:1.6rem}
+.work-title{font-size:var(--fs-sm);font-weight:600}
+.work-desc{font-size:var(--fs-xs);color:rgba(255,255,255,.35);line-height:1.5;flex-grow:1}
+.work-link{font-size:var(--fs-xs);color:#00d4ff;font-weight:600;text-decoration:none}
+.work-link:hover{text-decoration:underline}
+/* Verified credential chips */
+.cred-row{display:flex;gap:.4rem;flex-wrap:wrap;margin-bottom:.8rem}
+.cred{display:inline-flex;align-items:center;gap:5px;background:rgba(0,212,255,.1);border:1px solid rgba(0,212,255,.14);border-radius:6px;padding:.28rem .7rem;font-size:12px;color:#00d4ff;font-weight:600;letter-spacing:.3px}
+.cred svg{width:13px;height:13px}
+/* Profile links row */
+.profile-links{display:flex;gap:.5rem;flex-wrap:wrap;margin-top:.4rem}
+.profile-links a{display:inline-flex;align-items:center;gap:6px;background:var(--glass-bg);border:1px solid var(--glass-border);border-radius:8px;padding:.4rem .9rem;font-size:13px;color:rgba(255,255,255,.65);text-decoration:none;transition:all .2s}
+.profile-links a:hover{background:var(--glass-hover);color:#fff;border-color:rgba(0,212,255,.2)}
+/* Hero personalities — my one-liner subhead */
+.hero-persona{margin-top:.9rem;text-align:center;font-size:var(--fs-base);font-weight:600;background:linear-gradient(135deg,#7b68ee,#00d4ff);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
 
 /* Process — 3 steps */
 .process-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:.7rem;max-width:800px;margin:0 auto}
@@ -440,66 +515,417 @@ footer .wrap{display:flex;flex-wrap:wrap;gap:.8rem;justify-content:space-between
   .footer-labs{text-align:left;min-width:auto;width:100%}
   .footer-wrap{flex-direction:column}
 }
+.feed-mini{max-width:760px;margin:0 auto}
+.feed-mini .feed-item{background:rgba(255,255,255,.035);border:1px solid rgba(255,255,255,.08);border-radius:16px;padding:1.2rem 1.4rem;margin-bottom:.9rem;transition:all .2s}
+.feed-mini .feed-item:hover{background:rgba(255,255,255,.06);border-color:rgba(0,212,255,.25)}
+.feed-mini .feed-head{display:flex;align-items:center;gap:.6rem;margin-bottom:.6rem;font-size:13px;color:rgba(255,255,255,.45)}
+.feed-mini .feed-head .autor{font-weight:700;color:rgba(255,255,255,.75)}
+.feed-mini .feed-head .ago{margin-left:auto}
+.feed-mini .feed-body{font-size:15px;line-height:1.7;color:#e8ecf4;white-space:pre-wrap;word-break:break-word}
+.feed-mini .feed-foot{display:flex;gap:1.2rem;margin-top:.9rem;padding-top:.8rem;border-top:1px solid rgba(255,255,255,.06);font-size:13px;color:rgba(255,255,255,.4)}
+.feed-empty{text-align:center;padding:2rem;color:rgba(255,255,255,.25);font-size:14px}
+
+/* ============ 首頁改版：信任區 / hero demo / 精簡 CTA ============ */
+.hero-entry{font-size:12px;letter-spacing:.5px;color:rgba(255,255,255,.45);margin-top:1.2rem}
+.hero-cta-single{display:flex;flex-direction:column;align-items:center;gap:.7rem;margin-top:1.6rem}
+.hero-cta-single .btn-primary{font-size:15px;padding:.9rem 2.2rem}
+.hero-cta-single .sub-line{font-size:12.5px;color:rgba(255,255,255,.45);letter-spacing:.3px;text-align:center;line-height:1.9}
+.hero-cta-single .sub-line a{color:#00d4ff;text-decoration:none}
+.hero-cta-single .sub-line a:hover{text-decoration:underline}
+.hero-secondary{font-size:13px;padding:.7rem 1.6rem}
+.hero-live{font-size:12px;color:rgba(255,255,255,.4);letter-spacing:.2px;margin-top:.3rem}
+.hero-partchip{display:inline-block;font-size:11.5px;letter-spacing:.6px;padding:.28rem .7rem;border-radius:999px;margin-bottom:.9rem;border:1px solid var(--accent-glow);color:var(--accent);background:var(--accent-soft)}
+html[data-mood="light"] .hero-partchip{color:#0e7490;border-color:rgba(2,132,199,.3);background:rgba(2,132,199,.07)}
+.ai-demo-wrap{width:min(460px,92vw);margin:1.6rem auto 0;position:relative;z-index:1}
+.ai-demo{background:rgba(10,15,38,.82);border:1px solid rgba(0,212,255,.2);border-radius:16px;overflow:hidden;box-shadow:0 16px 50px rgba(0,0,0,.35),0 0 0 1px rgba(0,212,255,.06)}
+.ai-demo-head{display:flex;align-items:center;gap:.5rem;padding:.7rem .9rem;border-bottom:1px solid rgba(0,212,255,.12);font-size:12px;font-weight:600;color:rgba(255,255,255,.7)}
+.ai-demo-body{height:236px;overflow-y:auto;padding:.9rem;display:flex;flex-direction:column;gap:.55rem;scrollbar-width:thin}
+.ai-demo-msg{max-width:82%;font-size:13px;line-height:1.55;padding:.5rem .75rem;border-radius:12px}
+.ai-demo-msg.bot{background:rgba(123,104,238,.16);border:1px solid rgba(123,104,238,.22);color:rgba(255,255,255,.9);align-self:flex-start}
+.ai-demo-msg.you{background:rgba(0,212,255,.14);border:1px solid rgba(0,212,255,.28);color:rgba(255,255,255,.92);align-self:flex-end}
+.ai-demo-msg.typing{opacity:.65;font-style:italic}
+.ai-demo-form{display:flex;border-top:1px solid rgba(0,212,255,.14);background:rgba(0,0,0,.2)}
+.ai-demo-form input{flex:1;background:transparent;border:none;outline:none;color:rgba(255,255,255,.88);padding:.75rem .9rem;font-size:13px}
+.ai-demo-form input::placeholder{color:rgba(255,255,255,.3)}
+.ai-demo-form button{background:rgba(0,212,255,.14);border:none;color:#00d4ff;padding:.75rem 1.1rem;cursor:pointer;font-weight:700;font-size:13px;transition:background .2s}
+.ai-demo-form button:hover{background:rgba(0,212,255,.26)}
+.ai-demo-chip-row{display:flex;gap:.4rem;padding:.55rem .7rem;border-top:1px solid rgba(255,255,255,.05);flex-wrap:wrap}
+.ai-demo-chip{background:rgba(0,212,255,.08);border:1px solid rgba(0,212,255,.14);color:rgba(255,255,255,.6);font-size:11px;padding:.22rem .55rem;border-radius:999px;cursor:pointer;transition:all .2s}
+.ai-demo-chip:hover{background:rgba(0,212,255,.18);color:#fff}
+.trust-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:.9rem;margin-top:1.6rem}
+.trust-card{background:var(--glass-bg);border:1px solid var(--glass-border);border-radius:14px;padding:1.1rem 1.2rem;backdrop-filter:blur(8px)}
+.trust-card .t-ic{font-size:1.5rem;opacity:.9}
+.trust-card h3{font-size:14.5px;font-weight:700;margin:.5rem 0 .35rem}
+.trust-card p{font-size:12.5px;line-height:1.6;opacity:.65}
+.trust-card .t-tag{display:inline-block;margin-top:.6rem;font-size:11px;color:#00d4ff;letter-spacing:.5px}
+.link-strip{display:flex;flex-wrap:wrap;gap:.5rem;margin-top:1.3rem;justify-content:center}
+.link-strip a{font-size:13px;color:rgba(255,255,255,.55);border:1px solid rgba(0,212,255,.18);border-radius:999px;padding:.32rem .85rem;transition:all .2s}
+.link-strip a:hover{color:#fff;border-color:rgba(0,212,255,.5);background:rgba(0,212,255,.08)}
+.plan-card.plan-chat{display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;background:rgba(0,212,255,.05);border:1px dashed rgba(0,212,255,.35)}
+.plan-card.plan-chat .plan-icon{font-size:1.8rem}
+.plan-card.plan-chat h3{font-size:15.5px}
+.plan-card.plan-chat p{font-size:13px;line-height:1.7;opacity:.75;max-width:240px}
+.contact-form.compact{display:grid;grid-template-columns:1fr 1fr;gap:.9rem;max-width:560px;margin:0 auto}
+.contact-form.compact label{grid-column:1/-1}
+.contact-form.compact .full{grid-column:1/-1}
+@media(max-width:640px){
+  .trust-grid{grid-template-columns:1fr}
+  .contact-form.compact{grid-template-columns:1fr}
+  .ai-demo-body{height:200px}
+}
+@media(prefers-color-scheme:light){
+  .hero-cta-single .sub-line{color:rgba(26,26,46,.5)!important}
+  .hero-entry{color:rgba(26,26,46,.5)!important}
+  .trust-card{background:rgba(255,255,255,.6);border-color:rgba(0,0,0,.06);color:#1a1a2e}
+  .trust-card h3{color:#1a1a2e}
+  .trust-card p{color:rgba(26,26,46,.6)!important}
+  .link-strip a{color:rgba(26,26,46,.55);border-color:rgba(0,212,255,.35)}
+  .link-strip a:hover{color:#1a1a2e;background:rgba(0,212,255,.08)}
+  .plan-card.plan-chat{border-color:rgba(0,212,255,.5)}
+  .plan-card.plan-chat h3{color:#1a1a2e}
+}
+/* ════════════════════════════════════════════════════════════════
+   Mood System 3.0 — 色調隨「一天24小時 × 季節 × 節日」自動變換
+   由 <script id="moodEngine"> 依時段注入 --accent/--bg-top/... 變數
+   ════════════════════════════════════════════════════════════════ */
+:root{
+  --accent:#00d4ff;--accent2:#7b68ee;
+  --bg-top:rgba(123,104,238,.16);--bg-mid:rgba(0,212,255,.08);
+  --bg-deep:#0a0e27;--bg-light-deep:#f3f6fc;
+  --orb:rgba(0,212,255,.1);
+  --grid:rgba(0,212,255,.045);
+  --nav-line:rgba(0,212,255,.12);--nav-glow:rgba(0,212,255,.05);
+  --accent-glow:rgba(0,212,255,.5);--accent2-glow:rgba(123,104,238,.5);--accent2-soft:rgba(123,104,238,.15);
+  --btn-glow:rgba(0,212,255,.15);
+  --badge-bg:rgba(0,212,255,.06);--badge-bc:rgba(0,212,255,.22);--badge-txt:rgba(255,255,255,.6);
+  --badge-bg-l:rgba(0,212,255,.1);--badge-bc-l:rgba(0,212,255,.3);--badge-txt-l:rgba(26,26,46,.6);
+  --beam1:rgba(0,212,255,.12);--beam2:rgba(123,104,238,.08);
+  --moon-a:#f5f7ff;--moon-b:#8fa0ff;--moon-glow:rgba(160,175,255,.5);--moon-in:rgba(200,180,255,.35);
+  --muted:rgba(255,255,255,.5);
+  --chip-bg:rgba(0,212,255,.05);--chip-bc:rgba(0,212,255,.18);--chip-txt:rgba(255,255,255,.65);--chip-glow:rgba(0,212,255,.14);
+  --chip-bg-l:rgba(255,255,255,.6);--chip-bc-l:rgba(0,0,0,.07);--chip-txt-l:rgba(26,26,46,.6);--chip-glow-l:rgba(0,212,255,.12);
+  --nav-sub-bg-d:rgba(9,13,34,.96);--nav-sub-bg-l:rgba(255,255,255,.97)
+}
+html[data-mood="dark"]{color-scheme:dark}
+html[data-mood="light"]{color-scheme:light}
+html[data-mood="dark"] body{
+  background:
+    radial-gradient(ellipse 60% 45% at 50% -5%,var(--bg-top),transparent 70%),
+    radial-gradient(ellipse 45% 35% at 85% 15%,var(--bg-mid),transparent 70%),
+    radial-gradient(ellipse 50% 40% at 8% 40%,var(--bg-mid),transparent 70%),
+    var(--bg-deep);
+  color:#e8ecf4}
+html[data-mood="light"] body{
+  background:
+    radial-gradient(ellipse 60% 45% at 50% -5%,var(--bg-top-l,var(--bg-top)),transparent 70%),
+    radial-gradient(ellipse 45% 35% at 85% 15%,var(--bg-mid),transparent 70%),
+    var(--bg-light-deep);
+  color:#1a1a2e}
+html[data-mood="dark"] body::before{background-image:linear-gradient(var(--grid) 1px,transparent 1px),linear-gradient(90deg,var(--grid) 1px,transparent 1px)}
+html[data-mood="light"] body::before{background-image:linear-gradient(rgba(8,145,178,.06) 1px,transparent 1px),linear-gradient(90deg,rgba(8,145,178,.06) 1px,transparent 1px)}
+body::after{background:radial-gradient(circle,var(--orb),transparent 60%)}
+html[data-mood="dark"] nav{background:rgba(9,13,34,.78);backdrop-filter:blur(32px) saturate(1.4);-webkit-backdrop-filter:blur(32px) saturate(1.4);border-bottom-color:var(--nav-line)!important;box-shadow:0 1px 0 var(--nav-glow),0 8px 30px rgba(0,0,0,.25)!important}
+html[data-mood="light"] nav{background:rgba(255,255,255,.85)!important;border-bottom-color:var(--nav-line)!important;box-shadow:0 8px 30px rgba(0,0,0,.08)!important}
+html[data-mood="dark"] nav::before{background:linear-gradient(90deg,transparent,var(--accent-glow),var(--accent2-glow),transparent)!important}
+html[data-mood="light"] nav::before{background:linear-gradient(90deg,transparent,var(--accent-glow),var(--accent2-glow),transparent)!important}
+html[data-mood="dark"] .nav-brand{color:rgba(255,255,255,.8)}
+html[data-mood="light"] .nav-brand{color:rgba(26,26,46,.5)}
+.nav-brand em{background:linear-gradient(135deg,var(--accent),var(--accent2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;text-fill-color:transparent}
+html[data-mood="dark"] .nav-links a{color:rgba(255,255,255,.55)}
+html[data-mood="light"] .nav-links a{color:rgba(26,26,46,.55)}
+.nav-links a::after{background:var(--accent)}
+.nav-links a:hover{color:var(--accent)}
+.nav-hot{color:var(--accent)!important;font-weight:600}
+/* 主排連結 + CTA 鈕不爆版 */
+.nav-cta{font-size:12.5px;padding:.5rem 1.05rem;border-radius:100px;align-items:center;gap:.35rem;display:inline-flex;width:auto!important;white-space:nowrap}
+.btn-primary{background:linear-gradient(135deg,var(--accent),var(--accent2));box-shadow:0 4px 20px var(--btn-glow),0 0 0 1px var(--accent-glow),0 0 30px var(--accent2-soft)}
+.btn-primary:hover{box-shadow:0 8px 30px var(--btn-glow),0 0 0 1px var(--accent),0 0 40px var(--accent2-soft)}
+/* 第二排入口：遊戲 / 知識 / AI 配對 / 社群 */
+.nav-sub-links{position:absolute;left:50%;top:100%;transform:translateX(-50%);display:flex;gap:.9rem;align-items:center;padding:.55rem 1.2rem;border:1px solid var(--glass-border);border-top:none;border-radius:0 0 14px 14px;backdrop-filter:blur(22px) saturate(1.3);-webkit-backdrop-filter:blur(22px) saturate(1.3);white-space:nowrap;z-index:99;font-size:12.5px;letter-spacing:.3px;box-shadow:0 12px 30px rgba(0,0,0,.18)}
+html[data-mood="dark"] .nav-sub-links{background:var(--nav-sub-bg-d)}
+html[data-mood="light"] .nav-sub-links{background:var(--nav-sub-bg-l)}
+@media(max-width:1024px){.nav-sub-links{display:none}}
+.nav-sub-label{color:var(--muted);letter-spacing:1px;font-weight:500;text-transform:uppercase;font-size:11px}
+.nav-sub-links a{color:var(--muted);transition:.25s;padding:.28rem .5rem;border-radius:8px}
+.nav-sub-links a:hover{color:var(--accent);background:var(--chip-bg)}
+html[data-mood="light"] .nav-sub-links a:hover{background:rgba(0,0,0,.05)}
+/* Hero 熱門內容入口磁貼 */
+.portal-row{display:flex;flex-wrap:wrap;gap:.5rem;justify-content:center;margin:-.5rem 0 1.5rem;position:relative;z-index:1;max-width:860px}
+.portal-chip{display:inline-flex;align-items:center;gap:.4rem;padding:.42rem .8rem;border:1px solid var(--chip-bc);border-radius:100px;background:var(--chip-bg);backdrop-filter:blur(6px);color:var(--chip-txt);font-size:12.5px;letter-spacing:.3px;transition:transform .25s,border-color .25s,box-shadow .25s,color .25s;cursor:pointer}
+.portal-chip span{font-size:14px;line-height:1}
+.portal-chip b{font-weight:700}
+.portal-chip small{opacity:.55;margin-left:.1rem}
+.portal-chip:hover{transform:translateY(-2px);border-color:var(--accent);box-shadow:0 6px 18px var(--chip-glow);color:var(--accent)}
+html[data-mood="light"] .portal-chip{background:var(--chip-bg-l);border-color:var(--chip-bc-l);color:var(--chip-txt-l)}
+html[data-mood="light"] .portal-chip:hover{border-color:var(--accent);box-shadow:0 6px 18px var(--chip-glow-l);color:var(--accent)}
+/* 重點數值／光暈跟著色調走 */
+.bento-stat-num{background:linear-gradient(135deg,var(--accent),var(--accent2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;text-fill-color:transparent}
+.hero-badge{color:var(--badge-txt);border-color:var(--badge-bc);background:var(--badge-bg)}
+html[data-mood="light"] .hero-badge{color:var(--badge-txt-l)!important;background:var(--badge-bg-l)!important;border-color:var(--badge-bc-l)!important}
+.hero-glow{background:radial-gradient(circle at 35% 35%,var(--moon-a) 0%,var(--moon-b) 40%,var(--accent2-soft) 62%,transparent 75%);box-shadow:0 0 40px var(--moon-glow),0 0 120px var(--accent2-soft),inset -8px -6px 18px var(--moon-in)}
+.hero::before{background:radial-gradient(ellipse 50% 60% at 50% 0%,var(--beam1),transparent 70%),radial-gradient(ellipse 40% 50% at 50% 0%,var(--beam2),transparent 70%)}
+/* 亮色模式的互動元件同步 */
+html[data-mood="light"] .trust-card{background:rgba(255,255,255,.6);border-color:rgba(0,0,0,.06);color:#1a1a2e}
+html[data-mood="light"] .trust-card p{color:rgba(26,26,46,.6)}
+html[data-mood="light"] .link-strip a{color:rgba(26,26,46,.55);border-color:var(--badge-bc-l)}
+html[data-mood="light"] .link-strip a:hover{color:#1a1a2e;background:rgba(0,212,255,.08)}
+html[data-mood="light"] .hero-cta-single .sub-line{color:rgba(26,26,46,.5)}
+html[data-mood="light"] .hero-entry{color:rgba(26,26,46,.5)}
+html[data-mood="light"] .ai-demo{background:rgba(255,255,255,.55);border-color:var(--chip-bc-l);box-shadow:0 16px 50px rgba(0,0,0,.1)}
+html[data-mood="light"] .ai-demo-head{color:rgba(26,26,46,.72);border-bottom-color:var(--chip-bc-l)}
+html[data-mood="light"] .ai-demo-msg.bot{background:rgba(123,104,238,.12);color:rgba(26,26,46,.85);border-color:rgba(123,104,238,.2)}
+html[data-mood="light"] .ai-demo-msg.you{background:rgba(0,212,255,.12);color:rgba(26,26,46,.9);border-color:rgba(0,212,255,.25)}
+html[data-mood="light"] .ai-demo-form{background:rgba(0,0,0,.02);border-top-color:var(--chip-bc-l)}
+html[data-mood="light"] .ai-demo-form input{color:rgba(26,26,46,.85)}
+html[data-mood="light"] .ai-demo-form input::placeholder{color:rgba(26,26,46,.3)}
+@media(max-width:1024px){
+  .nav-links{gap:.6rem}
+  .nav-links a{font-size:12px;letter-spacing:.3px}
+}
+@media(max-width:820px){
+  .lang-select{display:none}
+  .nav-cta{padding:.45rem .75rem;font-size:11.5px}
+  .portal-chip small{display:none}
+  .portal-chip{padding:.38rem .7rem}
+}
 </style>
 </head>
 <body>
+<script id="moodEngine">
+/* Mood System 3.0 — 色調隨「一天24小時 × 季節 × 節日」自動變換 */
+(function(){
+  var hexA=function(hex,a){
+    if(!/^#/.test(hex))return hex;
+    var h=hex.replace('#','');
+    return 'rgba('+parseInt(h.substr(0,2),16)+','+parseInt(h.substr(2,2),16)+','+parseInt(h.substr(4,2),16)+','+a+')';
+  };
+  var d=new Date(), mm=d.getMonth()+1;
+  var h=d.getHours();
+  /* 24 小時：6:00–17:59 亮色，其餘深色 */
+  var mood=(h>=6&&h<18)?'light':'dark';
+  document.documentElement.setAttribute('data-mood',mood);
+
+  /* 時段配色：清晨／上午／中午／下午／傍晚／夜晚各有色調，讓「一天的變化」看得見 */
+  var dayparts=[
+    {k:'dawn',      label:'清晨', accent:'#38bdf8', accent2:'#a5b4fc'},
+    {k:'morning',   label:'上午', accent:'#22d3ee', accent2:'#34d399'},
+    {k:'noon',      label:'中午', accent:'#facc15', accent2:'#fb923c'},
+    {k:'afternoon', label:'下午', accent:'#60a5fa', accent2:'#818cf8'},
+    {k:'evening',   label:'傍晚', accent:'#fb7185', accent2:'#c084fc'},
+    {k:'night',     label:'夜晚', accent:'#818cf8', accent2:'#22d3ee'}
+  ];
+  var partKey=h<5?'night':h<8?'dawn':h<12?'morning':h<14?'noon':h<18?'afternoon':h<21?'evening':'night';
+  var part=dayparts.filter(function(p){return p.k===partKey})[0];
+
+  /* 季節 */
+  var seasons=[
+    {m:[3,4,5],label:'春季',accent:'#2dd4bf',accent2:'#a7f3d0'},
+    {m:[6,7,8],label:'夏季',accent:'#22d3ee',accent2:'#4ade80'},
+    {m:[9,10,11],label:'秋季',accent:'#f59e0b',accent2:'#fb923c'},
+    {m:[12,1,2],label:'冬季',accent:'#818cf8',accent2:'#38bdf8'}
+  ];
+  var season=seasons.filter(function(s){return s.m.indexOf(mm)>=0})[0]||seasons[0];
+
+  /* 節日（台灣／重要節日，以 2026 近似日期） */
+  var holidays=[
+    {d:[1,1],    icon:'🎊',label:'元旦',   accent:'#fbbf24',accent2:'#f59e0b',msg:'新年快樂，今年穩穩起步'},
+    {d:[2,17],   icon:'🧧',label:'農曆新年',accent:'#ef4444',accent2:'#f59e0b',msg:'新年快樂，開工大吉'},
+    {d:[5,10],   icon:'🌷',label:'母親節', accent:'#f472b6',accent2:'#fb7185',msg:'把時間還給媽媽，AI 顧店'},
+    {d:[6,19],   icon:'🐲',label:'端午',   accent:'#22c55e',accent2:'#a3e635',msg:'端午安康，系統照常值班'},
+    {d:[8,8],    icon:'🦸',label:'父親節', accent:'#60a5fa',accent2:'#38bdf8',msg:'爸爸節快樂'},
+    {d:[9,25],   icon:'🌕',label:'中秋',   accent:'#fbbf24',accent2:'#f97316',msg:'中秋連假，AI 替你看家'},
+    {d:[10,10],  icon:'🇹🇼',label:'雙十',   accent:'#ef4444',accent2:'#fbbf24',msg:'雙十連假，AI 不放假'},
+    {d:[12,25],  icon:'🎄',label:'聖誕',   accent:'#f87171',accent2:'#fbbf24',msg:'Merry Christmas'},
+    {d:[12,31],  icon:'🎆',label:'跨年',   accent:'#c084fc',accent2:'#fbbf24',msg:'跨年倒數，AI 陪你守夜'}
+  ];
+  var today=new Date(2026,mm-1,d.getDate());
+  var holiday=null;
+  for(var i=0;i<holidays.length;i++){
+    var H=holidays[i],Hd=new Date(2026,H.d[0]-1,H.d[1]);
+    var diff=Math.round((today-Hd)/86400000);
+    if(diff>=-1&&diff<=0){holiday=H;break;}   /* 節日當天與前一天就切換 */
+  }
+  var accent=holiday?holiday.accent:part.accent;
+  var accent2=holiday?holiday.accent2:part.accent2;
+
+  /* 時段問候 */
+  var greetMsg=
+    (holiday?holiday.msg+' ':(''))+
+    [ '晨起一杯咖啡，AI 先幫你把站點跑著',
+      '白天正忙，瑣事丟給 AI',
+      '下午茶時間，AI 繼續盯哨',
+      '下班了，客戶交給 AI，你休息',
+      '夜貓子的系統，AI 徹夜守護',
+      '夜深了 AI 在，0 點不當機'
+    ][h<6?5:h<11?0:h<14?1:h<17?2:h<19?3:h<23?4:5];
+  var badgeText=((holiday?(holiday.icon+' '+holiday.label+' · '):'')
+      +greetMsg
+      +(season.label==='夏季'||season.label==='冬季'?'':' · '+season.label)).replace(/undefined|NaN/g,'');
+  /* 時段指示（固定顯示，讓人看得出現在是早/中/晚哪一段） */
+  var partChip=document.createElement('div');
+  partChip.className='hero-partchip';
+  partChip.textContent=part.label+'時段 · 每天 '+dayparts.map(function(d){return d.label;}).join('／');
+  function updateBadge(){
+    var badge=document.getElementById('heroBadge');
+    if(!badge)return;
+    badge.textContent=badgeText;
+    var old=document.querySelector('.hero-partchip');
+    if(old)old.remove();
+    var hero=document.querySelector('.hero');
+    if(hero)hero.insertBefore(partChip,hero.firstChild.nextSibling);
+  }
+  if(document.readyState!=='loading')updateBadge();
+  else document.addEventListener('DOMContentLoaded',updateBadge);
+
+  /* 注入配色變數 */
+  var css=document.createElement('style');css.id='moodVars';css.textContent=':root{'+
+    '--accent:'+accent+';--accent2:'+accent2+';'+
+    '--accent-glow:'+hexA(accent,.5)+';--accent2-glow:'+hexA(accent2,.5)+';--accent2-soft:'+hexA(accent2,.16)+';'+
+    '--btn-glow:'+hexA(accent,.2)+';'+
+    '--badge-bg:'+hexA(accent,.06)+';--badge-bc:'+hexA(accent,.22)+';--badge-txt:'+(mood==='dark'?'rgba(255,255,255,.6)':'rgba(26,26,46,.65)')+';'+
+    '--badge-bg-l:'+hexA(accent,.1)+';--badge-bc-l:'+hexA(accent,.3)+';--badge-txt-l:rgba(26,26,46,.65);'+
+    '--bg-top:'+hexA(accent2,mood==='dark'?.18:.12)+';--bg-mid:'+hexA(accent,mood==='dark'?.08:.06)+';'+
+    '--orb:'+hexA(accent,.1)+';--grid:'+hexA(accent,mood==='dark'?.045:.05)+';'+
+    '--nav-line:'+hexA(accent,.2)+';--nav-glow:'+hexA(accent,.06)+';'+
+    '--beam1:'+hexA(accent,.12)+';--beam2:'+hexA(accent2,.08)+';'+
+    '--moon-a:'+(mood==='dark'?'#f5f7ff':'#ffffff')+';--moon-b:'+accent2+';--moon-glow:'+hexA(accent2,.4)+';--moon-in:'+hexA(accent2,.3)+';'+
+    '--chip-bg:'+hexA(accent,mood==='dark'?.05:.06)+';--chip-bc:'+hexA(accent,.22)+';--chip-txt:'+(mood==='dark'?'rgba(255,255,255,.65)':'rgba(26,26,46,.6)')+';--chip-glow:'+hexA(accent,.14)+';'+
+    '--muted:'+(mood==='dark'?'rgba(255,255,255,.5)':'rgba(26,26,46,.55)')+';'+
+    '}';
+  document.head.appendChild(css);
+
+  /* 每 15 分鐘重算（跨時段／午夜自動換色），不重載網頁 */
+  setInterval(function(){
+    var nh=new Date().getHours();
+    var nm=(nh>=6&&nh<18)?'light':'dark';
+    if(nm!==mood){location.reload();return;}
+    /* 時段切換（清晨→上午…）只換色與指示，不重載頁面 */
+    var nk=nh<5?'night':nh<8?'dawn':nh<12?'morning':nh<14?'noon':nh<18?'afternoon':nh<21?'evening':'night';
+    if(nk!==partKey){location.reload();}
+  },60*1000);
+})();
+</script>
 <div class="cursor" id="cursor"></div>
 
 <nav>
   <div class="nav-brand"><em>翔川 Neo</em></div>
   <div class="nav-right">
     <div class="nav-links">
+      <a href="#achievements">成效</a>
+      <a href="#results">案例</a>
       <a href="product/">方案</a>
       <a href="ai-code-review/">AI 審碼</a>
-      <a href="matching.html">AI 配對</a>
-      <a href="games/">遊戲</a>
-      <a href="guides/">知識</a>
-      <a href="govdata">開放資料</a>
-      <a href="#about">關於我</a>
-      <a href="#contact" style="color:#00d4ff;font-weight:600">預約諮詢</a>
-      <select class="lang-select" onchange="switchLang(this.value)">
-        <option value="zh-TW">繁中</option>
-        <option value="en">EN</option>
-      </select>
+      <a href="thoughts/">🧰 職人筆記</a>
+      <a href="novels.html" class="nav-hot">📖 追小說</a>
+      <a href="social/">🔥 短內容</a>
+      <a href="#contact" class="btn btn-primary nav-cta">🎯 免費聊聊 30 分</a>
     </div>
+    <select class="lang-select" onchange="switchLang(this.value)">
+      <option value="zh-TW">繁中</option>
+      <option value="en">EN</option>
+    </select>
     <div class="gsi-container" id="gsi-user-area"></div>
+  </div>
+  <div class="nav-sub-links">
+    <span class="nav-sub-label">不知道逛哪？</span>
+    <a href="games/">🎮 遊戲</a>
+    <a href="guides/">🗂 知識庫</a>
+    <a href="govdata">🏛 開放資料</a>
+    <a href="matching.html">⚡ AI 配對</a>
+    <a href="community/">💬 社群串</a>
+    <a href="affiliate.html">🛠 夥伴計畫</a>
+    <a href="support.html">☕ 支持翔川</a>
   </div>
 </nav>
 
 <!-- Hero -->
 <section class="hero">
   <div class="hero-glow"></div>
-  <div class="hero-badge">AI 自動化 · 一人公司專屬</div>
-  <h1><span class="line1">每天幫你省下 4 小時</span><span class="line2">的 AI 自動化系統</span></h1>
-  <p>從 AI 智能客服到行銷自動化，幫你把重複庶務交給系統，專注在真正賺錢的核心業務。已協助多位超級個體打造 24/7 自動化賺錢引擎。</p>
-  <div class="hero-actions">
-    <a href="ai-chat.html" class="btn btn-primary">🤖 立刻試用（免費、不用註冊）</a>
-    <a href="#contact" class="btn btn-outline">📩 免費預約 30 分鐘 AI 盤點</a>
+  <div class="hero-badge" id="heroBadge">🕐 先把下面的客服玩一玩 · 真的會回你</div>
+  <div class="portal-row" id="portalRow">
+    <a href="novels.html" class="portal-chip"><span>📖</span><b>追小說</b><small>每天一章</small></a>
+    <a href="social/" class="portal-chip"><span>🔥</span><b>短內容</b><small>每日兩則</small></a>
+    <a href="thoughts/" class="portal-chip"><span>🧰</span><b>職人筆記</b><small>每天一篇</small></a>
+    <a href="community/" class="portal-chip"><span>💬</span><b>社群串</b><small>誰都能發</small></a>
+    <a href="matching.html" class="portal-chip"><span>⚡</span><b>AI 配對</b><small>人 + AI 創業</small></a>
+    <a href="guides/" class="portal-chip"><span>🚀</span><b>創業起步</b><small>免費工具</small></a>
   </div>
-  <div class="hero-entry" style="text-align:center;font-size:13px;opacity:.65;margin-top:1rem;line-height:2">
-    不想聊天也行，直接用：<a href="ai-chat.html">AI 助理</a> ・
-    <a href="govdata">政府開放資料問答</a> ・ <a href="novels.html">每日連載小說</a> ・
-    <a href="thoughts/">每日職人筆記</a>
-  </div>
-  <div class="hero-live" id="heroLive" style="text-align:center;font-size:12px;opacity:.45;margin-top:.6rem">
-    本站內容每天由 AI 自動產生 ↓
+  <h1><span class="line1">員工下班了，客戶沒下班</span><span class="line2">AI 幫你值這班機</span></h1>
+  <p>我是 <b>Lewis Lunora</b> — 10+ 年 DevOps 架構師 × AI 整合。下面這個客服你打一句話它就會回，這就是我幫一人公司裝的系統：24/7 不漏單、能查價格、能發文。</p>
+  <div class="hero-cta-single">
+    <a href="#demo" class="btn btn-primary">🤖 立刻試用（免費、不用註冊）</a>
+    <div class="sub-line">
+      不想聊天也行，直接用：<a href="ai-chat.html" style="color:#00d4ff">AI 助理</a> ・
+      <a href="govdata" style="color:#00d4ff">政府開放資料問答</a> ・
+      <a href="novels.html" style="color:#00d4ff">每日連載小說</a>
+    </div>
+    <a href="#contact" class="btn btn-outline hero-secondary">📩 免費聊聊 30 分鐘（要我幫你裝）</a>
+    <div class="hero-live" id="heroLive">本站的內容每天由 AI 自動產生 ↓</div>
   </div>
   <div class="bento-stats">
-    <div class="bento-stat"><span class="bento-stat-num">已協助多位 solopreneur 建置 AI 系統</span></div>
-    <div class="bento-stat"><div class="bento-stat-num">4 hr</div><div class="bento-stat-label">每日省時</div></div>
-    <div class="bento-stat"><div class="bento-stat-num">24/7</div><div class="bento-stat-label">全自動運行</div></div>
+    <div class="bento-stat"><div class="bento-stat-num">24/7</div><div class="bento-stat-label">不休息的客服</div></div>
+    <div class="bento-stat"><div class="bento-stat-num">&lt;3s</div><div class="bento-stat-label">平均回覆</div></div>
+    <div class="bento-stat"><div class="bento-stat-num">4 hr</div><div class="bento-stat-label">每天省下的工</div></div>
   </div>
-  <div class="hero-visual" aria-label="AI 自動化系統示範">
-    <div class="ai-chat">
-      <div class="ai-chat-head"><span class="ai-chat-dot"></span>翔川 AI 助手 · 24/7 在線</div>
-      <div class="ai-msg ai-in">客戶在凌晨 2 點問報價，我幫你回覆好了 ✨</div>
-      <div class="ai-msg ai-out">👌 收到，已自動更新報價單</div>
-      <div class="ai-msg ai-in">📈 今日已處理 47 則訊息，節省 3.2 小時</div>
-      <div class="ai-msg ai-tag">▸ 已排程發布 FB + IG 貼文</div>
+  <div class="ai-demo-wrap" id="demo" aria-label="AI 客服即時示範">
+    <div class="ai-demo">
+      <div class="ai-demo-head"><span class="ai-chat-dot"></span>翔川 AI 客服 · 真後端在回你，不是動畫</div>
+      <div class="ai-demo-body" id="demoBody"></div>
+      <div class="ai-demo-chip-row">
+        <button class="ai-demo-chip" data-q="客服方案要多少錢">💲 問價格</button>
+        <button class="ai-demo-chip" data-q="AI 客服能做什麼">⚙️ 問功能</button>
+        <button class="ai-demo-chip" data-q="怎麼開始使用">🚀 問開始</button>
+      </div>
+      <form class="ai-demo-form" id="demoForm">
+        <input id="demoInput" placeholder="打一句話，客服會回你…" autocomplete="off">
+        <button type="submit">送出</button>
+      </form>
     </div>
-    <div class="ai-float ai-float-1">⚡ 自動回覆</div>
-    <div class="ai-float ai-float-2">🤖 AI 排程</div>
-    <div class="ai-float ai-float-3">📊 報表</div>
+    <div class="hero-entry">↑ 你現在玩的，就是我要幫你裝進官網 / LINE / Telegram 的那個客服</div>
+  </div>
+</section>
+
+<!-- Achievements → Trust (verifiable) -->
+<section class="section" id="achievements" style="padding-top:1.4rem">
+  <div class="wrap">
+    <div class="section-label">先驗證，再談合作</div>
+    <h2 class="section-title">這網站上的東西，全部是真的</h2>
+    <p class="section-sub" style="max-width:640px;margin:0 auto 1.4rem;text-align:center">我沒有員工、沒有部門——下面每一樣你都能當場驗證。</p>
+    <div class="trust-grid">
+      <div class="trust-card">
+        <span class="t-ic">🔓</span>
+        <h3>程式碼全程公開</h3>
+        <p>從零到上線的每個 commit 都在 GitHub 上。你現在看得到的這套系統，原始碼全部攤開給你。</p>
+        <a class="t-tag" href="https://github.com/lewislunora" target="_blank" rel="noopener">github.com/lewislunora →</a>
+      </div>
+      <div class="trust-card">
+        <span class="t-ic">🧪</span>
+        <h3>你剛剛已經驗證過</h3>
+        <p>上面的 AI 客服你打一句話就會回——這就是系統在運作，不是展示影片或截圖。</p>
+        <span class="t-tag">↑ 你現在就在操作它</span>
+      </div>
+      <div class="trust-card">
+        <span class="t-ic">⚡</span>
+        <h3>有結果的過去</h3>
+        <p>前職實績：12 個月上線時程縮短到 6 個月、故障 30 分鐘內復原。這些做法我每天都在用，也會用在你的系統上。</p>
+        <span class="t-tag">11+ 年 DevOps 實戰</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Give first — live content (第3屏) -->
+<section class="section" id="feed">
+  <div class="wrap">
+    <div class="section-label">先給你一點好處</div>
+    <h2 class="section-title">這個網站每天都在長東西，不用等</h2>
+    <p class="section-sub" style="max-width:640px;margin:0 auto 1.4rem;text-align:center">AI 客服、小說、維運長文——全部是系統自己跑的。先滑一滑看今天的內容，對你有用再談。</p>
+    <div class="feed-mini" id="homeFeed"><div class="feed-empty">載入中…</div></div>
+    <div style="text-align:center;margin-top:1.2rem">
+      <a class="work-link" href="social/" style="font-size:14px">✨ 去整頁短內容流刷刷 →</a>
+      <a class="work-link" href="novels.html" style="font-size:14px">📖 追小說 →</a>
+      <a class="work-link" href="thoughts/" style="font-size:14px">🧰 看今天寫的維運筆記 →</a>
+    </div>
   </div>
 </section>
 
@@ -614,44 +1040,14 @@ footer .wrap{display:flex;flex-wrap:wrap;gap:.8rem;justify-content:space-between
         </ul>
         <a href="#contact" class="btn btn-primary">免費診斷 →</a>
       </div>
-      <div class="plan-card reveal">
-        <span class="plan-icon">🚀</span>
-        <div class="plan-name">行銷自動化代操</div>
-        <div class="plan-price">NT$120K<small>-150K</small></div>
-        <p class="plan-desc">內容自動生成 + 多平台排程發佈 + 數據追蹤，打造全自動營運引擎。</p>
-        <ul class="plan-feats">
-          <li>AI 內容生成（多語言）</li>
-          <li>FB / IG / LINE / Telegram 自動發佈</li>
-          <li>排程與發佈儀表板</li>
-          <li>成效追蹤與持續優化</li>
-          <li>4-8 週完整交付</li>
-        </ul>
-        <a href="#contact" class="btn btn-outline">免費診斷 →</a>
+      <div class="plan-card plan-chat reveal">
+        <span class="plan-icon">🤝</span>
+        <h3>不確定該從哪裡開始？</h3>
+        <p>先別下決定——花 30 分鐘跟我聊聊你的狀況，我幫你判斷哪一套對你最有感。聊完沒價值，你隨時可以走。</p>
+        <a href="#contact" class="btn btn-outline">免費聊聊 →</a>
       </div>
     </div>
     <p class="plan-note">* 以上為參考區間，實際依需求免費診斷後報價 · 月費代操方案另議</p>
-  </div>
-</section>
-
-<!-- Results -->
-<section class="section">
-  <div class="wrap">
-    <div class="section-label">實際成果</div>
-    <h2 class="section-title">導入 AI 自動化後的改變</h2>
-    <div class="results-grid">
-      <div class="result-card reveal">
-        <div class="result-num">4 hr+</div>
-        <div class="result-label">每天省下的時間</div>
-      </div>
-      <div class="result-card reveal">
-        <div class="result-num">&lt;3 sec</div>
-        <div class="result-label">AI 客服平均回覆時間</div>
-      </div>
-      <div class="result-card reveal">
-        <div class="result-num">4 國</div>
-        <div class="result-label">支援語言數</div>
-      </div>
-    </div>
   </div>
 </section>
 
@@ -664,17 +1060,67 @@ footer .wrap{display:flex;flex-wrap:wrap;gap:.8rem;justify-content:space-between
         <div class="founder-avatar">L</div>
         <div class="founder-info">
           <h3>Lewis Lunora — 你的技術後盾</h3>
-          <div class="title">創辦人 · 首席架構師</div>
-          <p>10+ 年 DevOps、Kubernetes、GCP 雲端架構與 AI 系統整合經驗。我不只懂技術，更懂如何把複雜的技術轉化為一人公司的變現工具。</p>
+          <div class="title">創辦人 · 首席架構師 · 一人公司實戰者</div>
+          <p>10+ 年 DevOps、Kubernetes、GCP 雲端架構與 AI 系統整合經驗。我不只懂技術，更懂如何把複雜的技術轉化為一人公司的變現工具 — 因為我自己就是把「技術 → 產品 → 內容 → 收入」整條路走一遍的實戰者。</p>
+          <div class="cred-row">
+            <span class="cred"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2l3 3 3-3 1.5 4 4 1.5-3 3 3 3-4 1.5-1.5 4-3-3-3 3-1.5-4-4-1.5 3-3-3-3 4-1.5 1.5-4z"/><circle cx="12" cy="12" r="3"/></svg>Kubernetes</span>
+            <span class="cred"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2l3 3 3-3 1.5 4 4 1.5-3 3 3 3-4 1.5-1.5 4-3-3-3 3-1.5-4-4-1.5 3-3-3-3 4-1.5 1.5-4z"/><circle cx="12" cy="12" r="3"/></svg>GCP Cloud Architect</span>
+            <span class="cred"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2l3 3 3-3 1.5 4 4 1.5-3 3 3 3-4 1.5-1.5 4-3-3-3 3-1.5-4-4-1.5 3-3-3-3 4-1.5 1.5-4z"/><circle cx="12" cy="12" r="3"/></svg>Docker / CI/CD</span>
+            <span class="cred"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2l3 3 3-3 1.5 4 4 1.5-3 3 3 3-4 1.5-1.5 4-3-3-3 3-1.5-4-4-1.5 3-3-3-3 4-1.5 1.5-4z"/><circle cx="12" cy="12" r="3"/></svg>AI 系統整合</span>
+          </div>
           <div class="founder-chips">
             <span class="chip">☸️ Kubernetes</span>
             <span class="chip">🐳 Docker</span>
             <span class="chip">☁️ GCP</span>
             <span class="chip">⚙️ CI/CD</span>
             <span class="chip">🤖 AI 整合</span>
+            <span class="chip">🏗️ 一人公司實戰</span>
+          </div>
+          <div class="profile-links">
+            <a href="https://github.com/lewislunora" target="_blank" rel="noopener">GitHub ▸</a>
+            <a href="https://t.me/lewislunora" target="_blank" rel="noopener">Telegram ▸</a>
+            <a href="mailto:lewislunora@gmail.com">Email ▸</a>
           </div>
         </div>
       </div>
+    </div>
+  </div>
+</section>
+
+<!-- Work — portfolio / output showcase -->
+<section class="section" id="work">
+  <div class="wrap">
+    <div class="section-label">線上跑著的作品</div>
+    <h2 class="section-title">全部點得開，不是截圖</h2>
+    <p class="section-sub" style="max-width:640px;margin:0 auto 1.4rem;text-align:center">這些系統和內容現在就在線上運行，你隨時可以打開驗證。</p>
+    <div class="work-grid">
+      <div class="work-card">
+        <span class="work-icon">💬</span>
+        <div class="work-title">AI 智能客服系統</div>
+        <div class="work-desc">24/7 自動回覆、知識庫自增長、串接 LINE/Telegram/網站。</div>
+        <a class="work-link" href="ai-chat.html">立即體驗 →</a>
+      </div>
+      <div class="work-card">
+        <span class="work-icon">🧰</span>
+        <div class="work-title">職人筆記・SEO 長文</div>
+        <div class="work-desc">伺服器維運、備份、雲端帳單自保—真實做過的人寫的實戰文，每天自動更新一篇。</div>
+        <a class="work-link" href="thoughts/">閱讀筆記 →</a>
+      </div>
+      <div class="work-card">
+        <span class="work-icon">📖</span>
+        <div class="work-title">AI 連載小說・每天新一章</div>
+        <div class="work-desc">重生、都市、玄幻三連載。每天自動更新一章，追更者看完在底下留言討論。</div>
+        <a class="work-link" href="novels.html">追更 →</a>
+      </div>
+    </div>
+    <div class="link-strip">
+      <a href="matching.html">💞 AI 配對</a>
+      <a href="games/">🎮 遊戲</a>
+      <a href="guides/">📚 知識庫</a>
+      <a href="ai-story.html">🎬 短劇腳本</a>
+      <a href="social/">🔥 短內容</a>
+      <a href="product/">🔧 產品</a>
+      <a href="pricing.html">💰 價格</a>
     </div>
   </div>
 </section>
@@ -711,19 +1157,19 @@ footer .wrap{display:flex;flex-wrap:wrap;gap:.8rem;justify-content:space-between
     <h2 class="section-title">你可能想問</h2>
     <div class="faq-list">
       <div class="faq-item reveal">
-        <div class="faq-q" onclick="this.parentElement.classList.toggle('open')">導入 AI 自動化需要多少預算？</div>
+        <div class="faq-q">導入 AI 自動化需要多少預算？</div>
         <div class="faq-a">每位客戶的需求不同，我們先透過免費 30 分鐘諮詢了解你的狀況，再提供客製化方案與報價。從小規模開始，逐步擴大也是可行的策略。</div>
       </div>
       <div class="faq-item reveal">
-        <div class="faq-q" onclick="this.parentElement.classList.toggle('open')">我完全不懂技術，可以導入嗎？</div>
+        <div class="faq-q">我完全不懂技術，可以導入嗎？</div>
         <div class="faq-a">完全可以。我們的服務就是幫你處理所有技術問題，你只需要告訴我你的業務需求，剩下的交給我們。</div>
       </div>
       <div class="faq-item reveal">
-        <div class="faq-q" onclick="this.parentElement.classList.toggle('open')">導入後系統出問題怎麼辦？</div>
+        <div class="faq-q">導入後系統出問題怎麼辦？</div>
         <div class="faq-a">我們提供技術支援與維護服務，確保系統穩定運行。所有系統都建立在高可用架構上，最大限度避免當機風險。</div>
       </div>
       <div class="faq-item reveal">
-        <div class="faq-q" onclick="this.parentElement.classList.toggle('open')">需要多久才能看到效果？</div>
+        <div class="faq-q">需要多久才能看到效果？</div>
         <div class="faq-a">視系統複雜度而定，簡單的 AI 客服通常 1-2 週可以上線；完整的自動化系統約需 4-8 週。上線後立即開始節省時間。</div>
       </div>
     </div>
@@ -734,13 +1180,11 @@ footer .wrap{display:flex;flex-wrap:wrap;gap:.8rem;justify-content:space-between
 <section class="section" id="contact">
   <div class="wrap">
     <div class="cta-form-wrap reveal">
-      <h2>準備好讓 AI 幫你工作了嗎？</h2>
-      <p class="desc">免費預約 30 分鐘線上諮詢，我們將為你評估最適合的 AI 自動化方案。</p>
-      <form class="contact-form" id="contactForm" onsubmit="return handleContact(event)">
-        <label for="f_name">你的名字/暱稱 *</label>
-        <input type="text" id="f_name" name="姓名" required placeholder="例如：小明">
+      <h2>30 分鐘，聊聊你的狀況就夠了</h2>
+      <p class="desc">不推銷、不收費，先搞清楚你的現狀與卡點。聊完沒價值，你不用承諾任何事。</p>
+      <form class="contact-form compact" id="contactForm" onsubmit="return handleContact(event)">
         <label for="f_contact">Line ID 或 手機號碼 *</label>
-        <input type="text" id="f_contact" name="聯絡方式" required placeholder="方便即時聯絡">
+        <input type="text" id="f_contact" name="聯絡方式" required placeholder="方便即時聯絡你">
         <label for="f_need">目前最想解決的問題</label>
         <select id="f_need" name="需求">
           <option value="客服回覆太慢">客服回覆太慢</option>
@@ -748,14 +1192,15 @@ footer .wrap{display:flex;flex-wrap:wrap;gap:.8rem;justify-content:space-between
           <option value="想建置品牌網站">想建置品牌網站</option>
           <option value="其他">其他</option>
         </select>
-        <button type="submit" class="btn btn-primary" id="contactBtn">📩 立即預約免費諮詢</button>
-        <div class="contact-result" id="contactResult"></div>
+        <div class="full">
+          <button type="submit" class="btn btn-primary" id="contactBtn">📩 免費聊聊 · 我先回你</button>
+          <div class="contact-result" id="contactResult"></div>
+          <p style="font-size:12px;opacity:.5;margin-top:.4rem">這裡只給我自己看，不會發垃圾信。或直接 Telegram：<a href="https://t.me/lewislunora" style="color:#00d4ff">@lewislunora</a></p>
+        </div>
       </form>
     </div>
   </div>
 </section>
-
-<section class="section reveal" data-feed></section>
 
 <!-- Footer -->
 <footer>
@@ -770,6 +1215,7 @@ footer .wrap{display:flex;flex-wrap:wrap;gap:.8rem;justify-content:space-between
         <a href="security-portfolio.html">紅帽滲透測試</a>
         <a href="privacy.html">隱私政策</a>
         <a href="tos.html">服務條款</a>
+        <a href="admin/panel.html">管理後台</a>
         <a href="admin/analytics.html">流量分析</a>
         <a href="admin/govdata">開放資料後台</a>
         <a href="admin/share-kit">免費推廣素材包</a>
@@ -822,10 +1268,10 @@ footer .wrap{display:flex;flex-wrap:wrap;gap:.8rem;justify-content:space-between
 </div>
 
 <script src="https://accounts.google.com/gsi/client" async defer></script>
-<script src="share.js?v=20260801"></script>
-<script src="widget.js?v=20260801"></script>
-<script src="js/feed.js?v=20260801"></script>
-<script src="js/features.js?v=20260801"></script>
+<script src="share.js?v=20261005"></script>
+<script src="widget.js?v=20261005"></script>
+<script src="js/feed.js?v=20261005"></script>
+<script src="js/features.js?v=20261005"></script>
 <script>
 /* Cross-platform auto-detection */
 (function(){
@@ -909,7 +1355,7 @@ const LANG={
     step_1_title:'Free AI Audit',
     step_1_desc:'30-min online consultation to understand your pain points and evaluate AI automation opportunities.',
     step_2_title:'Custom Blueprint',
-    step_2_desc:'Design your专属 automation architecture and execution plan with clear deliverables.',
+    step_2_desc:'Design your custom automation architecture and execution plan with clear deliverables.',
     step_3_title:'Go Live',
     step_3_desc:'System built, tested, and launched. Continuous optimization for stable operation.',
     faq_label:'FAQ',
@@ -950,30 +1396,89 @@ function handleContact(e){
   e.preventDefault();
   var btn=document.getElementById('contactBtn');
   var result=document.getElementById('contactResult');
-  var name=document.getElementById('f_name').value;
   var contact=document.getElementById('f_contact').value;
   var need=document.getElementById('f_need').value;
+  var name=(contact||'').slice(0,20)||'訪客';
   btn.disabled=true;btn.textContent='⏳ 發送中...';
   var api=location.hostname.includes('github.io')?'https://lewislunora.onrender.com/api/contact':'/api/contact';
   fetch(api,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({姓名:name,聯絡方式:contact,需求:need})})
-  .then(function(r){return r.json()})
+  .then(function(r){ if(!r.ok) throw new Error(r.status); return r.json(); })
   .then(function(d){
-    btn.textContent='✅ 已送出！我們會盡快聯繫你';
+    btn.textContent='✅ 已送出，我會盡快回你';
     result.style.display='block';result.style.color='#00d4ff';
-    result.textContent='感謝你的諮詢申請，我們會在 24 小時內與你聯繫！';
-    setTimeout(function(){btn.disabled=false;btn.textContent='📩 立即預約免費諮詢'},5000);
+    result.textContent='收到了！我會在 24 小時內回你，先想想你的問題。';
+    setTimeout(function(){btn.disabled=false;btn.textContent='📩 免費聊聊 · 我先回你'},5000);
   })
   .catch(function(){
-    btn.textContent='❌ 發送失敗，請直接聯繫';
+    btn.textContent='❌ 發送失敗，請直接聯繫我';
     result.style.display='block';result.style.color='#ff6b6b';
-    result.textContent='發送失敗，請直接聯繫 lewislunora@gmail.com';
-    setTimeout(function(){btn.disabled=false;btn.textContent='📩 立即預約免費諮詢'},5000);
+    result.textContent='發送失敗，請直接 Telegram：@lewislunora';
+    setTimeout(function(){btn.disabled=false;btn.textContent='📩 免費聊聊 · 我先回你'},5000);
   });
   return false;
 }
+
+/* Hero live AI demo — 真後端 /api/kb/query */
+(function(){
+  var body=document.getElementById('demoBody');
+  var form=document.getElementById('demoForm');
+  var input=document.getElementById('demoInput');
+  if(!body||!form||!input)return;
+  var apiBase=location.hostname.includes('github.io')?'https://lewislunora.onrender.com':'';
+  function esc(s){return s.replace(/&/g,'&amp;').replace(/</g,'&lt;');}
+  function add(txt,role){
+    var d=document.createElement('div');d.className='ai-demo-msg '+role;
+    d.innerHTML=esc(txt).replace(/\n/g,'<br>');
+    body.appendChild(d);body.scrollTop=body.scrollHeight;return d;
+  }
+  function send(q){
+    if(!q)return;input.value='';add(q,'you');
+    var tp=add('想想怎麼回你…','bot typing');
+    fetch(apiBase+'/api/kb/query',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({text:q})})
+    .then(function(r){return r.json()})
+    .then(function(d){
+      var rep=(d&&d.reply&&typeof d.reply==='string'&&d.reply.trim())
+        ? d.reply
+        : '這題我知識庫還沒收到，先幫你記下了。免費聊聊時我真人直接回你 👉 按下方的按鈕。';
+      setTimeout(function(){tp.classList.remove('typing');tp.innerHTML=esc(rep).replace(/\n/g,'<br>');body.scrollTop=body.scrollHeight;},400);
+    })
+    .catch(function(){tp.classList.remove('typing');tp.innerHTML='demo 暫時連不上（在冷啟動），點「免費聊聊」我真人馬上回你。';});
+  }
+  add('你好，我是翔川 AI 客服——你打的每一句，都是線上真的系統在回。試試問我：「客服方案多少錢？」', 'bot');
+  form.addEventListener('submit',function(e){e.preventDefault();send(input.value.trim());});
+  document.querySelectorAll('.ai-demo-chip').forEach(function(c){
+    c.addEventListener('click',function(){send(c.getAttribute('data-q'));});
+  });
+})();
+
+/* Home short-feed */
+(function(){
+  var box=document.getElementById('homeFeed');
+  if(!box) return;
+  var apiBase = location.hostname.includes('github.io')
+    ? 'https://lewislunora.onrender.com' : '';
+  fetch(apiBase + '/api/feed?page=1&per_page=4')
+  .then(function(r){return r.json()})
+  .then(function(d){
+    var items=(d.items||[]).filter(function(p){return p && p.content});
+    if(!items.length){ box.innerHTML='<div class="feed-empty">第一篇短文就要誕生了…</div>'; return; }
+    box.innerHTML=items.map(function(p){
+      var a=p.author||{name:'翔川'};
+      var name=a.name||'翔川';
+      var ago=(p.created_at||'').replace('T',' ').slice(0,16);
+      return '<div class="feed-item">'+
+        '<div class="feed-head"><span class="autor">'+name.replace(/[<>&"]/g,'')+'</span><span class="tag" style="color:#00d4ff">'+ (p.post_type==='short'?'AI 短想':'短貼文') +'</span><span class="ago">'+ago+'</span></div>'+
+        '<div class="feed-body">'+p.content.replace(/[<>&]/g,function(c){return{'<':'&lt;','>':'&gt;','&':'&amp;'}[c]})+'</div>'+
+        '<div class="feed-foot"><span>❤ '+(p.like_count||0)+'</span><span>💬 '+(p.comment_count||0)+'</span><span>↻ '+(p.author&&p.id?'可留言':'')+'</span></div>'+
+      '</div>';
+    }).join('');
+  })
+  .catch(function(){
+    box.innerHTML='<div class="feed-empty">動態載入失敗</div>';
+  });
+})();
 </script>
 <script>
-/* Service Worker — auto-updates without clearing cache */
 /* 首頁即時數字：證明本站每天真的在自動產出（不用假數字） */
 (function(){
   var el=document.getElementById('heroLive');
@@ -983,19 +1488,21 @@ function handleContact(e){
     fetch('/api/novels').then(function(r){return r.json();}).catch(function(){return null;})
   ]).then(function(res){
     var st=res[0], nv=res[1];
-    if(!st||!st.auto_engine) return;
-    var t=st.auto_engine.ticks||{};
+    if(!st) return;
+    var t=(st.auto_engine&&st.auto_engine.ticks)||{};
     var ok=Object.keys(t).filter(function(k){return t[k]&&t[k].ok;}).length;
-    var chapters=((nv&&nv.items)||[]).reduce(function(a,n){return a+(n.chapter_count||0);},0);
-    var parts=['⏱ 自動引擎 '+Object.keys(t).length+' 個，'+ok+' 個最近一次執行成功'];
+    var chapters=(nv&&nv.items||[]).reduce(function(a,n){return a+(n.chapter_count||0);},0);
+    var parts=['⏱ 排程運作中：短文／SEO／小說／推播 共 '+Object.keys(t).length+' 個引擎，'
+      +ok+' 個最近一次執行成功'];
     if(chapters) parts.push('📖 小說已自動連載 '+chapters+' 章');
     el.textContent=parts.join('｜');
   });
 })();
 </script>
 <script>
+/* Service Worker — auto-updates without clearing cache */
 if ('serviceWorker' in navigator) {
-  navigator.serviceWorker.register('sw.js?v=20260801').catch(function(){});
+  navigator.serviceWorker.register('sw.js?v=20261005').catch(function(){});
 }
 </script>
 </body>

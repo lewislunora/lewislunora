@@ -129,8 +129,10 @@ def generate_and_publish(skip_post=None):
 # 每日自動產文的排程鉤子（從 server 呼叫）
 def auto_short_daily(max_per_day=2):
     from ..database import fetch
+    # 以台灣日界（UTC+8）計算每日上限，避免台灣早上 8 點就翻日
     today = fetch(
-        "SELECT COUNT(*) AS c FROM feed_posts WHERE post_type='short' AND date(created_at)=date('now')"
+        "SELECT COUNT(*) AS c FROM feed_posts WHERE post_type='short' "
+        "AND date(created_at,'+8 hours')=date('now','+8 hours')"
     )[0]["c"]
     total = fetch("SELECT COUNT(*) AS c FROM feed_posts")[0]["c"]
     # 網站完全沒有任何貼文時，跳過每日上限（但每 tick 仍只產一篇，逐步暖機）

@@ -131,8 +131,10 @@ def generate_seo_article(skip_existing: bool = True) -> dict | None:
 
 def auto_seo_daily(max_per_day: int = 1) -> dict:
     """scheduler 用：每天產 1 篇，網站全空時首篇立刻補。"""
+    # 以台灣日界（UTC+8）計算每日上限
     today = fetch(
-        "SELECT COUNT(*) AS c FROM seo_articles WHERE date(created_at)=date('now')"
+        "SELECT COUNT(*) AS c FROM seo_articles "
+        "WHERE date(created_at,'+8 hours')=date('now','+8 hours')"
     )[0]["c"]
     total = fetch("SELECT COUNT(*) AS c FROM seo_articles")[0]["c"]
     if today >= max_per_day and total > 0:
