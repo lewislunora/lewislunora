@@ -138,3 +138,14 @@ def test_channels_endpoint_available():
     c = TestClient(app)
     r = c.get("/api/promo/channels")
     assert r.status_code == 200 and "configured" in r.json()
+
+
+def test_sitemap_includes_key_and_new_pages():
+    """sitemap 必須含 govdata／product 等重點頁，並自動帶入 guides 底下的新頁。"""
+    from fastapi.testclient import TestClient
+    from marketing_system.api.server import app
+    xml = TestClient(app).get("/sitemap.xml").text
+    for must in ("/govdata", "/product/", "/guides/google-indexing.html",
+                 "/guides/ai-content-system.html"):
+        assert must in xml, f"sitemap 缺少 {must}"
+    assert "admin/" not in xml, "後台頁不應被索引"

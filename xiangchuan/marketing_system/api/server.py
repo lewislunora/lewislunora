@@ -1542,7 +1542,24 @@ def serve_sitemap():
         ("/index.html", "0.8"), ("/ai-story.html", "0.7"), ("/ai-chat.html", "0.7"),
         ("/thoughts/", "0.8"), ("/guides/", "0.7"), ("/community/", "0.7"),
         ("/affiliate.html", "0.6"), ("/support.html", "0.6"),
+        ("/govdata", "0.8"), ("/product/", "0.9"), ("/social/", "0.7"),
+        ("/ai-code-review/", "0.7"), ("/ai-brand/", "0.6"), ("/99u/", "0.6"),
+        ("/matching.html", "0.6"), ("/app.html", "0.6"), ("/security-portfolio.html", "0.7"),
     ]
+    # 自動帶入內容目錄下的頁面，避免新增文章卻忘了加進 sitemap（索引漏掉的常見原因）
+    try:
+        seen = {p for p, _ in static_pages}
+        for folder in ("guides", "proposals", "operations", "ai-brand", "product", "social"):
+            d = DOCS_DIR / folder
+            if not d.is_dir():
+                continue
+            for fp in sorted(d.glob("*.html")):
+                url = f"/{folder}/{fp.name}"
+                if url not in seen:
+                    seen.add(url)
+                    static_pages.append((url, "0.6"))
+    except Exception as e:
+        logger.warning(f"sitemap scan failed: {e}")
     urls = "".join(
         f"<url><loc>{base}{p}</loc><priority>{pr}</priority></url>"
         for p, pr in static_pages
