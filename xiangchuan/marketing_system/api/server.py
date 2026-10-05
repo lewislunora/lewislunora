@@ -2965,6 +2965,32 @@ def govdata_recent(limit: int = 8):
     return {"items": recent_analyzed(limit=min(limit, 30))}
 
 
+@app.get("/api/promo/share-kit")
+def promo_share_kit(limit: int = 3):
+    from ..services.promo import share_kit
+    return share_kit(limit=min(max(limit, 1), 6))
+
+
+@app.get("/api/promo/weekly-digest")
+def promo_weekly_digest():
+    from ..services.promo import weekly_digest
+    return weekly_digest()
+
+
+@app.get("/feed.xml")
+def promo_feed_xml():
+    from ..services.promo import rss_xml
+    return Response(rss_xml(), media_type="application/rss+xml")
+
+
+@app.get("/admin/share-kit")
+async def admin_share_kit():
+    fp = DOCS_DIR / "admin" / "share-kit.html"
+    if fp.exists():
+        return HTMLResponse(fp.read_text(encoding="utf-8"))
+    raise HTTPException(404, "Not found")
+
+
 @app.get("/api/govdata/ask")
 def govdata_ask(q: str = ""):
     from ..services.govdata import ask

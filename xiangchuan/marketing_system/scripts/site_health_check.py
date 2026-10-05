@@ -39,6 +39,7 @@ PUBLIC_GET = [
     "/api/seo-articles", "/api/novels", "/api/community/threads",
     "/api/kb", "/api/templates", "/api/content", "/api/comments",
     "/api/pages", "/api/license/status",
+    "/api/promo/share-kit", "/api/promo/weekly-digest", "/feed.xml",
 ]
 
 SEVERITY = {"ok": 0, "warn": 1, "crit": 2}

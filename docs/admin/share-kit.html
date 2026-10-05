@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>免費推廣素材包｜翔川 Neo</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',system-ui,sans-serif;background:#0a0e27;color:#fff;min-height:100vh}
+.wrap{max-width:980px;margin:0 auto;padding:28px 18px}
+h1{font-size:22px;margin-bottom:6px}
+.muted{color:#94a3b8;font-size:14px;line-height:1.7}
+.card{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);border-radius:14px;padding:18px;margin-top:16px}
+.item{background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.08);border-radius:12px;padding:14px;margin-top:12px}
+.item h4{font-size:15px;margin-bottom:4px}
+.kinds{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}
+.kinds a{font-size:12px;color:#5eead4;text-decoration:none;border:1px solid rgba(94,234,212,.3);border-radius:999px;padding:4px 10px}
+.post{margin-top:10px}
+.post .lbl{font-size:12px;color:#94a3b8;display:flex;justify-content:space-between;align-items:center}
+textarea{width:100%;min-height:92px;margin-top:6px;background:#0e1338;border:1px solid rgba(255,255,255,.12);border-radius:9px;color:#e2e8f0;padding:10px 12px;font-size:13px;line-height:1.7;resize:vertical;font-family:-apple-system,'PingFang TC',sans-serif}
+button{background:linear-gradient(135deg,#0d9488,#14b8a6);border:none;color:#042f2e;font-weight:700;border-radius:8px;padding:8px 14px;cursor:pointer;font-size:13px}
+button.ghost{background:transparent;border:1px solid rgba(255,255,255,.2);color:#cbd5e1;font-weight:500}
+.over{color:#f87171}
+.digest{width:100%;min-height:150px}
+a{color:#5eead4}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>免費推廣素材包</h1>
+  <div class="muted">站上最新內容已自動轉成各平台成稿貼文，連結含 UTM 追蹤（可回 <a href="/admin/analytics">/admin/analytics</a> 看哪個管道帶來流量）。複製貼上即可發布，零成本、零 token。</div>
+
+  <div class="card">
+    <h3 style="margin-bottom:8px">每週彙整貼文（適合每週發一次）</h3>
+    <div class="muted" style="margin-bottom:8px" id="dmeta"></div>
+    <textarea class="digest" id="digest" readonly></textarea>
+    <div style="margin-top:8px;display:flex;gap:8px">
+      <button onclick="copyDigest()">複製彙整貼文</button>
+      <button class="ghost" onclick="load()">重新產生</button>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3 style="margin-bottom:10px">最新內容 × 平台成稿</h3>
+    <div id="items"></div>
+  </div>
+
+  <div class="card">
+    <h3 style="margin-bottom:8px">免費曝光管道（依成本排序）</h3>
+    <ul style="margin-left:20px;line-height:2;font-size:14px;color:#cbd5e1">
+      <li>Bluesky／Telegram：免費 API，填 token 後可全自動發佈（目前待設定）。</li>
+      <li>Google Search Console + <a href="/sitemap.xml">sitemap.xml</a>：免費索引，長期自然流量。</li>
+      <li>GitHub README／Show HN／Reddit／Dcard／Facebook 社團：免費手動曝光，貼文已備好。</li>
+      <li>訂閱：<a href="/feed.xml">/feed.xml</a>（RSS）可放進 Feedly／Inoreader。</li>
+    </ul>
+  </div>
+</div>
+<script>
+const $=s=>document.querySelector(s);
+const api=p=>fetch(p).then(r=>r.json());
+function copy(t,btn){ navigator.clipboard.writeText(t).then(()=>{const o=btn.textContent;btn.textContent="已複製 ✓";setTimeout(()=>btn.textContent=o,1500);}); }
+async function load(){
+  const [kit,dig]=await Promise.all([api("/api/promo/share-kit?limit=3"),api("/api/promo/weekly-digest")]);
+  $("#digest").value=dig.text;
+  $("#dmeta").textContent=`近 7 天：${dig.posts} 則短文、${dig.articles} 篇長文｜${dig.stats}`;
+  $("#items").innerHTML=kit.items.map((it,idx)=>`
+    <div class="item">
+      <h4>${it.title}</h4>
+      <div class="muted">${it.kind}｜${it.created_at||"連載中"}</div>
+      <div class="kinds"><a href="${it.url}" target="_blank">開啟頁面 ↗</a></div>
+      ${it.posts.map((p,pi)=>`
+        <div class="post">
+          <div class="lbl"><span>${p.label} <span class="${p.within_limit?'':'over'}">${p.chars} 字</span></span>
+            <span><button onclick="copy(this.closest('.post').querySelector('textarea').value,this)">複製</button></span>
+          </div>
+          <textarea readonly>${p.text.replace(/</g,'&lt;')}</textarea>
+        </div>`).join("")}
+    </div>`).join("")||'<div class="muted">尚無內容</div>';
+}
+function copyDigest(){ copy($("#digest").value,document.querySelector(".card button")); }
+load();
+</script>
+</body>
+</html>
