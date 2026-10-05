@@ -29,8 +29,8 @@ def test_short_targets_its_slots():
     assert dp.should_run("short", _at(19))["slot"] == "evening"
     # 產過清晨後，上午不該再產（要等到中午時段）
     dp.mark_slot("short", "dawn", day="2026-10-05")
-    assert dp.should_run("short", _at(9))["run"] is False
-    assert dp.should_run("short", _at(13))["run"] is True
+    assert dp.should_run("short", _at(9), day="2026-10-05")["run"] is False
+    assert dp.should_run("short", _at(13), day="2026-10-05")["run"] is True
 
 
 def test_seo_targets_morning_and_no_duplicate():
@@ -39,7 +39,8 @@ def test_seo_targets_morning_and_no_duplicate():
     dp.mark_slot("seo", "morning", day="2026-10-05")
     # 當天已產過，之後任何時段都不該再產（長文一天一篇）
     for h in (13, 16, 20, 22):
-        assert dp.should_run("seo", _at(h))["run"] is False, f"{h} 時不該再產長文"
+        gate = dp.should_run("seo", _at(h), day="2026-10-05")
+        assert gate["run"] is False, f"{h} 時不該再產長文（{gate['reason']}）"
 
 
 def test_marked_slot_not_repeated():

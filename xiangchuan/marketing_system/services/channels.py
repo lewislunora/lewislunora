@@ -46,10 +46,11 @@ def channels_configured() -> dict:
 
 
 def today_count(channel: str) -> int:
-    since = datetime.now().strftime("%Y-%m-%d 00:00:00")
+    """今日推播次數。pushed_at 由 SQLite 以 UTC 寫入，故用台灣日界換算。"""
     return fetch_one(
-        "SELECT COUNT(*) AS c FROM channel_pushes WHERE channel=? AND pushed_at>=?",
-        [channel, since],
+        "SELECT COUNT(*) AS c FROM channel_pushes "
+        "WHERE channel=? AND date(pushed_at,'+8 hours')=date('now','+8 hours')",
+        [channel],
     )["c"]
 
 

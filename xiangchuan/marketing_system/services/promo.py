@@ -124,7 +124,8 @@ def share_kit(limit: int = 3) -> dict:
 
 def weekly_digest() -> dict:
     """近 7 天內容彙整：一篇貼文講完這週產出。"""
-    since = (datetime.now() - timedelta(days=7)).strftime("%Y-%m-%d %H:%M:%S")
+    # created_at 由 SQLite 以 UTC 寫入，故起點要換算成 UTC，避免時區錯位
+    since = (datetime.utcnow() - timedelta(days=7)).strftime("%Y-%m-%d %H:%M:%S")
     posts = fetch(
         "SELECT content, created_at FROM feed_posts WHERE created_at >= ? ORDER BY created_at DESC LIMIT 20",
         [since],

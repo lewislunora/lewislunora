@@ -78,7 +78,7 @@ def mark_slot(kind: str, slot: str, day: str | None = None) -> None:
     )
 
 
-def should_run(kind: str, now: datetime | None = None) -> dict:
+def should_run(kind: str, now: datetime | None = None, day: str | None = None) -> dict:
     """判斷現在該不該為這類內容產出。
 
     回傳 {run: bool, slot: str, reason: str}
@@ -90,7 +90,7 @@ def should_run(kind: str, now: datetime | None = None) -> dict:
     cur = current_slot(now)
     if not plan:
         return {"run": True, "slot": cur["key"], "reason": "無時段設定"}
-    done = done_slots(kind)
+    done = done_slots(kind, day or (now.strftime("%Y-%m-%d") if now else today_tw()))
     h = now.hour
     # 1) 當前時段正好在計畫內且尚未產出
     if cur["key"] in plan and cur["key"] not in done:

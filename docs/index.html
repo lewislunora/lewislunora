@@ -534,6 +534,43 @@ footer .wrap{display:flex;flex-wrap:wrap;gap:.8rem;justify-content:space-between
 .hero-cta-single .sub-line a:hover{text-decoration:underline}
 .hero-secondary{font-size:13px;padding:.7rem 1.6rem}
 .hero-live{font-size:12px;color:rgba(255,255,255,.4);letter-spacing:.2px;margin-top:.3rem}
+
+/* 浮動 emoji 粒子：讓首頁有「活著」的感覺（純 CSS，不吃效能） */
+.hero-float{position:absolute;inset:0;overflow:hidden;pointer-events:none;z-index:0}
+.hero-float span{position:absolute;font-size:20px;opacity:.16;animation:float-up linear infinite;will-change:transform}
+@keyframes float-up{
+  0%{transform:translateY(20px) rotate(0deg);opacity:0}
+  12%{opacity:.18}
+  88%{opacity:.14}
+  100%{transform:translateY(-160px) rotate(220deg);opacity:0}
+}
+/* 卡片跟隨滑鼠輕微傾斜（play-card） */
+.play-card{transform:perspective(600px)}
+.play-card.tilting{transition:transform .12s ease-out}
+@media(prefers-reduced-motion:reduce){.hero-float{display:none}}
+
+/* ═══ 首頁「好玩優先」改版：跑馬燈 + 玩什麼卡片 + 導覽精簡 ═══ */
+.ticker{display:flex;align-items:center;gap:.7rem;width:min(720px,92vw);margin:1.2rem auto 0;padding:.55rem .9rem;border-radius:999px;border:1px solid var(--accent-glow);background:var(--accent-soft);text-decoration:none;overflow:hidden}
+.ticker-tag{flex:none;font-size:11px;letter-spacing:.6px;color:var(--accent);border-right:1px solid var(--accent-glow);padding-right:.7rem}
+.ticker-track{font-size:13px;color:rgba(255,255,255,.7);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;animation:ticker-in .5s ease}
+html[data-mood="light"] .ticker-track{color:rgba(26,26,46,.7)}
+@keyframes ticker-in{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
+.ticker:hover .ticker-track{color:#fff}
+html[data-mood="light"] .ticker:hover .ticker-track{color:#0e7490}
+.play-section{padding-top:2.5rem}
+.play-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:1rem}
+.play-card{position:relative;display:flex;flex-direction:column;gap:.35rem;padding:1.15rem 1.2rem 1.05rem;border-radius:18px;text-decoration:none;color:inherit;background:linear-gradient(160deg,rgba(255,255,255,.07),rgba(255,255,255,.02));border:1px solid var(--nav-line);transition:transform .18s ease,border-color .18s ease,box-shadow .18s ease}
+.play-card::after{content:'';position:absolute;inset:-1px;border-radius:18px;background:linear-gradient(135deg,var(--accent),var(--accent2));opacity:0;transition:opacity .18s ease;z-index:-1}
+.play-card:hover{transform:translateY(-4px);border-color:transparent;box-shadow:0 10px 34px rgba(0,0,0,.28)}
+.play-card:hover::after{opacity:.55}
+.play-card:hover .play-go{color:#fff;letter-spacing:.5px}
+html[data-mood="light"] .play-card:hover .play-go{color:#042f4a}
+.play-ic{font-size:1.7rem;line-height:1}
+.play-card h3{font-size:15.5px;font-weight:700}
+.play-card p{font-size:13px;line-height:1.65;opacity:.65}
+.play-go{font-size:12px;color:var(--accent);letter-spacing:.3px;margin-top:.35rem;transition:all .18s ease}
+@media(max-width:600px){.play-grid{grid-template-columns:repeat(auto-fit,minmax(150px,1fr))}.play-card{padding:.95rem 1rem}.play-card h3{font-size:14px}.play-card p{font-size:12px}}
+
 .hero-partchip{display:inline-block;font-size:11.5px;letter-spacing:.6px;padding:.28rem .7rem;border-radius:999px;margin-bottom:.9rem;border:1px solid var(--accent-glow);color:var(--accent);background:var(--accent-soft)}
 html[data-mood="light"] .hero-partchip{color:#0e7490;border-color:rgba(2,132,199,.3);background:rgba(2,132,199,.07)}
 .ai-demo-wrap{width:min(460px,92vw);margin:1.6rem auto 0;position:relative;z-index:1}
@@ -637,6 +674,14 @@ html[data-mood="light"] .nav-links a{color:rgba(26,26,46,.55)}
 .nav-links a:hover{color:var(--accent)}
 .nav-hot{color:var(--accent)!important;font-weight:600}
 /* 主排連結 + CTA 鈕不爆版 */
+.nav-more{position:relative}
+.nav-more summary{list-style:none;cursor:pointer;font-size:12.5px;color:rgba(255,255,255,.55);padding:.5rem .6rem}
+.nav-more summary::-webkit-details-marker{display:none}
+.nav-more[open] summary{color:#fff}
+.nav-more-menu{position:absolute;right:0;top:110%;min-width:150px;background:#111740;border:1px solid var(--nav-line);border-radius:12px;padding:.4rem;display:grid;box-shadow:0 12px 32px rgba(0,0,0,.4);z-index:60}
+.nav-more-menu a{font-size:13px;color:rgba(255,255,255,.75);padding:.45rem .6rem;border-radius:8px;white-space:nowrap}
+.nav-more-menu a:hover{background:rgba(255,255,255,.08);color:#fff}
+@media(max-width:760px){.nav-more-menu{right:auto;left:0}}
 .nav-cta{font-size:12.5px;padding:.5rem 1.05rem;border-radius:100px;align-items:center;gap:.35rem;display:inline-flex;width:auto!important;white-space:nowrap}
 .btn-primary{background:linear-gradient(135deg,var(--accent),var(--accent2));box-shadow:0 4px 20px var(--btn-glow),0 0 0 1px var(--accent-glow),0 0 30px var(--accent2-soft)}
 .btn-primary:hover{box-shadow:0 8px 30px var(--btn-glow),0 0 0 1px var(--accent),0 0 40px var(--accent2-soft)}
@@ -811,13 +856,19 @@ html[data-mood="light"] .ai-demo-form input::placeholder{color:rgba(26,26,46,.3)
   <div class="nav-brand"><em>翔川 Neo</em></div>
   <div class="nav-right">
     <div class="nav-links">
+      <a href="#play">玩什麼</a>
       <a href="#achievements">成效</a>
-      <a href="#results">案例</a>
-      <a href="product/">方案</a>
-      <a href="ai-code-review/">AI 審碼</a>
-      <a href="thoughts/">🧰 職人筆記</a>
-      <a href="novels.html" class="nav-hot">📖 追小說</a>
-      <a href="social/">🔥 短內容</a>
+      <a href="novels.html" class="nav-hot">📖 小說</a>
+      <a href="thoughts/">🧰 筆記</a>
+      <details class="nav-more">
+        <summary>更多 ▾</summary>
+        <div class="nav-more-menu">
+          <a href="#results">案例</a><a href="product/">方案</a>
+          <a href="ai-code-review/">AI 審碼</a><a href="social/">🔥 短內容</a>
+          <a href="matching.html">⚡ AI 配對</a><a href="guides/">🗂 知識庫</a>
+          <a href="community/">💬 社群串</a><a href="affiliate.html">🛠 夥伴計畫</a>
+        </div>
+      </details>
       <a href="#contact" class="btn btn-primary nav-cta">🎯 免費聊聊 30 分</a>
     </div>
     <select class="lang-select" onchange="switchLang(this.value)">
@@ -829,11 +880,8 @@ html[data-mood="light"] .ai-demo-form input::placeholder{color:rgba(26,26,46,.3)
   <div class="nav-sub-links">
     <span class="nav-sub-label">不知道逛哪？</span>
     <a href="games/">🎮 遊戲</a>
-    <a href="guides/">🗂 知識庫</a>
     <a href="govdata">🏛 開放資料</a>
-    <a href="matching.html">⚡ AI 配對</a>
-    <a href="community/">💬 社群串</a>
-    <a href="affiliate.html">🛠 夥伴計畫</a>
+    <a href="ai-chat.html">🤖 AI 客服</a>
     <a href="support.html">☕ 支持翔川</a>
   </div>
 </nav>
@@ -841,17 +889,14 @@ html[data-mood="light"] .ai-demo-form input::placeholder{color:rgba(26,26,46,.3)
 <!-- Hero -->
 <section class="hero">
   <div class="hero-glow"></div>
+  <div class="hero-float" id="heroFloat" aria-hidden="true"></div>
   <div class="hero-badge" id="heroBadge">🕐 先把下面的客服玩一玩 · 真的會回你</div>
-  <div class="portal-row" id="portalRow">
-    <a href="novels.html" class="portal-chip"><span>📖</span><b>追小說</b><small>每天一章</small></a>
-    <a href="social/" class="portal-chip"><span>🔥</span><b>短內容</b><small>每日兩則</small></a>
-    <a href="thoughts/" class="portal-chip"><span>🧰</span><b>職人筆記</b><small>每天一篇</small></a>
-    <a href="community/" class="portal-chip"><span>💬</span><b>社群串</b><small>誰都能發</small></a>
-    <a href="matching.html" class="portal-chip"><span>⚡</span><b>AI 配對</b><small>人 + AI 創業</small></a>
-    <a href="guides/" class="portal-chip"><span>🚀</span><b>創業起步</b><small>免費工具</small></a>
-  </div>
   <h1><span class="line1">員工下班了，客戶沒下班</span><span class="line2">AI 幫你值這班機</span></h1>
   <p>我是 <b>Lewis Lunora</b> — 10+ 年 DevOps 架構師 × AI 整合。下面這個客服你打一句話它就會回，這就是我幫一人公司裝的系統：24/7 不漏單、能查價格、能發文。</p>
+  <a class="ticker" href="/thoughts/" id="ticker">
+    <span class="ticker-tag">今日自動更新</span>
+    <span class="ticker-track" id="tickerTrack">載入中…</span>
+  </a>
   <div class="hero-cta-single">
     <a href="#demo" class="btn btn-primary">🤖 立刻試用（免費、不用註冊）</a>
     <div class="sub-line">
@@ -882,6 +927,21 @@ html[data-mood="light"] .ai-demo-form input::placeholder{color:rgba(26,26,46,.3)
       </form>
     </div>
     <div class="hero-entry">↑ 你現在玩的，就是我要幫你裝進官網 / LINE / Telegram 的那個客服</div>
+  </div>
+</section>
+
+<!-- 玩什麼：hero 下方第一屏，讓「好玩」比「方案」先被看到 -->
+<section class="section play-section" id="play">
+  <div class="wrap">
+    <div class="section-sub" style="text-align:center;margin-bottom:2rem">不用註冊，點了就玩。這站上大部分東西是公開的 ↓</div>
+    <div class="play-grid">
+      <a class="play-card" href="ai-chat.html"><span class="play-ic">🤖</span><h3>AI 客服／助理</h3><p>問價格、問功能、問怎麼開始，秒回。</p><span class="play-go">開始玩 →</span></a>
+      <a class="play-card" href="novels.html"><span class="play-ic">📖</span><h3>每日連載小說</h3><p>AI 自己寫、自己接續，每天一章。</p><span class="play-go">追最新章 →</span></a>
+      <a class="play-card" href="games/"><span class="play-ic">🎮</span><h3>20 款小遊戲</h3><p>猜題、心測、邏輯挑戰，手機也能玩。</p><span class="play-go">挑一個 →</span></a>
+      <a class="play-card" href="govdata"><span class="play-ic">🏛️</span><h3>政府開放資料問答</h3><p>用自然語言問全台開放資料，AI 幫你算。</p><span class="play-go">問一句 →</span></a>
+      <a class="play-card" href="thoughts/"><span class="play-ic">🧰</span><h3>每日職人筆記</h3><p>真實維運經驗，每天一篇，寫得像人話。</p><span class="play-go">看今天這篇 →</span></a>
+      <a class="play-card" href="community/"><span class="play-ic">💬</span><h3>誰都能發的社群串</h3><p>不用註冊就能留言，回覆別人的想法。</p><span class="play-go">去講一句 →</span></a>
+    </div>
   </div>
 </section>
 
@@ -1479,6 +1539,56 @@ function handleContact(e){
 })();
 </script>
 <script>
+/* 首頁 playful：浮動 emoji 粒子 + 卡片跟隨滑鼠傾斜 */
+(function(){
+  var box=document.getElementById('heroFloat');
+  if(box && !window.matchMedia('(prefers-reduced-motion: reduce)').matches){
+    var emo=['🤖','📖','🧰','🏛️','⚡','💬','🛠️','☕','🎮','🌙'];
+    emo.forEach(function(e,i){
+      var sp=document.createElement('span');
+      sp.textContent=e;
+      sp.style.left=(4+i*9.5)+'%';
+      sp.style.bottom='-30px';
+      sp.style.animationDuration=(14+i%5*3)+'s';
+      sp.style.animationDelay=(i*1.7)+'s';
+      box.appendChild(sp);
+    });
+  }
+  if(window.matchMedia('(hover: hover)').matches){
+    document.querySelectorAll('.play-card').forEach(function(card){
+      card.addEventListener('mouseenter',function(){card.classList.add('tilting');});
+      card.addEventListener('mousemove',function(ev){
+        var r=card.getBoundingClientRect();
+        var x=(ev.clientX-r.left)/r.width-.5, y=(ev.clientY-r.top)/r.height-.5;
+        card.style.transform='perspective(600px) rotateY('+(x*7).toFixed(2)+'deg) rotateX('+(-y*7).toFixed(2)+'deg) translateY(-4px)';
+      });
+      card.addEventListener('mouseleave',function(){
+        card.classList.remove('tilting'); card.style.transform='';
+      });
+    });
+  }
+})();
+
+/* 今日自動更新跑馬燈：顯示真實最新的短文與長文 */
+(function(){
+  var box=document.getElementById('tickerTrack'), ln=document.getElementById('ticker');
+  if(!box) return;
+  Promise.all([
+    fetch('/api/feed?limit=1').then(function(r){return r.json();}).catch(function(){return null;}),
+    fetch('/api/seo-articles?limit=1').then(function(r){return r.json();}).catch(function(){return null;})
+  ]).then(function(res){
+    var f=(res[0]&&(res[0].items||res[0])||[])[0];
+    var a=(res[1]&&(res[1].items||res[1])||[])[0];
+    var parts=[];
+    if(a) parts.push('📝 '+a.title);
+    if(f) parts.push('✍️ '+String(f.content||'').replace(/\s+/g,' ').slice(0,42));
+    if(parts.length){
+      box.textContent=parts.join('　｜　');
+      if(a) ln.href='/thoughts/'+a.slug;
+    }else{ ln.style.display='none'; }
+  });
+})();
+
 /* 首頁即時數字：證明本站每天真的在自動產出（不用假數字） */
 (function(){
   var el=document.getElementById('heroLive');
