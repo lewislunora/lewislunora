@@ -2492,6 +2492,19 @@ def _register_promo_task():
     # 促銷文案：每天一輪（daily_promo 內部有「當天已有就不重複」守門）
     scheduler.add_hook(1440, "promo", daily_promo)
 
+    def channel_push_tick():
+        """免費社群管道自動發佈（Telegram／Bluesky）。沒憑證就跳過。"""
+        try:
+            from ..services.channels import auto_push
+            r = auto_push()
+            if not r.get("ok") and not r.get("channels"):
+                logger.info(f"tick channel_push: {r.get('detail')}")
+        except Exception as e:
+            logger.warning(f"tick channel_push failed: {e}")
+
+    # 每 30 分鐘檢查一次是否有新內容可推到已設定的免費管道
+    scheduler.add_hook(30, "channel_push", channel_push_tick)
+
 # ── Web Roamer ──────────────────────────────────────────────────────────
 @app.get("/api/roam/search")
 def roam_search(query: str = ""):
@@ -2963,6 +2976,24 @@ def govdata_analyze(nid: str):
 def govdata_recent(limit: int = 8):
     from ..services.govdata import recent_analyzed
     return {"items": recent_analyzed(limit=min(limit, 30))}
+
+
+@app.get("/api/promo/channels")
+def promo_channels():
+    from ..services.channels import status
+    return status()
+
+
+@app.post("/api/promo/channels/push")
+async def promo_channels_push(request: Request):
+    _require_admin(request)
+    from ..services.channels import auto_push
+    body = {}
+    try:
+        body = await request.json()
+    except Exception:
+        pass
+    return auto_push(force_key=body.get("item_key", ""))
 
 
 @app.get("/api/promo/share-kit")

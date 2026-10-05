@@ -64,3 +64,8 @@ BROWSER_TIMEOUT = 30000
 DEFAULT_SCHEDULE_TIME = "09:00"
 MAX_CONTENT_LENGTH = 2000
 LANGUAGES = ["zh-TW", "zh-CN", "en"]
+
+# 免費社群推廣管道（Telegram 公開頻道／Bluesky）
+TELEGRAM_PUSH_CHAT_IDS = os.environ.get("TELEGRAM_PUSH_CHAT_IDS", "")
+BLUESKY_HANDLE = os.environ.get("BLUESKY_HANDLE", "")
+BLUESKY_APP_PASSWORD = os.environ.get("BLUESKY_APP_PASSWORD", "")

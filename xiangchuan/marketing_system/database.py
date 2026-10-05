@@ -438,6 +438,18 @@ CREATE TABLE IF NOT EXISTS social_identities (
             posted_at TEXT DEFAULT NULL
         );
 
+        CREATE TABLE IF NOT EXISTS channel_pushes (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            item_key TEXT NOT NULL,
+            channel TEXT NOT NULL,
+            title TEXT DEFAULT '',
+            ok INTEGER DEFAULT 0,
+            detail TEXT DEFAULT '',
+            pushed_at TEXT DEFAULT (datetime('now'))
+        );
+        CREATE UNIQUE INDEX IF NOT EXISTS idx_channel_pushes_key
+            ON channel_pushes(item_key, channel);
+
         CREATE TABLE IF NOT EXISTS site_settings (
             key TEXT PRIMARY KEY,
             value TEXT DEFAULT '',

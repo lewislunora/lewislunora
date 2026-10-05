@@ -69,3 +69,72 @@ def test_promo_endpoints_available():
     assert d.status_code == 200 and d.json()["text"]
     f = c.get("/feed.xml")
     assert f.status_code == 200 and "<rss" in f.text
+
+# ── 免費社群管道（Telegram／Bluesky）────────────────────────────────────
+def _seed_one_article():
+    from marketing_system.database import execute
+    execute("INSERT INTO seo_articles (slug,title,summary,content_html) VALUES (?,?,?,?)",
+            ["chan-test", "推播測試文章", "摘要：確認推播管線。", "<p>x</p>"])
+
+
+def _fake_channels(monkeypatch, calls):
+    from marketing_system.services import channels
+    monkeypatch.setattr(channels, "channels_configured",
+                        lambda: {"telegram": True, "bluesky": False})
+    monkeypatch.setattr(channels, "PUSHERS",
+                        {"telegram": lambda t: (calls.append(t), {"ok": True, "detail": "mock"})[1]})
+    return channels
+
+
+def test_auto_push_without_credentials_is_noop():
+    from marketing_system.services import channels
+    _seed_one_article()
+    r = channels.auto_push()
+    assert r["ok"] is False and "憑證" in r["detail"]
+
+
+def test_auto_push_sends_once_per_item(monkeypatch):
+    from marketing_system.database import execute
+    _seed_one_article()
+    # 隔離其它測試可能留下的候選內容，只留一筆
+    execute("DELETE FROM feed_posts")
+    execute("DELETE FROM novels")
+    calls = []
+    channels = _fake_channels(monkeypatch, calls)
+    r1 = channels.auto_push()
+    assert r1["ok"] is True and len(calls) == 1
+    assert "utm_source=auto_push" in calls[0]
+    # 同一筆不重複推
+    r2 = channels.auto_push()
+    assert len(calls) == 1
+    assert r2["detail"] == "沒有待推的新內容"
+
+
+def test_auto_push_respects_daily_cap(monkeypatch):
+    from marketing_system.database import execute
+    _seed_one_article()
+    calls = []
+    channels = _fake_channels(monkeypatch, calls)
+    for i in range(5):
+        execute("INSERT INTO seo_articles (slug,title,summary,content_html) VALUES (?,?,?,?)",
+                [f"cap-{i}", f"第{i}篇", "摘要", "<p>x</p>"])
+    for _ in range(5):
+        channels.auto_push()
+    assert len(calls) == channels.DAILY_CAP["telegram"]
+    skipped = channels.auto_push()
+    assert all(r.get("skipped") for r in skipped["channels"].values())
+
+
+def test_channel_status_shape():
+    from marketing_system.services import channels
+    s = channels.status()
+    assert set(s["configured"]) == {"telegram", "bluesky"}
+    assert "today" in s and "recent" in s
+
+
+def test_channels_endpoint_available():
+    from fastapi.testclient import TestClient
+    from marketing_system.api.server import app
+    c = TestClient(app)
+    r = c.get("/api/promo/channels")
+    assert r.status_code == 200 and "configured" in r.json()

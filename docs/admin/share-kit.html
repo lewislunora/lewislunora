@@ -41,6 +41,26 @@ a{color:#5eead4}
   </div>
 
   <div class="card">
+    <h3 style="margin-bottom:8px">免費社群管道自動發佈</h3>
+    <div class="muted" style="margin-bottom:10px">設定好憑證後，排程器每 30 分鐘檢查一次新內容並自動推播（每管道每日上限 3 則，避免洗版）。</div>
+    <div id="chstat" style="font-size:14px;line-height:2;color:#cbd5e1"></div>
+    <div style="margin-top:10px;display:flex;gap:8px;align-items:center">
+      <button onclick="pushNow()">立即推送最新內容</button>
+      <span class="muted" id="pushout"></span>
+    </div>
+    <details style="margin-top:12px">
+      <summary class="muted" style="cursor:pointer">如何設定（免費）</summary>
+      <ul style="margin-left:18px;line-height:2;font-size:13px;color:#94a3b8">
+        <li>Telegram：Render 環境變數加 <code>TELEGRAM_BOT_TOKEN</code> 與
+            <code>TELEGRAM_PUSH_CHAT_IDS</code>（公開頻道用 <code>@你的頻道</code>，多個以逗號分隔）。</li>
+        <li>Bluesky：環境變數加 <code>BLUESKY_HANDLE</code> 與 <code>BLUESKY_APP_PASSWORD</code>
+            （Bluesky → 設定 → 進階 → App password）。</li>
+        <li>兩者都是免費方案、不需審核，填完存檔重啟即生效。</li>
+      </ul>
+    </details>
+  </div>
+
+  <div class="card">
     <h3 style="margin-bottom:10px">最新內容 × 平台成稿</h3>
     <div id="items"></div>
   </div>
@@ -60,9 +80,15 @@ const $=s=>document.querySelector(s);
 const api=p=>fetch(p).then(r=>r.json());
 function copy(t,btn){ navigator.clipboard.writeText(t).then(()=>{const o=btn.textContent;btn.textContent="已複製 ✓";setTimeout(()=>btn.textContent=o,1500);}); }
 async function load(){
-  const [kit,dig]=await Promise.all([api("/api/promo/share-kit?limit=3"),api("/api/promo/weekly-digest")]);
+  const [kit,dig,ch]=await Promise.all([api("/api/promo/share-kit?limit=3"),
+    api("/api/promo/weekly-digest"),api("/api/promo/channels")]);
   $("#digest").value=dig.text;
   $("#dmeta").textContent=`近 7 天：${dig.posts} 則短文、${dig.articles} 篇長文｜${dig.stats}`;
+  const name={telegram:"Telegram",bluesky:"Bluesky"};
+  $("#chstat").innerHTML=Object.entries(ch.configured).map(([k,ok])=>
+    `<div>● ${name[k]}：${ok?`<span style="color:#34d399">已啟用</span>（今日 ${ch.today[k]}/${ch.cap[k]}）`:`<span style="color:#f87171">未設定憑證</span>`}</div>`).join("")
+    + (ch.pending_item?`<div style="color:#94a3b8">待推內容：${ch.pending_item}</div>`:"")
+    + (ch.recent&&ch.recent.length?`<div style="color:#94a3b8">最近推播：${ch.recent.slice(0,3).map(r=>`${name[r.channel]||r.channel} ${r.ok?"✓":"✗"}`).join("　")}</div>`:"");
   $("#items").innerHTML=kit.items.map((it,idx)=>`
     <div class="item">
       <h4>${it.title}</h4>
@@ -78,6 +104,11 @@ async function load(){
     </div>`).join("")||'<div class="muted">尚無內容</div>';
 }
 function copyDigest(){ copy($("#digest").value,document.querySelector(".card button")); }
+async function pushNow(){ $("#pushout").textContent="推送中…";
+  const r=await fetch("/api/promo/channels/push",{method:"POST",headers:{"Content-Type":"application/json"},body:"{}"});
+  const d=await r.json();
+  $("#pushout").textContent = r.status===403 ? "需要管理員登入（403）" : (d.detail||JSON.stringify(d).slice(0,120));
+  load(); }
 load();
 </script>
 </body>
