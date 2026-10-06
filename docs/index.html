@@ -576,7 +576,31 @@ html[data-mood="light"] .play-card:hover .play-go{color:#042f4a}
 .prompt-chip{padding:.25rem .55rem;font-size:11.5px;border-radius:999px;cursor:pointer;background:rgba(255,255,255,.08);transition:all .12s ease}
 .prompt-chip:hover{background:rgba(0,212,255,.25);transform:translateY(-1px)}
 @media(max-width:560px){.quick-toys{gap:.4rem}.toy-btn{font-size:12px;padding:.42rem .72rem}.prompt-strip{max-width:96vw;overflow-x:auto;flex-wrap:nowrap;justify-content:flex-start;scrollbar-width:none;-ms-overflow-style:none}.prompt-strip::-webkit-scrollbar{display:none}.prompt-chip{white-space:nowrap}}
-@media(max-width:600px){.play-grid{grid-template-columns:repeat(auto-fit,minmax(150px,1fr))}.play-card{padding:.95rem 1rem}.play-card h3{font-size:14px}.play-card p{font-size:12px}}
+.play-carousel{position:relative;margin:0 auto;max-width:min(980px,94vw)}
+.play-track{display:flex;gap:1rem;overflow-x:auto;scroll-snap-type:x mandatory;padding:.25rem .25rem 1rem;scroll-padding-inline:.5rem;-webkit-overflow-scrolling:touch;scrollbar-width:none;-ms-overflow-style:none}
+.play-track::-webkit-scrollbar{display:none}
+.play-track .play-card{flex:0 0 min(240px,78vw);scroll-snap-align:center;scroll-snap-stop:always}
+@media(min-width:900px){.play-track .play-card{flex:0 0 calc((100% - 5rem)/6)}}
+.carousel-dots{display:flex;justify-content:center;gap:.35rem;margin-top:.25rem}
+.carousel-dot{width:6px;height:6px;border-radius:999px;background:rgba(255,255,255,.25);transition:all .16s ease;cursor:pointer}
+.carousel-dot.active{background:#00d4ff;width:18px}
+html[data-mood="light"] .carousel-dot{background:rgba(14,116,144,.25)}
+html[data-mood="light"] .carousel-dot.active{background:#0e7490}
+@media(prefers-reduced-motion:reduce){.play-track{scroll-snap-type:none}}
+.mini-game{margin:1.2rem auto 0;max-width:min(760px,92vw);border-radius:18px;border:1px solid var(--nav-line);background:linear-gradient(160deg,rgba(255,255,255,.08),rgba(255,255,255,.03));box-shadow:inset 0 1px 0 rgba(255,255,255,.08)}
+.mg-head{display:flex;align-items:center;justify-content:space-between;gap:.8rem;padding:.6rem .85rem;border-bottom:1px solid rgba(255,255,255,.08);font-size:13px}
+.mg-title{display:flex;align-items:center;gap:.45rem}
+.mg-board{position:relative;height:clamp(190px,36vw,240px);overflow:hidden;touch-action:none}
+.mg-bubble{position:absolute;bottom:-40px;width:clamp(40px,6vw,56px);height:clamp(40px,6vw,56px);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:clamp(18px,3.2vw,24px);cursor:pointer;user-select:none;-webkit-user-select:none;will-change:transform,opacity;box-shadow:0 8px 24px rgba(0,0,0,.25),inset 0 1px 0 rgba(255,255,255,.25);transition:transform .12s ease,opacity .16s ease;backdrop-filter:blur(2px)}
+.mg-bubble.pop{transform:scale(1.4);opacity:0}
+.mg-bubble.float{animation:mg-float linear forwards}
+@keyframes mg-float{from{transform:translateY(0) rotate(0deg)}to{transform:translateY(-150vh) rotate(360deg)}}
+.mg-foot{display:flex;align-items:center;justify-content:center;gap:.8rem;padding:.45rem .7rem;border-top:1px solid rgba(255,255,255,.08);font-size:12px;color:rgba(255,255,255,.65)}
+html[data-mood="light"] .mg-foot{color:rgba(26,26,46,.65)}
+.mg-btn{border:1px solid var(--nav-line);background:rgba(255,255,255,.1);color:inherit;padding:.25rem .6rem;border-radius:999px;font-size:11.5px;cursor:pointer}
+.mg-btn:hover{background:rgba(255,255,255,.16)}
+@media(prefers-reduced-motion:reduce){.mg-bubble.float{animation:none;transform:translateY(-40px)}}
+@media(max-width:600px){.play-track .play-card{padding:.95rem 1rem}.play-card h3{font-size:14px}.play-card p{font-size:12px}}
 
 .hero-partchip{display:inline-block;font-size:11.5px;letter-spacing:.6px;padding:.28rem .7rem;border-radius:999px;margin-bottom:.9rem;border:1px solid var(--accent-glow);color:var(--accent);background:var(--accent-soft)}
 html[data-mood="light"] .hero-partchip{color:#0e7490;border-color:rgba(2,132,199,.3);background:rgba(2,132,199,.07)}
@@ -936,6 +960,19 @@ html[data-mood="light"] .ai-demo-form input::placeholder{color:rgba(26,26,46,.3)
 <section class="section play-section" id="play">
   <div class="wrap">
     <div class="section-sub" style="text-align:center;margin-bottom:1rem">不用註冊，點了就玩。這站上大部分東西是公開的 ↓</div>
+    <div class="mini-game" id="miniGame" aria-label="10 秒泡泡小挑戰">
+      <div class="mg-head">
+        <div class="mg-title"><span>🎯</span><b>10 秒小挑戰：點泡泡</b><small style="opacity:.65">純前端、小巧好玩</small></div>
+        <button class="mg-btn" id="mgToggle" type="button">開始</button>
+      </div>
+      <div class="mg-board" id="mgBoard"></div>
+      <div class="mg-foot">
+        <span>得分：<b id="mgScore">0</b></span>
+        <span>剩餘：<b id="mgLeft">10</b>s</span>
+        <span>最高：<b id="mgBest">0</b></span>
+        <button class="mg-btn" id="mgRestart" type="button" style="display:none">再玩一次</button>
+      </div>
+    </div>
     <div class="quick-toys" aria-label="首頁小玩意">
       <button class="toy-btn" id="btnRandGame" type="button">🎲 隨機玩一個遊戲</button>
       <div class="prompt-strip" id="promptStrip">
@@ -953,13 +990,16 @@ html[data-mood="light"] .ai-demo-form input::placeholder{color:rgba(26,26,46,.3)
     <div class="bento-stat"><div class="bento-stat-num">4 hr</div><div class="bento-stat-label">每天省下的工</div></div>
   </div>
 
-    <div class="play-grid">
-      <a class="play-card" href="ai-chat.html"><span class="play-ic">🤖</span><h3>AI 客服／助理</h3><p>問價格、問功能、問怎麼開始，秒回。</p><span class="play-go">開始玩 →</span></a>
-      <a class="play-card" href="novels.html"><span class="play-ic">📖</span><h3>每日連載小說</h3><p>AI 自己寫、自己接續，每天一章。</p><span class="play-go">追最新章 →</span></a>
-      <a class="play-card" href="games/"><span class="play-ic">🎮</span><h3>20 款小遊戲</h3><p>猜題、心測、邏輯挑戰，手機也能玩。</p><span class="play-go">挑一個 →</span></a>
-      <a class="play-card" href="govdata"><span class="play-ic">🏛️</span><h3>政府開放資料問答</h3><p>用自然語言問全台開放資料，AI 幫你算。</p><span class="play-go">問一句 →</span></a>
-      <a class="play-card" href="thoughts/"><span class="play-ic">🧰</span><h3>每日職人筆記</h3><p>真實維運經驗，每天一篇，寫得像人話。</p><span class="play-go">看今天這篇 →</span></a>
-      <a class="play-card" href="community/"><span class="play-ic">💬</span><h3>誰都能發的社群串</h3><p>不用註冊就能留言，回覆別人的想法。</p><span class="play-go">去講一句 →</span></a>
+    <div class="play-carousel" id="playCarousel" aria-label="立即可玩的功能（可左右滑動）">
+      <div class="play-track">
+        <a class="play-card" href="ai-chat.html"><span class="play-ic">🤖</span><h3>AI 客服／助理</h3><p>問價格、問功能、問怎麼開始，秒回。</p><span class="play-go">開始玩 →</span></a>
+        <a class="play-card" href="novels.html"><span class="play-ic">📖</span><h3>每日連載小說</h3><p>AI 自己寫、自己接續，每天一章。</p><span class="play-go">追最新章 →</span></a>
+        <a class="play-card" href="games/"><span class="play-ic">🎮</span><h3>20 款小遊戲</h3><p>猜題、心測、邏輯挑戰，手機也能玩。</p><span class="play-go">挑一個 →</span></a>
+        <a class="play-card" href="govdata"><span class="play-ic">🏛️</span><h3>政府開放資料問答</h3><p>用自然語言問全台開放資料，AI 幫你算。</p><span class="play-go">問一句 →</span></a>
+        <a class="play-card" href="thoughts/"><span class="play-ic">🧰</span><h3>每日職人筆記</h3><p>真實維運經驗，每天一篇，寫得像人話。</p><span class="play-go">看今天這篇 →</span></a>
+        <a class="play-card" href="community/"><span class="play-ic">💬</span><h3>誰都能發的社群串</h3><p>不用註冊就能留言，回覆別人的想法。</p><span class="play-go">去講一句 →</span></a>
+      </div>
+      <div class="carousel-dots" id="playDots"></div>
     </div>
   </div>
 </section>
@@ -1609,6 +1649,7 @@ function handleContact(e){
 })();
 
 
+
 /* 首頁小玩意：隨機遊戲、快速提問填入 AI demo、今日靈感 */
 (function(){
   var games=['2048','flappy-bird','snake','memory-card','balloon','tetris-lite','chrome-dino','typing-speed','quiz','wordle','math-game','puzzle','whack-a-mole','rps','tower','asteroid','color-match','sequence','catch','mine'];
@@ -1631,12 +1672,46 @@ function handleContact(e){
   var btnIn=document.getElementById('btnInspire');
   if(btnIn){
     btnIn.addEventListener('click',function(){
-      var urls=['/thoughts/','/novels.html','/social/'];
+      var urls=['/thoughts/','/novels.html','/social/','/govdata','/games/','/guides/','/community/'];
       var u=urls[~~(Math.random()*urls.length)];
       location.href=u;
     });
   }
+  /* Carousel */
+  var car=document.getElementById('playCarousel'), track=document.querySelector('.play-track'), dotsWrap=document.getElementById('playDots');
+  if(car&&track&&dotsWrap){
+    var cards=[].slice.call(track.querySelectorAll('.play-card'));
+    var idx=0, timer=null, reduce=window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    cards.forEach(function(_,i){var d=document.createElement('button');d.type='button';d.className='carousel-dot'+(i===0?' active':'');d.setAttribute('aria-label','第 '+(i+1)+' 張');d.addEventListener('click',function(){go(i,true)});dotsWrap.appendChild(d);});
+    var dots=[].slice.call(dotsWrap.querySelectorAll('.carousel-dot'));
+    function go(n,manual){if(n<0)n=cards.length-1;if(n>=cards.length)n=0;idx=n;var c=cards[idx]; if(c){track.scrollBy({left:c.offsetLeft-track.scrollLeft-(track.clientWidth-c.clientWidth)/2,behavior:manual||reduce?'auto':'smooth'});}dots.forEach(function(x,i){x.classList.toggle('active',i===idx);});if(manual){pause();play();}}
+    function next(){go(idx+1,false)}
+    function play(){if(reduce||cards.length<=1)return;clearInterval(timer);timer=setInterval(next,3800);}
+    function pause(){clearInterval(timer);}
+    var sx=0,dx=0,drag=false;
+    track.addEventListener('pointerdown',function(e){drag=true;sx=e.clientX;pause();});
+    window.addEventListener('pointermove',function(e){if(!drag)return;dx=e.clientX-sx;});
+    window.addEventListener('pointerup',function(){if(!drag)return;drag=false;if(Math.abs(dx)>40) go(idx+(dx<0?1:-1),true);else play();dx=0;});
+    track.addEventListener('scroll',function(){clearTimeout(track._t);track._t=setTimeout(function(){var best=0,bestd=1e9;cards.forEach(function(c,i){var m=Math.abs(c.getBoundingClientRect().left+c.clientWidth/2-(track.getBoundingClientRect().left+track.clientWidth/2));if(m<bestd){bestd=m;best=i;}});if(best!==idx){idx=best;dots.forEach(function(x,i){x.classList.toggle('active',i===idx);});}},80);},{passive:true});
+    window.addEventListener('resize',function(){go(idx,true);});
+    car.addEventListener('mouseenter',pause);car.addEventListener('mouseleave',play);car.addEventListener('focusin',pause);car.addEventListener('focusout',play);
+    play();
+  }
+  /* Bubble */
+  var mg=document.getElementById('miniGame'), board=document.getElementById('mgBoard'), mgScore=document.getElementById('mgScore'), mgLeft=document.getElementById('mgLeft'), mgBest=document.getElementById('mgBest'), mgToggle=document.getElementById('mgToggle'), mgRestart=document.getElementById('mgRestart');
+  if(mg&&board){
+    var best=Number(localStorage.getItem('mgBest')||0); mgBest.textContent=best;
+    var running=false,timer=null,spawn=null,score=0,left=10,reduceM=window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    function rand(a,b){return a+Math.random()*(b-a)}
+    function spawnBubble(){if(!running)return; var b=document.createElement('div');b.className='mg-bubble'+(reduceM?'':' float'); var size=rand(40,56), cols=Math.max(1,Math.floor(board.clientWidth/size)); b.style.left=rand(6,board.clientWidth-size-6)+'px'; b.style.width=size+'px';b.style.height=size+'px'; var em=['✨','⚡','🎉','🧠','🚀','💡','🎮','🤖','🏆','💎']; b.textContent=em[~~(rand(0,em.length))]; b.style.animationDuration=rand(2.2,3.2)+'s'; b.style.background='radial-gradient(circle at 40% 30%, rgba(255,255,255,.45), rgba(0,212,255,'+~~(rand(16,40))+'), rgba(123,104,238,.55))'; b.addEventListener('pointerdown',function(e){e.preventDefault();if(!running)return;score++;mgScore.textContent=score;b.classList.add('pop');setTimeout(function(){b.remove();},140);},{once:true}); board.appendChild(b); setTimeout(function(){if(b.parentNode)b.remove();},reduceM?600:3600); spawn=setTimeout(spawnBubble,rand(220,520));}
+    function tick(){if(!running)return;left--;mgLeft.textContent=left;if(left<=0){end();}}
+    function start(){board.innerHTML='';score=0;left=10;mgScore.textContent=0;mgLeft.textContent=10;running=true;mgToggle.style.display='none';mgRestart.style.display='none';spawnBubble();timer=setInterval(tick,1000);}
+    function end(){running=false;clearInterval(timer);clearTimeout(spawn);if(score>best){best=score;localStorage.setItem('mgBest',best);}mgBest.textContent=best;mgToggle.style.display='none';mgRestart.style.display='inline-flex';}
+    mgToggle.addEventListener('click',start); mgRestart.addEventListener('click',start);
+    window.addEventListener('resize',function(){if(!running)return;board.innerHTML='';});
+  }
 })();
+
 
 
 /* 首頁即時數字：證明本站每天真的在自動產出（不用假數字） */
