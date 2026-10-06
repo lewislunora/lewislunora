@@ -569,6 +569,13 @@ html[data-mood="light"] .play-card:hover .play-go{color:#042f4a}
 .play-card h3{font-size:15.5px;font-weight:700}
 .play-card p{font-size:13px;line-height:1.65;opacity:.65}
 .play-go{font-size:12px;color:var(--accent);letter-spacing:.3px;margin-top:.35rem;transition:all .18s ease}
+.quick-toys{display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:.5rem;margin:.8rem auto 0;max-width:min(820px,92vw)}
+.toy-btn{border:1px solid var(--nav-line);background:linear-gradient(160deg,rgba(255,255,255,.08),rgba(255,255,255,.03));color:inherit;padding:.45rem .85rem;border-radius:999px;font-size:12.5px;cursor:pointer;transition:transform .12s ease,border-color .12s ease,box-shadow .12s ease}
+.toy-btn:hover{transform:translateY(-2px);border-color:var(--accent);box-shadow:0 8px 24px rgba(0,0,0,.26)}
+.prompt-strip{display:flex;flex-wrap:wrap;justify-content:center;gap:.35rem;padding:.35rem .45rem;border-radius:999px;background:rgba(255,255,255,.05);border:1px solid var(--nav-line)}
+.prompt-chip{padding:.25rem .55rem;font-size:11.5px;border-radius:999px;cursor:pointer;background:rgba(255,255,255,.08);transition:all .12s ease}
+.prompt-chip:hover{background:rgba(0,212,255,.25);transform:translateY(-1px)}
+@media(max-width:560px){.quick-toys{gap:.4rem}.toy-btn{font-size:12px;padding:.42rem .72rem}.prompt-strip{max-width:96vw;overflow-x:auto;flex-wrap:nowrap;justify-content:flex-start;scrollbar-width:none;-ms-overflow-style:none}.prompt-strip::-webkit-scrollbar{display:none}.prompt-chip{white-space:nowrap}}
 @media(max-width:600px){.play-grid{grid-template-columns:repeat(auto-fit,minmax(150px,1fr))}.play-card{padding:.95rem 1rem}.play-card h3{font-size:14px}.play-card p{font-size:12px}}
 
 .hero-partchip{display:inline-block;font-size:11.5px;letter-spacing:.6px;padding:.28rem .7rem;border-radius:999px;margin-bottom:.9rem;border:1px solid var(--accent-glow);color:var(--accent);background:var(--accent-soft)}
@@ -929,6 +936,17 @@ html[data-mood="light"] .ai-demo-form input::placeholder{color:rgba(26,26,46,.3)
 <section class="section play-section" id="play">
   <div class="wrap">
     <div class="section-sub" style="text-align:center;margin-bottom:1rem">不用註冊，點了就玩。這站上大部分東西是公開的 ↓</div>
+    <div class="quick-toys" aria-label="首頁小玩意">
+      <button class="toy-btn" id="btnRandGame" type="button">🎲 隨機玩一個遊戲</button>
+      <div class="prompt-strip" id="promptStrip">
+        <span class="prompt-chip" data-q="這個網站能幫我做什麼？">網站是幹嘛的？</span>
+        <span class="prompt-chip" data-q="政府開放資料怎麼用？">政府資料怎麼查？</span>
+        <span class="prompt-chip" data-q="有免費的 AI 工具嗎？">免費 AI 工具</span>
+        <span class="prompt-chip" data-q="怎麼開始用 AI 客服？">怎麼用 AI 客服？</span>
+        <span class="prompt-chip" data-q="推薦一篇今天的職人筆記">看今天筆記</span>
+      </div>
+      <button class="toy-btn" id="btnInspire" type="button">✨ 今日靈感</button>
+    </div>
   <div class="bento-stats">
     <div class="bento-stat"><div class="bento-stat-num">24/7</div><div class="bento-stat-label">不休息的客服</div></div>
     <div class="bento-stat"><div class="bento-stat-num">&lt;3s</div><div class="bento-stat-label">平均回覆</div></div>
@@ -1589,6 +1607,37 @@ function handleContact(e){
     }else{ ln.style.display='none'; }
   });
 })();
+
+
+/* 首頁小玩意：隨機遊戲、快速提問填入 AI demo、今日靈感 */
+(function(){
+  var games=['2048','flappy-bird','snake','memory-card','balloon','tetris-lite','chrome-dino','typing-speed','quiz','wordle','math-game','puzzle','whack-a-mole','rps','tower','asteroid','color-match','sequence','catch','mine'];
+  var btnGame=document.getElementById('btnRandGame');
+  if(btnGame){ btnGame.addEventListener('click',function(){
+    var g=games[~~(Math.random()*games.length)];
+    location.href='games/'+g+'.html';
+  });}
+  var strip=document.getElementById('promptStrip');
+  if(strip){
+    strip.querySelectorAll('.prompt-chip').forEach(function(ch){
+      ch.addEventListener('click',function(){
+        var q=ch.getAttribute('data-q')||ch.textContent;
+        var ta=document.querySelector('#demo #demoInput, #demo input, .ai-demo-form input, #demo textarea, .chat-input');
+        if(ta){ ta.value=q; ta.focus(); try{ta.scrollIntoView({block:'center',behavior:'smooth'});}catch(e){} }
+        else { location.href='#demo'; }
+      });
+    });
+  }
+  var btnIn=document.getElementById('btnInspire');
+  if(btnIn){
+    btnIn.addEventListener('click',function(){
+      var urls=['/thoughts/','/novels.html','/social/'];
+      var u=urls[~~(Math.random()*urls.length)];
+      location.href=u;
+    });
+  }
+})();
+
 
 /* 首頁即時數字：證明本站每天真的在自動產出（不用假數字） */
 (function(){
