@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>任務牆・接任務賺錢 — 翔川 Neo</title>
+<meta name="description" content="任務牆、外包任務、接案賺錢">
+<link rel="stylesheet" href="css/main.css?v=20261005">
+<style>
+.hero-mini{padding:clamp(3.5rem,6vw,4.5rem) 1rem 1rem;text-align:center}
+.hero-mini h1{font-size:clamp(30px,5vw,48px);margin-bottom:.5rem;background:linear-gradient(135deg,#e8ecf4 0%,rgba(232,236,244,.5) 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.hero-mini p{opacity:.65;max-width:640px;margin:0 auto 1.2rem}
+.cards{display:grid;gap:1rem;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));max-width:min(980px,94vw);margin:0 auto}
+.card{background:linear-gradient(160deg,rgba(255,255,255,.08),rgba(255,255,255,.03));border:1px solid var(--nav-line);border-radius:16px;padding:1.1rem 1.15rem}
+.card h3{font-size:15px;margin-bottom:.25rem}
+.meta{font-size:12px;opacity:.65;display:flex;flex-wrap:wrap;gap:.4rem 1rem;margin-bottom:.5rem}
+.tags{display:flex;flex-wrap:wrap;gap:.35rem;margin-top:.5rem}
+.tag{font-size:11px;border:1px solid var(--nav-line);padding:.15rem .45rem;border-radius:999px;background:rgba(255,255,255,.05)}
+.cta-row{display:flex;gap:.5rem;flex-wrap:wrap;margin-top:.8rem}
+.btn-sm{border:1px solid var(--nav-line);padding:.3rem .65rem;border-radius:999px;font-size:12px;background:rgba(255,255,255,.08)}
+.btn-sm.pri{background:rgba(0,212,255,.2);border-color:rgba(0,212,255,.45)}
+footer{padding:2rem 1rem;text-align:center;opacity:.45;font-size:12px}
+</style>
+</head>
+<body>
+<div class="bg"></div>
+<header class="nav" id="nav"></header>
+<section class="hero-mini">
+  <h1>任務牆・接任務賺錢</h1>
+  <p>把小任務丟出去，或接個任務賺點外快。明確報酬、明確範圍。</p>
+  <a class="btn-pri" href="/community/">＋ 張貼任務</a>
+</section>
+<section>
+  <div class="cards" id="list"></div>
+</section>
+<footer>翔川 Neo — 把煩人的事，用最簡單的方式做掉</footer>
+<script>
+const sample=[
+  {id:1,title:'簡單資料整理（Excel/CSV）',pay:'$500～800',due:'7 天內',tags:['資料','文書'],desc:'清理重複欄位、格式調整。'},
+  {id:2,title:'Logo 簡易微調',pay:'$1,000～1,500',due:'3～5 天',tags:['設計','外包'],desc:'調整顏色或間距即可。'},
+  {id:3,title:'文章潤稿 500～800 字',pay:'$400～600',due:'48 小時',tags:['寫作','潤稿'],desc:'讓語氣更自然。'},
+  {id:4,title:'截圖/簡易測試',pay:'$300～500',due:'1～2 天',tags:['測試','QA'],desc:'在特定裝置確認流程是否正常。'},
+  {id:5,title:'自動化腳本小修',pay:'$1,500～2,500',due:'3～7 天',tags:['Python','自動化'],desc:'修正現有腳本小 Bug。'},
+];
+document.getElementById('list').innerHTML=sample.map(x=>`<div class="card"><h3>${x.title}</h3><div class="meta"><span>報酬 ${x.pay}</span><span>截止 ${x.due}</span></div><p style="opacity:.8;line-height:1.65">${x.desc}</p><div class="tags">${x.tags.map(t=>`<span class="tag">${t}</span>`).join('')}</div><div class="cta-row"><a class="btn-sm pri" href="/community/">接這個任務</a><a class="btn-sm" href="/social/chat.html">私訊發案方</a></div></div>`).join('');
+</script>
+</body>
+</html>

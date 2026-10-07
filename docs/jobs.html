@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>找工作・找人才 — 翔川 Neo</title>
+<meta name="description" content="求職、求才、兼職、短期、遠端、外包工作平台">
+<link rel="stylesheet" href="css/main.css?v=20261005">
+<style>
+.hero-mini{padding:clamp(3.5rem,6vw,4.5rem) 1rem 1rem;text-align:center}
+.hero-mini h1{font-size:clamp(30px,5vw,48px);margin-bottom:.5rem;background:linear-gradient(135deg,#e8ecf4 0%,rgba(232,236,244,.5) 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.hero-mini p{opacity:.65;max-width:640px;margin:0 auto 1.2rem}
+.tabs{display:flex;flex-wrap:wrap;gap:.4rem;justify-content:center;margin:1rem auto 1.5rem;max-width:min(860px,92vw)}
+.tab{border:1px solid var(--nav-line);padding:.35rem .75rem;border-radius:999px;font-size:13px;background:rgba(255,255,255,.05);cursor:pointer}
+.tab.active{background:rgba(0,212,255,.2);border-color:rgba(0,212,255,.45)}
+.cards{display:grid;gap:1rem;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));max-width:min(980px,94vw);margin:0 auto}
+.card{background:linear-gradient(160deg,rgba(255,255,255,.08),rgba(255,255,255,.03));border:1px solid var(--nav-line);border-radius:16px;padding:1.1rem 1.15rem}
+.card h3{font-size:15px;margin-bottom:.25rem}
+.meta{font-size:12px;opacity:.65;display:flex;flex-wrap:wrap;gap:.4rem 1rem;margin-bottom:.5rem}
+.tags{display:flex;flex-wrap:wrap;gap:.35rem;margin-top:.5rem}
+.tag{font-size:11px;border:1px solid var(--nav-line);padding:.15rem .45rem;border-radius:999px;background:rgba(255,255,255,.05)}
+.cta-row{display:flex;gap:.5rem;flex-wrap:wrap;margin-top:.8rem}
+.btn-sm{border:1px solid var(--nav-line);padding:.3rem .65rem;border-radius:999px;font-size:12px;background:rgba(255,255,255,.08)}
+.btn-sm.pri{background:rgba(0,212,255,.2);border-color:rgba(0,212,255,.45)}
+.empty{opacity:.55;text-align:center;padding:2rem}
+footer{padding:2rem 1rem;text-align:center;opacity:.45;font-size:12px}
+</style>
+</head>
+<body>
+<div class="bg"></div>
+<header class="nav" id="nav"></header>
+<section class="hero-mini">
+  <h1>找工作・找人才</h1>
+  <p>求職、求才、兼職、短期、遠端、外包，一個地方就能配對。</p>
+  <div class="tabs" id="tabs">
+    <button class="tab active" data-t="all">全部</button>
+    <button class="tab" data-t="job">找工作（兼職・短期・遠端）</button>
+    <button class="tab" data-t="hire">找人才（外包・接案・招募）</button>
+  </div>
+</section>
+<section>
+  <div class="cards" id="list"></div>
+  <div class="empty" id="empty" style="display:none">暫時還沒資料，歡迎到社群串貼出你的需求。</div>
+</section>
+<footer>翔川 Neo — 把煩人的事，用最簡單的方式做掉</footer>
+<script>
+function $(s,c){return (c||document).querySelector(s)}
+function $$(s,c){return Array.from((c||document).querySelectorAll(s))}
+const sample=[
+  {id:1,type:'job',title:'行銷小幫手（短期、遠端）',org:'Startup 團隊',pay:'時薪 $250～350',loc:'遠端',tags:['短期','遠端','行銷'],desc:'協助社群貼文、簡單圖文，需基本中文。'},
+  {id:2,type:'job',title:'前端外包協助（切版）',org:'個人專案',pay:'專案 $3k～8k',loc:'遠端',tags:['外包','前端','React'],desc:'協助頁面微調，一頁式或元件化。'},
+  {id:3,type:'hire',title:'徵求 AI 自動化外包',org:'一人公司',pay:'專案 $5k～15k',loc:'遠端',tags:['AI','自動化','外包'],desc:'想把重複流程自動化，尋找短期合作夥伴。'},
+  {id:4,type:'job',title:'客服兼職（夜班部分時段）',org:'線上服務',pay:'時薪 $200～280',loc:'遠端',tags:['兼職','客服','遠端'],desc:'回覆基本諮詢，文件清楚即可。'},
+  {id:5,type:'hire',title:'徵求內容編輯（每週 2–3 篇）',org:'內容站',pay:'每篇 $500～800',loc:'遠端',tags:['寫作','長期','遠端'],desc:'協助潤稿與排版。'},
+];
+let cur='all';
+function render(){
+  const t=$('#list'), e=$('#empty');
+  let d=sample.filter(x=>cur==='all'||x.type===cur);
+  if(!d.length){t.innerHTML=''; e.style.display=''; return}
+  e.style.display='none';
+  t.innerHTML=d.map(x=>`<div class="card"><h3>${x.title}</h3><div class="meta"><span>${x.org}</span><span>${x.pay}</span><span>${x.loc}</span></div><p style="opacity:.8;line-height:1.65">${x.desc}</p><div class="tags">${x.tags.map(t=>`<span class="tag">${t}</span>`).join('')}</div><div class="cta-row"><a class="btn-sm pri" href="/community/" onclick="sessionStorage.setItem('comm-tag','${x.type==='job'?'找工作':'找人才'}')">留言討論</a><a class="btn-sm" href="/social/chat.html?uid=1">線上對話</a></div></div>`).join('');
+}
+$$('.tab').forEach(b=>b.onclick=()=>{$$('.tab').forEach(x=>x.classList.remove('active'));b.classList.add('active');cur=b.dataset.t;render();});
+render();
+</script>
+</body>
+</html>
