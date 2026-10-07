@@ -499,6 +499,14 @@
       "post_type": "short",
       "author": "AI 每日短想",
       "created_at": "2026-10-07 04:12:48"
+    },
+    {
+      "id": 23,
+      "user_id": null,
+      "content": "別再盯著數據焦慮了，那只是後果。我親測最有效的方法是：這週主動聯繫 10 個你佩服的前輩，不是求資源，而是帶著一個具體問題去請教。你會發現，他們樂於分享，而你獲益更豐。\n\n你目前最想認識的那 10 個人是誰？",
+      "post_type": "short",
+      "author": "AI 每日短想",
+      "created_at": "2026-10-07 13:20:24"
     }
   ],
   "community_threads": [
@@ -1643,6 +1651,19 @@
       "view_count": 0,
       "created_at": "2026-10-07 01:10:15",
       "updated_at": "2026-10-07 01:10:15"
+    },
+    {
+      "id": 11,
+      "slug": "nginx-502-的-11-種原因與解法",
+      "title": "Nginx 502 的 11 種原因與解法",
+      "category": "維運",
+      "summary": "Nginx 502 的 11 種原因與解法\n\n502 Bad Gateway 不是偶發的錯誤，而是 Nginx 與後端服務溝通失敗 的徵兆。下面列出最常見的 11 種根本原因，並附上實務排查與修復步驟，讓你能在生產環境中快速定位、避免重蹈覆…",
+      "content_html": "<h1>Nginx 502 的 11 種原因與解法</h1>\n\n<p>502 Bad Gateway 不是偶發的錯誤，而是 <strong>Nginx 與後端服務溝通失敗</strong> 的徵兆。下面列出最常見的 11 種根本原因，並附上實務排查與修復步驟，讓你能在生產環境中快速定位、避免重蹈覆轍。</p>\n\n<p>---</p>\n\n<h2>1. 後端服務未啟動或崩潰</h2>\n<p><strong>症狀</strong>：`curl -I http://127.0.0.1:8080` 回傳連線被拒絕或超時。</p>\n<p><strong>解法</strong>：</p>\n<ul>\n<li>使用 `systemctl status app.service` 確認服務狀態。</li>\n<li>若服務掛掉，檢查日誌 `journalctl -u app.service -f` 找出崩潰原因（記憶體 OOM、例外未捕獲等）。</li>\n<li>加入 <strong>systemd 的 Restart=on-failure</strong>，確保意外退出時自動重啟。</li>\n</ul>\n<h2>2. 後端服務回應過慢</h2>\n<p><strong>症狀</strong>：Nginx 超過 `proxy_read_timeout` 後返回 502。</p>\n<p><strong>解法</strong>：</p>\n<ul>\n<li>先用 `ab -n 10 -c 2 http://127.0.0.1:8080/` 測試延遲。</li>\n<li>若確實超時，調整 Nginx 設定：</li>\n</ul><p>  ```nginx</p>\n<p>  proxy_connect_timeout 30s;</p>\n<p>  proxy_send_timeout    30s;</p>\n<p>  proxy_read_timeout    60s;</p>\n<p>  ```</p>\n<ul>\n<li>同時優化後端程式（SQL Index、Cache）或加速硬體（CPU、IO）。</li>\n</ul>\n<h2>3. Nginx 與後端使用不同的協定/端口</h2>\n<p><strong>症狀</strong>：`proxy_pass http://backend:8443`，實際後端只聽 8080。</p>\n<p><strong>解法</strong>：</p>\n<ul>\n<li>檢查 `upstream` 定義與 `proxy_pass` URL 是否一致。</li>\n<li>使用 `netstat -tlnp | grep 8080` 確認正確端口。</li>\n</ul>\n<h2>4. 防火牆或 SELinux 阻擋連線</h2>\n<p><strong>症狀</strong>：`telnet 127.0.0.1 8080` 正常，但 Nginx 仍 502。</p>\n<p><strong>解法</strong>：</p>\n<ul>\n<li>`iptables -L -n` 或 `firewall-cmd --list-all` 檢查規則。</li>\n<li>若是 SELinux，執行 `setsebool -P httpd_can_network_connect 1` 允許 Nginx 連向網路。</li>\n</ul>\n<h2>5. upstream 伺服器健康檢查失敗</h2>\n<p><strong>症狀</strong>：使用 `upstream` 負載均衡，所有節點被標記為 *down*。</p>\n<p><strong>解法</strong>：</p>\n<ul>\n<li>確認 `proxy_next_upstream` 設定，避免過度重試。</li>\n<li>加入 `health_check`（需要 ngx_http_upstream_check_module）或使用外部工具（Consul）監控。</li>\n</ul>\n<h2>6. 代理緩衝區（buffer）不足</h2>\n<p><strong>症狀</strong>：大檔案或長 JSON 回傳時 502。</p>\n<p><strong>解法</strong>：</p>\n<p>  ```nginx</p>\n<p>  proxy_buffer_size   128k;</p>\n<p>  proxy_buffers       8 256k;</p>\n<p>  proxy_busy_buffers_size 256k;</p>\n<p>  ```</p>\n<ul>\n<li>若仍失敗，檢查 `client_max_body_size` 是否過小。</li>\n</ul>\n<h2>7. SSL/TLS 握手失敗</h2>\n<p><strong>症狀</strong>：`proxy_pass https://backend`，但後端使用自簽證書。</p>\n<p><strong>解法</strong>：</p>\n<ul>\n<li>在 `proxy_ssl_verify off;` 暫時關閉驗證測試。</li>\n<li>正式環境應把根證書加入 `proxy_ssl_trusted_certificate`，或使用 <strong>Let's Encrypt</strong> 取得正式憑證。</li>\n</ul>\n<h2>8. 後端返回非 2xx/3xx 狀態碼且未被轉發</h2>\n<p><strong>症狀</strong>：後端回 500，Nginx 卻直接回 502。</p>\n<p><strong>解法</strong>：</p>\n<ul>\n<li>確認 `proxy_intercept_errors off;`（預設）或自行定義 `error_page 502 =200 /fallback.html;`。</li>\n<li>若需要保留原始錯誤，使用 `proxy_pass_error_message on;`。</li>\n</ul>\n<h2>9. 代理請求頭部過大</h2>\n<p><strong>症狀</strong>：客戶端帶大量 Cookie，Nginx 轉給後端時超過 `proxy_buffer_size`。</p>\n<p><strong>解法</strong>：</p>\n<p>  ```nginx</p>\n<p>  large_client_header_buffers 4 16k;</p>\n<p>  proxy_set_header Cookie $http_cookie;</p>\n<p>  ```</p>\n<ul>\n<li>定期清理不必要的 Cookie，減少傳輸負擔。</li>\n</ul>\n<h2>10. 後端程式的資源限制（ulimit）</h2>\n<p><strong>症狀</strong>：高併發時後端只能打開少量檔案描述符，導致連線被拒。</p>\n<p><strong>解法</strong>：</p>\n<ul>\n<li>在 systemd 服務檔中加入 `LimitNOFILE=65535`。</li>\n<li>用 `cat /proc/$(pidof app)/limits` 確認實際上限。</li>\n</ul>\n<h2>11. Nginx 本身的 worker 進程資源耗盡</h2>\n<p><strong>症狀</strong>：`worker_connections` 設定過低，連線排隊導致超時。</p>\n<p><strong>解法</strong>：</p>\n<p>  ```nginx</p>\n<p>  worker_processes auto;</p>\n<p>  events {</p>\n<p>      worker_connections 65535;</p>\n<p>      multi_accept on;</p>\n<p>  }</p>\n<p>  ```</p>\n<ul>\n<li>監控 `nginx_status`，若 `reading`、`waiting` 持續升高，即時調整。</li>\n</ul>\n<p>---</p>\n\n<h3>實務排查流程（快速定位 502）</h3>\n\n<p>1. <strong>先看 Nginx 錯誤日誌</strong>：`tail -f /var/log/nginx/error.log`，常會直接顯示 `upstream timed out`、`connect() failed`。</p>\n<p>2. <strong>測試後端可用性</strong>：`curl -I http://127.0.0.1:8080`、`nc -zv 127.0.0.1 8080`。</p>\n<p>3. <strong>檢查防火牆/SELinux</strong>：`getenforce`、`iptables -L`.</p>\n<p>4. <strong>確認 upstream 配置</strong>：`nginx -T | grep upstream -A5`.</p>\n<p>5. <strong>逐項套用上表解法</strong>，每次改動後 `nginx -s reload` 並觀察是否仍出現 502。</p>\n\n<p>---</p>\n\n<p><strong>小撇步</strong></p>\n<ul>\n<li><strong>log_level</strong> 暫時調高為 `error_log /var/log/nginx/error.log debug;`，能看到更詳細的 upstream 交互。</li>\n<li><strong>健康檢查腳本</strong>：`while true; do curl -sf http://127.0.0.1:8080/health || systemctl restart app.service; sleep 30; done &`，自動復原。</li>\n<li><strong>版本兼容</strong>：部分舊版 Nginx 只支援 `proxy_connect_timeout`，升版到 1.22+ 可使用 `proxy_next_upstream_tries` 精細控制。</li>\n</ul>\n<p>---</p>\n\n<p><strong>行動建議</strong>：立刻把上述 11 個檢查點寫成一份內部 SOP，並在每次部署前跑一次自動化測試，讓 502 再也不是突如其來的災難。</p>",
+      "keyword": "Nginx 502 的 11 種原因與解法",
+      "status": "published",
+      "view_count": 0,
+      "created_at": "2026-10-07 13:20:29",
+      "updated_at": "2026-10-07 13:20:29"
     }
   ],
   "site_settings": []
