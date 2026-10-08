@@ -70,17 +70,18 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Validate k8s manifests
-        uses: azure/setup-kubectl@v4
-        with:
-          version: "v1.31.0"
-
-      - name: kubectl client-side dry run
+      - name: Install kubeconform
         run: |
-          for f in xiangchuan/k3s-platform/k8s-manifests/*.yaml; do
-            kubectl apply --dry-run=client -f "$f"
-          done
-        continue-on-error: false
+          curl -sSL https://github.com/yannh/kubeconform/releases/download/v0.6.7/kubeconform-linux-amd64.tar.gz \
+            | tar xz -C /tmp kubeconform
+          sudo install /tmp/kubeconform /usr/local/bin/kubeconform
+
+      - name: Validate k8s manifests
+        run: |
+          kubeconform -strict -summary -kubernetes-version 1.31.0 \
+            -ignore-missing-schemas \
+            xiangchuan/k3s-platform/k8s-manifests/*.yaml \
+            xiangchuan/k3s-platform/argocd/*.yaml
 
   build:
     needs: [test, terraform-validate, manifest-validate]
