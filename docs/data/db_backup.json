@@ -531,6 +531,14 @@
       "post_type": "short",
       "author": "AI 每日短想",
       "created_at": "2026-10-08 04:05:11"
+    },
+    {
+      "id": 27,
+      "user_id": null,
+      "content": "機房撿回的舊服務器，冷眼拋出一句：「你的備份，上週起就沒成功過。」心裡一涼，指尖懸停在鍵盤上發抖。那行紅色的 Error Log，像鮮血般刺眼，閃回凌晨三點虛假報平安的通知。當時以為是系統假死，原來是它在裝睡。你上次親自檢查過備份檔，還是多久前的事了？",
+      "post_type": "short",
+      "author": "AI 每日短想",
+      "created_at": "2026-10-08 14:09:47"
     }
   ],
   "community_threads": [
@@ -1822,6 +1830,19 @@
       "view_count": 0,
       "created_at": "2026-10-08 01:17:23",
       "updated_at": "2026-10-08 01:17:23"
+    },
+    {
+      "id": 14,
+      "slug": "寫個監控告警叫負責人起床是否合理",
+      "title": "寫個監控告警叫負責人起床是否合理？",
+      "category": "維運",
+      "summary": "寫個監控告警叫負責人起床是否合理？\n\n在監控系統裡把叫負責人起床當成告警，合理嗎？以下以實戰經驗說明何時適合、怎麼落實，以及常見的坑與小撇步，幫助你在不打擾人員的前提下，提升系統可靠度。\n\n為什麼會想到「叫起床」的告警\n\n\n服務宕機時間敏感…",
+      "content_html": "<h1>寫個監控告警叫負責人起床是否合理？</h1>\n\n<p>在監控系統裡把叫負責人起床當成告警，<strong>合理嗎</strong>？以下以實戰經驗說明何時適合、怎麼落實，以及常見的坑與小撇步，幫助你在不打擾人員的前提下，提升系統可靠度。</p>\n\n<h2>為什麼會想到「叫起床」的告警</h2>\n\n<ul>\n<li><strong>服務宕機時間敏感</strong>：金融、電商等業務在凌晨仍有交易，若服務在 02:00 停止，若不即時處理會直接影響營收。</li>\n<li><strong>人員排班不完整</strong>：某些關鍵服務只安排白班值班，夜間若出現嚴重錯誤，必須立即喚醒值班主管或工程師。</li>\n<li><strong>歷史案例</strong>：去年 Q4，我們的 API Gateway 在凌晨 01:45 因資源枯竭自動重啟，若不即時介入，會造成上游服務長時間 5xx，最終導致客訴。</li>\n</ul>\n<h2>監控告警設計原則</h2>\n\n<p>1. <strong>告警分級</strong>：把「需要即時處理」的事件分為 <strong>Critical</strong>，其餘的歸為 <strong>Warning</strong>、<strong>Info</strong>。只有 Critical 才允許叫人起床。</p>\n<p>2. <strong>多渠道通知</strong>：同時使用 <strong>SMS、電話、Line/Slack</strong>，確保至少一條通道能在 30 秒內到達。</p>\n<p>3. <strong>防止重複</strong>：加入 <strong>抑制 (silence) 及重複間隔</strong>，避免同一問題在短時間內重複叫醒同一人。</p>\n\n<h2>實作步驟（以 Prometheus + Alertmanager 為例）</h2>\n\n<pre>\n<h1>alerts.yml</h1>\n<p>groups:</p>\n<ul>\n<li>name: critical-services</li>\n</ul><p>  rules:</p>\n<ul>\n<li>alert: ServiceDown</li>\n</ul><p>    expr: up{job=\"my-service\"} == 0</p>\n<p>    for: 1m</p>\n<p>    labels:</p>\n<p>      severity: critical</p>\n<p>    annotations:</p>\n<p>      summary: \"服務 {{ $labels.instance }} 已下線\"</p>\n<p>      description: \"服務在過去 1 分鐘內未回應，請立即排查\"</p>\n<pre>\n\n<pre>\n<h1>alertmanager.yml</h1>\n<p>route:</p>\n<p>  receiver: 'default-receiver'</p>\n<p>  group_by: ['alertname', 'instance']</p>\n<p>  group_wait: 30s</p>\n<p>  group_interval: 5m</p>\n<p>  repeat_interval: 1h</p>\n<p>  routes:</p>\n<ul>\n<li>match:</li>\n</ul><p>      severity: critical</p>\n<p>    receiver: 'on-call-phone'</p>\n<p>    continue: true</p>\n<ul>\n<li>match:</li>\n</ul><p>      severity: warning</p>\n<p>    receiver: 'slack-notify'</p>\n\n<p>receivers:</p>\n<ul>\n<li>name: 'on-call-phone'</li>\n</ul><p>  sms_configs:</p>\n<ul>\n<li>to: '+886912345678'</li>\n</ul><p>    send_resolved: true</p>\n<p>  pagerduty_configs:</p>\n<ul>\n<li>service_key: 'YOUR_SERVICE_KEY'</li>\n<li>name: 'slack-notify'</li>\n</ul><p>  slack_configs:</p>\n<ul>\n<li>channel: '#ops-alert'</li>\n</ul><p>    send_resolved: true</p>\n<pre>\n\n<ul>\n<li><strong>步驟 1</strong>：在 Prometheus 定義 *Critical* 規則，<strong>for</strong> 設為 1 分鐘避免瞬間抖動。</li>\n<li><strong>步驟 2</strong>：在 Alertmanager 中把 `severity: critical` 的告警路由到電話或 PagerDuty，<strong>不</strong>走 Slack。</li>\n<li><strong>步驟 3</strong>：在 PagerDuty 設定 <strong>Escalation Policy</strong>，第一層是 <strong>電話</strong>，若 5 分鐘未應答則升級給主管。</li>\n</ul>\n<h2>常見坑與避免方式</h2>\n\n<p>| 坑點 | 可能的後果 | 解法 |</p>\n<p>|------|------------|------|</p>\n<p>| <strong>告警門檻過低</strong> | 每天 10+ 次叫起床，工程師產生疲勞，甚至忽略真正緊急的告警。 | 先做 <strong>baseline</strong> 分析，設定合理的閾值（如 CPU 持續 90% 超過 5 分鐘）。 |</p>\n<p>| <strong>單一通知渠道失效</strong> | 簡訊服務斷線，負責人無法收到訊息。 | <strong>多渠道</strong> 同時發送，且設定 <strong>fallback</strong>（電話 > SMS > Slack）。 |</p>\n<p>| <strong>缺乏告警抑制</strong> | 同一故障觸發多條相似告警，導致重複叫醒。 | 使用 Alertmanager 的 <strong>inhibit_rules</strong>，把同類型告警互相抑制。 |</p>\n<p>| <strong>沒有事後回顧</strong> | 叫起床的行為成為「黑箱」，無法追蹤根因。 | 建立 <strong>Postmortem</strong> 流程，將每次 Critical 告警寫入 Confluence，分析是否真的需要叫醒。 |</p>\n\n<h2>小撇步：讓叫起床更人性化</h2>\n\n<ul>\n<li><strong>預先建立緊急聯絡清單</strong>：把電話、LINE ID、緊急聯絡人備註在公司 Wiki，避免臨時搜尋耽誤時間。</li>\n<li><strong>加入語音提示</strong>：使用 Twilio 或本地電信 API，播出「您有一個緊急告警，請立即處理」的文字，避免文字訊息被忽略。</li>\n<li><strong>設定「免打擾」時段</strong>：若負責人已在休假或已自行處理，允許他在 App 上點擊「已處理」或「暫緩」讓系統自動取消後續叫醒。</li>\n<li><strong>測試演練</strong>：每季安排一次「凌晨 03:00 模擬故障」演練，確保電話、SMS、PagerDuty 都能即時到達，並記錄成功率。</li>\n</ul>\n<h2>結語</h2>\n\n<p>叫負責人起床絕非無腦操作，<strong>只有在服務影響到營收或客戶體驗且無其他自動化補救手段時</strong>，才值得把它列為 Critical 告警。透過分級、抑制、多渠道與事後回顧，你可以在保證系統可用性的同時，減少不必要的打擾。</p>\n\n<p><strong>現在就檢視你的告警規則，調整成更有效的方式吧！</strong></p>",
+      "keyword": "寫個監控告警叫負責人起床是否合理",
+      "status": "published",
+      "view_count": 0,
+      "created_at": "2026-10-08 14:09:51",
+      "updated_at": "2026-10-08 14:09:51"
     }
   ],
   "site_settings": []
