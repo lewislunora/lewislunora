@@ -1,0 +1,10 @@
+# 複製為 terraform.tfvars 後依環境調整
+kubeconfig_path  = "~/.kube/config"
+kube_context     = ""
+namespace        = "platform"
+git_repo_url     = "https://github.com/lewislunora/lewislunora.git"
+git_revision     = "main"
+manifests_path   = "xiangchuan/k3s-platform/k8s-manifests"
+argocd_namespace = "argocd"
+app_image        = "ghcr.io/lewislunora/xiangchuan/platform-app:latest"
+app_replicas     = 1

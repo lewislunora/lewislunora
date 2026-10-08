@@ -1,0 +1,30 @@
+apiVersion: argoproj.io/v1alpha1
+kind: AppProject
+metadata:
+  name: xiangchuan
+  namespace: argocd
+spec:
+  description: 翔川 Neo 自我品牌平台（網站 + MCP + 行銷系統）
+  sourceRepos:
+    - "https://github.com/lewislunora/lewislunora.git"
+    - "https://github.com/lewislunora/lewislunora"
+  destinations:
+    - namespace: platform
+      server: https://kubernetes.default.svc
+      selector:
+        matchLabels:
+          app.kubernetes.io/instance: xiangchuan
+    - namespace: argocd
+      server: https://kubernetes.default.svc
+  clusterResourceWhitelist: []
+  namespaceResourceWhitelist:
+    - group: ""
+      kind: "*"
+    - group: apps
+      kind: "*"
+    - group: networking.k8s.io
+      kind: "*"
+    - group: batch
+      kind: "*"
+  orphanedResources:
+    warn: true
