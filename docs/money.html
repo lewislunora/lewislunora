@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>創業・賺錢資訊 — 翔川 Neo</title>
+<meta name="description" content="AI 創業點子、賺錢資訊、可行商業模式、找到打工與接案方式">
+<link rel="stylesheet" href="css/main.css?v=20261005">
+<style>
+.hero-mini{padding:clamp(3.5rem,6vw,4.5rem) 1rem 1rem;text-align:center}
+.hero-mini h1{font-size:clamp(30px,5vw,48px);margin-bottom:.5rem;background:linear-gradient(135deg,#e8ecf4 0%,rgba(232,236,244,.5) 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.hero-mini p{opacity:.65;max-width:720px;margin:0 auto 1.2rem}
+.cards{display:grid;gap:1rem;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));max-width:min(1080px,94vw);margin:0 auto}
+.card{background:linear-gradient(160deg,rgba(255,255,255,.08),rgba(255,255,255,.03));border:1px solid var(--nav-line);border-radius:16px;padding:1.1rem 1.15rem;display:flex;flex-direction:column;gap:.5rem}
+.card h3{font-size:15px}
+.meta{font-size:12px;opacity:.65}
+.tags{display:flex;flex-wrap:wrap;gap:.35rem;margin-top:auto}
+.tag{font-size:11px;border:1px solid var(--nav-line);padding:.15rem .45rem;border-radius:999px;background:rgba(255,255,255,.05)}
+.cta-row{display:flex;gap:.5rem;flex-wrap:wrap}
+.btn-sm{border:1px solid var(--nav-line);padding:.3rem .65rem;border-radius:999px;font-size:12px;background:rgba(255,255,255,.08)}
+.btn-sm.pri{background:rgba(0,212,255,.2);border-color:rgba(0,212,255,.45)}
+footer{padding:2rem 1rem;text-align:center;opacity:.45;font-size:12px}
+</style>
+</head>
+<body>
+<div class="bg"></div>
+<header class="nav" id="nav"></header>
+<section class="hero-mini">
+  <h1>創業・賺錢資訊</h1>
+  <p>彙整可實作的 AI 商業點子。可以自己賺錢、找人打工、也能幫人找到打工與接案機會。</p>
+  <div class="cta-row" style="justify-content:center">
+    <a class="btn-sm pri" href="jobs.html">💼 找工作・找人才</a>
+    <a class="btn-sm" href="tasks.html">🎯 任務牆・接任務賺錢</a>
+    <a class="btn-sm" href="calendar.html">📅 行事曆</a>
+    <a class="btn-sm" href="community/">💬 留言板</a>
+    <a class="btn-sm" href="social/chat.html">💬 線上對話</a>
+  </div>
+</section>
+<section>
+  <div class="cards" id="list"></div>
+</section>
+<footer>翔川 Neo — 把煩人的事，用最簡單的方式做掉</footer>
+<script>
+fetch('data/ai-business-ideas.json?v=1').then(r=>r.json()).then(d=>{
+  const list=document.getElementById('list');
+  list.innerHTML=(d||[]).map(x=>'<div class="card"><h3>'+x.name+'</h3><div class="meta">商業模式：'+x.model+'</div><p style="opacity:.85;line-height:1.65">'+x.function+'</p><div class="meta">適用對象：'+x.audience+'</div><div class="tags">'+(x.tags||[]).map(t=>'<span class="tag">'+t+'</span>').join('')+'</div><div class="cta-row" style="margin-top:.5rem"><a class="btn-sm pri" href="tasks.html">丟到任務牆找人執行</a><a class="btn-sm" href="jobs.html">找人才・找工作</a><a class="btn-sm" href="community/">留言板討論</a><a class="btn-sm" href="social/chat.html">線上對話</a></div></div>').join('');
+});
+</script>
+</body>
+</html>
