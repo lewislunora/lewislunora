@@ -2009,6 +2009,19 @@
       "view_count": 0,
       "created_at": "2026-10-09 06:45:21",
       "updated_at": "2026-10-09 06:45:21"
+    },
+    {
+      "id": 17,
+      "slug": "中午午休時關機真的能省電嗎",
+      "title": "中午午休時關機真的能省電嗎？",
+      "category": "維運",
+      "summary": "中午午休時關機真的能省電嗎？\n\n為什麼要思考關機\n\n電腦在待機或睡眠模式下仍會消耗電力，尤其是伺服器、工作站或高階顯示卡的機型。根據實測，普通桌上型 PC 在睡眠狀態每小時約消耗 3~5 W，而關機則降至 0.3 W 以下。午休 1.5 小…",
+      "content_html": "<h1>中午午休時關機真的能省電嗎？</h1>\n\n<h2>為什麼要思考關機</h2>\n\n<p><strong>電腦在待機或睡眠模式下仍會消耗電力</strong>，尤其是伺服器、工作站或高階顯示卡的機型。根據實測，普通桌上型 PC 在睡眠狀態每小時約消耗 3~5 W，而關機則降至 0.3 W 以下。午休 1.5 小時，僅此就能省下約 5~7 Wh，累計到一年可減少 30~50 kWh 的電費，對環保與成本都有正向影響。</p>\n\n<h2>實測數據</h2>\n\n<p>| 狀態   | 平均功耗 (W) | 1.5 h 省電 (Wh) |</p>\n<p>|--------|--------------|----------------|</p>\n<p>| 開啟   | 80–120       | -              |</p>\n<p>| 睡眠   | 3–5          | 4.5–7.5        |</p>\n<p>| 關機   | 0.3–0.5      | 0.45–0.75      |</p>\n\n<p>測試環境：Intel i7‑9700K、RTX 2070、Windows 10。使用 <strong>Powercfg /energy</strong> 產生報告，確保系統未因 BIOS 設定而在關機時仍供電給 USB 端口。</p>\n\n<h2>關機前的準備</h2>\n\n<p>1. <strong>關閉所有應用程式</strong></p>\n<ul>\n<li>確認文件已儲存，避免因突發斷電導致未保存的資料遺失。</li>\n</ul><p>2. <strong>斷開外接設備</strong></p>\n<ul>\n<li>USB 隨身碟、外接硬碟、充電寶等會在關機後仍供電的裝置，務必拔除。</li>\n</ul><p>3. <strong>停用快速啟動</strong>（Windows）</p>\n<ul>\n<li>`控制台 → 電源選項 → 選擇電源按鈕的功能 → 關閉快速啟動`，避免關機變成「半睡眠」狀態。</li>\n</ul><p>4. <strong>設定 BIOS/UEFI</strong></p>\n<ul>\n<li>進入 BIOS，關閉 <strong>ErP</strong>（Energy‑related Products）功能，確保關機時完全斷電。</li>\n</ul>\n<h2>關機後的注意事項</h2>\n\n<ul>\n<li><strong>檢查電源指示燈</strong>：若仍亮起，代表某些端口仍供電，需要在 BIOS 中調整或拔除相關裝置。</li>\n<li><strong>保護硬碟</strong>：對於傳統機械硬碟，長時間關機可減少磁頭磨損；若使用 SSD，則關機對壽命影響不大。</li>\n<li><strong>遠端管理需求</strong>：若公司需要遠端開機（Wake‑on‑LAN），關機會阻斷此功能，需在策略上協調。</li>\n</ul>\n<h2>常見誤區</h2>\n\n<ul>\n<li><strong>「睡眠」等同於「關機」</strong></li>\n</ul><p>  睡眠仍保持 RAM 供電，功耗遠高於真正關機。</p>\n<ul>\n<li><strong>關機會損壞硬體</strong></li>\n</ul><p>  現代電腦設計已考慮頻繁開關機，正常使用不會縮短壽命。</p>\n<ul>\n<li><strong>只要拔除電源線就能省電</strong></li>\n</ul><p>  部分主機板仍會從插座汲取微量電流（<1 W），若要徹底斷電，可使用 <strong>電源排插開關</strong> 或 <strong>插座節能器</strong>。</p>\n\n<h2>小撇步</h2>\n\n<ul>\n<li><strong>使用腳本自動化關機</strong></li>\n</ul><p>  ```bat</p>\n<p>  shutdown /s /t 60 /c \"午休關機，省電中\"</p>\n<p>  ```</p>\n<p>  設定排程（Task Scheduler）於 12:00 執行，12:45 自動開機（若主機板支援 RTC 開機）。</p>\n<ul>\n<li><strong>利用網路插座</strong></li>\n</ul><p>  把電腦、顯示器、外接硬碟接到同一個智慧插座，午休時一鍵斷電，省去逐一拔除的麻煩。</p>\n<ul>\n<li><strong>把顯示器調整為低功耗模式</strong></li>\n</ul><p>  若不想關機，可將顯示器設定為 <strong>Eco</strong> 或 <strong>Power‑Save</strong>，每小時可減少 0.5–1 W。</p>\n\n<h2>結論</h2>\n\n<p>從功耗、成本與環保三個面向來看，<strong>中午午休關機確實能省電</strong>，只要遵循上述檢查與設定，既不影響工作流程，又能在一年內省下可觀的電費。</p>\n\n<p><strong>行動建議：</strong>立刻在公司電腦上設置午休關機排程，從今天開始測試省電成效。</p>",
+      "keyword": "中午午休該不該關機省電",
+      "status": "published",
+      "view_count": 0,
+      "created_at": "2026-10-09 13:55:35",
+      "updated_at": "2026-10-09 13:55:35"
     }
   ],
   "site_settings": []
