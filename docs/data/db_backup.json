@@ -301,6 +301,15 @@
       "ip": "119.14.79.43",
       "country": "Taiwan",
       "visited_at": "2026-10-06 07:35:08"
+    },
+    {
+      "id": 9,
+      "page": "/lewislunora/product/",
+      "referrer": "",
+      "user_agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Trae/1.107.1 Chrome/142.0.7444.235 Electron/39.2.7 Safari/537.36",
+      "ip": "122.100.112.224",
+      "country": "Taiwan",
+      "visited_at": "2026-10-10 14:20:08"
     }
   ],
   "geo_cache": [
@@ -309,6 +318,12 @@
       "country": "Taiwan",
       "city": "Taipei",
       "cached_at": "2026-10-04 12:58:51"
+    },
+    {
+      "ip": "122.100.112.224",
+      "country": "Taiwan",
+      "city": "Luodong",
+      "cached_at": "2026-10-10 14:20:08"
     }
   ],
   "comments": [
@@ -2188,6 +2203,19 @@
       "view_count": 0,
       "created_at": "2026-10-10 02:49:29",
       "updated_at": "2026-10-10 02:49:29"
+    },
+    {
+      "id": 20,
+      "slug": "為什麼老是有人在半夜改程式",
+      "title": "為什麼老是有人在半夜改程式？",
+      "category": "維運",
+      "summary": "為什麼老是有人在半夜改程式？\n\n背景：深夜改版的根本原因\n大多數公司在上班時間已經排滿了會議、需求討論與測試，開發者只能在下班後或凌晨找空檔。此外，緊急的業務需求、突發的系統錯誤或是前一天遺留的 merge conflict，也常迫使人們在…",
+      "content_html": "<h1>為什麼老是有人在半夜改程式？</h1>\n\n<h2>背景：深夜改版的根本原因</h2>\n<p>大多數公司在上班時間已經排滿了會議、需求討論與測試，<strong>開發者只能在下班後或凌晨找空檔</strong>。此外，緊急的業務需求、突發的系統錯誤或是前一天遺留的 merge conflict，也常迫使人們在深夜動手。</p>\n\n<h2>常見的深夜改程式情境</h2>\n<ul>\n<li><strong>緊急 hotfix</strong>：線上服務因為安全漏洞或性能瓶頸瞬間掛掉，必須在最短時間內推上修補程式。</li>\n<li><strong>CI/CD 爆炸</strong>：凌晨的自動部署失敗，測試環境被破壞，只有在夜裡才能手動恢復。</li>\n<li><strong>跨時區合作</strong>：與海外團隊協作時，時差讓「正常工作時間」變成了自己的半夜。</li>\n</ul>\n<h2>具體做法：如何把深夜改版的風險降到最低</h2>\n\n<h3>1. 建立「夜間部署」流程</h3>\n<p>1. <strong>提前規劃</strong>：在 sprint 會議就把可能的夜間任務列入看板，指定負責人與預估時間。</p>\n<p>2. <strong>使用 feature flag</strong>：將新功能或修正包裹在 flag 裡，部署後先關閉，確保不會立即影響使用者。</p>\n<p>3. <strong>自動化回滾腳本</strong>：每次部署都必須附帶回滾指令，測試環境先跑一次，確定回滾無誤再上線。</p>\n\n<h3>2. 減少 merge conflict 的根本方法</h3>\n<ul>\n<li><strong>每日同步</strong>：即使是遠端工作，也要每天 pull 最新的 `dev` 分支，避免長時間分支導致大量衝突。</li>\n<li><strong>小批次 PR</strong>：每次改動控制在 200 行以內，讓 reviewer 能快速給出回饋，降低深夜卡關的機會。</li>\n</ul>\n<h3>3. 夜間工作時的安全措施</h3>\n<ul>\n<li><strong>雙人審核</strong>：即使是緊急修復，也要找同事做一次簡短的 Pair Programming，避免單點失誤。</li>\n<li><strong>寫清楚的 commit 訊息</strong>：在深夜容易忘記細節，完整的訊息能在事後快速定位問題。</li>\n<li><strong>備份資料庫</strong>：在執行任何 schema 變更前，使用 `pg_dump` 或 `mysqldump` 產生即時備份。</li>\n</ul>\n<h3>4. 心理與生理的自我保護</h3>\n<ul>\n<li><strong>設定「深夜上限」</strong>：公司規範每週深夜加班不超過 12 小時，超過即需補休。</li>\n<li><strong>使用番茄鐘</strong>：每工作 25 分鐘休息 5 分鐘，避免長時間盯著螢幕造成眼睛疲勞。</li>\n<li><strong>事前模擬</strong>：在白天先把改動跑通，僅在夜裡做「一鍵部署」的操作，降低臨場出錯的機會。</li>\n</ul>\n<h2>避坑小撇步</h2>\n\n<ul>\n<li><strong>不要在凌晨直接 push 到 master</strong>：先推到 `staging`，確認無誤後再 merge。</li>\n<li><strong>避免使用硬編碼的時間戳</strong>：夜間測試時容易因時區差異產生不可預期的錯誤。</li>\n<li><strong>不要忽略日誌</strong>：在緊急修復時，常常只看錯誤訊息，卻忘了把相關 log level 調高，事後排查會更困難。</li>\n</ul>\n<h2>小結</h2>\n<p>半夜改程式是現實工作中的常態，但只要<strong>前置規劃、流程自動化、嚴格審核</strong>以及<strong>自我健康管理</strong>做好，便能把風險與成本降到最低。</p>\n\n<p><strong>行動建議：</strong>立刻在團隊的 Confluence 或 Wiki 上建立一份「深夜部署 SOP」，讓每位成員在加班前都有明確的步驟可依，從今天開始減少深夜錯誤。</p>",
+      "keyword": "為什麼老是有人在半夜改程式",
+      "status": "published",
+      "view_count": 0,
+      "created_at": "2026-10-10 09:45:40",
+      "updated_at": "2026-10-10 09:45:40"
     }
   ],
   "site_settings": []
