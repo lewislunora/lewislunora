@@ -2382,6 +2382,19 @@
       "view_count": 0,
       "created_at": "2026-10-11 02:19:09",
       "updated_at": "2026-10-11 02:19:09"
+    },
+    {
+      "id": 23,
+      "slug": "離職交接是悲劇還是機會",
+      "title": "離職交接是悲劇還是機會？",
+      "category": "維運",
+      "summary": "離職交接是悲劇還是機會？\n\n直接切入：離職交接如果做好，就能把「悲劇」變成「機會」——讓自己留下好口碑，也讓團隊順利運作。\n\n---\n\n1. 心態調整：先把「情緒」寫在紙上\n\n\n先寫三件事：\n  1. 為什麼離職（自己、公司、職涯）\n  2…",
+      "content_html": "<h1>離職交接是悲劇還是機會？</h1>\n\n<p><strong>直接切入：離職交接如果做好，就能把「悲劇」變成「機會」——讓自己留下好口碑，也讓團隊順利運作。</strong></p>\n\n<p>---</p>\n\n<h2>1. 心態調整：先把「情緒」寫在紙上</h2>\n\n<ul>\n<li><strong>先寫三件事</strong>：</li>\n</ul><p>  1. 為什麼離職（自己、公司、職涯）</p>\n<p>  2. 最想保留的正向回憶</p>\n<p>  3. 交接成功後的期待（推薦信、未來合作可能）</p>\n<ul>\n<li>把情緒寫下來後，才能在交接時保持<strong>客觀、專業</strong>，避免因情緒失控留下爛摳。</li>\n</ul>\n<p>---</p>\n\n<h2>2. 交接清單：從大到小分層</h2>\n\n<p>| 層級 | 內容 | 交付形式 |</p>\n<p>|------|------|----------|</p>\n<p>| <strong>核心</strong> | 系統架構圖、主要服務流程 | PDF + Git repo README |</p>\n<p>| <strong>日常</strong> | 每日/每週例行任務清單、排程腳本 | Google Sheet + Slack 訊息釘選 |</p>\n<p>| <strong>細節</strong> | 密碼、憑證、第三方服務 API 金鑰 | 加密的 <strong>1Password</strong> 共享保管庫 |</p>\n\n<p>> <strong>小技巧</strong>：使用「<strong>TODO → DONE</strong>」兩欄式表格，交接當天讓接手者直接在表格裡打勾，完成度一目了然。</p>\n\n<p>---</p>\n\n<h2>3. 文件與知識管理：一次搞定，不留死角</h2>\n\n<p>1. <strong>集中化文件庫</strong>：把所有 Markdown、設計圖、部署說明搬到公司內部的 Confluence 或 GitLab Wiki。</p>\n<p>2. <strong>版本標註</strong>：每次更新文件都在標題加上 `vX.Y`，讓接手者知道哪個是最新。</p>\n<p>3. <strong>錄製操作影片</strong>：對於 UI 操作或 CLI 複雜指令，錄 3–5 分鐘的螢幕影片，放在內網的「Knowledge Hub」裡，<strong>文字說明+影片</strong>雙重備援。</p>\n\n<p>---</p>\n\n<h2>4. 系統權限與安全：別讓資安成「遺留問題」</h2>\n\n<ul>\n<li><strong>權限回收清單</strong>：列出自己擁有的所有 IAM 群組、SSH 金鑰、VPN 帳號。交接前先在表格中標註「已移交」或「已撤銷」。</li>\n<li><strong>多因素驗證（MFA）</strong>：若使用者已啟用 MFA，交接時務必把 <strong>MFA 裝置</strong>（如 YubiKey）交給接手者或公司資安部門統一回收。</li>\n<li><strong>密碼交接</strong>：絕不要直接發送明文密碼，使用 <strong>加密郵件</strong>或 <strong>一次性密碼管理工具</strong>（如 1Password Share）完成交付。</li>\n</ul>\n<p>---</p>\n\n<h2>5. 溝通與跟進：讓交接不只是一紙清單</h2>\n\n<ul>\n<li><strong>交接會議</strong>：安排至少兩場（一次全體說明，一次一對一）</li>\n<li><strong>全體會議</strong>：說明交接範圍、時間表、風險點。</li>\n<li><strong>一對一</strong>：針對每位接手者的疑問，提供實作示範。</li>\n<li><strong>交接備忘錄</strong>：會後立即寫下會議要點、決策與未決問題，發給所有相關人員。</li>\n<li><strong>交接後 1 週檢查</strong>：設定日曆提醒，主動詢問接手者是否還有卡點，必要時提供遠端支援（只限 30 分鐘內）。</li>\n</ul>\n<p>---</p>\n\n<h2>6. 常見坑與避免方式</h2>\n\n<p>| 常見坑 | 為什麼會發生 | 避免方式 |</p>\n<p>|--------|--------------|----------|</p>\n<p>| <strong>文件散落</strong> | 各部門使用不同工具（Google Drive、Git、內部 Wiki） | <strong>統一入口</strong>：建立「交接總目錄」的超連結，所有文件都從此入口找 |</p>\n<p>| <strong>權限遺留</strong> | 忘記第三方 SaaS（如 Datadog、Rollbar） | 用 <strong>IAM 掃描腳本</strong>（如 AWS IAM Access Analyzer）列出所有授權，逐一核對 |</p>\n<p>| <strong>交接時間過短</strong> | 離職通知太晚或交接人手不足 | <strong>提前規劃</strong>：收到離職通知即刻啟動 2 週交接計畫，與主管協商延長交接期 |</p>\n<p>| <strong>口頭說明不完整</strong> | 只說「這個腳本每晚跑」 | <strong>錄音/錄影</strong>：把口頭說明同步錄製，會後附上文字摘要 |</p>\n\n<p>---</p>\n\n<h2>7. 小撇步：讓交接更有價值</h2>\n\n<ul>\n<li><strong>「三層驗收」</strong>：交接完成 → 接手者自行測試 → 第三方（如 QA）驗收。三次確認才能算真正完成。</li>\n<li><strong>「交接成績單」</strong>：在交接最後給自己一張「交接分數卡」：文件完整度、權限回收率、問題解決率等，用數據說服未來的面試官「我交接得好」。</li>\n<li><strong>「留下聯絡方式」</strong>：在交接文件末尾寫下自己的個人郵箱或 LinkedIn，表示「如果真的卡住，我願意提供 1 次免費諮詢」，這會讓離職印象更正面。</li>\n</ul>\n<p>---</p>\n\n<h2>結語</h2>\n\n<p>把離職交接當作 <strong>職涯的最後一次 showcase</strong>，不僅能避免悲劇，更能把自己的專業形象提升到新高度。</p>\n\n<p><strong>行動建議：立刻開啟一個「離職交接專案」的 Trello 看板，列出上述六大板塊，並在每個卡片下填入具體執行項目，今天就開始執行吧！</strong></p>",
+      "keyword": "離職交接是悲劇還是機會",
+      "status": "published",
+      "view_count": 0,
+      "created_at": "2026-10-11 09:25:37",
+      "updated_at": "2026-10-11 09:25:37"
     }
   ],
   "site_settings": []
