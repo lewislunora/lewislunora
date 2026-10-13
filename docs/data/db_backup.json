@@ -723,6 +723,14 @@
       "post_type": "short",
       "author": "AI 每日短想",
       "created_at": "2026-10-13 04:08:48"
+    },
+    {
+      "id": 48,
+      "user_id": null,
+      "content": "別再怪 AI 客服太蠢，問題出在你只給它標準答案，卻沒教它如何纠错。\n\n我見過太多團隊，把 FAQ 丟進 prompt 就完事，導致機器人不斷重複同一套廢話。記得加入「用戶滿意度」與「案例反饋」閉環，讓 AI 從每次失敗中學習，而不是原地踏步死循環。\n\n你的 AI 客服被投訴最多的時候，是遇到哪種問題？",
+      "post_type": "short",
+      "author": "AI 每日短想",
+      "created_at": "2026-10-13 21:11:45"
     }
   ],
   "community_threads": [
