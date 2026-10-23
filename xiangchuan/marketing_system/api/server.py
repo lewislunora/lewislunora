@@ -224,6 +224,13 @@ def startup():
     StudentDatabase.init_db()
     _sync_scheduler_connectors()
     scheduler.start()
+    # Render 磁碟是臨時的：每次重啟 govdata 目錄都會歸零，啟動時自動補回。
+    if os.getenv("RENDER") or os.getenv("GOVDATA_AUTOSEED"):
+        try:
+            from ..services.govdata import ensure_catalog
+            ensure_catalog()
+        except Exception:
+            pass
     try:
         import requests as http
         # 僅在正式部署環境（有 RENDER_EXTERNAL_URL）才設定 Telegram webhook，
@@ -2975,7 +2982,9 @@ def govdata_search(q: str = "", page: int = 1, per_page: int = 20):
 
 @app.get("/api/govdata/status")
 def govdata_status():
-    from ..services.govdata import status as gov_status
+    from ..services.govdata import ensure_catalog, status as gov_status
+    if os.getenv("RENDER") or os.getenv("GOVDATA_AUTOSEED"):
+        ensure_catalog()
     return gov_status()
 
 

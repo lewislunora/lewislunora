@@ -9,6 +9,7 @@ import csv
 import io
 import json
 import logging
+import threading
 import zipfile
 
 import requests
@@ -28,8 +29,12 @@ MAX_COLS = 200
 COOLDOWN_SECONDS = 600
 GLOBAL_ROW_BUDGET = 400000
 FAIL_RETRY_DAYS = 7
+SEED_PAGES = 20
+FULL_SYNC_PAGES = 200
 
 _INGEST_META = {}
+_SEED_LOCK = threading.Lock()
+_SEED_THREAD = None
 
 
 def _truncate(text, n=4000):
@@ -42,9 +47,10 @@ def _truncate(text, n=4000):
     return text[:n]
 
 
-def sync_catalog(max_pages: int = 150) -> dict:
+def sync_catalog(max_pages: int = 150, start_page: int = 1) -> dict:
     """分批同步資料集詮釋資料。回傳本次處理統計。"""
-    page = 1
+    first_page = max(1, int(start_page))
+    page = first_page
     fetched = 0
     upserted = 0
     errors = 0
@@ -71,7 +77,48 @@ def sync_catalog(max_pages: int = 150) -> dict:
             logger.warning(f"govdata catalog page {page} failed: {e}")
             if errors >= 3:
                 break
-    return {"pages": page - 1, "fetched": fetched, "upserted": upserted, "errors": errors}
+    return {
+        "pages": page - first_page,
+        "fetched": fetched,
+        "upserted": upserted,
+        "errors": errors,
+    }
+
+
+def catalog_empty() -> bool:
+    try:
+        return fetch_one("SELECT COUNT(*) AS c FROM gov_catalog")["c"] == 0
+    except Exception:
+        return False
+
+
+def _seed_job(seed_pages: int, full_pages: int) -> None:
+    """先抓少量頁數讓搜尋立刻可用，再背景補齊。"""
+    try:
+        if catalog_empty():
+            first = sync_catalog(max_pages=seed_pages)
+            logger.info(f"govdata seed sync: {first}")
+        if full_pages > seed_pages:
+            rest = sync_catalog(max_pages=full_pages, start_page=seed_pages + 1)
+            logger.info(f"govdata full sync: {rest}")
+    except Exception as e:
+        logger.warning(f"govdata seed job failed: {e}")
+
+
+def ensure_catalog(seed_pages: int = SEED_PAGES, full_pages: int = FULL_SYNC_PAGES) -> dict:
+    """目錄為空時在背景自動匯入（Render 重啟後磁碟重置的自我修復）。"""
+    global _SEED_THREAD
+    if not catalog_empty():
+        return {"started": False, "reason": "catalog-not-empty"}
+    with _SEED_LOCK:
+        if _SEED_THREAD is not None and _SEED_THREAD.is_alive():
+            return {"started": False, "reason": "already-running"}
+        _SEED_THREAD = threading.Thread(
+            target=_seed_job, args=(seed_pages, full_pages), daemon=True
+        )
+        _SEED_THREAD.start()
+    logger.info("govdata catalog empty -> background seed started")
+    return {"started": True}
 
 
 def _upsert_catalog(it: dict):

@@ -60,7 +60,9 @@ class ContentScheduler:
                     self._keep_alive()
                 if self._ping_count % 60 == 0:
                     self._auto_learn_kb()
-                if self._ping_count % 480 == 0:
+                if self._ping_count % 480 == 0 or (
+                    self._ping_count % 5 == 0 and self._govdata_empty()
+                ):
                     self._govdata_sync()
                 if self._ping_count % 30 == 0:
                     self._dump_backup_snapshot()
@@ -87,10 +89,19 @@ class ContentScheduler:
         except Exception as e:
             logger.warning(f"Auto-learn KB failed: {e}")
 
+    def _govdata_empty(self) -> bool:
+        try:
+            from .database import fetch_one
+            return fetch_one("SELECT COUNT(*) AS c FROM gov_catalog")["c"] == 0
+        except Exception:
+            return False
+
     def _govdata_sync(self):
-        # 背景執行，避免大檔下載阻塞主迴圈（每 ~8h 觸發一次）
-        t = threading.Thread(target=self._govdata_pipeline_job, daemon=True)
-        t.start()
+        # 背景執行，避免大檔下載阻塞主迴圈（每 ~8h 觸發一次；目錄為空時更頻繁）
+        if getattr(self, "_govdata_thread", None) and self._govdata_thread.is_alive():
+            return
+        self._govdata_thread = threading.Thread(target=self._govdata_pipeline_job, daemon=True)
+        self._govdata_thread.start()
 
     def _govdata_pipeline_job(self):
         try:

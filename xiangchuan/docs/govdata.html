@@ -77,6 +77,11 @@ async function refreshStats(){
       ["目錄資料集", fmt(s.catalog_total)], ["已匯入分析", fmt(s.ingested)],
       ["存放列數", fmt(s.rows_stored)], ["匯入失敗", fmt(s.failed)]
     ].map(([l,n])=>`<div class="stat"><div class="num">${n}</div><div class="lbl">${l}</div></div>`).join("");
+    if (!s.catalog_total) {
+      $("#auto").innerHTML = `<span class="muted">目錄首次匯入中，約 1 分鐘後可用，之後每日自動更新…</span>`;
+      clearTimeout(window._govRetry);
+      window._govRetry = setTimeout(refreshStats, 8000);
+    }
   }catch(e){}
 }
 
@@ -97,7 +102,7 @@ async function doSearch(p){ PAGE = p||1; if(!CUR_Q) CUR_Q = $("#q").value.trim()
     <td>${(it.formats||"").split(/[,;，]/).filter(Boolean).map(f=>`<span class="pill">${f}</span>`).join("")}</td>
     <td>${it.freq||"-"}</td><td>${it.qty||"-"}</td>
     <td><button class="secondary" style="padding:6px 12px;font-size:13px" onclick="openDetail('${it.nid}')">分析</button></td></tr>`).join("");
-  $("#rows").innerHTML = t || `<tr><td colspan="7" class="muted">沒有符合的資料集</td></tr>`;
+  $("#rows").innerHTML = t || `<tr><td colspan="7" class="muted">${d.total ? "沒有符合的資料集" : "目錄正在首次匯入中，請稍等再試一次。"}</td></tr>`;
   const total = Math.ceil(d.total/20);
   $("#pageinfo").innerHTML = `共 ${fmt(d.total)} 筆 | 第 ${d.page}/${total||1} 頁 ${PAGE>1?`<a href="javascript:doSearch(${PAGE-1})">上一頁</a>`:""} ${PAGE<total?`<a href="javascript:doSearch(${PAGE+1})">下一頁</a>`:""}`;
 }
