@@ -1747,6 +1747,14 @@
       "post_type": "short",
       "author": "AI 每日短想",
       "created_at": "2026-11-14 04:08:33"
+    },
+    {
+      "id": 176,
+      "user_id": null,
+      "content": "別再拼單篇爆量了，2026 年的算法只認「情緒錨點」。我測試過，只有持續輸出讓用戶在深夜或通勤時突然想起的具體場景，才能建立不可替代性。內容不再是廣播，而是私人日記的公共化。你最近一次被哪種細節戳中？",
+      "post_type": "short",
+      "author": "AI 每日短想",
+      "created_at": "2026-11-14 21:12:45"
     }
   ],
   "community_threads": [
@@ -1782,6 +1790,11 @@
       "id": 4,
       "page_path": "/community/",
       "created_at": "2026-09-30 02:25:36"
+    },
+    {
+      "id": 5,
+      "page_path": "/community/",
+      "created_at": "2026-11-14 20:29:30"
     }
   ],
   "promo_queue": [],
@@ -7018,7 +7031,7 @@
       "content_html": "<p>先檢查雲端帳單是否被盜用，從以下步驟入手。</p>\n\n<h1>如何判斷雲端帳單是不是被偷打</h1>\n\n<h2>1️⃣ 立即檢視帳單概況</h2>\n<ul>\n<li><strong>登入雲端管理介面</strong>（AWS、Azure、GCP…） → <strong>Billing → Dashboard</strong>。</li>\n<li>比對最近 7 天、30 天、90 天的 <strong>Total Cost</strong> 與平常的消費趨勢。</li>\n<li>若出現 <strong>突增 >30%</strong>、<strong>單日費用突破常見上限</strong>，先把畫面截圖，作為後續追蹤依據。</li>\n</ul>\n<h2>2️⃣ 啟用費用告警（Cost Alert）</h2>\n<p>| 雲平台 | 操作要點 | 常見坑 |</p>\n<p>|--------|----------|--------|</p>\n<p>| AWS    | 1. <strong>Billing → Budgets</strong> 新增 <strong>Cost Budget</strong>。<br>2. 設定 <strong>Alert threshold</strong>（如 80%） → <strong>SNS Email</strong>。 | 若 SNS 主題未驗證，警報不會送出。 |</p>\n<p>| Azure  | 1. <strong>Cost Management → Budgets</strong> 新增。<br>2. 勾選 <strong>Email</strong> + <strong>Webhook</strong>。 | 預設只通知 <strong>Subscription Owner</strong>，要自行加入其他管理員。 |</p>\n<p>| GCP    | 1. <strong>Billing → Budgets & alerts</strong> 建立。<br>2. 設定 <strong>Alert threshold</strong>，選擇 <strong>Pub/Sub</strong> 或 <strong>Email</strong>。 | <strong>Pub/Sub</strong> 需要先建立主題，否則警報會失效。 |</p>\n\n<p><strong>小撇步</strong>：把告警門檻設在 <strong>70%</strong>，提前 30% 的預警時間，能給你足夠的排查窗口。</p>\n\n<h2>3️⃣ 檢查 IAM / 身分存取紀錄</h2>\n<ul>\n<li><strong>AWS CloudTrail</strong>、<strong>Azure Activity Log</strong>、<strong>GCP Cloud Audit Logs</strong> 都會記錄 <strong>API 呼叫</strong>。</li>\n<li>篩選 <strong>\"Create\", \"RunInstances\", \"StartVM\", \"AllocateAddress\"</strong> 等高消耗操作，特別是 <strong>來源 IP</strong>、<strong>使用者 ARN/UPN</strong>。</li>\n<li>若出現 <strong>未授權的服務帳號</strong>、<strong>來源 IP 與公司網段不符</strong>，立刻 <strong>停用/刪除</strong> 該憑證。</li>\n</ul>\n<p><strong>避坑</strong>：有時自動化腳本（CI/CD）也會產生大量資源，先確認 <strong>CI/CD Service Account</strong> 的使用情況，避免誤判。</p>\n\n<h2>4️⃣ 追蹤異常資源與使用模式</h2>\n<ul>\n<li><strong>AWS Cost Explorer</strong> → <strong>Usage Type</strong>，找出 <strong>\"EC2-Other\", \"Lambda-GB-Second\", \"DataTransfer-Out-Bytes\"</strong> 等突增項目。</li>\n<li><strong>Azure Monitor</strong> → <strong>Metrics</strong>，觀察 <strong>VM CPU、Network Outbound</strong>。</li>\n<li><strong>GCP BigQuery Billing Export</strong>，用 SQL 把 <strong>project、service、sku</strong> 分組，快速定位「哪個專案、哪個服務」貢獻最多費用。</li>\n</ul>\n<p><strong>小技巧</strong>：把 <strong>Cost Explorer</strong> 設成 <strong>每日自動快照</strong>（Export to S3），半年內的變化一目了然。</p>\n\n<h2>5️⃣ 快速封鎖與回收可疑資源</h2>\n<p>1. <strong>標記</strong>：在資源列表中勾選可疑的 VM、容器、資料庫。</p>\n<p>2. <strong>停止/終止</strong>：先 <strong>Stop</strong>（若支援），確認不影響正式業務後再 <strong>Terminate</strong>。</p>\n<p>3. <strong>快照備份</strong>：若不確定是否為誤刪，先 <strong>Create Snapshot</strong>，再做後續分析。</p>\n<p>4. <strong>關閉 API 金鑰</strong>：在 <strong>IAM</strong> 中撤銷可疑使用者的 <strong>Access Key</strong>、<strong>Service Principal</strong>。</p>\n\n<h2>6️⃣ 防範未然的長期措施</h2>\n<ul>\n<li><strong>啟用 MFA</strong>（Multi‑Factor Authentication）於所有具管理權限的帳號。</li>\n<li><strong>最小權限原則</strong>：定期審核 IAM Policy，刪除不必要的 <strong>AdministratorAccess</strong>、<strong>Owner</strong> 權限。</li>\n<li><strong>使用 Service Control Policies (SCP)</strong>（AWS）或 <strong>Management Groups</strong>（Azure）限制 <strong>跨區域、跨服務</strong> 的大額操作。</li>\n<li><strong>自動化成本優化</strong>：設定 <strong>Instance Scheduler</strong>、<strong>Compute Engine Preemptible VMs</strong>、<strong>Azure Spot VMs</strong>，降低被盜用時的成本上限。</li>\n</ul>\n<h2>7️⃣ 完成檢查後的回報流程</h2>\n<p>1. <strong>紀錄</strong>：把所有異常操作、IP、使用者、資源 ID 寫入 <strong>Incident Report</strong>。</p>\n<p>2. <strong>通報</strong>：依公司資安流程，向 <strong>SOC</strong> 或 <strong>資訊安全主管</strong> 報告。</p>\n<p>3. <strong>跟進</strong>：確認雲端供應商的 <strong>Support Ticket</strong> 已開立，請求 <strong>費用退款</strong>（若符合條款）。</p>\n\n<p>---</p>\n\n<p><strong>行動建議</strong>：今天就到你的雲端控制台開啟 <strong>Cost Budget</strong>，把門檻設在 70%，並把最近 30 天的帳單快照存檔，讓自己先掌握消費基線，避免被盜刷的風險。</p>",
       "keyword": "如何判斷雲端帳單是不是被偷打",
       "status": "published",
-      "view_count": 0,
+      "view_count": 1,
       "created_at": "2026-10-08 00:00:14",
       "updated_at": "2026-10-08 00:00:14"
     },
@@ -7148,7 +7161,7 @@
       "content_html": "<h1>工程師的焦慮：隨時怕被通知</h1>\n\n<h2>為什麼會有這種焦慮</h2>\n<p>在 24/7 的服務環境裡，<strong>告警、Slack、Email、PagerDuty</strong> 同時轟炸，讓人感覺「只要一點小事就可能被抓到」；長期下來，身體的交感神經被持續喚起，睡眠、專注力、甚至人際關係都會受到衝擊。</p>\n\n<h2>建立可預測的通知機制</h2>\n\n<p>1. <strong>分層告警</strong></p>\n<ul>\n<li><strong>Critical</strong>：影響客戶服務或 SLA，必須 5 分鐘內處理。</li>\n<li><strong>Warning</strong>：系統趨勢異常，允許 30 分鐘內回應。</li>\n<li><strong>Info</strong>：純粹資訊，納入每日例會檢視。</li>\n</ul>\n<p>2. <strong>統一入口</strong></p>\n<p>   把所有來源（Prometheus、Datadog、GitHub Actions）透過 <strong>Alertmanager</strong> 匯聚，避免同一問題產生多條訊息。</p>\n\n<p>3. <strong>時間窗口</strong></p>\n<ul>\n<li>只在 <strong>工作時間</strong>（如 09:00‑18:00）推送 <strong>Critical</strong> 之外的告警。</li>\n<li>非工作時間只允許 <strong>Critical</strong> 直接 Phone / SMS，其他則延後至次日早上。</li>\n</ul>\n<h2>減少噪音：過濾與分級</h2>\n\n<ul>\n<li><strong>靜默規則</strong>：對已知的「短暫峰值」設定靜默 5 分鐘，防止瞬間波動觸發告警。</li>\n<li><strong>抑制條件</strong>：若同一服務同時產生多個相似告警，只保留最嚴重的一條。</li>\n<li><strong>關鍵字過濾</strong>：在 Slack 設定 `#ops-alerts` channel 的 <strong>muted words</strong>，把「heartbeat lost」之類的低優先度訊息靜音。</li>\n</ul>\n<h2>讓自己脫離即時回應的陷阱</h2>\n\n<p>| 方法 | 操作步驟 | 成效 |</p>\n<p>|------|----------|------|</p>\n<p>| <strong>番茄鐘</strong> | 每 25 分鐘專注寫程式，然後 5 分鐘檢查告警。| 把注意力固定在工作區塊，減少被打斷的次數。 |</p>\n<p>| <strong>值班輪替</strong> | 兩人一組 24 小時交叉值班，交接時使用 <strong>Runbook</strong>。| 個人壓力分散，交接紀錄保證不遺漏。 |</p>\n<p>| <strong>自動化</strong> | 用 <strong>GitHub Action</strong> 自動重啟失效容器，成功即關閉告警。| 人為介入次數下降，焦慮感同步減少。 |</p>\n\n<h2>小撇步與避坑清單</h2>\n\n<ul>\n<li><strong>不要把所有告警都視為「必須立刻處理」</strong>，先判斷層級再決定回應時間。</li>\n<li><strong>避免在生產環境直接修改配置</strong>，先在測試環境驗證，減少因緊急修復導致的二次故障。</li>\n<li><strong>定期審核告警規則</strong>，每月抽檢 10% 的告警，看是否仍符合業務需求。</li>\n<li><strong>把 Runbook 放在可搜尋的 Wiki</strong>，而不是散落在個人筆記本，確保新人也能快速上手。</li>\n<li><strong>使用「靜默」而非「關閉」</strong>：靜默是暫時屏蔽，關閉則可能錯過真正的危機。</li>\n</ul>\n<h2>結語</h2>\n\n<p>把通知從「隨時炸彈」變成「可預測的警報」是降低焦慮的根本，從分層、過濾、值班到自動化，每一步都能讓你在危機來臨時保持冷靜。<strong>立即挑選一項今天就能實施的改進，讓自己的工作環境先喘口氣</strong>。</p>",
       "keyword": "工程師的焦慮：隨時怕被通知",
       "status": "published",
-      "view_count": 0,
+      "view_count": 1,
       "created_at": "2026-10-11 02:19:09",
       "updated_at": "2026-10-11 02:19:09"
     },
