@@ -12,9 +12,15 @@
       ? 'https://lewislunora.onrender.com/api/analytics/track'
       : '/api/analytics/track';
 
+    // GitHub Pages 掛在 /lewislunora/ 子路徑，去掉前綴才能和 Render 的頁面路徑對齊
+    var page = location.pathname + location.search;
+    if (location.hostname.indexOf('github.io') >= 0) {
+      page = page.replace(/^\/lewislunora/, '') || '/';
+    }
+
     var payload = JSON.stringify({
       event: 'pageview',
-      page: location.pathname + location.search,
+      page: page,
       ref: document.referrer || '',
       ts: Date.now()
     });
