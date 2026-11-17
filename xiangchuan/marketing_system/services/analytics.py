@@ -58,7 +58,9 @@ def track_async(page: str, referrer: str = "", user_agent: str = "", ip: str = "
 
 
 def summary(since_hours: int = 24) -> dict:
-    cutoff = (datetime.now() - timedelta(hours=since_hours)).isoformat()
+    # pages.visited_at 是 SQLite datetime('now')，UTC、以空白分隔；
+    # 這裡必須用同樣格式與時區比較，否則同一天的資料永遠被排除。
+    cutoff = (datetime.utcnow() - timedelta(hours=since_hours)).strftime("%Y-%m-%d %H:%M:%S")
     total = fetch_one(
         "SELECT COUNT(*) as cnt FROM page_views WHERE visited_at >= ?", [cutoff]
     )
