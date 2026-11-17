@@ -36,13 +36,13 @@ python ai_tuner.py inventory
 python ai_tuner.py propose
 
 # 看報告
-python ai_tuner.py report --out ../ai-tuner/reports/$(date +%F).md
+python ai_tuner.py report --out ../../ai-tuner/reports/$(date +%F).md
 
 # 乾跑：只驗證會套用哪些變更
-python ai_tuner.py apply --proposals ../ai-tuner/proposals/$(date +%F).json --dry-run
+python ai_tuner.py apply --proposals ../../ai-tuner/proposals/$(date +%F).json --dry-run
 
 # 真正套用（會跑測試；--push 才會推送）
-python ai_tuner.py apply --proposals ../ai-tuner/proposals/$(date +%F).json --yes --push
+python ai_tuner.py apply --proposals ../../ai-tuner/proposals/$(date +%F).json --yes --push
 ```
 
 ## 決策紀錄

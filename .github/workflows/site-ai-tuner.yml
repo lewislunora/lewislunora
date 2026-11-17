@@ -30,6 +30,8 @@ jobs:
     name: 量測與 AI 提案
     runs-on: ubuntu-latest
     timeout-minutes: 20
+    outputs:
+      ready: ${{ steps.keycheck.outputs.ready }}
     steps:
       - uses: actions/checkout@v4
         with:
@@ -39,6 +41,18 @@ jobs:
         with:
           python-version: "3.12"
 
+      - name: 檢查 GROQ_API_KEY
+        id: keycheck
+        env:
+          GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
+        run: |
+          if [ -z "$GROQ_API_KEY" ]; then
+            echo "::warning::GROQ_API_KEY 未設定，本次只收集數據、不產生 AI 提案"
+            echo "ready=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "ready=true" >> "$GITHUB_OUTPUT"
+          fi
+
       - name: 收集量表與網站庫存
         working-directory: xiangchuan/marketing_system/scripts
         run: |
@@ -46,6 +60,7 @@ jobs:
           python ai_tuner.py inventory
 
       - name: 呼叫 Groq 產生提案
+        if: steps.keycheck.outputs.ready == 'true'
         working-directory: xiangchuan/marketing_system/scripts
         env:
           GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
@@ -53,7 +68,7 @@ jobs:
 
       - name: 產生 Markdown 報告
         working-directory: xiangchuan/marketing_system/scripts
-        run: python ai_tuner.py report --out ../ai-tuner/reports/$(date -u +%F).md
+        run: python ai_tuner.py report --out ../../ai-tuner/reports/$(date -u +%F).md
 
       - name: 上傳提案 artifact
         uses: actions/upload-artifact@v4
@@ -69,7 +84,7 @@ jobs:
   apply:
     name: 套用低風險變更並部署
     needs: [analyze]
-    if: github.event_name == 'schedule' || github.event.inputs.dry_run == 'false'
+    if: needs.analyze.outputs.ready == 'true' && (github.event_name == 'schedule' || github.event.inputs.dry_run == 'false')
     runs-on: ubuntu-latest
     timeout-minutes: 40
     steps:
@@ -102,7 +117,7 @@ jobs:
           git config user.name "site-ai-tuner"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           python ai_tuner.py apply \
-            --proposals ../ai-tuner/proposals/$(date -u +%F).json \
+            --proposals ../../ai-tuner/proposals/$(date -u +%F).json \
             --yes --push \
             --message "ai-tuner: $(date -u +%F) 自動調整"
 
