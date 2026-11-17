@@ -3,9 +3,9 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>動態 — 翔川社交</title>
-<meta property="og:title" content="動態 — 翔川社交">
-<meta property="og:description" content="交友 · 聊天 · 匿名討論，一個地方全部搞定">
+<title>發佈版 — 翔川 AI 社交</title>
+<meta property="og:title" content="發佈版 — 翔川 AI 社交">
+<meta property="og:description" content="像 Threads 的動態版：發文、聊天、交友，還有 AI 夥伴陪你聊">
 <link rel="stylesheet" href="/css/social.css">
 <style>
 .composer{display:flex;gap:12px}
@@ -30,18 +30,44 @@
 .comment-input{display:flex;gap:8px;margin-top:8px}
 .comment-input input{flex:1}
 .load-more{text-align:center;padding:14px}
+.tabs{display:flex;gap:8px;overflow-x:auto;padding:2px 2px 12px}
+.tab{border:1px solid #1e293b;background:#0b1220;color:#94a3b8;border-radius:999px;padding:7px 14px;font-size:13px;cursor:pointer;white-space:nowrap}
+.tab.active{background:linear-gradient(135deg,#7b68ee,#00d4ff);color:#fff;border-color:transparent}
+.ai-strip{margin-bottom:14px}
+.ai-title{font-weight:700;font-size:14px;color:#e2e8f0;margin-bottom:10px}
+.ai-title span{font-weight:400;color:#64748b;font-size:12px;margin-left:6px}
+.ai-list{display:flex;gap:10px;overflow-x:auto;padding-bottom:4px}
+.ai-chip{display:flex;align-items:center;gap:8px;background:#0d1428;border:1px solid #1c2436;border-radius:14px;padding:8px 12px;cursor:pointer;white-space:nowrap;color:#e2e8f0;font-size:13px;text-align:left}
+.ai-chip:hover{border-color:#7b68ee}
+.ai-chip .av{font-size:20px}
+.ai-chip small{display:block;color:#64748b;font-size:11px;margin-top:2px}
+.ai-badge{display:inline-block;background:linear-gradient(135deg,#7b68ee,#00d4ff);color:#fff;font-size:10px;font-weight:700;padding:1px 6px;border-radius:999px;vertical-align:middle;margin-left:6px}
+.composer select{background:#0b1220;color:#cbd5e1;border:1px solid #1e293b;border-radius:10px;padding:7px 10px;font-size:13px}
 </style>
 </head>
 <body>
 <nav class="sn-top"><div class="sn-inner" id="social-nav"></div></nav>
 <div class="sn-container">
+  <div class="card ai-strip" id="aiStrip">
+    <div class="ai-title">🤖 AI 夥伴 <span>選一位陪你聊，或直接在發佈版和他們互動</span></div>
+    <div class="ai-list" id="aiList"><span style="color:#64748b;font-size:13px">載入中…</span></div>
+  </div>
+
   <div class="card composer" id="composer" hidden>
     <div id="composer-avatar"></div>
     <div class="body">
       <textarea id="postContent" placeholder="分享你的近況，跟大家聊天吧…" maxlength="2000"></textarea>
-      <div class="row">
+        <div class="row">
         <span style="font-size:12px;color:#64748b">💡 用心寫，朋友更想回你</span>
-        <button class="btn-pri" id="postBtn">發佈</button>
+        <div style="display:flex;gap:8px;align-items:center">
+          <select id="postType" aria-label="貼文分類">
+            <option value="life">生活</option>
+            <option value="tech">科技</option>
+            <option value="idea">靈感</option>
+            <option value="auto">AI 自動化</option>
+          </select>
+          <button class="btn-pri" id="postBtn">發佈</button>
+        </div>
       </div>
     </div>
   </div>
@@ -49,8 +75,16 @@
   <div class="card" id="loginCard" hidden>
     <div class="empty"><div class="icon">💬</div>
       <p style="margin-bottom:16px">登入後就能發文、按讚、交友、私訊聊天</p>
-      <a class="btn-pri" style="padding:10px 26px" href="/login.html?next=/social/">登入 / 註冊</a>
+      <a class="btn-pri" style="padding:10px 26px" href="/login.html" id="heroLogin">登入 / 註冊</a>
     </div>
+  </div>
+
+  <div class="tabs" id="tabs">
+    <button class="tab active" data-type="">全部</button>
+    <button class="tab" data-type="life">生活</button>
+    <button class="tab" data-type="tech">科技</button>
+    <button class="tab" data-type="idea">靈感</button>
+    <button class="tab" data-type="auto">AI 自動化</button>
   </div>
 
   <div id="feedList"><div class="empty">載入中…</div></div>
@@ -61,6 +95,7 @@
 (function () {
   'use strict';
   var page = 1, loading = false, total = Infinity;
+  var curType = '';
   var feed = document.getElementById('feedList');
 
   Social.renderNav('/social/');
@@ -77,13 +112,14 @@
 
   function postHtml(p) {
     var a = p.author || { name: '翔川' };
-    var profileHref = a.id ? '/social/profile.html?id=' + a.id : '#';
+    var profileHref = a.id ? (Social.site || '') + '/social/profile.html?id=' + a.id : '#';
     var avatar = Social.avatarHtml(a, 42);
     return '<div class="post">' +
       '<div class="head">' +
         (a.id ? '<a href="' + profileHref + '">' + avatar + '</a>' : avatar) +
         '<div>' +
-          '<div class="nm"><a href="' + profileHref + '">' + Social.esc(a.name) + '</a></div>' +
+          '<div class="nm"><a href="' + profileHref + '">' + Social.esc(a.name) + '</a>' +
+            (a.is_bot ? '<span class="ai-badge">AI</span>' : '') + '</div>' +
         '</div>' +
         '<span class="time">' + Social.timeAgo(p.created_at) + '</span>' +
       '</div>' +
@@ -101,7 +137,7 @@
   function load() {
     if (loading) return;
     loading = true;
-    Social.api('/api/feed?page=' + page + '&per_page=15').then(function (r) {
+    Social.api('/api/feed?page=' + page + '&per_page=15' + (curType ? '&type=' + encodeURIComponent(curType) : '')).then(function (r) {
       loading = false;
       if (!r.ok) { feed.innerHTML = '<div class="empty">載入失敗</div>'; return; }
       total = r.data.total;
@@ -169,7 +205,7 @@
   };
 
   window.copyLink = function (pid) {
-    var url = location.origin + '/social/index.html?p=' + pid;
+    var url = location.origin + (Social.site || '') + '/social/index.html?p=' + pid;
     navigator.clipboard.writeText(url).then(function () { Social.notify('已複製貼文連結'); });
   };
 
@@ -178,21 +214,62 @@
     if (!text) return;
     var btn = this;
     btn.disabled = true;
+    var ptype = (document.getElementById('postType') || {}).value || 'life';
     Social.requireLogin().then(function () {
-      return Social.api('/api/feed', { method: 'POST', body: { content: text } });
+      return Social.api('/api/feed', { method: 'POST', body: { content: text, post_type: ptype } });
     }).then(function (r) {
       btn.disabled = false;
       if (!r.ok) { Social.notify('發佈失敗'); return; }
       document.getElementById('postContent').value = '';
       page = 1;
-      Social.api('/api/feed?page=1&per_page=15').then(function (r2) {
+      Social.api('/api/feed?page=1&per_page=15' + (curType ? '&type=' + encodeURIComponent(curType) : '')).then(function (r2) {
         feed.innerHTML = r2.data.items.map(postHtml).join('');
         Social.notify('發佈成功！');
       });
     });
   });
 
+  // 分類 tabs
+  document.getElementById('tabs').addEventListener('click', function (e) {
+    var t = e.target.closest('.tab');
+    if (!t) return;
+    Array.prototype.forEach.call(this.querySelectorAll('.tab'), function (x) { x.classList.remove('active'); });
+    t.classList.add('active');
+    curType = t.getAttribute('data-type') || '';
+    page = 1;
+    feed.innerHTML = '<div class="empty">載入中…</div>';
+    load();
+  });
+
+  // AI 夥伴列
+  function loadBots() {
+    Social.api('/api/social/bots').then(function (r) {
+      var box = document.getElementById('aiList');
+      var items = (r.data && r.data.items) || [];
+      if (!items.length) { box.innerHTML = '<span style="color:#64748b;font-size:13px">AI 夥伴準備中…</span>'; return; }
+      box.innerHTML = items.map(function (b) {
+        return '<button class="ai-chip" data-user="' + Social.esc(b.username) + '">' +
+          '<span class="av">' + Social.esc(b.avatar || '🤖') + '</span>' +
+          '<span>' + Social.esc(b.name) + ' <span class="ai-badge">AI</span>' +
+          '<small>' + Social.esc(b.bio || '') + '</small></span></button>';
+      }).join('');
+    });
+  }
+  document.getElementById('aiList').addEventListener('click', function (e) {
+    var chip = e.target.closest('.ai-chip');
+    if (!chip) return;
+    Social.requireLogin().then(function () {
+      return Social.api('/api/social/chat-with-bot', { method: 'POST', body: { username: chip.getAttribute('data-user') } });
+    }).then(function (r) {
+      if (!r.ok) { Social.notify('暫時無法開啟對話'); return; }
+      location.href = 'chat.html?cid=' + r.data.conversation_id;
+    });
+  });
+
+  loadBots();
   load();
+  var heroLogin = document.getElementById('heroLogin');
+  if (heroLogin && Social.loginUrl) heroLogin.href = Social.loginUrl();
 })();
 </script>
 <script src="analytics-beacon.js" defer></script>

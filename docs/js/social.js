@@ -2,13 +2,23 @@
 (function (window) {
   'use strict';
 
-  var API = window.location.hostname.includes('github.io') ? 'https://lewislunora.onrender.com' : '';
+  // GitHub Pages 是 /lewislunora/ 子路徑，所有站內連結都要帶前綴，
+  // 否則 /social/、/login.html 會指到網域根目錄而 404。
+  var IS_GH = window.location.hostname.indexOf('github.io') >= 0;
+  var API = IS_GH ? 'https://lewislunora.onrender.com' : '';
+  var SITE = IS_GH ? '/lewislunora' : '';
   var me = null;
+
+  function loginUrl() {
+    return SITE + '/login.html?next=' + encodeURIComponent(window.location.origin + SITE + '/social/');
+  }
 
   function api(path, opts) {
     opts = opts || {};
     opts.headers = opts.headers || {};
-    opts.credentials = 'same-origin';
+    // GitHub Pages 呼叫 Render API 屬跨網域，必須 include 才會帶登入 cookie；
+    // 同網域則維持 same-origin。
+    opts.credentials = IS_GH ? 'include' : 'same-origin';
     if (opts.body && typeof opts.body !== 'string') {
       opts.headers['Content-Type'] = 'application/json';
       opts.body = JSON.stringify(opts.body);
@@ -30,7 +40,7 @@
 
   function requireLogin() {
     return current().then(function (u) {
-      if (!u) { window.location.href = '/login.html?next=/social/'; throw new Error('login required'); }
+      if (!u) { window.location.href = loginUrl(); throw new Error('login required'); }
       return u;
     });
   }
@@ -54,16 +64,23 @@
 
   function avatarHtml(u, size) {
     size = size || 40;
-    if (u && u.avatar) return '<img class="avatar" style="width:' + size + 'px;height:' + size + 'px" src="' + esc(u.avatar) + '" onerror="this.style.display=\'none\'">';
+    if (u && u.avatar) {
+      var av = String(u.avatar);
+      // AI 夥伴用 emoji 當頭像（🤖🌱✨🛠️），不是圖片路徑
+      if (!/^(https?:|\/|data:|\.\/)/.test(av) && av.indexOf('.') === -1) {
+        return '<div class="avatar" style="width:' + size + 'px;height:' + size + 'px;display:flex;align-items:center;justify-content:center;background:#0d1428;font-size:' + Math.round(size * 0.5) + 'px">' + esc(av) + '</div>';
+      }
+      return '<img class="avatar" style="width:' + size + 'px;height:' + size + 'px" src="' + esc(av) + '" onerror="this.style.display=\'none\'">';
+    }
     return '<div class="avatar" style="width:' + size + 'px;height:' + size + 'px;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,#7b68ee,#00d4ff);color:#fff;font-weight:700">' + esc((u && u.name ? u.name[0] : '?').toUpperCase()) + '</div>';
   }
 
   var NAV_LINKS = [
-    { href: '/social/', label: '動態', icon: '📰' },
-    { href: '/social/people.html', label: '找人', icon: '🤝' },
-    { href: '/community/', label: '討論版', icon: '🗣️' },
-    { href: '/social/chat.html', label: '私訊', icon: '💬', chat: true },
-    { href: '/social/profile.html?me=1', label: '我的', icon: '👤' },
+    { href: SITE + '/social/', label: '動態', icon: '📰' },
+    { href: SITE + '/social/people.html', label: '找人', icon: '🤝' },
+    { href: SITE + '/community/', label: '討論版', icon: '🗣️' },
+    { href: SITE + '/social/chat.html', label: '私訊', icon: '💬', chat: true },
+    { href: SITE + '/social/profile.html?me=1', label: '我的', icon: '👤' },
   ];
 
   function renderNav(active) {
@@ -71,16 +88,16 @@
     if (!nav) return;
     current().then(function (u) {
       var links = NAV_LINKS.map(function (l) {
-        var cls = 'sn-item' + (l.href === active ? ' active' : '');
+        var cls = 'sn-item' + (l.href.slice(SITE.length) === active ? ' active' : '');
         var badge = '';
         if (l.chat && u) badge = '<span class="sn-badge" id="sn-unread" style="display:none">0</span>';
         return '<a class="' + cls + '" href="' + l.href + '">' + l.icon + '<span class="sn-label">' + l.label + '</span>' + badge + '</a>';
       }).join('');
       var right = u
-        ? '<div class="sn-user"><a class="sn-avatar-link" href="/social/profile.html?me=1">' + avatarHtml(u, 32) + '</a>' +
+        ? '<div class="sn-user"><a class="sn-avatar-link" href="' + SITE + '/social/profile.html?me=1">' + avatarHtml(u, 32) + '</a>' +
           '<button class="sn-btn" onclick="Social.logout()">登出</button></div>'
-        : '<a class="sn-btn primary" href="/login.html?next=/social/">登入 / 註冊</a>';
-      nav.innerHTML = '<div class="sn-inner"><a class="sn-brand" href="/social/"><img src="/favicon.png" alt="">翔川<em>社交</em></a>' +
+        : '<a class="sn-btn primary" href="' + loginUrl() + '">登入 / 註冊</a>';
+      nav.innerHTML = '<div class="sn-inner"><a class="sn-brand" href="' + SITE + '/social/"><img src="' + SITE + '/favicon.png" alt="">翔川<em>社交</em></a>' +
         '<div class="sn-links">' + links + '</div>' + right + '</div>';
       bindUnread();
     });
@@ -101,7 +118,7 @@
   }
 
   function logout() {
-    window.location.href = '/api/auth/logout?next=/social/';
+    window.location.href = API + '/api/auth/logout?next=' + encodeURIComponent(window.location.origin + SITE + '/social/');
   }
 
   function notify(text) {
@@ -118,5 +135,5 @@
     el._t = setTimeout(function () { el.style.opacity = '0'; }, 2200);
   }
 
-  window.Social = { api: api, current: current, requireLogin: requireLogin, esc: esc, timeAgo: timeAgo, avatarHtml: avatarHtml, renderNav: renderNav, logout: logout, notify: notify };
+  window.Social = { api: api, current: current, requireLogin: requireLogin, esc: esc, timeAgo: timeAgo, avatarHtml: avatarHtml, renderNav: renderNav, logout: logout, notify: notify, loginUrl: loginUrl, site: SITE };
 })(window);

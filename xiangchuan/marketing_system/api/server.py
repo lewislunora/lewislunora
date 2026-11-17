@@ -1860,7 +1860,7 @@ def _user_dict(u):
     name = u["name"] or email_prefix or u["username"] or "使用者"
     return {"id": u["id"], "name": name,
             "username": u["username"], "email": u["email"] or "", "avatar": u["avatar"] or "", "bio": u["bio"] or "",
-            "plan": u.get("plan") or "free"}
+            "plan": u.get("plan") or "free", "is_bot": bool(u.get("is_bot"))}
 
 
 def _require_user(request: Request):
@@ -1887,6 +1887,15 @@ def _get_or_create_conversation(me_id, other_id):
         return row["id"]
     return execute("INSERT INTO conversations (user_a, user_b) VALUES (?, ?)",
                    (min(me_id, other_id), max(me_id, other_id)))
+
+
+def _ai_bot_dm_reply(bot: dict, cid: int, history: list) -> None:
+    """背景執行：讓 AI 夥伴回覆私訊。"""
+    try:
+        from ..services.ai_social import bot_reply_to_dm
+        bot_reply_to_dm(bot, cid, history)
+    except Exception as exc:  # noqa: BLE001
+        logger.warning(f"ai bot dm reply failed: {exc}")
 
 
 # ---------- 私訊聊天 ----------
@@ -1963,6 +1972,23 @@ def chat_send(data: MessageSend, request: Request):
     row = fetch_one(
         "SELECT m.*, u.name AS sender_name, u.avatar AS sender_avatar FROM messages m "
         "JOIN users u ON u.id=m.sender_id WHERE m.id=?", (mid,))
+    # 對方若是 AI 夥伴，背景生成一則回覆（不阻塞送出）
+    try:
+        conv = fetch_one("SELECT * FROM conversations WHERE id=?", (cid,))
+        other_id = conv["user_b"] if conv["user_a"] == me["id"] else conv["user_a"]
+        bot = fetch_one("SELECT * FROM users WHERE id=? AND is_bot=1", (other_id,))
+        if bot:
+            hist = fetch(
+                "SELECT sender_id, body FROM messages WHERE conversation_id=? ORDER BY id DESC LIMIT 8",
+                (cid,),
+            )
+            threading.Thread(
+                target=_ai_bot_dm_reply,
+                args=(dict(bot), cid, [dict(h) for h in reversed(hist)]),
+                daemon=True,
+            ).start()
+    except Exception as exc:  # noqa: BLE001 - 回覆失敗不影響訊息送出
+        logger.warning(f"bot dm scheduling failed: {exc}")
     return {"status": "ok", "message": row}
 
 
@@ -2027,7 +2053,7 @@ def list_users(request: Request, q: str = "", page: int = 1, per_page: int = 30)
         like = f"%{q}%"
         params += [like, like, like]
     offset = (page - 1) * per_page
-    rows = fetch(f"SELECT id, username, email, name, avatar, bio FROM users WHERE {cond} ORDER BY id DESC LIMIT ? OFFSET ?",
+    rows = fetch(f"SELECT id, username, email, name, avatar, bio, plan, is_bot FROM users WHERE {cond} ORDER BY is_bot DESC, id DESC LIMIT ? OFFSET ?",
                  params + [per_page, offset])
     items = []
     for r in rows:
@@ -2045,7 +2071,7 @@ def list_users(request: Request, q: str = "", page: int = 1, per_page: int = 30)
 @app.get("/api/users/{uid}")
 def get_user_profile(uid: int, request: Request):
     me = _current_user(request)
-    row = fetch_one("SELECT id, username, email, name, avatar, bio FROM users WHERE id=? AND is_active=1", (uid,))
+    row = fetch_one("SELECT id, username, email, name, avatar, bio, plan, is_bot FROM users WHERE id=? AND is_active=1", (uid,))
     if not row:
         raise HTTPException(404, "使用者不存在")
     profile = _user_dict(row)
@@ -2103,11 +2129,12 @@ def _feed_item(p, me):
     author_id = p["user_id"]
     author = None
     if author_id:
-        u = fetch_one("SELECT id, name, username, email, avatar, bio FROM users WHERE id=?", (author_id,))
+        u = fetch_one("SELECT id, name, username, email, avatar, bio, plan, is_bot FROM users WHERE id=?", (author_id,))
         if u:
             author = _user_dict(u)
     if not author:
-        author = {"id": None, "name": p["author"], "username": "", "avatar": "", "bio": ""}
+        author = {"id": None, "name": p["author"], "username": "", "avatar": "", "bio": "",
+                  "plan": "free", "is_bot": False}
     likes = fetch("SELECT COUNT(*) AS c FROM reactions WHERE page_path=? AND emoji='❤'",
                   (f"feed:{p['id']}",))
     like_count = likes[0]["c"] if likes else 0
@@ -2127,22 +2154,33 @@ def create_feed_post(data: FeedPostCreate, request: Request):
     if not data.content.strip():
         raise HTTPException(400, "內容不能為空")
     content = data.content.strip()[:2000]
+    if _is_user_input_spam(content):
+        return JSONResponse(status_code=200, content={"status": "ok", "post": None, "filtered": True})
+    post_type = data.post_type if data.post_type in ("life", "tech", "idea", "auto", "tip", "note", "chat") else "life"
     user_id = me["id"] if me else None
     author = (me["name"] or me["username"] or data.author) if me else data.author
     pid = execute(
         "INSERT INTO feed_posts (user_id, content, post_type, author) VALUES (?, ?, ?, ?)",
-        [user_id, content, data.post_type, author],
+        [user_id, content, post_type, author],
     )
     row = fetch_one("SELECT * FROM feed_posts WHERE id=?", (pid,))
     return {"status": "ok", "post": _feed_item(row, me)}
 
 
 @app.get("/api/feed")
-def list_feed_posts(request: Request, page: int = 1, per_page: int = 20):
+def list_feed_posts(request: Request, page: int = 1, per_page: int = 20, type: str = ""):
     me = _current_user(request)
     offset = (page - 1) * per_page
-    rows = fetch("SELECT * FROM feed_posts ORDER BY created_at DESC, id DESC LIMIT ? OFFSET ?", [per_page, offset])
-    total = fetch("SELECT COUNT(*) AS c FROM feed_posts")[0]["c"]
+    allowed = {"life", "tech", "idea", "auto", "tip", "note", "chat"}
+    if type in allowed:
+        rows = fetch(
+            "SELECT * FROM feed_posts WHERE post_type=? ORDER BY created_at DESC, id DESC LIMIT ? OFFSET ?",
+            [type, per_page, offset],
+        )
+        total = fetch_one("SELECT COUNT(*) AS c FROM feed_posts WHERE post_type=?", [type])["c"]
+    else:
+        rows = fetch("SELECT * FROM feed_posts ORDER BY created_at DESC, id DESC LIMIT ? OFFSET ?", [per_page, offset])
+        total = fetch_one("SELECT COUNT(*) AS c FROM feed_posts")["c"]
     return {"items": [_feed_item(p, me) for p in rows], "total": total, "page": page}
 
 
@@ -2187,6 +2225,37 @@ def feed_comments(pid: int, request: Request):
         (f"feed:{pid}",),
     )
     return {"items": rows}
+
+
+# ---------- AI 社交夥伴 ----------
+class BotChatOpen(BaseModel):
+    username: str = ""
+
+
+@app.get("/api/social/bots")
+def social_bots():
+    from ..services.ai_social import list_bots
+    return {"items": list_bots()}
+
+
+@app.post("/api/social/chat-with-bot")
+def chat_with_bot(data: BotChatOpen, request: Request):
+    me = _require_user(request)
+    from ..services.ai_social import get_bot, greeting_for
+    bot = get_bot(data.username)
+    if not bot:
+        raise HTTPException(404, "找不到 AI 夥伴")
+    cid = _get_or_create_conversation(me["id"], bot["id"])
+    has_msg = fetch_one("SELECT id FROM messages WHERE conversation_id=? LIMIT 1", (cid,))
+    if not has_msg:
+        execute(
+            "INSERT INTO messages (conversation_id, sender_id, body) VALUES (?, ?, ?)",
+            (cid, bot["id"], greeting_for(dict(bot))),
+        )
+    return {
+        "conversation_id": cid,
+        "bot": {"id": bot["id"], "name": bot["name"], "avatar": bot["avatar"], "bio": bot["bio"]},
+    }
 
 
 @app.post("/api/ai/summarize")
@@ -2564,6 +2633,18 @@ def _register_promo_task():
 
     # 每 30 分鐘檢查一次是否有新內容可推到已設定的免費管道
     scheduler.add_hook(30, "channel_push", channel_push_tick)
+
+    def ai_social_tick():
+        """AI 社交夥伴：自動發文與回覆真人貼文（每 20 分鐘一輪）。"""
+        try:
+            from ..services.ai_social import tick as ai_social_run
+            r = ai_social_run()
+            if r.get("posted") or r.get("replied"):
+                logger.info(f"ai_social tick: {r}")
+        except Exception as e:
+            logger.warning(f"tick ai_social failed: {e}")
+
+    scheduler.add_hook(20, "ai_social", ai_social_tick)
 
 # ── Web Roamer ──────────────────────────────────────────────────────────
 @app.get("/api/roam/search")

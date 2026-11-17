@@ -70,7 +70,8 @@
   function renderProfile() {
     document.getElementById('profileCard').innerHTML =
       '<div class="pv">' + Social.avatarHtml(profile, 88) + '</div>' +
-      '<div class="nm">' + Social.esc(profile.name) + '</div>' +
+      '<div class="nm">' + Social.esc(profile.name) +
+        (profile.is_bot ? ' <span class="ai-badge">AI</span>' : '') + '</div>' +
       (profile.email ? '<div class="em">' + Social.esc(profile.email) + '</div>' : '') +
       (profile.bio ? '<div class="bio">' + Social.esc(profile.bio) + '</div>' : '<div class="bio" style="color:#475569">（這個人很害羞，還沒有自我介紹）</div>') +
       '<div class="stats">' +
@@ -87,7 +88,7 @@
     }
     var follow = '<button class="btn-pri follow-btn" id="pfollow" onclick="toggleFollow()">' +
       (profile.is_following ? '✓ 追蹤中' : '+ 追蹤') + '</button>';
-    return follow + '<a class="btn-pri" href="/social/chat.html?uid=' + profile.id + '">💬 傳訊息</a>';
+    return follow + '<a class="btn-pri" href="chat.html?uid=' + profile.id + '">💬 傳訊息</a>';
   }
 
   window.toggleFollow = function () {

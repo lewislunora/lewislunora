@@ -59,7 +59,7 @@
       <div class="msg-body" id="msgBody">
         <div class="empty-state"><div class="icon" style="font-size:40px">💬</div>
           <p style="margin-bottom:14px">從左邊選一個對話開始聊天，或到「找人」認識新朋友</p>
-          <a class="btn-pri" href="/social/people.html">🤝 去找人聊聊</a>
+          <a class="btn-pri" href="people.html">🤝 去找人聊聊</a>
         </div>
       </div>
       <div class="msg-input" id="msgInput" style="display:none">
@@ -105,7 +105,7 @@
 
   window.openByUser = function (uid) {
     Social.api('/api/chat/open', { method: 'POST', body: { user_id: uid } }).then(function (r) {
-      if (r.ok) { history.replaceState(null, '', '/social/chat.html?cid=' + r.data.conversation_id); openConv(r.data.conversation_id); }
+      if (r.ok) { history.replaceState(null, '', 'chat.html?cid=' + r.data.conversation_id); openConv(r.data.conversation_id); }
     });
   };
 
@@ -120,7 +120,7 @@
       document.getElementById('headName').textContent = conv.other_name;
       document.getElementById('msgHead').style.display = 'flex';
       document.getElementById('msgInput').style.display = 'flex';
-      document.getElementById('headProfile').href = '/social/profile.html?id=' + conv.other_id;
+      document.getElementById('headProfile').href = 'profile.html?id=' + conv.other_id;
     }).catch(function () {});
     loadMessages(cid);
     clearInterval(pollTimer);

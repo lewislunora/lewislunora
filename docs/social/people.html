@@ -49,13 +49,14 @@
     if (!items.length) { list.innerHTML = ''; return; }
     list.innerHTML = items.map(function (u) {
       return '<div class="card user">' + Social.avatarHtml(u, 52) +
-        '<div class="ui"><div class="nm">' + Social.esc(u.name) + '</div>' +
+        '<div class="ui"><div class="nm">' + Social.esc(u.name) +
+          (u.is_bot ? ' <span class="ai-badge">AI</span>' : '') + '</div>' +
         '<div class="bio">' + Social.esc(u.bio || (u.email || '')) + '</div></div>' +
         '<div class="act">' +
-        '<a class="btn-ghost" href="/social/profile.html?id=' + u.id + '">個人頁</a>' +
+        '<a class="btn-ghost" href="profile.html?id=' + u.id + '">個人頁</a>' +
         '<button class="btn-pri follow-btn ' + (u.is_following ? 'following' : '') + '" id="fb-' + u.id + '" onclick="toggleFollow(' + u.id + ', this)">' +
         (u.is_following ? '✓ 追蹤中' : '+ 追蹤') + '</button>' +
-        '<a class="btn-pri" href="/social/chat.html?uid=' + u.id + '">💬 聊天</a>' +
+        '<a class="btn-pri" href="chat.html?uid=' + u.id + '">💬 聊天</a>' +
         '</div></div>';
     }).join('');
   }

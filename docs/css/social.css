@@ -68,3 +68,5 @@ input[type=text]:focus,textarea:focus{border-color:#7b68ee}
   .sn-label{display:none}
   .sn-item{padding:8px 10px}
 }
+
+.ai-badge{display:inline-block;background:linear-gradient(135deg,#7b68ee,#00d4ff);color:#fff;font-size:10px;font-weight:700;padding:1px 6px;border-radius:999px;vertical-align:middle;margin-left:6px}

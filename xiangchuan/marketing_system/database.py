@@ -23,6 +23,7 @@ DB_TABLES = [
     "novels", "novel_chapters",
     "seo_articles",
     "site_settings",
+    "ai_bot_actions",
     "gov_catalog", "gov_datasets", "gov_rows",
 ]
 
@@ -393,6 +394,8 @@ CREATE TABLE IF NOT EXISTS novel_chapters (
             name TEXT DEFAULT '',
             avatar TEXT DEFAULT '',
             bio TEXT DEFAULT '',
+            is_bot INTEGER DEFAULT 0,
+            persona TEXT DEFAULT '',
             created_at TEXT DEFAULT (datetime('now'))
         );
 
@@ -528,6 +531,14 @@ CREATE TABLE IF NOT EXISTS social_identities (
             created_at TEXT DEFAULT (datetime('now'))
         );
 
+        CREATE TABLE IF NOT EXISTS ai_bot_actions (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            bot_user_id INTEGER NOT NULL,
+            action TEXT NOT NULL,
+            ref TEXT DEFAULT '',
+            created_at TEXT DEFAULT (datetime('now'))
+        );
+
         CREATE TABLE IF NOT EXISTS conversations (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             user_a INTEGER NOT NULL,
@@ -636,7 +647,8 @@ CREATE TABLE IF NOT EXISTS social_identities (
 
     # Migration: add missing columns
     for col, col_def in [("email", "TEXT DEFAULT ''"), ("salt", "TEXT DEFAULT ''"), ("token", "TEXT DEFAULT ''"),
-                         ("name", "TEXT DEFAULT ''"), ("avatar", "TEXT DEFAULT ''"), ("bio", "TEXT DEFAULT ''")]:
+                         ("name", "TEXT DEFAULT ''"), ("avatar", "TEXT DEFAULT ''"), ("bio", "TEXT DEFAULT ''"),
+                         ("is_bot", "INTEGER DEFAULT 0"), ("persona", "TEXT DEFAULT ''")]:
         try:
             conn.execute(f"ALTER TABLE users ADD COLUMN {col} {col_def}")
         except sqlite3.OperationalError:
