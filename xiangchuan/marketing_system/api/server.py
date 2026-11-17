@@ -7,7 +7,7 @@ import secrets
 import threading
 import time
 import logging
-from datetime import datetime
+from datetime import datetime, timedelta
 from fastapi import FastAPI, HTTPException, Request
 from fastapi.responses import HTMLResponse, JSONResponse, Response, RedirectResponse
 from fastapi.staticfiles import StaticFiles
@@ -329,6 +329,51 @@ async def analytics_track(request: Request):
 @app.get("/api/analytics/summary")
 def analytics_summary_endpoint(since: int = 24):
     return analytics_summary(since_hours=since)
+
+
+# ---------- 分潤追蹤 ----------
+@app.post("/api/analytics/affiliate-click")
+async def analytics_affiliate_click(request: Request):
+    """記錄一次聯盟連結點擊。前端 affiliate-beacon.js 跨域送回。"""
+    try:
+        body = await request.json()
+    except Exception:
+        body = {}
+    program = str(body.get("program", ""))[:60]
+    if not program or not re.match(r"^[a-z0-9_-]+$", program, re.I):
+        return {"ok": False}
+    page = str(body.get("page", "/"))[:300]
+    ref = str(body.get("ref", ""))[:500]
+    ua = request.headers.get("user-agent", "")
+    ip = request.headers.get("x-forwarded-for", request.client.host if request.client else "") or ""
+    ip = ip.split(",")[0].strip()
+    try:
+        execute(
+            "INSERT INTO affiliate_clicks (program, page, referrer, user_agent, ip) "
+            "VALUES (?, ?, ?, ?, ?)",
+            [program, page, ref, ua[:500], ip],
+        )
+    except Exception as e:
+        logger.warning(f"affiliate_click insert failed: {e}")
+    return {"ok": True}
+
+
+@app.get("/api/analytics/affiliate-summary")
+def analytics_affiliate_summary(since: int = 24 * 30):
+    """分潤報表：各程式點擊數、獨立 IP、最近點擊時間。管理員用。"""
+    cutoff = (datetime.utcnow() - timedelta(hours=since)).strftime("%Y-%m-%d %H:%M:%S")
+    try:
+        rows = fetch(
+            "SELECT program, COUNT(*) AS clicks, COUNT(DISTINCT ip) AS unique_ips, "
+            "MAX(clicked_at) AS last_click "
+            "FROM affiliate_clicks WHERE clicked_at >= ? "
+            "GROUP BY program ORDER BY clicks DESC",
+            [cutoff],
+        )
+        return {"since_hours": since, "items": rows or []}
+    except Exception as e:
+        logger.warning(f"affiliate summary failed: {e}")
+        return {"since_hours": since, "items": []}
 
 
 def _notify_contact(data: dict):
@@ -2258,6 +2303,47 @@ def chat_with_bot(data: BotChatOpen, request: Request):
     }
 
 
+# ---------- 名單收集（Email 訂閱） ----------
+class SubscribeRequest(BaseModel):
+    email: str
+    source: str = "direct"
+
+
+@app.post("/api/subscribe")
+def subscribe(data: SubscribeRequest):
+    email = (data.email or "").strip().lower()
+    if not re.match(r"^[^@\s]+@[^@\s]+\.[^@\s]+$", email):
+        raise HTTPException(400, "Email 格式不正確")
+    existing = fetch_one("SELECT id FROM subscribers WHERE email=?", [email])
+    if not existing:
+        execute("INSERT INTO subscribers (email, source) VALUES (?, ?)", [email, data.source or "direct"])
+        # 新訂閱者：立即寄歡迎信（SMTP 未設好就只記錄，不影響訂閱本身）
+        from ..services.promo import weekly_digest as _digest
+        from ..services.email_service import send_generic_email as _send
+        try:
+            _send(f"🎉 歡迎加入翔川 Neo｜AI 自動化與維運實戰 {email}", _digest()["text"])
+        except Exception:
+            pass
+    return {"status": "ok", "subscribed": True, "email": email}
+
+
+@app.get("/api/subscribers/count")
+def subscriber_count():
+    total = fetch_one("SELECT COUNT(*) AS c FROM subscribers")["c"]
+    return {"total": total}
+
+
+@app.get("/api/admin/subscribers")
+def admin_subscribers(request: Request):
+    _require_admin(request)
+    items = fetch(
+        "SELECT id, email, source, unsubscribed_at, created_at FROM subscribers "
+        "ORDER BY created_at DESC LIMIT 200"
+    )
+    total = fetch_one("SELECT COUNT(*) AS c FROM subscribers")["c"]
+    return {"items": items, "total": total}
+
+
 @app.post("/api/ai/summarize")
 async def ai_summarize(request: Request):
     body = await request.json()
@@ -2645,6 +2731,24 @@ def _register_promo_task():
             logger.warning(f"tick ai_social failed: {e}")
 
     scheduler.add_hook(20, "ai_social", ai_social_tick)
+
+    def weekly_digest_email():
+        """每週自動寄內容彙整到名單（Email 訂閱者）；目前訂閱者數為 0 就空轉。"""
+        from ..database import fetch as _fetch
+        subs = _fetch("SELECT email FROM subscribers WHERE unsubscribed_at IS NULL")
+        if not subs:
+            return {"ok": True, "sent": 0, "total": 0}
+        from ..services.promo import weekly_digest as _wd
+        from ..services.email_service import send_generic_email as _sg
+        d = _wd()
+        sent = 0
+        for s in subs:
+            r = _sg(f"📈 本週更新｜翔川 Neo（{s['email']}）", d["text"])
+            if r.get("status") == "sent":
+                sent += 1
+        return {"ok": True, "sent": sent, "total": len(subs)}
+
+    scheduler.add_hook(1440, "weekly_digest", weekly_digest_email)
 
 # ── Web Roamer ──────────────────────────────────────────────────────────
 @app.get("/api/roam/search")

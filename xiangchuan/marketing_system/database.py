@@ -24,7 +24,9 @@ DB_TABLES = [
     "seo_articles",
     "site_settings",
     "ai_bot_actions",
+    "subscribers",
     "gov_catalog", "gov_datasets", "gov_rows",
+    "affiliate_clicks",
 ]
 
 
@@ -310,6 +312,19 @@ CREATE TABLE IF NOT EXISTS novel_chapters (
             visited_at TEXT DEFAULT (datetime('now'))
         );
 
+        -- 分潤追蹤：每一次聯盟連結點擊（program = vultr/porkbun/...）
+        CREATE TABLE IF NOT EXISTS affiliate_clicks (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            program TEXT NOT NULL,
+            page TEXT DEFAULT '',
+            referrer TEXT DEFAULT '',
+            user_agent TEXT DEFAULT '',
+            ip TEXT DEFAULT '',
+            clicked_at TEXT DEFAULT (datetime('now'))
+        );
+        CREATE INDEX IF NOT EXISTS idx_aff_clicks_program
+            ON affiliate_clicks(program, clicked_at);
+
         CREATE TABLE IF NOT EXISTS geo_cache (
             ip TEXT PRIMARY KEY,
             country TEXT DEFAULT '',
@@ -536,6 +551,14 @@ CREATE TABLE IF NOT EXISTS social_identities (
             bot_user_id INTEGER NOT NULL,
             action TEXT NOT NULL,
             ref TEXT DEFAULT '',
+            created_at TEXT DEFAULT (datetime('now'))
+        );
+
+        CREATE TABLE IF NOT EXISTS subscribers (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            email TEXT NOT NULL UNIQUE,
+            source TEXT DEFAULT 'direct',
+            unsubscribed_at TEXT DEFAULT NULL,
             created_at TEXT DEFAULT (datetime('now'))
         );
 

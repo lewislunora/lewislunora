@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>免費名單 · 加入翔川 Neo</title>
+<meta name="description" content="加入翔川 Neo 免費名單：每週 AI 自動化與維運實戰更新、長文與短文、一鍵訂閱 RSS。你的 Email 只用來收到這週的內容彙整，不會被倒賣。">
+<link rel="stylesheet" href="/css/social.css">
+<style>
+ body{font-family:-apple-system,'PingFang TC','Noto Sans TC',sans-serif;max-width:760px;margin:0 auto;padding:24px;color:#222;background:#fafafa;line-height:1.7}
+ h1{font-size:1.6rem;margin-bottom:.2em}
+ .sub{color:#667085;font-size:.95rem;margin-bottom:1.6rem}
+ .card{background:#fff;border:1px solid #e5e7eb;border-radius:14px;padding:18px 20px}
+ label{display:block;font-size:.85rem;color:#667085;margin:.8rem 0 .25rem}
+ input{width:100%;padding:10px 12px;border:1px solid #e5e7eb;border-radius:10px;font-size:14px;box-sizing:border-box}
+ button{display:inline-block;background:linear-gradient(135deg,#7b68ee,#00d4ff);color:#fff;border:none;border-radius:10px;padding:10px 22px;font-size:14px;font-weight:700;cursor:pointer;margin-top:.8rem}
+ button:disabled{opacity:.5;cursor:not-allowed}
+ .msg{margin-top:.8rem;font-size:.85rem;min-height:1.2em}
+ .note{margin-top:1.2rem;font-size:.78rem;color:#98a2b3;line-height:1.6}
+ .row{display:flex;gap:10px;flex-wrap:wrap;margin-top:1rem}
+ a{color:#2563eb}
+</style>
+</head>
+<body>
+<nav><a href="/">← 回首頁</a> <a href="/social/">📰 發佈版</a> <a href="/pricing.html">💰 方案</a></nav>
+<h1>📮 加入免費名單</h1>
+<div class="sub">每週收到翔川 Neo 的內容彙整：長文、短文、小說更新、開放資料分析。Email 只用來寄這週的更新，不倒賣、不推廣。</div>
+<div class="card">
+  <form id="subForm">
+    <label for="email">你的 Email</label>
+    <input id="email" type="email" required placeholder="you@example.com">
+    <button type="submit" id="subBtn">訂閱（免費）</button>
+    <div class="msg" id="msg"></div>
+  </form>
+</div>
+<div class="note">
+  <div>✅ 免費訂閱，沒有廣告、沒有自動寄賣貨信。</div>
+  <div>✅ 內容同樣有 RSS：<a href="/feed.xml">/feed.xml</a>，不想收信可以取消訂閱（Email 信件內有說明）。</div>
+  <div>目前訂閱者數：<b id="cnt">—</b>。</div>
+</div>
+<script>
+(async function(){
+  const email = document.getElementById('email');
+  const btn = document.getElementById('subBtn');
+  const msg = document.getElementById('msg');
+  const cnt = document.getElementById('cnt');
+  const loadCnt = async () => {
+    try { const r = await fetch('/api/subscribers/count', {credentials:'include'}); const d = await r.json(); cnt.textContent = d.total || 0; } catch(e){ cnt.textContent = '—'; }
+  };
+  loadCnt();
+  document.getElementById('subForm').addEventListener('submit', async function(ev){
+    ev.preventDefault();
+    const v = email.value.trim();
+    if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(v)) { msg.textContent = '❌ Email 格式不正確'; return; }
+    btn.disabled = true;
+    const r = await fetch('/api/subscribe', {method:'POST', headers:{'Content-Type':'application/json'}, credentials:'include', body: JSON.stringify({email: v, source: 'site_subscribe'})});
+    const d = await r.json().catch(()=>({}));
+    btn.disabled = false;
+    msg.textContent = d.status === 'ok' ? '✅ 訂閱成功！歡迎進來 🎉' : '❌ ' + (d.detail || '訂閱失敗，請再試一次');
+    if (d.status === 'ok') { setTimeout(()=>location.href = '/social/', 1200); }
+  });
+})();
+</script>
+<script src="analytics-beacon.js" defer></script>
+</body>
+</html>
