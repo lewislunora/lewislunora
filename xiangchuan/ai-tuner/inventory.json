@@ -1,0 +1,770 @@
+{
+  "generated_at": "2026-11-18T00:55:37",
+  "pages": [
+    {
+      "path": "docs/99u/dashboard.html",
+      "role": "內容頁",
+      "title": "合作夥伴後台",
+      "description": "",
+      "bytes": 13769,
+      "h1_count": 0
+    },
+    {
+      "path": "docs/99u/index.html",
+      "role": "首頁／轉換入口",
+      "title": "合作夥伴入口",
+      "description": "",
+      "bytes": 2664,
+      "h1_count": 1
+    },
+    {
+      "path": "docs/99u/landing.html",
+      "role": "內容頁",
+      "title": "歡迎加入",
+      "description": "",
+      "bytes": 3346,
+      "h1_count": 1
+    },
+    {
+      "path": "docs/admin/analytics.html",
+      "role": "後台（AI 不改）",
+      "title": "流量分析 — 翔川 Neo",
+      "description": "",
+      "bytes": 6936,
+      "h1_count": 1
+    },
+    {
+      "path": "docs/admin/autopilot.html",
+      "role": "後台（AI 不改）",
+      "title": "自動推廣儀表板 | 翔川 Neo Admin",
+      "description": "AI 生成內容 → 一鍵排程到全部已連線社群平台。",
+      "bytes": 8609,
+      "h1_count": 1
+    },
+    {
+      "path": "docs/admin/govdata.html",
+      "role": "後台（AI 不改）",
+      "title": "開放資料後台｜翔川 Neo",
+      "description": "",
+      "bytes": 3444,
+      "h1_count": 1
+    },
+    {
+      "path": "docs/admin/licenses.html",
+      "role": "後台（AI 不改）",
+      "title": "開通碼管理 | 翔川 Neo Admin",
+      "description": "產生、檢視、撤銷會員開通碼。",
+      "bytes": 6993,
+      "h1_count": 1
+    },
+    {
+      "path": "docs/admin/monetize.html",
+      "role": "後台（AI 不改）",
+      "title": "變現設定 | 翔川 Neo Admin",
+      "description": "聯盟連結與斗內收款方式後台編輯，存檔即生效。",
+      "bytes": 5455,
+      "h1_count": 1
+    },
+    {
+      "path": "docs/admin/novel-create.html",
+      "role": "後台（AI 不改）",
+      "title": "小說創作管理 — 翔川 Neo",
+      "description": "",
+      "bytes": 5293,
+      "h1_count": 1
+    },
+    {
+      "path": "docs/admin/panel.html",
+      "role": "後台（AI 不改）",
+      "title": "管理後台 — 翔川 Neo",
+      "description": "",
+      "bytes": 25532,
+      "h1_count": 7
+    },
+    {
+      "path": "docs/admin/platforms.html",
+      "role": "後台（AI 不改）",
+      "title": "平台連線設定 | 翔川 Neo Admin",
+      "description": "一次設定所有社群平台的自動發布連線。",
+      "bytes": 8293,
+      "h1_count": 1
+    },
+    {
+      "path": "docs/admin/promo.html",
+      "role": "後台（AI 不改）",
+      "title": "自動推廣管理 — 翔川 Neo",
+      "description": "",
+      "bytes": 5924,
+      "h1_count": 1
+    },
+    {
+      "path": "docs/admin/roam.html",
+      "role": "後台（AI 不改）",
+      "title": "網路遊尋 — AI 自動貼文 | 翔川 Neo",
+      "description": "",
+      "bytes": 11572,
+      "h1_count": 1
+    },
+    {
+      "path": "docs/admin/share-kit.html",
+      "role": "後台（AI 不改）",
+      "title": "免費推廣素材包｜翔川 Neo",
+      "description": "",
+      "bytes": 6137,
+      "h1_count": 1
+    },
+    {
+      "path": "docs/affiliate.html",
+      "role": "內容頁",
+      "title": "夥伴計畫｜翔川 Neo",
+      "description": "翔川 Neo 團隊實際使用並推薦的維運工具——透過以下連結購買，我們會獲得小額回饋但不影響你的價格。",
+      "bytes": 4951,
+      "h1_count": 1
+    },
+    {
+      "path": "docs/ai-brand/index.html",
+      "role": "首頁／轉換入口",
+      "title": "AI 個人品牌實戰指南 - 免費下載",
+      "description": "",
+      "bytes": 10345,
+      "h1_count": 1
+    },
+    {
+      "path": "docs/ai-character.html",
+      "role": "內容頁",
+      "title": "AI 虛擬助手 - 2026",
+      "description": "",
+      "bytes": 22317,
+      "h1_count": 0
+    },
+    {
+      "path": "docs/ai-chat.html",
+      "role": "內容頁",
+      "title": "AI 智能客服 Demo - 翔川 Neo｜曜科技",
+      "description": "",
+      "bytes": 8495,
+      "h1_count": 1
+    },
+    {
+      "path": "docs/ai-code-review/index.html",
+      "role": "首頁／轉換入口",
+      "title": "AI Code Review — Jira + GitLab + SonarQube 自動化審碼 | 翔川 Neo",
+      "description": "導入 SDLC 自動化：Jira 開票 → GitLab MR → SonarQube 品質關卡 → AI 自動審查。人工 review 時間從 30 分降到 10 分。",
+      "bytes": 12884,
+      "h1_count": 1
+    },
+    {
+      "path": "docs/ai-fate.html",
+      "role": "內容頁",
+      "title": "AI 命理｜翔川 Lewis - 智能八字分析",
+      "description": "AI 命理咨询服务，结合传统命理与人工智能，提供八字分析、命名、运势预测",
+      "bytes": 11102,
+      "h1_count": 1
+    },
+    {
+      "path": "docs/ai-story.html",
+      "role": "內容頁",
+      "title": "AI 創作工坊｜短劇・動漫腳本自動化 | 翔川 Neo",
+      "description": "AI 短劇腳本、AI 動漫企劃自動化生成：輸入主題，秒產出可發布的腳本、分鏡、配音稿與結尾鉤子。",
+      "bytes": 9613,
+      "h1_count": 1
+    },
+    {
+      "path": "docs/app.html",
+      "role": "App 下載",
+      "title": "翔川 Neo｜曜科技 |Ai_bot 內容中心",
+      "description": "",
+      "bytes": 9067,
+      "h1_count": 1
+    },
+    {
+      "path": "docs/calendar.html",
+      "role": "行事曆",
+      "title": "行事曆 — 翔川 Neo",
+      "description": "活動、面試、截止日、工作排程行事曆",
+      "bytes": 3706,
+      "h1_count": 1
+    },
+    {
+      "path": "docs/community/index.html",
+      "role": "社群留存",
+      "title": "社群討論 — 翔川 Neo",
+      "description": "",
+      "bytes": 9268,
+      "h1_count": 1
+    },
+    {
+      "path": "docs/community/thread.html",
+      "role": "社群留存",
+      "title": "討論串 — 翔川 Neo 社群",
+      "description": "",
+      "bytes": 6714,
+      "h1_count": 1
+    },
+    {
+      "path": "docs/flutter-app.html",
+      "role": "App 下載",
+      "title": "翔川 Neo｜曜科技 |Ai_bot",
+      "description": "翔川 Neo｜曜科技 |Ai_bot - Flutter App",
+      "bytes": 1876,
+      "h1_count": 0
+    },
+    {
+      "path": "docs/games/2048.html",
+      "role": "內容頁",
+      "title": "2048 — 挑戰你的朋友！",
+      "description": "經典 2048 數字合併益智遊戲。滑動合併方塊，挑戰 2048 高分！",
+      "bytes": 21976,
+      "h1_count": 1
+    },
+    {
+      "path": "docs/games/ai-questions.html",
+      "role": "內容頁",
+      "title": "AI 20 問",
+      "description": "AI 20 問 — 讓 AI 想一個東西，你用問答猜出它是什麼！",
+      "bytes": 37222,
+      "h1_count": 1
+    },
+    {
+      "path": "docs/games/baccarat.html",
+      "role": "內容頁",
+      "title": "百家樂 — 翔川 Neo｜曜科技",
+      "description": "經典百家樂遊戲，閒莊和三路下注！",
+      "bytes": 14826,
+      "h1_count": 1
+    },
+    {
+      "path": "docs/games/blackjack.html",
+      "role": "內容頁",
+      "title": "21 點 — 翔川 Neo｜曜科技",
+      "description": "經典 21 點撲克比點遊戲，與莊家比點數！",
+      "bytes": 13397,
+      "h1_count": 1
+    },
+    {
+      "path": "docs/games/breakout.html",
+      "role": "內容頁",
+      "title": "打磚塊 — 挑戰你的朋友！",
+      "description": "經典打磚塊遊戲，擊碎所有磚塊！",
+      "bytes": 18017,
+      "h1_count": 1
+    },
+    {
+      "path": "docs/games/dino-runner.html",
+      "role": "內容頁",
+      "title": "Dino 跑酷 — 挑戰你的朋友！",
+      "description": "Dino 恐龍跑酷！跳躍閃避障礙物，挑戰最遠距離！",
+      "bytes": 7353,
+      "h1_count": 1
+    },
+    {
+      "path": "docs/games/dragon-tiger.html",
+      "role": "內容頁",
+      "title": "龍虎鬥 — 翔川 Neo｜曜科技",
+      "description": "經典龍虎鬥遊戲，比大小！",
+      "bytes": 15151,
+      "h1_count": 1
+    },
+    {
+      "path": "docs/games/face-runner.html",
+      "role": "內容頁",
+      "title": "表情跑酷 — 臉部互動遊戲",
+      "description": "用你的臉控制太空船，表情互動跑酷遊戲！",
+      "bytes": 46528,
+      "h1_count": 1
+    },
+    {
+      "path": "docs/games/flappy.html",
+      "role": "App 下載",
+      "title": "Flappy Bird — 挑戰你的朋友！",
+      "description": "經典 Flappy Bird，穿越水管挑戰最高分！",
+      "bytes": 14840,
+      "h1_count": 0
+    },
+    {
+      "path": "docs/games/index.html",
+      "role": "首頁／轉換入口",
+      "title": "遊戲大廳 — 翔川 Neo｜曜科技 — 23 款免費網頁遊戲",
+      "description": "23 款免費網頁遊戲：2048、貪食蛇、Flappy Bird、俄羅斯方塊、踩地雷、21點、百家樂、拉霸、圈圈叉叉、打磚塊、記憶翻牌、AI 20 問、三國志、益智作業等。一鍵分享分數挑戰朋友！",
+      "bytes": 9439,
+      "h1_count": 1
+    },
+    {
+      "path": "docs/games/memory.html",
+      "role": "內容頁",
+      "title": "記憶翻牌 — 挑戰你的朋友！",
+      "description": "配對相同的 emoji 卡片，考驗你的記憶力！",
+      "bytes": 18809,
+      "h1_count": 1
+    },
+    {
+      "path": "docs/games/minesweeper.html",
+      "role": "內容頁",
+      "title": "踩地雷 — 挑戰你的朋友！",
+      "description": "經典踩地雷 Minesweeper！找出所有地雷，挑戰最快完成時間！",
+      "bytes": 8583,
+      "h1_count": 1
+    },
+    {
+      "path": "docs/games/motion-catcher.html",
+      "role": "內容頁",
+      "title": "體感接物 — 鏡頭互動遊戲",
+      "description": "用鏡頭或滑鼠接住星星，體感互動遊戲！",
+      "bytes": 26925,
+      "h1_count": 1
+    },
+    {
+      "path": "docs/games/pong.html",
+      "role": "內容頁",
+      "title": "Pong 桌球 — 挑戰你的朋友！",
+      "description": "經典 Pong 桌球遊戲，單人 vs AI 或雙人 PvP，先得 5 分者勝！",
+      "bytes": 10430,
+      "h1_count": 1
+    },
+    {
+      "path": "docs/games/puzzle.html",
+      "role": "內容頁",
+      "title": "🧠 益智作業 — 程式邏輯題 × 推理遊戲",
+      "description": "Python 程式邏輯題、邏輯推理謎題，還有河內塔與猜數字兩款互動益智小遊戲！",
+      "bytes": 15310,
+      "h1_count": 0
+    },
+    {
+      "path": "docs/games/rps.html",
+      "role": "內容頁",
+      "title": "剪刀石頭布 — 翔川 Neo｜曜科技",
+      "description": "經典剪刀石頭布遊戲，支援鏡頭互動！",
+      "bytes": 32940,
+      "h1_count": 0
+    },
+    {
+      "path": "docs/games/simon.html",
+      "role": "內容頁",
+      "title": "Simon 記憶挑戰 — 挑戰你的朋友！",
+      "description": "Simon Says 記憶顏色序列遊戲！考驗你的短期記憶力，看看能過幾關！",
+      "bytes": 10307,
+      "h1_count": 1
+    },
+    {
+      "path": "docs/games/slot.html",
+      "role": "內容頁",
+      "title": "老虎機 — 翔川 Neo｜曜科技",
+      "description": "經典水果老虎機，轉動拉霸赢大獎！",
+      "bytes": 11669,
+      "h1_count": 1
+    },
+    {
+      "path": "docs/games/snake.html",
+      "role": "內容頁",
+      "title": "蛇 Snake — 挑戰你的朋友！",
+      "description": "經典貪食蛇遊戲，吃食物長大，挑戰最高分！",
+      "bytes": 15147,
+      "h1_count": 0
+    },
+    {
+      "path": "docs/games/tetris.html",
+      "role": "內容頁",
+      "title": "Tetris — 挑戰你的朋友！",
+      "description": "經典俄羅斯方塊 Tetris！旋轉排列方塊，消除滿行挑戰最高分！",
+      "bytes": 12822,
+      "h1_count": 1
+    },
+    {
+      "path": "docs/games/three-kingdoms-online.html",
+      "role": "內容頁",
+      "title": "三國志 線上對戰 — 1-12 人即時戰略",
+      "description": "與朋友或電腦線上即時對戰三國志！開房邀請好友加入，電腦自動補滿空缺，最多 12 人逐鹿中原！",
+      "bytes": 33099,
+      "h1_count": 0
+    },
+    {
+      "path": "docs/games/three-kingdoms.html",
+      "role": "內容頁",
+      "title": "三國志 攻城略地 — 戰略回合制",
+      "description": "選定曹操、劉備或孫權，徵兵、整軍、攻城略地，一統三國！",
+      "bytes": 17539,
+      "h1_count": 0
+    },
+    {
+      "path": "docs/games/tictactoe.html",
+      "role": "內容頁",
+      "title": "圈圈叉叉 — 挑戰你的朋友！",
+      "description": "與 AI 對戰圈圈叉叉，採用 Minimax 演算法！",
+      "bytes": 21223,
+      "h1_count": 0
+    },
+    {
+      "path": "docs/games/whack-a-mole.html",
+      "role": "內容頁",
+      "title": "打地鼠 — 挑戰你的朋友！",
+      "description": "經典打地鼠遊戲！30 秒內打到最多地鼠，挑戰最高分！",
+      "bytes": 10053,
+      "h1_count": 1
+    },
+    {
+      "path": "docs/govdata.html",
+      "role": "專業信任背書",
+      "title": "政府開放資料分析儀表板｜翔川 Neo",
+      "description": "自動爬取 data.gov.tw 全部開放資料目錄，搜尋、下載、分析台灣政府開放資料。",
+      "bytes": 10214,
+      "h1_count": 0
+    },
+    {
+      "path": "docs/guides/ai-automation-funnel.html",
+      "role": "內容頁",
+      "title": "AI 自動化銷售漏斗：從流量到變現的完整流程 - AI 品牌知識庫",
+      "description": "",
+      "bytes": 5194,
+      "h1_count": 1
+    },
+    {
+      "path": "docs/guides/ai-consulting-framework.html",
+      "role": "內容頁",
+      "title": "AI 顧問服務框架：如何用 AI 放大你的專業價值 - AI 品牌知識庫",
+      "description": "",
+      "bytes": 4460,
+      "h1_count": 1
+    },
+    {
+      "path": "docs/guides/ai-content-system.html",
+      "role": "內容頁",
+      "title": "AI 內容系統建立指南：高效產出高品質內容 - AI 品牌知識庫",
+      "description": "",
+      "bytes": 5263,
+      "h1_count": 1
+    },
+    {
+      "path": "docs/guides/ai-customer-system.html",
+      "role": "內容頁",
+      "title": "AI 驅動的客戶獲取系統：自動化精準行銷 - AI 品牌知識庫",
+      "description": "",
+      "bytes": 4600,
+      "h1_count": 1
+    },
+    {
+      "path": "docs/guides/ai-personal-brand-positioning.html",
+      "role": "內容頁",
+      "title": "AI 時代個人品牌定位策略：找到你的獨特價值 - AI 品牌知識庫",
+      "description": "",
+      "bytes": 4919,
+      "h1_count": 1
+    },
+    {
+      "path": "docs/guides/ai-python-learning-path.html",
+      "role": "內容頁",
+      "title": "使用生成式 AI 學習 Python：2026 完整學習路徑 - AI 品牌知識庫",
+      "description": "",
+      "bytes": 12022,
+      "h1_count": 1
+    },
+    {
+      "path": "docs/guides/ai-short-drama-sop.html",
+      "role": "內容頁",
+      "title": "AI 短劇實戰 SOP：免費工具從零到變現 - AI 品牌知識庫",
+      "description": "",
+      "bytes": 6208,
+      "h1_count": 1
+    },
+    {
+      "path": "docs/guides/auto-publish-setup.html",
+      "role": "內容頁",
+      "title": "全平台自動推廣 30 分鐘設定指南 | 翔川 Neo",
+      "description": "一次把 Telegram、LINE、Facebook、Instagram、X、Threads、Dcard、小紅書全部串上你的自動推廣排程器。",
+      "bytes": 6371,
+      "h1_count": 1
+    },
+    {
+      "path": "docs/guides/google-indexing.html",
+      "role": "內容頁",
+      "title": "免費讓 Google 收錄你的網站｜Search Console 索引指南｜翔川 Neo",
+      "description": "免費的搜尋引擎收錄步驟：Google Search Console 驗證 sitemap、提交網址、免費索引。台灣一人公司也能做完，10 分鐘內完成設定。",
+      "bytes": 4976,
+      "h1_count": 1
+    },
+    {
+      "path": "docs/guides/index.html",
+      "role": "首頁／轉換入口",
+      "title": "AI 品牌知識庫 - 指南與教學",
+      "description": "",
+      "bytes": 5423,
+      "h1_count": 1
+    },
+    {
+      "path": "docs/guides/knowledge-to-product.html",
+      "role": "內容頁",
+      "title": "將知識技能轉化為數位產品：AI 加速產品化流程 - AI 品牌知識庫",
+      "description": "",
+      "bytes": 4871,
+      "h1_count": 1
+    },
+    {
+      "path": "docs/guides/no-face-personal-brand.html",
+      "role": "內容頁",
+      "title": "不露臉個人品牌建立完全指南：用 AI 打造影響力 - AI 品牌知識庫",
+      "description": "",
+      "bytes": 4909,
+      "h1_count": 1
+    },
+    {
+      "path": "docs/guides/solopreneur-ai-system.html",
+      "role": "內容頁",
+      "title": "超級個體 AI 系統建立指南：一人公司必備的自動化工具 - AI 品牌知識庫",
+      "description": "",
+      "bytes": 4656,
+      "h1_count": 1
+    },
+    {
+      "path": "docs/index.html",
+      "role": "首頁／轉換入口",
+      "title": "翔川 Neo｜AI 自動化幫一人公司每天省 4 小時",
+      "description": "專為一人公司與超級個體設計的 AI 自動化解決方案。AI 智能客服 24/7 秒回、行銷自動化一鍵發文、技術架構穩定不當機。免費預約 30 分鐘 AI 盤點。",
+      "bytes": 108892,
+      "h1_count": 1
+    },
+    {
+      "path": "docs/jobs.html",
+      "role": "找工作／找人才",
+      "title": "找工作・找人才 — 翔川 Neo",
+      "description": "求職、求才、兼職、短期、遠端、外包工作平台",
+      "bytes": 4301,
+      "h1_count": 1
+    },
+    {
+      "path": "docs/login.html",
+      "role": "會員登入",
+      "title": "登入 — 翔川 Neo｜曜科技",
+      "description": "",
+      "bytes": 9371,
+      "h1_count": 1
+    },
+    {
+      "path": "docs/matching.html",
+      "role": "內容頁",
+      "title": "AI 理想型配對｜翔川 Neo",
+      "description": "用 AI 分析你的八字，找出你的理想型。免費配對報告，了解你的性格與完美對象。",
+      "bytes": 14789,
+      "h1_count": 1
+    },
+    {
+      "path": "docs/money.html",
+      "role": "AI 商業點子",
+      "title": "創業・賺錢資訊 — 翔川 Neo",
+      "description": "AI 創業點子、賺錢資訊、可行商業模式、找到打工與接案方式",
+      "bytes": 2948,
+      "h1_count": 1
+    },
+    {
+      "path": "docs/novels.html",
+      "role": "小說連載",
+      "title": "AI 連載小說 — 翔川 Neo",
+      "description": "每天自動更新的 AI 連載小說。重生、都市、玄幻——追更一族的最愛，看完下章在底下留言討論。",
+      "bytes": 9199,
+      "h1_count": 1
+    },
+    {
+      "path": "docs/operations/index.html",
+      "role": "首頁／轉換入口",
+      "title": "維運文件模板 | 翔川 Neo",
+      "description": "",
+      "bytes": 19078,
+      "h1_count": 0
+    },
+    {
+      "path": "docs/pricing.html",
+      "role": "價格／詢價轉換",
+      "title": "付費開通 | 翔川 Neo 產品與服務",
+      "description": "免費試用 AI 工具，進階訂閱、一次性課程、客製服務，三種方式支持並開通你的 AI 方案。",
+      "bytes": 14134,
+      "h1_count": 1
+    },
+    {
+      "path": "docs/privacy.html",
+      "role": "內容頁",
+      "title": "隱私政策 — 翔川 Neo｜曜科技 |Ai_bot",
+      "description": "",
+      "bytes": 2728,
+      "h1_count": 1
+    },
+    {
+      "path": "docs/product/index.html",
+      "role": "首頁／轉換入口",
+      "title": "翔川 Neo｜曜科技 |Ai_bot - AI 智能客服與行銷自動化平台",
+      "description": "NT$890/月 起！台灣團隊打造的 AI 行銷系統。24 小時 AI 智能客服、自動內容生成、多平台分發。免費諮詢。",
+      "bytes": 63903,
+      "h1_count": 1
+    },
+    {
+      "path": "docs/proposals/ai-customer-service.html",
+      "role": "內容頁",
+      "title": "AI 客服整合提案｜電商業者 | 翔川 Neo",
+      "description": "為電商業者設計的 AI 客服整合方案：24 小時自動回覆、降低漏單、節省人力。含價格方案與成效預估。",
+      "bytes": 10694,
+      "h1_count": 1
+    },
+    {
+      "path": "docs/proposals/ops-managed.html",
+      "role": "內容頁",
+      "title": "維運 DevOps 整包服務 | Lewis Lunora",
+      "description": "SLA 99.95% 營運體系、30 分鐘復原、CI/CD 自動化、AI 維運。11 年維運總監級專家，幫你把系統從『會當機』變成『穩定賺錢』。",
+      "bytes": 6538,
+      "h1_count": 1
+    },
+    {
+      "path": "docs/register.html",
+      "role": "會員註冊",
+      "title": "登入 / 註冊 | 翔川 Neo",
+      "description": "登入或註冊翔川 Neo 帳號，兌換開通碼、升級 PRO 解鎖無限 AI 創作。",
+      "bytes": 4630,
+      "h1_count": 1
+    },
+    {
+      "path": "docs/security-portfolio.html",
+      "role": "專業信任背書",
+      "title": "紅帽滲透測試｜翔川 Neo 安全服務",
+      "description": "專業紅帽滲透測試服務。自動化掃描 550+ 域名、OWASP Top 10 全覆蓋、MITRE ATT&CK 框架。立即預約免費資安健檢。",
+      "bytes": 8819,
+      "h1_count": 1
+    },
+    {
+      "path": "docs/service-terms.html",
+      "role": "內容頁",
+      "title": "服務流程與條款 — 翔川 Neo｜曜科技",
+      "description": "",
+      "bytes": 4125,
+      "h1_count": 1
+    },
+    {
+      "path": "docs/social/chat.html",
+      "role": "社群／配對",
+      "title": "私訊 — 翔川社交",
+      "description": "",
+      "bytes": 8946,
+      "h1_count": 0
+    },
+    {
+      "path": "docs/social/index.html",
+      "role": "社群／配對",
+      "title": "動態 — 翔川社交",
+      "description": "",
+      "bytes": 8289,
+      "h1_count": 0
+    },
+    {
+      "path": "docs/social/people.html",
+      "role": "社群／配對",
+      "title": "找人 — 翔川社交",
+      "description": "",
+      "bytes": 3139,
+      "h1_count": 0
+    },
+    {
+      "path": "docs/social/profile.html",
+      "role": "社群／配對",
+      "title": "個人頁 — 翔川社交",
+      "description": "",
+      "bytes": 6186,
+      "h1_count": 0
+    },
+    {
+      "path": "docs/solopreneur/index.html",
+      "role": "首頁／轉換入口",
+      "title": "超級個體解決方案 - AI 自動化系統 + 顧問服務",
+      "description": "",
+      "bytes": 9935,
+      "h1_count": 1
+    },
+    {
+      "path": "docs/stock-trading/index.html",
+      "role": "首頁／轉換入口",
+      "title": "ETF 投資預測與交易通知 — 翔川 Neo｜曜科技",
+      "description": "",
+      "bytes": 23135,
+      "h1_count": 1
+    },
+    {
+      "path": "docs/student/admin.html",
+      "role": "後台（AI 不改）",
+      "title": "管理後台 — 學生賺分平台",
+      "description": "",
+      "bytes": 28504,
+      "h1_count": 2
+    },
+    {
+      "path": "docs/student/dashboard.html",
+      "role": "內容頁",
+      "title": "學生首頁 — 學生賺分平台",
+      "description": "",
+      "bytes": 12299,
+      "h1_count": 0
+    },
+    {
+      "path": "docs/student/history.html",
+      "role": "內容頁",
+      "title": "交易記錄 — 學生賺分平台",
+      "description": "",
+      "bytes": 10309,
+      "h1_count": 1
+    },
+    {
+      "path": "docs/student/index.html",
+      "role": "首頁／轉換入口",
+      "title": "學生賺分平台 — 翔川 Neo｜曜科技",
+      "description": "",
+      "bytes": 10473,
+      "h1_count": 1
+    },
+    {
+      "path": "docs/student/profile.html",
+      "role": "內容頁",
+      "title": "個人檔案 — 學生賺分平台",
+      "description": "",
+      "bytes": 14072,
+      "h1_count": 1
+    },
+    {
+      "path": "docs/student/rewards.html",
+      "role": "內容頁",
+      "title": "獎勵兌換所 — 學生賺分平台",
+      "description": "",
+      "bytes": 20227,
+      "h1_count": 1
+    },
+    {
+      "path": "docs/student/tasks.html",
+      "role": "任務牆",
+      "title": "任務列表 — 學生賺分平台",
+      "description": "",
+      "bytes": 16446,
+      "h1_count": 1
+    },
+    {
+      "path": "docs/support.html",
+      "role": "支援／聯繫",
+      "title": "支持翔川｜請我喝咖啡 / 訂閱進階筆記",
+      "description": "喜歡免費的職人筆記、短內容或小說？用一杯咖啡支持，或訂閱進階筆記拿更多實戰 SOP。",
+      "bytes": 5473,
+      "h1_count": 1
+    },
+    {
+      "path": "docs/tasks.html",
+      "role": "任務牆",
+      "title": "任務牆・接任務賺錢 — 翔川 Neo",
+      "description": "任務牆、外包任務、接案賺錢",
+      "bytes": 2951,
+      "h1_count": 1
+    },
+    {
+      "path": "docs/tos.html",
+      "role": "內容頁",
+      "title": "服務條款 — 翔川 Neo｜曜科技 |Ai_bot",
+      "description": "",
+      "bytes": 2686,
+      "h1_count": 1
+    }
+  ],
+  "data_files": [
+    "docs/data/ai-business-ideas.json",
+    "docs/data/db_backup.json",
+    "docs/data/payment-config.json"
+  ]
+}

@@ -46,5 +46,6 @@ fetch('data/ai-business-ideas.json?v=1').then(r=>r.json()).then(d=>{
   list.innerHTML=(d||[]).map(x=>'<div class="card"><h3>'+x.name+'</h3><div class="meta">商業模式：'+x.model+'</div><p style="opacity:.85;line-height:1.65">'+x.function+'</p><div class="meta">適用對象：'+x.audience+'</div><div class="tags">'+(x.tags||[]).map(t=>'<span class="tag">'+t+'</span>').join('')+'</div><div class="cta-row" style="margin-top:.5rem"><a class="btn-sm pri" href="tasks.html">丟到任務牆找人執行</a><a class="btn-sm" href="jobs.html">找人才・找工作</a><a class="btn-sm" href="community/">留言板討論</a><a class="btn-sm" href="social/chat.html">線上對話</a></div></div>').join('');
 });
 </script>
+<script src="analytics-beacon.js" defer></script>
 </body>
 </html>

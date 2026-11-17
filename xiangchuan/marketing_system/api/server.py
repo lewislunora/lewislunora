@@ -266,6 +266,13 @@ def status():
     }
 
 
+@app.get("/api/health")
+@app.get("/healthz")
+def health():
+    """輕量保活端點：不查 DB、不觸發排程，供外部 keep-alive ping 使用。"""
+    return {"status": "ok", "ts": int(time.time())}
+
+
 @app.get("/api/notify/test")
 def notify_test():
     """Synchronously test all notification channels and report results."""

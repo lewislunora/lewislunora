@@ -1,0 +1,29 @@
+name: Keep Alive
+
+# Render 免費方案閒置約 15 分鐘會休眠；每 10 分鐘打一次輕量 /api/health 保活。
+# 若 repo 連續 60 天沒有活動，GitHub 會自動停用 schedule，記得偶爾 workflow_dispatch。
+
+on:
+  schedule:
+    - cron: "*/10 * * * *"
+  workflow_dispatch:
+
+permissions: {}
+
+concurrency:
+  group: keep-alive
+  cancel-in-progress: false
+
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Ping /api/health
+        run: |
+          code=$(curl -s -o /dev/null -w '%{http_code}' --max-time 90 \
+            https://lewislunora.onrender.com/api/health || true)
+          echo "/api/health -> $code"
+          if [ "$code" != "200" ]; then
+            echo "::warning::keep-alive 未取得 200（冷啟動中或服務異常）"
+          fi
