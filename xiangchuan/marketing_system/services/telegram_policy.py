@@ -23,7 +23,7 @@ LINKED_CHANNEL_IDS = _ids("TELEGRAM_LINKED_CHANNEL_IDS", "-1003937328575")
 EXTERNAL_CHAT_IDS = _ids("TELEGRAM_EXTERNAL_CHAT_IDS", "")
 
 ALL_COMMANDS = frozenset({
-    "start", "help",
+    "start", "help", "ai",
     "靈感", "idea",
     "翻譯", "translate",
     "搜尋", "search",
@@ -39,7 +39,7 @@ ALL_COMMANDS = frozenset({
 
 # 翻譯/搜尋/計算成本低可對外開放；生圖、語音會花 API 費用，個人資料僅對內。
 PUBLIC_COMMANDS = frozenset({
-    "start", "help", "靈感", "idea", "翻譯", "translate",
+    "start", "help", "ai", "靈感", "idea", "翻譯", "translate",
     "搜尋", "search", "計算", "calc",
 })
 INTERNAL_ONLY_COMMANDS = frozenset({

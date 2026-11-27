@@ -14,7 +14,7 @@ _commit_lock = threading.Lock()
 
 DB_TABLES = [
     "accounts", "contents", "schedules", "analytics",
-    "ai_templates", "kb_entries", "kb_pending", "contacts", "users",
+    "ai_templates", "kb_entries", "kb_pending", "bot_chat_habits", "contacts", "users",
     "page_views", "geo_cache",
     "comments", "reactions", "feed_posts", "community_threads",
     "community_replies", "article_views", "promo_queue",
@@ -385,6 +385,17 @@ CREATE TABLE IF NOT EXISTS novel_chapters (
             ai_suggest TEXT DEFAULT '',
             status TEXT DEFAULT 'pending',
             created_at TEXT DEFAULT (datetime('now')),
+            updated_at TEXT DEFAULT (datetime('now'))
+        );
+
+        CREATE TABLE IF NOT EXISTS bot_chat_habits (
+            chat_id TEXT PRIMARY KEY,
+            samples INTEGER DEFAULT 0,
+            avg_chars REAL DEFAULT 0,
+            avg_lines REAL DEFAULT 1,
+            questions INTEGER DEFAULT 0,
+            mentions INTEGER DEFAULT 0,
+            topics TEXT DEFAULT '{}',
             updated_at TEXT DEFAULT (datetime('now'))
         );
 

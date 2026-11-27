@@ -21,7 +21,7 @@ cd marketing_system
 | 筆記、提醒、翻譯、生圖 | `/筆記`、`/提醒`、`/翻譯`、`/生圖` | 需 |
 | 語音轉文字 | 點精靈面板的 💿 上傳音訊 | 需 |
 
-「列出功能／能做什麼」直接回白名單，不交給 AI 自由生成，避免承諾未實作能力。`GET /api/status` 的 `build_fingerprint` 可用來確認線上是哪一版（`spirit-2026-11-27`）。測試：`tests/test_spirit.py`。
+「列出功能／能做什麼」直接回白名單，不交給 AI 自由生成，避免承諾未實作能力。`GET /api/status` 的 `build_fingerprint` 可用來確認線上是哪一版（`intent-learning-2026-11-27`）。測試：`tests/test_spirit.py`。
 
 ## 設定環境變數
 

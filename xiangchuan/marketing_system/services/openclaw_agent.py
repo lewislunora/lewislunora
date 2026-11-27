@@ -14,6 +14,8 @@ import requests
 from ..ai.generator import AIContentGenerator
 from ..config import TELEGRAM_BOT_TOKEN, GROQ_API_KEY
 from . import telegram_policy as policy
+from . import bot_learning as learning
+from .knowledge_base import get_kb_reply, save_unanswered
 
 logger = logging.getLogger(__name__)
 
@@ -30,6 +32,7 @@ ai_gen = AIContentGenerator()
 
 COMMANDS = {
     "start": "🚀 啟動 OpenClaw AI 助手",
+    "ai": "🤖 自然語言提問（AI 自動判讀意圖）",
     "靈感": "💡 產生內容靈感（可接主題，例如 /靈感 AI 行銷）",
     "idea": "💡 Generate content ideas (English)",
     "翻譯": "🌐 翻譯（/翻譯 文字 或 /翻譯 en: 文字）",
@@ -72,7 +75,15 @@ def _is_authorized(chat_id):
     return str(chat_id) in ALLOWED_CHAT_IDS
 
 
-def _cmd_start():
+def _cmd_start(chat_id=None):
+    if chat_id is not None and not policy.is_internal(chat_id):
+        return (
+            "🤖 *OpenClaw AI 助手已啟動！*\n\n"
+            "公開功能：\n"
+            "💡 內容靈感／🌐 翻譯／🔍 整合搜尋\n"
+            "🧮 計算\n\n"
+            "輸入 /help 查看公開指令。"
+        )
     return (
         "🤖 *OpenClaw AI 助手已啟動！*\n\n"
         "我是你的 AI 個人助理，可以幫你：\n"
@@ -325,22 +336,155 @@ def wants_capabilities(text: str) -> bool:
     ))
 
 
-def _shorten(text: str, limit: int = 60) -> str:
-    """把回覆壓成短句：目標約 15 字，最長 limit 字。"""
+# ── 自然語言意圖判讀 ──────────────────────────────────────────────────
+# AI 只能在這份代號表裡選，不能自由承諾功能（避免「情感分析」類幻覺）。
+_INTENT_CODES = (
+    "help", "stop", "calc", "translate", "search",
+    "note", "remind", "image", "status", "deploy", "idea",
+    "unsupported", "faq",
+)
+_INTERNAL_INTENTS = frozenset({"note", "remind", "image", "status", "deploy"})
+
+_STOP_RE = re.compile(
+    r"(關閉|關掉|停用|停止|安靜|不要回|disable|turn\s*off|stop).{0,24}"
+    r"(openclaw|ai\s*助手|bot|機器人|助理|回覆|自動回)"
+    r"|(openclaw|ai\s*助手|bot|機器人|助理|自動回覆).{0,24}"
+    r"(關閉|關掉|停用|停止|安靜|不要回|disable|turn\s*off|stop)",
+    re.I,
+)
+_UNSUPPORTED_RE = re.compile(
+    r"情感分析|情緒分析|sentiment|個人日曆|日曆|語音撥打|撥打|打電話|"
+    r"購物|下單|訂餐|外送|改程式|寫程式|修改程式|開關觸發邏輯",
+    re.I,
+)
+_RULES = (
+    ("calc", (r"計算|算一下|算算|加起來|乘以|除以|sqrt\s*\(|\bcalc\b|\d+\s*[+\-*/^%]\s*\d+",)),
+    ("translate", (r"翻譯|翻成|譯成|英文怎麼說|中文怎麼說|\btranslate\b",)),
+    ("search", (r"搜尋|查找|查一下|查資料|\bsearch\b|\bgoogle\b",)),
+    ("remind", (r"提醒|通知我|幾分鐘後|小時後|\bremind\b",)),
+    ("note", (r"筆記|記一下|記住|記錄一下|\bnote\b",)),
+    ("image", (r"生圖|產生圖片|畫一張|畫個|\bimage\b|\bdraw\b",)),
+    ("status", (r"系統狀態|\bstatus\b",)),
+    ("deploy", (r"部署|上線|更新網站|\bdeploy\b",)),
+    ("idea", (r"靈感|點子|構思|文案|內容點子|\bidea\b",)),
+)
+_INTENT_ARGS = {
+    "calc": r"^(?:請|幫我)?(?:算一下|算算|計算|calc)\s*",
+    "translate": r"^(?:請|幫我)?(?:翻譯成|翻譯|翻成|譯成|translate)\s*",
+    "search": r"^(?:請|幫我)?(?:搜尋|查找|查一下|search)\s*",
+    "note": r"^(?:請|幫我)?(?:筆記|記一下|記住|記錄一下|note)\s*",
+    "remind": r"^(?:請|幫我)?(?:提醒我|提醒|通知我|remind)\s*",
+    "image": r"^(?:請|幫我)?(?:生圖|產生圖片|畫一張|畫個|image|draw)\s*",
+}
+_INTENT_PROMPT = (
+    "你是意圖分類器，不是問答機器人。只輸出一行代號："
+    "help/stop/calc/translate/search/note/remind/image/status/deploy/idea/unsupported/faq。"
+    "若代號是 faq，第二行才可直接給繁體中文簡短回答（10 字內）。"
+    "絕對不要輸出代號表以外的功能，也不要承諾未列出的能力。"
+    "stop=使用者想關閉或停用助手；unsupported=要求未實作功能或改程式。\n"
+    "訊息："
+)
+
+
+def _kb_answer(text):
+    try:
+        return get_kb_reply(text) or ""
+    except Exception as e:
+        logger.warning("KB lookup failed: %s", e)
+        return ""
+
+
+def _remember_unanswered(text):
+    """重複出現的問題交由既有 auto_learn() 變成知識庫答案。"""
+    if not (text or "").strip():
+        return
+    try:
+        save_unanswered(text.strip(), "zh-TW")
+    except Exception as e:
+        logger.warning("save unanswered failed: %s", e)
+
+
+def classify_intent(text, chat_id=None):
+    """回 (intent, answer_hint)。先規則、後 KB、最後 AI 選代號。"""
+    s = (text or "").strip()
+    if not s:
+        return "faq", ""
+    if wants_capabilities(s):
+        return "help", ""
+    if _STOP_RE.search(s):
+        return "stop", ""
+    if _UNSUPPORTED_RE.search(s):
+        return "unsupported", ""
+    for code, patterns in _RULES:
+        if any(re.search(p, s, re.I) for p in patterns):
+            return code, s
+    kb = _kb_answer(s)
+    if kb:
+        return "faq", kb
+    if not ai_gen.is_available():
+        return "faq", ""
+    try:
+        result = ai_gen.generate("", {"prompt": _INTENT_PROMPT + s})
+    except Exception as e:
+        logger.warning("intent classify failed: %s", e)
+        return "faq", ""
+    lines = [line.strip() for line in (result or "").splitlines() if line.strip()]
+    code = re.sub(r"[^a-z_]+", "", lines[0].lower()) if lines else ""
+    if code in _INTENT_CODES:
+        return code, "\n".join(lines[1:])
+    # AI 沒照格式輸出：把內容當成 faq 簡答，不再多打一次 API。
+    return "faq", (result or "").strip()
+
+
+def _cmd_stop():
+    return (
+        "🤖 *關閉助手*\n"
+        "• 對內群：@ 我才會回覆\n"
+        "• 完全停用：私訊站長"
+    )
+
+
+def route_natural_language(text, chat_id=None):
+    """自然語言統一入口：AI 判讀意圖後轉給既有指令，不新增假功能。"""
+    intent, hint = classify_intent(text, chat_id)
+    if intent == "help":
+        return _cmd_help(chat_id)
+    if intent == "stop":
+        return _cmd_stop()
+    if intent in _INTERNAL_INTENTS and not policy.is_internal(chat_id):
+        return "🔒 此功能僅供對內群組使用。"
+    if intent == "unsupported":
+        _remember_unanswered(text)
+        return "⚠️ 這功能還沒實作。\n輸入 /help 查看可用指令。"
+    if intent == "faq":
+        _remember_unanswered(text)
+        if policy.is_internal(chat_id):
+            return _cmd_idea(text)  # 對內沿用既有「靈感／一般 AI 回覆」行為
+        return _shorten(hint, chat_id=chat_id) if hint else short_answer(text, chat_id)
+    pattern = _INTENT_ARGS.get(intent)
+    args = re.sub(pattern, "", (text or "").strip(), flags=re.I).strip() if pattern else (text or "").strip()
+    return _handle_command(chat_id, intent, args)
+
+
+def _shorten(text: str, limit: int = 60, chat_id=None) -> str:
+    """依群組習慣壓短：最多 3 行、每行 10 字（預設 1 行）。"""
+    max_lines, max_chars = learning.reply_budget(chat_id) if chat_id is not None else (1, 10)
     clean = " ".join((text or "").split())
     if not clean:
         return ""
-    for sep in ("\n", "。", "！", "？", ". ", "! "):
-        if sep in clean:
-            clean = clean.split(sep, 1)[0].strip()
+    parts = [p.strip() for p in re.split(r"[\n。！？!?]+", clean) if p.strip()]
+    lines = []
+    for part in parts[:max_lines]:
+        if len(part) > max_chars:
+            part = part[:max_chars].rstrip() + "…"
+        lines.append(part)
+        if sum(len(x) for x in lines) >= limit:
             break
-    if len(clean) > limit:
-        clean = clean[:limit].rstrip() + "…"
-    return clean
+    return "\n".join(lines)[:limit]
 
 
-def short_answer(text: str) -> str:
-    """對外群組/頻道的簡短回覆（目標約 15 字）。"""
+def short_answer(text: str, chat_id=None) -> str:
+    """對外群組/頻道的簡短回覆（依該群習慣，上限 3 行、每行 10 字）。"""
     if not ai_gen.is_available():
         return "⚠️ AI 未啟用"
     result = ai_gen.generate(
@@ -356,7 +500,7 @@ def short_answer(text: str) -> str:
             )
         },
     )
-    return _shorten(result)
+    return _shorten(result, chat_id=chat_id)
 
 
 def _cmd_deploy():
@@ -428,7 +572,9 @@ def _cmd_help(chat_id=None):
 
 def _handle_command(chat_id, cmd, args=""):
     if cmd in ("start",):
-        return _cmd_start()
+        return _cmd_start(chat_id)
+    elif cmd in ("ai",):
+        return route_natural_language(args, chat_id)
     elif cmd in ("靈感", "idea"):
         return _cmd_idea(args)
     elif cmd in ("翻譯", "translate"):
@@ -464,6 +610,15 @@ def _process_update(update):
     chat = message.get("chat", {})
     chat_id = chat.get("id")
     text = (message.get("text") or "").strip()
+    chat_type = chat.get("type", "private")
+
+    # 只學統計、不存原文；在 should_respond 之前觀察，才能學到「沒被回覆」的聊天習慣。
+    if chat_type in learning.GROUP_TYPES and text:
+        learning.observe(
+            chat_id, text,
+            is_question=policy.looks_like_question(text),
+            is_mention=f"@{policy.BOT_USERNAME.lower()}" in text.lower(),
+        )
 
     # 語音訊息沒有 text，需先於 should_respond 處理（僅對內）。
     if message.get("voice"):
@@ -476,7 +631,7 @@ def _process_update(update):
     if not policy.should_respond(message):
         return
 
-    clean = policy.clean_text(text, chat.get("type", "private"))
+    clean = policy.clean_text(text, chat_type)
     if wants_capabilities(clean):
         _send_message(chat_id, _cmd_help(chat_id))
         return
@@ -488,12 +643,9 @@ def _process_update(update):
             response = "🔒 此指令僅供對內群組使用。"
         else:
             response = _handle_command(chat_id, cmd, args)
-    elif policy.is_internal(chat_id):
-        # 私人工作群：已 @bot，可給完整 AI 回覆（含控制指令能力）
-        response = _handle_command(chat_id, "靈感", clean)
     else:
-        # 對外群組/頻道：自動判斷提問，只回簡短訊息
-        response = short_answer(clean)
+        # 自然語言交給同一套意圖引擎：計算／翻譯／筆記／提醒都免打斜線。
+        response = route_natural_language(clean, chat_id)
     _send_result(chat_id, response)
 
 

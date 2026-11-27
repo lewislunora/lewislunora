@@ -42,13 +42,13 @@ from ..services.social_auth import (
 )
 from ..services.openclaw_agent import (
     _handle_command as openclaw_handle,
-    _shorten as shorten_reply,
-    short_answer as openclaw_short_answer,
     wants_capabilities as openclaw_wants_capabilities,
     process_voice as openclaw_voice,
+    route_natural_language as openclaw_route,
 )
 from ..services import telegram_policy as tg_policy
-from ..services.knowledge_base import get_kb_reply, save_unanswered, get_pending, auto_learn
+from ..services import bot_learning as tg_learning
+from ..services.knowledge_base import get_kb_reply, get_pending, auto_learn
 from ..services.analytics import track_async, summary as analytics_summary
 from ..services.story_generator import AIStoryGenerator
 from ..services.serial_novel import SerialNovelEngine, free_chapter_limit
@@ -283,7 +283,7 @@ def status():
         "scheduler": scheduler.get_status_summary(),
         "auto_engine": scheduler.auto_status(),
         "platforms": {k: (k in scheduler.connectors) for k in PLATFORMS},
-        "build_fingerprint": "spirit-2026-11-27",
+        "build_fingerprint": "intent-learning-2026-11-27",
     }
 
 
@@ -1025,6 +1025,13 @@ async def telegram_webhook(request: Request):
             "INSERT OR IGNORE INTO accounts (platform, label, credentials) VALUES (?, ?, ?)",
             ["telegram_chat", chat.get("title", str(cid)), json.dumps({"chat_id": cid, "type": chat_type})],
         )
+        if text:
+            # 自我學習：只記統計，不記原文；用來調整該群的回覆長度。
+            tg_learning.observe(
+                cid, text,
+                is_question=tg_policy.looks_like_question(text),
+                is_mention=f"@{tg_policy.BOT_USERNAME.lower()}" in text.lower(),
+            )
 
     is_ai_reply = False
     if voice:
@@ -1055,19 +1062,10 @@ async def telegram_webhook(request: Request):
                 is_ai_reply = cmd not in ("start", "help")
             else:
                 return {"ok": True}
-        elif tg_policy.is_internal(cid):
-            # 私人工作群：已 @bot，才給完整 AI 回覆（可控制伺服器）
-            reply = openclaw_handle(cid, "靈感", clean)
-            is_ai_reply = True
         else:
-            # 對外 Group/Channel + 私聊：只互動，回覆一律壓成約 15 字
-            reply = get_kb_reply(clean)
-            if reply:
-                reply = shorten_reply(reply, 60)
-            else:
-                save_unanswered(clean, "zh-TW")
-                reply = openclaw_short_answer(clean)
-                is_ai_reply = True
+            # 自然語言統一走意圖引擎：AI 只選代號，功能範圍照白名單。
+            reply = openclaw_route(clean, cid)
+            is_ai_reply = True
 
     msg_id = msg.get("message_id")
     token = TELEGRAM_BOT_TOKEN
