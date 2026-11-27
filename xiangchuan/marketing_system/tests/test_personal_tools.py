@@ -215,6 +215,12 @@ def test_bot_notes_and_reminders_use_chat_owner():
     assert "喝水" in oa._handle_command(INTERNAL, "提醒", "列表")
 
 
+def test_help_escapes_asterisk_for_telegram_markdown():
+    # Telegram Markdown v1 會吃掉未跳脫的 *，讓範例變成錯誤的 (1+2)3。
+    assert r"(1+2)\*3" in oa._cmd_help(INTERNAL)
+    assert "(1+2)*3" not in oa._cmd_help(INTERNAL)
+
+
 def test_new_internal_commands_blocked_externally():
     for cmd in ("筆記", "note", "提醒", "remind", "語音", "voice", "生圖", "image"):
         assert tp.command_internal_only(cmd) is True
