@@ -29,6 +29,7 @@ COMMANDS = {
     "start": "🚀 啟動 OpenClaw AI 助手",
     "靈感": "💡 產生內容靈感（可接主題，例如 /靈感 AI 行銷）",
     "idea": "💡 Generate content ideas (English)",
+    "自動化": "⚙️ 觸發 AI 自動化內容生成",
     "部署": "🚀 觸發部署（網站更新）",
     "deploy": "🚀 Trigger deployment",
     "狀態": "📊 查看系統狀態",
@@ -107,6 +108,24 @@ def _cmd_deploy():
     )
 
 
+def _cmd_auto(args=""):
+    if not ai_gen.is_available():
+        return "⚠️ AI 功能未啟用（需要設定 GROQ_API_KEY）"
+
+    topic = args.strip() or "請給我一個創意的社群媒體內容點子"
+    result = ai_gen.generate(
+        "",
+        {
+            "prompt": (
+                "你是 AI 自動化作業台。根據主題「" + topic + "」"
+                "產生 1 個可執行的自動化內容任務（標題、文案方向、適合平台）。"
+                "用繁體中文回答。"
+            )
+        },
+    )
+    return f"⚙️ *AI 自動化*\n任務主題：{topic}\n\n{result}"
+
+
 def _cmd_status():
     ai_ok = ai_gen.is_available()
     groq_set = bool(GROQ_API_KEY)
@@ -133,6 +152,8 @@ def _handle_command(chat_id, cmd, args=""):
         return _cmd_start()
     elif cmd in ("靈感", "idea"):
         return _cmd_idea(args)
+    elif cmd in ("自動化", "auto"):
+        return _cmd_auto(args)
     elif cmd in ("部署", "deploy"):
         return _cmd_deploy()
     elif cmd in ("狀態", "status"):
