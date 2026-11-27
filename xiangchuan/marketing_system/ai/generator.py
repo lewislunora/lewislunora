@@ -81,3 +81,7 @@ class AIContentGenerator:
             f"👉 了解更多：https://lewislunora.github.io/lewislunora/product/\n\n"
             f"#{topic.replace(' ', '')} #AI行銷 #自動化"
         )
+
+
+# 全站共用同一個 client，避免重複初始化（API / bot / ai_tools 都用它）
+ai_generator = AIContentGenerator()

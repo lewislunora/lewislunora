@@ -14,7 +14,9 @@ cd marketing_system
 ## 設定環境變數
 
 ```bash
-export GROQ_API_KEY="your-groq-api-key"      # AI 內容生成
+export GROQ_API_KEY="your-groq-api-key"      # AI 文字生成／翻譯
+export OPENAI_API_KEY="your-openai-api-key"  # AI 生圖（未設定時生圖端點回 503）
+export OPENAI_IMAGE_MODEL="dall-e-3"         # 選擇性，預設 dall-e-3
 export TELEGRAM_BOT_TOKEN="your-bot-token"    # Telegram 發文
 export TELEGRAM_NOTIFY_CHAT_ID="626453598"    # 即時通知收件 chat id
 export LINE_NOTIFY_TOKEN="your-line-token"    # LINE 即時通知（選擇性）
@@ -172,6 +174,9 @@ marketing_system/
 - `GET /api/content` - 列出內容
 - `POST /api/content/{id}/publish` - 立即發布
 - `POST /api/content/ai-generate` - AI 生成內容
+- `POST /api/ai/translate` - 忠實翻譯（body: `text`, `source`, `target`；需登入）
+- `POST /api/ai/image` - AI 生圖（body: `prompt`, `size`；回 data URL，需登入 + `OPENAI_API_KEY`）
+- `POST /api/ai/search` - 整合搜尋（body: `q`, `scope=all|gov|kb|web`；公開）
 - `POST /api/accounts` - 新增平台帳號
 - `GET /api/schedules` - 排程狀態
 - `GET /dashboard` - Web 管理介面

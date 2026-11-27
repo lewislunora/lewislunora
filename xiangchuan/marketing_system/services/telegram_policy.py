@@ -25,13 +25,19 @@ EXTERNAL_CHAT_IDS = _ids("TELEGRAM_EXTERNAL_CHAT_IDS", "")
 ALL_COMMANDS = frozenset({
     "start", "help",
     "靈感", "idea",
+    "翻譯", "translate",
+    "搜尋", "search",
+    "生圖", "image",
     "自動化", "auto",
     "部署", "deploy",
     "狀態", "status",
 })
 
-PUBLIC_COMMANDS = frozenset({"start", "help", "靈感", "idea"})
-INTERNAL_ONLY_COMMANDS = frozenset({"自動化", "auto", "部署", "deploy", "狀態", "status"})
+# 翻譯/搜尋成本低可對外開放；生圖會花 OpenAI 費用，僅對內。
+PUBLIC_COMMANDS = frozenset({"start", "help", "靈感", "idea", "翻譯", "translate", "搜尋", "search"})
+INTERNAL_ONLY_COMMANDS = frozenset({
+    "自動化", "auto", "部署", "deploy", "狀態", "status", "生圖", "image",
+})
 
 GROUP_TYPES = frozenset({"group", "supergroup", "channel"})
 

@@ -3,6 +3,7 @@ OpenClaw Telegram Bot Agent - AI assistant for 翔川 Neo｜曜科技
 Provides inspiration, deployment, and system management via Telegram.
 """
 import os
+import re
 import time
 import logging
 import threading
@@ -31,6 +32,12 @@ COMMANDS = {
     "start": "🚀 啟動 OpenClaw AI 助手",
     "靈感": "💡 產生內容靈感（可接主題，例如 /靈感 AI 行銷）",
     "idea": "💡 Generate content ideas (English)",
+    "翻譯": "🌐 翻譯（/翻譯 文字 或 /翻譯 en: 文字）",
+    "translate": "🌐 Translate (/translate text or /translate zh-TW: text)",
+    "搜尋": "🔍 整合搜尋（政府資料＋知識庫＋網路）",
+    "search": "🔍 Search (gov data, knowledge base, web)",
+    "生圖": "🎨 AI 生圖（僅對內，需 OPENAI_API_KEY）",
+    "image": "🎨 Generate image (internal only)",
     "自動化": "⚙️ 觸發 AI 自動化內容生成",
     "部署": "🚀 觸發部署（網站更新）",
     "deploy": "🚀 Trigger deployment",
@@ -62,6 +69,7 @@ def _cmd_start():
         "🤖 *OpenClaw AI 助手已啟動！*\n\n"
         "我是你的 AI 個人助理，可以幫你：\n"
         "💡 產生內容靈感\n"
+        "🌐 翻譯文字／🔍 整合搜尋／🎨 AI 生圖\n"
         "🚀 觸發網站部署\n"
         "📊 查看系統狀態\n\n"
         "輸入 /help 查看所有指令。"
@@ -84,6 +92,125 @@ def _cmd_idea(topic=""):
         },
     )
     return f"💡 *內容靈感*\n主題：{prompt}\n\n{result}"
+
+
+# ── 翻譯 / 搜尋 / 生圖（網站 API 與 bot 共用 ai_tools） ─────────────
+_last_tool_call = {}
+_LANG_ALIAS = {
+    "zh-tw": "zh-TW", "zh-cn": "zh-CN", "zh": "zh-TW",
+    "en": "en", "ja": "ja", "jp": "ja", "ko": "ko",
+}
+
+
+def _throttled(chat_id, cmd, seconds=5):
+    """簡單的每 chat 冷卻，避免公開群組洗版或暴衝 API 額度。"""
+    key = (str(chat_id), cmd)
+    now = time.time()
+    if now - _last_tool_call.get(key, 0) < seconds:
+        return True
+    _last_tool_call[key] = now
+    return False
+
+
+def _md_safe(text) -> str:
+    """Telegram Markdown v1 會把這些符號當語法，先跳脫。"""
+    return re.sub(r"([_*\[\]`])", r"\\\1", str(text or ""))
+
+
+def _send_photo(chat_id, png_bytes, caption="", reply_to=None):
+    url = f"https://api.telegram.org/bot{BOT_TOKEN}/sendPhoto"
+    try:
+        payload = {"chat_id": chat_id, "caption": (caption or "")[:1000]}
+        if reply_to:
+            payload["reply_to_message_id"] = reply_to
+        requests.post(
+            url,
+            data=payload,
+            files={"photo": ("ai-image.png", png_bytes, "image/png")},
+            timeout=90,
+        )
+    except Exception as e:
+        logger.error(f"Telegram sendPhoto failed: {e}")
+
+
+def _send_result(chat_id, result, reply_to=None):
+    """指令回傳可能是文字，也可能是要直接貼圖的 dict。"""
+    if isinstance(result, dict) and result.get("photo"):
+        _send_photo(chat_id, result["photo"], result.get("caption", ""), reply_to)
+    else:
+        _send_message(chat_id, result)
+
+
+def _cmd_translate(args="", chat_id=None):
+    if _throttled(chat_id or "bot", "translate"):
+        return "⏳ 請 5 秒後再試。"
+    raw = (args or "").strip()
+    if not raw:
+        return "🌐 用法：/翻譯 文字，或 /翻譯 en: 文字\n語言代碼：zh-TW / zh-CN / en / ja / ko"
+    target = None
+    text = raw
+    m = re.match(r"^(zh-tw|zh-cn|zh|en|ja|jp|ko)\s*[:：]\s*(.+)$", raw, re.I | re.S)
+    if m:
+        target = _LANG_ALIAS.get(m.group(1).lower(), m.group(1))
+        text = m.group(2).strip()
+    else:
+        # 有中文字 → 譯成英文；否則譯成繁中
+        target = "en" if re.search(r"[\u4e00-\u9fff]", raw) else "zh-TW"
+    if not text:
+        return "⚠️ 請輸入要翻譯的內容。"
+    try:
+        from .ai_tools import translate
+        result = translate(text, target)
+    except Exception as e:
+        return f"⚠️ {e}"
+    return f"🌐 *翻譯（→{target}）*\n{_md_safe(result[:4000])}"
+
+
+def _cmd_search(args=""):
+    q = (args or "").strip()
+    if not q:
+        return "🔍 用法：/搜尋 關鍵字，或 /搜尋 web: 關鍵字\n範圍：all / gov / kb / web"
+    scope = "all"
+    m = re.match(r"^(all|gov|kb|web)\s*[:：]\s*(.+)$", q, re.I | re.S)
+    if m:
+        scope = m.group(1).lower()
+        q = m.group(2).strip()
+    if not q:
+        return "⚠️ 請輸入搜尋關鍵字。"
+    try:
+        from .ai_tools import search
+        items = search(q, scope, limit=5)
+    except Exception as e:
+        return f"⚠️ {e}"
+    if not items:
+        return f"🔍 「{_md_safe(q)}」沒有找到結果。"
+    lines = [f"🔍 *搜尋結果：{_md_safe(q)}*"]
+    for i, it in enumerate(items, 1):
+        url = it.get("url") or ""
+        lines.append(
+            f"{i}. {_md_safe(it.get('title', ''))}\n"
+            f"   {_md_safe(it.get('detail', ''))[:160]}"
+            + (f"\n   {url}" if url else "")
+        )
+    return "\n".join(lines)
+
+
+def _cmd_image(args="", chat_id=None):
+    if _throttled(chat_id or "bot", "image", 10):
+        return "⏳ 生圖請 10 秒後再試。"
+    raw = (args or "").strip()
+    if not raw:
+        return "🎨 用法：/生圖 圖片描述（或 /生圖 1792x1024 描述）"
+    size = "1024x1024"
+    m = re.match(r"^(1024x1024|1792x1024|1024x1792)\s+(.+)$", raw, re.I | re.S)
+    if m:
+        size, raw = m.group(1).lower(), m.group(2).strip()
+    try:
+        from .ai_tools import generate_image
+        png, revised = generate_image(raw, size)
+    except Exception as e:
+        return f"⚠️ {e}"
+    return {"photo": png, "caption": f"🎨 {revised[:600]}"}
 
 
 def _shorten(text: str, limit: int = 60) -> str:
@@ -180,7 +307,7 @@ def _cmd_help(chat_id=None):
         if cmd.lower() in allowed:
             lines.append(f"/{cmd} — {desc}")
     if chat_id is not None and policy.is_external(chat_id):
-        lines.append("\n🔒 自動化 / 部署 / 狀態僅供對內群組使用。")
+        lines.append("\n🔒 自動化 / 部署 / 狀態 / 生圖僅供對內群組使用。")
     return "\n".join(lines)
 
 
@@ -189,6 +316,12 @@ def _handle_command(chat_id, cmd, args=""):
         return _cmd_start()
     elif cmd in ("靈感", "idea"):
         return _cmd_idea(args)
+    elif cmd in ("翻譯", "translate"):
+        return _cmd_translate(args, chat_id)
+    elif cmd in ("搜尋", "search"):
+        return _cmd_search(args)
+    elif cmd in ("生圖", "image"):
+        return _cmd_image(args, chat_id)
     elif cmd in ("自動化", "auto"):
         return _cmd_auto(args)
     elif cmd in ("部署", "deploy"):
@@ -228,7 +361,7 @@ def _process_update(update):
     else:
         # 對外群組/頻道：自動判斷提問，只回簡短訊息
         response = short_answer(clean)
-    _send_message(chat_id, response)
+    _send_result(chat_id, response)
 
 
 def run_poller():

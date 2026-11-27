@@ -24,6 +24,9 @@
 | 回覆長度 | 完整 AI 回覆 | 約 15 字短訊（最長 60 字，可分段） |
 | 非提問的聊天 | 靜默忽略 | 靜默忽略 |
 | 內容靈感 `/靈感` | ✅ | ✅（公開安全 prompt） |
+| 翻譯 `/翻譯`、`/translate` | ✅ | ✅（每 chat 5 秒冷卻） |
+| 整合搜尋 `/搜尋`、`/search` | ✅ | ✅（政府資料＋知識庫，可加 `web:`） |
+| AI 生圖 `/生圖`、`/image` | ✅（需 `OPENAI_API_KEY`） | 🔒 拒絕（會產生 OpenAI 費用） |
 | AI 自動化 `/自動化` | ✅ | 🔒 拒絕：「僅供對內群組使用」 |
 | 觸發部署 `/部署` | ✅ | 🔒 拒絕，不碰 deploy hook |
 | 系統狀態 `/狀態` | ✅（含 API/部署鉤子狀態） | 🔒 拒絕（不揭露內部設定） |
@@ -36,6 +39,9 @@
 |---|---|---|---|
 | `/start`、`/help` | ✅ | ✅ | 自我介紹 / 指令列表（依身份顯示不同清單） |
 | `/靈感 [主題]`、`/idea` | ✅ | ✅ | 行銷創意，公開安全 |
+| `/翻譯 [語言:]文字`、`/translate` | ✅ | ✅ | `en:` / `zh-TW:` 等；省略時依文字自動判斷 |
+| `/搜尋 [scope:]關鍵字`、`/search` | ✅ | ✅ | scope=`all`/`gov`/`kb`/`web` |
+| `/生圖 [尺寸] 描述`、`/image` | ✅ | 🔒 | 直接回 sendPhoto；10 秒冷卻 |
 | `/自動化 [主題]`、`/auto` | ✅ | 🔒 | 觸發 AI 自動化任務 |
 | `/部署`、`/deploy` | ✅ | 🔒 | 觸發 Render deploy hook |
 | `/狀態`、`/status` | ✅ | 🔒 | 系統狀態、金鑰設定 |
@@ -118,4 +124,4 @@ Telegram POST → telegram_webhook
 
 > Render 必須設 `TELEGRAM_WEBHOOK_SECRET`，否則 webhook 端點會拒絕所有請求（`setWebhook` 也會略過）。本機 poller 不受影響。
 
-測試：`tests/test_security_permissions.py`（webhook 密鑰、外部群控制指令、匿名改配置/操作、冷卻繞過、憑證外洩掃描），全套 340 passed。
+測試：`tests/test_security_permissions.py`（webhook 密鑰、外部群控制指令、匿名改配置/操作、冷卻繞過、憑證外洩掃描），全套 363 passed（含新增 `tests/test_ai_tools.py` 的翻譯／生圖／搜尋路徑）。

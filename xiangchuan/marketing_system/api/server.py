@@ -21,7 +21,7 @@ from ..database import init_db, execute, fetch, fetch_one
 from student_platform.database import StudentDatabase
 from student_platform.routes import router as student_router
 from ..scheduler import ContentScheduler
-from ..ai.generator import AIContentGenerator
+from ..ai.generator import ai_generator
 from ..platforms.telegram_connector import TelegramConnector
 from ..platforms.line_connector import LineConnector
 from ..platforms.facebook_connector import FacebookConnector
@@ -50,6 +50,7 @@ from ..services.knowledge_base import get_kb_reply, save_unanswered, get_pending
 from ..services.analytics import track_async, summary as analytics_summary
 from ..services.story_generator import AIStoryGenerator
 from ..services.serial_novel import SerialNovelEngine, free_chapter_limit
+from ..services import ai_tools
 
 app = FastAPI(
     title="翔川 Neo｜曜科技 行銷自動化系統",
@@ -73,7 +74,6 @@ app.add_middleware(
 app.include_router(student_router)
 
 scheduler = ContentScheduler()
-ai_generator = AIContentGenerator()
 
 connectors = {}
 
@@ -628,6 +628,65 @@ def ai_story(data: StoryRequest, request: Request):
     return {"text": result}
 
 
+class AITranslateRequest(BaseModel):
+    text: str = ""
+    target: str = "en"
+    source: str = "auto"
+
+
+class AIImageRequest(BaseModel):
+    prompt: str = ""
+    size: str = "1024x1024"
+
+
+class AISearchRequest(BaseModel):
+    q: str = ""
+    scope: str = "all"
+    limit: int = 5
+
+
+@app.post("/api/ai/translate")
+def ai_translate(data: AITranslateRequest, request: Request):
+    """忠實翻譯（用既有 Groq 文字模型）。"""
+    u = _current_user(request)
+    if not u:
+        raise HTTPException(401, "請先登入再使用翻譯（免費每日 20 次）")
+    _check_quota(u["id"], "ai_translate")
+    try:
+        text = ai_tools.translate(data.text, data.target, data.source)
+    except Exception as e:
+        code = 503 if "需要設定" in str(e) else 400
+        raise HTTPException(code, str(e))
+    _bump_usage(u["id"], "ai_translate")
+    return {"text": text}
+
+
+@app.post("/api/ai/image")
+def ai_image(data: AIImageRequest, request: Request):
+    """AI 生圖；需 OPENAI_API_KEY，回傳可直接放進 <img src> 的 data URL。"""
+    u = _current_user(request)
+    if not u:
+        raise HTTPException(401, "請先登入再使用生圖（免費每日 3 次）")
+    _check_quota(u["id"], "ai_image")
+    try:
+        png, revised = ai_tools.generate_image(data.prompt, data.size)
+    except Exception as e:
+        code = 503 if "需要設定" in str(e) else 400
+        raise HTTPException(code, str(e))
+    _bump_usage(u["id"], "ai_image")
+    import base64 as _b64
+    return {
+        "image": "data:image/png;base64," + _b64.b64encode(png).decode("ascii"),
+        "revised_prompt": revised,
+    }
+
+
+@app.post("/api/ai/search")
+def ai_search(data: AISearchRequest):
+    """整合搜尋：政府開放資料 + 知識庫，或 web（需 Playwright）。"""
+    return {"items": ai_tools.search(data.q, data.scope, data.limit)}
+
+
 @app.post("/api/accounts")
 def create_account(request: Request, data: AccountCreate):
     _require_admin(request)
@@ -897,20 +956,35 @@ async def telegram_webhook(request: Request):
     token = TELEGRAM_BOT_TOKEN
     try:
         import requests as req
-        payload = {
-            "chat_id": cid,
-            "text": reply,
-            "parse_mode": "Markdown" if is_ai_reply else "HTML",
-        }
-        if msg_id:
-            payload["reply_to_message_id"] = msg_id
-        req.post(
-            f"https://api.telegram.org/bot{token}/sendMessage",
-            json=payload,
-            timeout=10,
-        )
+        if isinstance(reply, dict) and reply.get("photo"):
+            # /生圖 直接回圖片，而不是純文字
+            photo_payload = {
+                "chat_id": cid,
+                "caption": (reply.get("caption") or "")[:1000],
+            }
+            if msg_id:
+                photo_payload["reply_to_message_id"] = msg_id
+            req.post(
+                f"https://api.telegram.org/bot{token}/sendPhoto",
+                data=photo_payload,
+                files={"photo": ("ai-image.png", reply["photo"], "image/png")},
+                timeout=90,
+            )
+        else:
+            payload = {
+                "chat_id": cid,
+                "text": reply,
+                "parse_mode": "Markdown" if is_ai_reply else "HTML",
+            }
+            if msg_id:
+                payload["reply_to_message_id"] = msg_id
+            req.post(
+                f"https://api.telegram.org/bot{token}/sendMessage",
+                json=payload,
+                timeout=10,
+            )
     except Exception:
-        pass
+        logger.exception("telegram webhook send failed")
 
     return {"ok": True}
 
@@ -1049,9 +1123,9 @@ def auth_me(request: Request, token: str = ""):
 
 
 PLAN_LIMITS = {
-    "free": {"ai_story": 3, "ai_generate": 10},
-    "pro": {"ai_story": 100, "ai_generate": 500},
-    "enterprise": {"ai_story": 100000, "ai_generate": 1000000},
+    "free": {"ai_story": 3, "ai_generate": 10, "ai_translate": 20, "ai_image": 3},
+    "pro": {"ai_story": 100, "ai_generate": 500, "ai_translate": 500, "ai_image": 200},
+    "enterprise": {"ai_story": 100000, "ai_generate": 1000000, "ai_translate": 100000, "ai_image": 100000},
 }
 
 
@@ -1171,6 +1245,14 @@ def license_status(request: Request, token: str = ""):
         "plan": plan,
         "expires_at": expires,
         "usage": {
+            "tool": {
+                t: {
+                    "used": _usage_today(u["id"], t),
+                    "limit": PLAN_LIMITS.get(plan, PLAN_LIMITS["free"]).get(t),
+                }
+                for t in ("ai_story", "ai_translate", "ai_image")
+            },
+            # 向後相容：既有 ai-story.html 讀這兩個欄位
             "ai_story": _usage_today(u["id"], "ai_story"),
             "ai_story_limit": PLAN_LIMITS.get(plan, PLAN_LIMITS["free"]).get("ai_story"),
         },
@@ -1669,6 +1751,7 @@ def serve_sitemap():
         ("/", "1.0"), ("/pricing.html", "0.9"), ("/novels.html", "0.8"),
         ("/proposals/ops-managed.html", "0.9"), ("/proposals/ai-customer-service.html", "0.9"),
         ("/index.html", "0.8"), ("/ai-story.html", "0.7"), ("/ai-chat.html", "0.7"),
+        ("/ai-tools.html", "0.7"),
         ("/thoughts/", "0.8"), ("/guides/", "0.7"), ("/community/", "0.7"),
         ("/affiliate.html", "0.6"), ("/support.html", "0.6"),
         ("/govdata", "0.8"), ("/product/", "0.9"), ("/social/", "0.7"),
