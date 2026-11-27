@@ -8,6 +8,7 @@
 from __future__ import annotations
 
 import hashlib
+import json
 import logging
 import random
 from datetime import datetime, timedelta
@@ -192,6 +193,83 @@ def create_bot_post(bot: dict) -> int | None:
     return pid
 
 
+# ────────────────────────── 聚落新主題 ──────────────────────────
+
+THREAD_PROMPT = (
+    "你是「{name}」，{bio}。個性與語氣：{style}\n"
+    "現在是 {now}。請發一個「線上聚落」的討論主題：\n"
+    "- 30~60 字，點子式、像真人閒聊發起話題\n"
+    "- 具體場景或提問，不要空泛\n"
+    "- 結尾帶互動邀請\n"
+    "- 最多 2 個 hashtag，不要列舉，不要提到自己是 AI\n"
+    "只輸出 JSON：{{\"title\": \"...\", \"content\": \"...\"}}"
+)
+
+
+def create_bot_thread(bot: dict) -> int | None:
+    """AI 機器人發布一則「線上聚落」新主題（自由發揮）。"""
+    if not is_configured():
+        return None
+    if _count_actions(bot["id"], "thread", 1440) >= 2:
+        return None
+    text = _generate(
+        THREAD_PROMPT.format(name=bot["name"], bio=bot["bio"], style=bot.get("persona_style", ""), now=datetime.now().strftime("%m/%d %H:%M")),
+        max_tokens=300,
+    )
+    if not text:
+        return None
+    try:
+        data = json.loads(text)
+        title = str(data.get("title") or "").strip()
+        content = str(data.get("content") or "").strip()
+    except Exception:
+        return None
+    if not title or not content:
+        return None
+    execute(
+        "INSERT INTO community_threads (title, content, author_name, is_anonymous) VALUES (?, ?, ?, 1)",
+        (title, content, bot["name"]),
+    )
+    tid = fetch_one("SELECT id FROM community_threads ORDER BY id DESC LIMIT 1")["id"]
+    _log_action(bot["id"], "thread", str(tid))
+    return tid
+
+
+# ────────────────────────── 回覆聚落 ──────────────────────────
+
+THREAD_REPLY_PROMPT = (
+    "你是「{name}」，{bio}。個性與語氣：{style}\n"
+    "有人在線上聚落發了討論：\n「{title}」：{content}\n"
+    "請用繁體中文寫一則回覆：25~60 字，真誠延伸話題，最後一句小問題讓對話繼續。"
+    "不要講教、不要列舉、不要提到自己是 AI，只輸出回覆內容。"
+)
+
+
+def bot_reply_to_thread(thread: dict, bot: dict) -> int | None:
+    """AI 機器人回覆一則聚落討論（自然互動）。"""
+    if not is_configured():
+        return None
+    if _count_actions(bot["id"], "thread_reply", 60) >= 2:
+        return None
+    text = _generate(
+        THREAD_REPLY_PROMPT.format(
+            name=bot["name"], bio=bot["bio"], style=bot.get("persona_style", ""),
+            title=str(thread.get("title") or "")[:120],
+            content=str(thread.get("content") or "")[:300],
+        ),
+        max_tokens=200,
+    )
+    if not text:
+        return None
+    rid = execute(
+        "INSERT INTO community_replies (thread_id, content, author_name, is_anonymous) VALUES (?, ?, ?, 1)",
+        (thread["id"], text, bot["name"]),
+    )
+    execute("UPDATE community_threads SET reply_count = reply_count + 1 WHERE id=?", [thread["id"]])
+    _log_action(bot["id"], "thread_reply", str(thread["id"]))
+    return rid
+
+
 # ────────────────────────── 回覆動態 ──────────────────────────
 
 REPLY_PROMPT = (
@@ -296,6 +374,15 @@ def _bot_posts_last_24h() -> int:
     return row["c"] if row else 0
 
 
+def _bot_threads_last_24h() -> int:
+    cutoff = (datetime.utcnow() - timedelta(hours=24)).strftime("%Y-%m-%d %H:%M:%S")
+    row = fetch_one(
+        "SELECT COUNT(*) AS c FROM ai_bot_actions WHERE action='thread' AND created_at>=?",
+        (cutoff,),
+    )
+    return row["c"] if row else 0
+
+
 def tick() -> dict:
     """每 20 分鐘跑一次：補發文 + 回覆真人貼文。"""
     _prune_actions()
@@ -337,4 +424,28 @@ def tick() -> dict:
         if reply_to_post(dict(p), b):
             replied += 1
 
-    return {"ok": True, "posted": posted, "replied": replied}
+    # 3) 聚落新主題：每輪最多 1 篇 AI 發起討論（每日全站上限 8）
+    threads_created = 0
+    if _bot_threads_last_24h() < 8:
+        b = random.choice(bots)
+        if create_bot_thread(b):
+            threads_created += 1
+
+    # 4) 互動：對最新未被機器人回應的聚落，發一句話讓對話繼續
+    if replied < 2:
+        bot_names = {b["name"] for b in bots}
+        for t in fetch("SELECT * FROM community_threads ORDER BY id DESC LIMIT 5"):
+            if replied >= 2:
+                break
+            last = fetch_one(
+                "SELECT * FROM community_replies WHERE thread_id=? ORDER BY id DESC LIMIT 1",
+                [t["id"]],
+            )
+            if last and last["author_name"] in bot_names:
+                continue  # bot 已回過，不重複
+            b = random.choice(bots)
+            if bot_reply_to_thread(t, b):
+                replied += 1
+                break
+
+    return {"ok": True, "posted": posted, "replied": replied, "threads": threads_created}

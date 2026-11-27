@@ -125,6 +125,27 @@ def test_auto_push_respects_daily_cap(monkeypatch):
     assert all(r.get("skipped") for r in skipped["channels"].values())
 
 
+def test_auto_push_pushes_community_threads(monkeypatch):
+    """聚落新主題也要自動推廣到免費管道（Telegram／Bluesky），含 UTM。"""
+    from marketing_system.database import execute
+    from marketing_system.services import channels
+    execute("DELETE FROM feed_posts")
+    execute("DELETE FROM novels")
+    execute("DELETE FROM seo_articles")
+    execute("DELETE FROM community_threads")
+    execute("DELETE FROM community_replies")
+    execute(
+        "INSERT INTO community_threads (title, content, author_name, is_anonymous) VALUES (?, ?, ?, 1)",
+        ["聚落新主題", "要不要把部署流程寫成小說章？", "小翔 AI"],
+    )
+    calls = []
+    channels = _fake_channels(monkeypatch, calls)
+    r = channels.auto_push()
+    assert r["ok"] is True and len(calls) == 1
+    assert "utm_source=auto_push" in calls[0]
+    assert "/community/?thread=" in calls[0]
+
+
 def test_channel_status_shape():
     from marketing_system.services import channels
     s = channels.status()

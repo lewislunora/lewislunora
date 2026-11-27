@@ -169,7 +169,7 @@ PUSHERS = {"telegram": push_telegram, "bluesky": push_bluesky}
 
 # ---------------------------------------------------------------- 排程入口
 def _pending_item() -> dict:
-    """取最新且尚未推過的內容。"""
+    """取最新且尚未推過的內容（含聚落新主題）。"""
     from .promo import latest_content
     configured = channels_configured()
     for it in latest_content(limit_each=4):
@@ -177,6 +177,20 @@ def _pending_item() -> dict:
         for ch, ready in configured.items():
             if ready and not _already_pushed(key, ch):
                 return {**it, "item_key": key}
+    # 聚落（community）：新主題也要自動推廣到免費管道
+    threads = fetch("SELECT * FROM community_threads ORDER BY id DESC LIMIT 2")
+    for t in threads:
+        key = f"community:{t['id']}:{t['created_at']}"
+        for ch, ready in configured.items():
+            if ready and not _already_pushed(key, ch):
+                return {
+                    "kind": "community",
+                    "title": t["title"],
+                    "summary": t["content"],
+                    "url_path": f"/community/?thread={t['id']}",
+                    "created_at": t["created_at"],
+                    "item_key": key,
+                }
     return {}
 
 

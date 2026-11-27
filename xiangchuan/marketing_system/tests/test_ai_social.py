@@ -127,6 +127,40 @@ def test_create_bot_post_respects_6h_limit(monkeypatch):
     assert post["post_type"] == "life"
 
 
+def test_create_bot_thread_writes_community_thread(monkeypatch):
+    monkeypatch.setattr(ai_social, "GROQ_API_KEY", "stub")
+    monkeypatch.setattr(ai_social, "_generate",
+                        lambda *a, **k: '{"title": "部署流程小說化", "content": "要不要把每次發布都寫成小說章？"}')
+    bot = _bot_row()
+    tid = ai_social.create_bot_thread(bot)
+    assert tid
+    t = fetch_one("SELECT * FROM community_threads WHERE id=?", [tid])
+    assert t["title"] == "部署流程小說化"
+    assert "小說章" in t["content"]
+
+
+def test_create_bot_thread_rate_limited_per_bot_daily(monkeypatch):
+    monkeypatch.setattr(ai_social, "GROQ_API_KEY", "stub")
+    bot = _bot_row()
+    for _ in range(2):
+        ai_social.execute("INSERT INTO ai_bot_actions (bot_user_id, action, ref) VALUES (?, 'thread', 'x')", [bot["id"]])
+    assert ai_social.create_bot_thread(bot) is None
+
+
+def test_bot_reply_to_thread_writes_reply(monkeypatch):
+    monkeypatch.setattr(ai_social, "GROQ_API_KEY", "stub")
+    monkeypatch.setattr(ai_social, "_generate", lambda *a, **k: "要不要先寫下第一幕？")
+    ai_social.ensure_bots()
+    tid = ai_social.execute(
+        "INSERT INTO community_threads (title, content, author_name, is_anonymous) VALUES ('t', 'c', '阿明', 0)",
+    )
+    thread = fetch_one("SELECT * FROM community_threads WHERE id=?", [tid])
+    rid = ai_social.bot_reply_to_thread(thread, _bot_row())
+    assert rid
+    reply = fetch_one("SELECT * FROM community_replies WHERE id=?", [rid])
+    assert reply["content"] == "要不要先寫下第一幕？"
+
+
 def test_bot_dm_reply_and_dedupe(monkeypatch):
     bot = _bot_row()
     uid = execute("INSERT INTO users (username, password_hash, name) VALUES ('realperson', 'x', '真人')")
