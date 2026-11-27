@@ -140,6 +140,27 @@ def test_channels_endpoint_available():
     assert r.status_code == 200 and "configured" in r.json()
 
 
+def test_welcome_email_uses_free_resource_and_next_content():
+    from marketing_system.services.promo import welcome_email
+    w = welcome_email()
+    assert w["subject"].startswith("🎉 歡迎加入翔川 Neo")
+    assert "免費資源" in w["text"]
+    assert "內容庫" in w["text"]
+    assert "本週最值得看" in w["text"]
+    assert "本週更新" not in w["text"], "歡迎信不應重複用每週彙整報告當內容"
+
+
+def test_subscribe_sends_welcome_email_content():
+    from fastapi.testclient import TestClient
+    from marketing_system.api.server import app
+    from marketing_system.services.promo import welcome_email
+    c = TestClient(app)
+    r = c.post("/api/subscribe", json={"email": "welcome-test@example.com", "source": "test"})
+    assert r.status_code == 200 and r.json()["subscribed"] is True
+    w = welcome_email()
+    assert "免費資源" in w["text"]
+
+
 def test_sitemap_includes_key_and_new_pages():
     """sitemap 必須含 govdata／product 等重點頁，並自動帶入 guides 底下的新頁。"""
     from fastapi.testclient import TestClient

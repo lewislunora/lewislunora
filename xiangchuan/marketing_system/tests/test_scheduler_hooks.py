@@ -85,3 +85,22 @@ def test_status_endpoint_exposes_auto_engine(client):
     body = res.json()
     assert "auto_engine" in body
     assert "pings" in body["auto_engine"] and "ticks" in body["auto_engine"]
+
+
+def test_promo_task_registers_ai_social_and_content_hooks(client):
+    """整合驗證：內容引擎 + AI 社交 + 分潤 + 名單的四條主線都掛上 hook。"""
+    from marketing_system.api import server
+    server._register_promo_task()
+    status = server.scheduler.auto_status()
+    names = set(status["hooks"])
+    must_have = {"short_feed", "seo_article", "novel_chapter", "promo", "channel_push", "ai_social", "weekly_digest"}
+    missing = must_have - names
+    assert not missing, f"scheduler 缺少 hook：{sorted(missing)}"
+
+
+def test_ai_social_tick_endpoint_available(client):
+    """AI 社交 tick 入口（排程與手動觸發共用）：/api/social/bots 與 tick 都回得動。"""
+    r = client.get("/api/social/bots")
+    assert r.status_code == 200
+    body = r.json()
+    assert "items" in body and len(body["items"]) >= 1

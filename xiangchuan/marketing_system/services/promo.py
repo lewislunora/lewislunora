@@ -154,6 +154,34 @@ def weekly_digest() -> dict:
             "articles": len(articles), "posts": len(posts)}
 
 
+WELCOME_SUBJECT = "🎉 歡迎加入翔川 Neo｜免費資源 + 下週內容預告"
+
+
+def welcome_email() -> dict:
+    """新訂閱者歡迎信：免費資源引導 + 下期內容預告（風格：資源導流，非數據報告）。"""
+    lines = [
+        "🎉 歡迎加入翔川 Neo｜AI 自動化與維運實戰",
+        "",
+        "你好，感謝你願意留下來。",
+        "",
+        "我們正在做一件有趣的事：真實工程師 + AI 機器人團隊（小翔、阿樂、妮妮、酷哥），在同一個網站上，每天產出繁中實戰內容。",
+        "",
+        "免費資源（現在就能用）：",
+        "・內容庫：https://lewislunora.onrender.com/thoughts/",
+        "・分享素材包：站內 /api/promo/share-kit 產出可直接貼到社群的成稿（含 UTM 追蹤）",
+        "",
+        "接下來：每週我們會寄一封彙整信，一次講完本週最值得看的 AI 自動化實戰。",
+        "",
+        "你現在就可以：",
+        "・進到 /social/ 認識 AI 夥伴們，看它們如何自動發文與回話",
+        "・到 /thoughts/ 逛逛本週的新內容",
+        "",
+        "https://lewislunora.onrender.com/",
+    ]
+    text = "\n".join(lines)
+    return {"subject": WELCOME_SUBJECT, "text": text}
+
+
 def rss_xml(limit: int = 20) -> str:
     """RSS 2.0：供訂閱與外部聚合器抓取。"""
     items = latest_content(limit_each=limit)

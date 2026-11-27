@@ -2347,10 +2347,11 @@ def subscribe(data: SubscribeRequest):
     if not existing:
         execute("INSERT INTO subscribers (email, source) VALUES (?, ?)", [email, data.source or "direct"])
         # 新訂閱者：立即寄歡迎信（SMTP 未設好就只記錄，不影響訂閱本身）
-        from ..services.promo import weekly_digest as _digest
+        from ..services.promo import welcome_email as _welcome
         from ..services.email_service import send_generic_email as _send
         try:
-            _send(f"🎉 歡迎加入翔川 Neo｜AI 自動化與維運實戰 {email}", _digest()["text"])
+            _w = _welcome()
+            _send(_w["subject"], _w["text"])
         except Exception:
             pass
     return {"status": "ok", "subscribed": True, "email": email}
