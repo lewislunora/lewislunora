@@ -18,7 +18,8 @@ INTERNAL_CHAT_IDS = _ids(
 )
 LINKED_CHANNEL_IDS = _ids("TELEGRAM_LINKED_CHANNEL_IDS", "-1003937328575")
 
-# 對外：必須明確 opt-in 才回覆，避免被任意拉群後洗版
+# 對外：預設所有 Group/Channel 都能互動（需 @bot）；
+# 若設定此白名單，則只回覆名單內的對外 chat。
 EXTERNAL_CHAT_IDS = _ids("TELEGRAM_EXTERNAL_CHAT_IDS", "")
 
 ALL_COMMANDS = frozenset({
@@ -50,18 +51,23 @@ def is_external(chat_id) -> bool:
 def is_allowed(chat_id, chat_type: str = "private") -> bool:
     """是否可以回覆此 chat。
 
-    私聊保留原本的知識庫客服行為（任何人皆可問）；
-    群組/頻道則必須是內部或明確 opt-in 的對外群組。
+    - 私聊：保留知識庫客服，任何人皆可問
+    - 私人工作群：永遠允許
+    - 網站進來的 Group/Channel：預設可互動（需 @bot）；
+      若設了 TELEGRAM_EXTERNAL_CHAT_IDS 則只回覆名單內的 chat
     """
     if chat_type not in GROUP_TYPES:
         return True
-    s = str(chat_id)
-    return is_internal(s) or is_linked_channel(s) or s in EXTERNAL_CHAT_IDS
+    if is_internal(chat_id):
+        return True
+    if EXTERNAL_CHAT_IDS:
+        return str(chat_id) in EXTERNAL_CHAT_IDS
+    return True
 
 
 def allowed_commands(chat_id):
-    """依身份回傳可用的指令集合。"""
-    return ALL_COMMANDS if (is_internal(chat_id) or is_linked_channel(chat_id)) else PUBLIC_COMMANDS
+    """只有私人工作群／站長私聊能用控制指令；連動頻道也算對外。"""
+    return ALL_COMMANDS if is_internal(chat_id) else PUBLIC_COMMANDS
 
 
 def command_internal_only(cmd: str) -> bool:

@@ -6,7 +6,6 @@ from unittest.mock import patch, MagicMock
 from fastapi.testclient import TestClient
 from marketing_system.api.server import app
 from marketing_system.database import execute, fetch, fetch_one, init_db
-from marketing_system.services import telegram_policy as tg_policy
 
 
 @pytest.fixture(autouse=True)
@@ -173,8 +172,7 @@ class TestWebhookFullFlow:
         assert len(rows) == 1
         assert rows[0]["status"] == "pending"
 
-    def test_webhook_group_mention(self, client, monkeypatch):
-        monkeypatch.setattr(tg_policy, "EXTERNAL_CHAT_IDS", {"-100123"})
+    def test_webhook_group_mention(self, client):
         execute(
             "INSERT INTO kb_entries (keywords, answer, language) VALUES (?, ?, ?)",
             [json.dumps(["方案介紹"]), "方案介紹回答", "zh-TW"],
@@ -192,6 +190,20 @@ class TestWebhookFullFlow:
             sent = mock_post.call_args[1]["json"]
             assert "方案介紹回答" in sent["text"]
             assert sent["chat_id"] == -100123
+
+    def test_webhook_external_group_cannot_control_server(self, client):
+        with patch("requests.post") as mock_post:
+            mock_post.return_value.json.return_value = {"ok": True}
+            resp = client.post("/api/telegram/webhook", json={
+                "message": {
+                    "chat": {"id": -100123, "type": "group", "title": "Test Group"},
+                    "text": "@ailunora_bot /部署",
+                    "message_id": 6,
+                }
+            })
+            assert resp.status_code == 200
+            sent = mock_post.call_args[1]["json"]
+            assert "僅供對內群組" in sent["text"]
 
     def test_webhook_group_no_mention_ignored(self, client):
         with patch("requests.post") as mock_post:

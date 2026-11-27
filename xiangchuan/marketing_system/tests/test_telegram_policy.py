@@ -28,14 +28,15 @@ def test_internal_group_free_text_does_not_need_mention():
     assert tp.requires_mention(INTERNAL, "supergroup") is False
 
 
-def test_external_group_needs_mention_and_opt_in(monkeypatch):
+def test_external_group_interacts_on_mention_by_default(monkeypatch):
     monkeypatch.setattr(tp, "EXTERNAL_CHAT_IDS", set())
     assert tp.should_respond(_msg(EXTERNAL, "你好")) is False
-    assert tp.should_respond(_msg(EXTERNAL, "@ailunora_bot 你好")) is False
-
-    monkeypatch.setattr(tp, "EXTERNAL_CHAT_IDS", {EXTERNAL})
-    assert tp.should_respond(_msg(EXTERNAL, "你好")) is False
     assert tp.should_respond(_msg(EXTERNAL, "@ailunora_bot 你好")) is True
+
+    # 可選白名單：設了就只回覆名單內的對外 chat
+    monkeypatch.setattr(tp, "EXTERNAL_CHAT_IDS", {"-111111"})
+    assert tp.should_respond(_msg(EXTERNAL, "@ailunora_bot 你好")) is False
+    assert tp.should_respond(_msg("-111111", "@ailunora_bot 你好")) is True
 
 
 def test_private_chat_keeps_kb_service():
@@ -45,6 +46,9 @@ def test_private_chat_keeps_kb_service():
 
 def test_command_whitelist_by_identity():
     assert tp.allowed_commands(INTERNAL) == tp.ALL_COMMANDS
+    assert tp.allowed_commands(OWNER) == tp.ALL_COMMANDS
+    # 連動頻道也算對外，不能控制伺服器
+    assert tp.allowed_commands(CHANNEL) == tp.PUBLIC_COMMANDS
     assert tp.allowed_commands(EXTERNAL) == tp.PUBLIC_COMMANDS
     for cmd in ("自動化", "auto", "部署", "deploy", "狀態", "status"):
         assert tp.command_internal_only(cmd) is True

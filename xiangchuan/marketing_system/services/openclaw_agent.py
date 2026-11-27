@@ -181,9 +181,6 @@ def _process_update(update):
     # 對外群組未 @bot 或未 opt-in → 靜默忽略，不回「未授權」洗版
     if not policy.should_respond(message):
         return
-    if chat.get("type", "private") in policy.GROUP_TYPES and not _is_authorized(chat_id):
-        logger.warning(f"Unauthorized group access from chat {chat_id}")
-        return
 
     clean = policy.clean_text(text, chat.get("type", "private"))
     if clean.startswith("/"):

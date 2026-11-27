@@ -842,12 +842,12 @@ async def telegram_webhook(request: Request):
             is_ai_reply = cmd not in ("start", "help")
         else:
             return {"ok": True}
-    elif tg_policy.is_internal(cid) or tg_policy.is_linked_channel(cid):
-        # 對內：任何成員自由文字直接觸發 AI
+    elif tg_policy.is_internal(cid):
+        # 私人工作群：任何成員自由文字直接觸發 AI（可控制伺服器）
         reply = openclaw_handle(cid, "靈感", clean)
         is_ai_reply = True
     else:
-        # 對外/私聊：知識庫優先，找不到再 fallback 到公開安全的 AI
+        # 網站進來的 Group/Channel + 私聊：只互動，知識庫優先，再 fallback 公開 AI
         reply = get_kb_reply(clean)
         if not reply:
             save_unanswered(clean, "zh-TW")

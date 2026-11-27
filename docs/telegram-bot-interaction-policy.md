@@ -10,26 +10,24 @@
 
 | 身份 | 判定方式 | 預設值 |
 |---|---|---|
-| **對內群組**（internal） | chat_id 在 `TELEGRAM_INTERNAL_CHAT_IDS` | `-1003739611959`（翔川 Neo \| 曜科技 ｜Ai） |
-| **連動頻道**（linked channel） | chat_id 在 `TELEGRAM_LINKED_CHANNEL_IDS` | `-1003937328575`（`@lewislunora`） |
-| **站長私人 chat**（owner） | `TELEGRAM_NOTIFY_CHAT_ID` | `626453598` |
-| **對外社群**（external） | 以上皆非 | 任何新加入的群組，需 `TELEGRAM_EXTERNAL_CHAT_IDS` 明確 opt-in 才回覆 |
+| **對內（私人工作群）**（internal） | chat_id 在 `TELEGRAM_INTERNAL_CHAT_IDS` 或站長私聊 | `-1003739611959`（翔川 Neo \| 曜科技 ｜Ai）、`626453598` |
+| **對外（網站進來的 Group/Channel）** | 以上皆非，包含連動頻道 | 任何由網站連入的群組／頻道，需 `@ailunora_bot` 才回覆 |
 
+> 核心原則：**私人的工作群可以互動並控制伺服器；網站來的 Group/Channel 只能互動，不能控制伺服器。**
 > 目前 bot 在對內群組是**管理員**（可管理聊天、刪訊息、邀請、置頂），但 `can_change_info=false`，不能改群組設定。
 
 ## 3. 行為矩陣
 
-| 行為 | 對內群組 / 站長私聊 | 對外社群 |
+| 行為 | 對內（私人工作群／站長私聊） | 對外（網站 Group/Channel，含連動頻道） |
 |---|---|---|
 | 自由文字是否自動回覆 | ✅ 任何成員發言即觸發 AI | ⚠️ 必須 `@ailunora_bot` 或 `/指令@ailunora_bot` |
 | 未 @ 的訊息 | AI 回覆 | 靜默忽略（不回「未授權」洗版） |
 | 內容靈感 `/靈感` | ✅ | ✅（公開安全 prompt） |
 | AI 自動化 `/自動化` | ✅ | 🔒 拒絕：「僅供對內群組使用」 |
-| 觸發部署 `/部署` | ✅ | 🔒 拒絕 |
+| 觸發部署 `/部署` | ✅ | 🔒 拒絕，不碰 deploy hook |
 | 系統狀態 `/狀態` | ✅（含 API/部署鉤子狀態） | 🔒 拒絕（不揭露內部設定） |
 | 知識庫問答 | — | ✅ 優先，找不到才 fallback AI |
-| 主動推播 `auto_push` | ✅ 可推到內部 chat / 頻道 | ❌ 永不推播 |
-| 未授權群組 | — | 靜默忽略 |
+| 主動推播 `auto_push` | ✅ 可推到內部 chat | ❌ 永不推播到對外 Group/Channel |
 
 ## 4. 指令白名單
 
@@ -49,7 +47,7 @@
 getUpdates → _process_update
   → telegram_policy.should_respond(message)?
       ├─ 否 → 靜默忽略
-      └─ 是 → _is_authorized? → 指令白名單檢查 → _handle_command → sendMessage
+      └─ 是 → 身份判定 → 指令白名單檢查 → _handle_command → sendMessage
 ```
 
 ### 5.2 Webhook（`/api/telegram/webhook`）
@@ -67,7 +65,7 @@ Telegram POST → telegram_webhook
 
 1. 對外社群**不得**取得：`GROQ_API_KEY` 是否存在、deploy hook URL/狀態、DB 內容、內部 chat_id。
 2. 對外社群**不得**觸發部署或 AI 自動化排程。
-3. 對外社群必須明確 opt-in（`TELEGRAM_EXTERNAL_CHAT_IDS`），避免 bot 被任意拉群後洗版。
+3. 對外 Group/Channel 預設「可互動但不能控制」；若需限制特定群，可設 `TELEGRAM_EXTERNAL_CHAT_IDS` 白名單。
 4. 主動推播僅限 `TELEGRAM_PUSH_CHAT_IDS` 內的內部 chat / 頻道，且每日上限 3 則（見 `channels.py`）。
 5. 指令支援 `/cmd@ailunora_bot` 形式，避免與群內其他 bot 衝突。
 
@@ -76,8 +74,8 @@ Telegram POST → telegram_webhook
 | 變數 | 用途 |
 |---|---|
 | `TELEGRAM_INTERNAL_CHAT_IDS` | 對內群組 ID，逗號分隔 |
-| `TELEGRAM_LINKED_CHANNEL_IDS` | 連動頻道 ID |
-| `TELEGRAM_EXTERNAL_CHAT_IDS` | 允許互動的對外群組 ID（opt-in） |
+| `TELEGRAM_LINKED_CHANNEL_IDS` | 連動頻道 ID（比照對外，無控制權） |
+| `TELEGRAM_EXTERNAL_CHAT_IDS` | 選用：限制可互動的對外群組 ID；未設則所有 Group/Channel 皆可互動 |
 | `TELEGRAM_ALLOWED_CHAT_IDS` | 舊版白名單，仍相容（會與內部 ID 聯集） |
 | `TELEGRAM_NOTIFY_CHAT_ID` | 站長私人 chat（預設 `626453598`） |
 | `TELEGRAM_BOT_USERNAME` | 標記辨識（預設 `ailunora_bot`） |
