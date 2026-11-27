@@ -627,9 +627,18 @@ def cmd_report(args) -> int:
     config = load_config()
     metrics = read_json(Path(args.metrics)) if args.metrics else {}
     proposals = read_json(Path(args.proposals)) if args.proposals else {}
+    metrics = metrics or {}
+    proposals = proposals or {}
     lines = [f"# AI Tuner 報告 {today()}", ""]
     s = (metrics.get("summary") or {})
     lines.append(f"- 近 {metrics.get('since_hours', '?')}h PV：{s.get('total')}；歷史 PV：{s.get('total_all')}")
+    daily = metrics.get("daily") or {}
+    days = daily.get("days") or []
+    seq = "、".join(f"{d.get('day')}={d.get('pv')}" for d in days) or "（無資料）"
+    lines.append(f"- 每日 PV 序列（近 {daily.get('days_requested', '?')} 天）：{seq}")
+    top_pages = metrics.get("top_pages") or {}
+    for p in top_pages.get("pages") or []:
+        lines.append(f"- 熱門頁 TOP：{p.get('page')} PV={p.get('pv')}")
     for p in metrics.get("probes", []):
         lines.append(f"- {p.get('url')}：HTTP {p.get('status')} / {p.get('seconds')}s")
     lines += ["", f"## 診斷", proposals.get("diagnosis", "(無)"), "", "## 行動"]
