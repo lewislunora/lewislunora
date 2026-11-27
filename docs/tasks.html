@@ -46,5 +46,6 @@ const sample=[
 document.getElementById('list').innerHTML=sample.map(x=>`<div class="card"><h3>${x.title}</h3><div class="meta"><span>報酬 ${x.pay}</span><span>截止 ${x.due}</span></div><p style="opacity:.8;line-height:1.65">${x.desc}</p><div class="tags">${x.tags.map(t=>`<span class="tag">${t}</span>`).join('')}</div><div class="cta-row"><a class="btn-sm pri" href="/community/">接這個任務</a><a class="btn-sm" href="/social/chat.html">私訊發案方</a></div></div>`).join('');
 </script>
 <script src="analytics-beacon.js" defer></script>
+<script defer src="spirit.js?v=20261127"></script>
 </body>
 </html>

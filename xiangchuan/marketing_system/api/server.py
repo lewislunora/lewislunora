@@ -283,7 +283,7 @@ def status():
         "scheduler": scheduler.get_status_summary(),
         "auto_engine": scheduler.auto_status(),
         "platforms": {k: (k in scheduler.connectors) for k in PLATFORMS},
-        "build_fingerprint": "novel-fix-2026-09-29-a",
+        "build_fingerprint": "spirit-2026-11-27",
     }
 
 
@@ -1668,8 +1668,11 @@ async def dashboard():
     guard = '<script src="/auth-guard.js"></script>'
     wcss = '<link rel="stylesheet" href="/widget.css">'
     wjs = '<script src="/widget.js"></script>'
+    sjs = '<script defer src="/spirit.js?v=20261127"></script>'
     if guard not in html:
         html = html.replace("<head>", "<head>\n" + guard + "\n" + wcss + "\n" + wjs)
+    if 'spirit.js' not in html:
+        html = html.replace("<head>", "<head>\n" + sjs)
     return HTMLResponse(html)
 
 
