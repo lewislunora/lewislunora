@@ -192,6 +192,8 @@ def cmd_collect(args) -> int:
         "since_hours": since,
         "summary": http_get(f"{base}/api/analytics/summary?since={since}"),
         "summary_all_time": http_get(f"{base}/api/analytics/summary?since=20000"),
+        "daily": http_get(f"{base}/api/analytics/daily?days=7"),
+        "top_pages": http_get(f"{base}/api/analytics/top-pages?days=30"),
         "status": http_get(f"{base}/api/status"),
         "probes": [probe(url) for url in config.get("sites", [])],
     }
@@ -354,6 +356,8 @@ def build_user_prompt(metrics: dict, inventory: dict, decisions: list[dict]) -> 
             "近N小時PV": (metrics.get("summary") or {}).get("total"),
             "歷史PV": (metrics.get("summary_all_time") or {}).get("total_all"),
             "熱門頁": (metrics.get("summary_all_time") or {}).get("pages"),
+            "每日PV序列": (metrics.get("daily") or {}).get("days"),
+            "熱門頁TOP": (metrics.get("top_pages") or {}).get("pages"),
             "國家": (metrics.get("summary_all_time") or {}).get("countries"),
             "站台狀態": [{"url": p.get("url"), "status": p.get("status"), "秒": p.get("seconds")}
                        for p in metrics.get("probes", [])],

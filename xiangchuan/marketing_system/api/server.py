@@ -331,6 +331,35 @@ def analytics_summary_endpoint(since: int = 24):
     return analytics_summary(since_hours=since)
 
 
+@app.get("/api/analytics/daily")
+def analytics_daily(days: int = 7):
+    """每日 PV 序列：近 N 天的每日總計，供儀表板與 AI tuner 用。"""
+    days = max(1, min(days, 90))
+    rows = fetch(
+        "SELECT substr(visited_at, 1, 10) AS day, COUNT(*) AS c FROM page_views "
+        "WHERE visited_at >= datetime('now', ?) GROUP BY day ORDER BY day DESC LIMIT ?",
+        [f"-{days} days", days],
+    )
+    days_list = [{"day": r["day"], "pv": r["c"]} for r in rows]
+    return {
+        "days": list(reversed(days_list)),
+        "total": sum(r["pv"] for r in days_list),
+        "days_requested": days,
+        "since_hours": days * 24,
+    }
+
+
+@app.get("/api/analytics/top-pages")
+def analytics_top_pages(days: int = 30):
+    """熱門頁排名：近 N 天的訪客最多的頁面。"""
+    rows = fetch(
+        "SELECT page, COUNT(*) AS c FROM page_views "
+        "WHERE visited_at >= datetime('now', ?) GROUP BY page ORDER BY c DESC LIMIT 10",
+        [f"-{days} days"],
+    )
+    return {"pages": [{"page": r["page"], "pv": r["c"]} for r in rows], "days_requested": days}
+
+
 # ---------- 分潤追蹤 ----------
 @app.post("/api/analytics/affiliate-click")
 async def analytics_affiliate_click(request: Request):
