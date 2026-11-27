@@ -14,9 +14,10 @@ cd marketing_system
 ## 設定環境變數
 
 ```bash
-export GROQ_API_KEY="your-groq-api-key"      # AI 文字生成／翻譯
+export GROQ_API_KEY="your-groq-api-key"      # AI 文字生成／翻譯／語音辨識
 export OPENAI_API_KEY="your-openai-api-key"  # AI 生圖（未設定時生圖端點回 503）
 export OPENAI_IMAGE_MODEL="dall-e-3"         # 選擇性，預設 dall-e-3
+export GROQ_STT_MODEL="whisper-large-v3"     # 選擇性，語音辨識模型（無 GROQ 金鑰時退回 OpenAI whisper-1）
 export TELEGRAM_BOT_TOKEN="your-bot-token"    # Telegram 發文
 export TELEGRAM_NOTIFY_CHAT_ID="626453598"    # 即時通知收件 chat id
 export LINE_NOTIFY_TOKEN="your-line-token"    # LINE 即時通知（選擇性）
@@ -167,6 +168,15 @@ marketing_system/
 
 前端共用層 `docs/js/social.js`：`Social.api()`、`Social.requireLogin()`、`Social.renderNav()`（含未讀輪詢）、`Social.avatarHtml()`、`Social.timeAgo()`、`Social.notify()`。github.io 上自動改用 `https://lewislunora.onrender.com` 為 API 基底。
 
+## 個人工具（計算／筆記／提醒／語音）
+
+前端頁面 `docs/personal-tools.html`，共用服務層 `services/personal_tools.py` 與 `services/ai_tools.py`；網站和 Telegram bot 走同一套邏輯。
+
+- 計算：白名單 AST，不用 `eval`；公開免登入
+- 筆記／提醒：以 `user:<id>`（網站）或 `chat:<chat_id>`（Telegram）隔離，需登入／僅對內群組
+- 提醒：Telegram 提醒由 scheduler hook 每分鐘送出，失敗最多重試 3 次；網站提醒由前端輪詢 `/api/tools/reminders/due`
+- 語音辨識：multipart 上傳，優先 Groq Whisper，無 Groq 金鑰時用 OpenAI；免費帳號每日 10 次
+
 ## API 端點
 
 - `GET /api/status` - 系統狀態
@@ -177,6 +187,13 @@ marketing_system/
 - `POST /api/ai/translate` - 忠實翻譯（body: `text`, `source`, `target`；需登入）
 - `POST /api/ai/image` - AI 生圖（body: `prompt`, `size`；回 data URL，需登入 + `OPENAI_API_KEY`）
 - `POST /api/ai/search` - 整合搜尋（body: `q`, `scope=all|gov|kb|web`；公開）
+- `POST /api/tools/calculate` - 安全計算（body: `expression`；公開）
+- `GET/POST /api/tools/notes` - 列出／新增筆記（需登入）
+- `DELETE /api/tools/notes/{id}` - 刪除筆記（需登入）
+- `GET/POST /api/tools/reminders` - 列出／新增提醒（需登入；body: `text`, `due_at`）
+- `GET /api/tools/reminders/due` - 取出已到期的網站提醒（前端輪詢）
+- `DELETE /api/tools/reminders/{id}` - 取消提醒（需登入）
+- `POST /api/tools/transcribe` - 語音轉文字（multipart `file`，需登入 + STT 金鑰）
 - `POST /api/accounts` - 新增平台帳號
 - `GET /api/schedules` - 排程狀態
 - `GET /dashboard` - Web 管理介面

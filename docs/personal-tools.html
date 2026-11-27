@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>個人工具箱｜計算・筆記・提醒・語音辨識 | 翔川 Neo</title>
+<meta name="description" content="安全計算、個人筆記、到期提醒與語音轉文字。網站登入後可使用，Telegram @ailunora_bot 對內群組也能用。">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Noto Sans TC",system-ui,sans-serif;background:#0a0e27;color:#e0e0e0;line-height:1.6;min-height:100vh}
+.wrap{max-width:760px;margin:0 auto;padding:2rem 1.4rem 4rem}
+header{text-align:center;margin-bottom:2rem}
+h1{font-size:1.8rem;font-weight:800;background:linear-gradient(135deg,#00d4ff,#ff7b9c);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.back{display:inline-block;color:#00d4ff;text-decoration:none;font-size:.85rem;margin-bottom:1rem}
+.sub{color:rgba(255,255,255,.45);font-size:.95rem;margin-top:.4rem}
+.panel{background:linear-gradient(160deg,rgba(255,255,255,.05),rgba(255,255,255,.015));border:1px solid rgba(0,212,255,.12);border-radius:16px;padding:1.4rem;margin-bottom:1.2rem}
+label{font-size:.85rem;font-weight:600;color:rgba(255,255,255,.7);display:block;margin:.8rem 0 .4rem}
+input[type=text],textarea{width:100%;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);border-radius:10px;padding:.7rem .9rem;color:#fff;font-size:.95rem;font-family:inherit}
+input[type=file]{width:100%;font-size:.85rem;color:rgba(255,255,255,.75);margin:.5rem 0}
+textarea{min-height:110px;resize:vertical}
+input:focus,textarea:focus{outline:none;border-color:#00d4ff}
+.tabs{display:flex;gap:.5rem;margin-bottom:1.2rem;flex-wrap:wrap}
+.tab{flex:1;text-align:center;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:10px;padding:.7rem;font-size:.9rem;font-weight:600;color:rgba(255,255,255,.7);cursor:pointer;transition:.2s;min-width:110px}
+.tab.active{background:linear-gradient(135deg,rgba(0,212,255,.15),rgba(255,123,156,.15));border-color:#00d4ff;color:#fff}
+.row{display:flex;gap:.8rem}.row>*{flex:1}
+.btn{width:100%;background:linear-gradient(135deg,#00d4ff,#ff7b9c);color:#0a0e27;font-weight:800;border:none;padding:.9rem;border-radius:12px;font-size:1.05rem;cursor:pointer;margin-top:1.2rem;transition:transform .2s}
+.btn:hover{transform:translateY(-2px)}.btn:disabled{opacity:.5;cursor:wait;transform:none}
+.btn.small{width:auto;padding:.35rem .75rem;font-size:.75rem;margin:0;background:rgba(255,123,156,.18);color:#ffb3c8}
+.output{background:#0d1230;border:1px solid rgba(0,212,255,.12);border-radius:12px;padding:1.2rem;white-space:pre-wrap;word-break:break-word;font-size:.9rem;color:rgba(255,255,255,.85);min-height:100px;display:none}
+.output.show{display:block}
+.item{display:flex;gap:.8rem;align-items:flex-start;padding:.65rem 0;border-bottom:1px solid rgba(255,255,255,.08);white-space:pre-wrap;word-break:break-word}
+.item:last-child{border-bottom:none}
+.item .body{flex:1}
+.item .meta{font-size:.75rem;color:rgba(255,255,255,.45)}
+.loading{color:#00d4ff;text-align:center;padding:1rem;display:none}.loading.show{display:block}
+.loginbar{font-size:.85rem;color:rgba(255,255,255,.6);margin:1rem 0;text-align:center}
+.note{background:rgba(255,193,7,.08);border:1px solid rgba(255,193,7,.2);border-radius:10px;padding:.8rem 1rem;font-size:.8rem;color:rgba(255,235,180,.8);margin-top:1rem}
+.chips{display:flex;gap:.5rem;flex-wrap:wrap;margin-top:.6rem}
+.chip{background:rgba(0,212,255,.1);border:1px solid rgba(0,212,255,.2);color:#00d4ff;border-radius:99px;padding:.3rem .8rem;font-size:.78rem;cursor:pointer}
+#toast{position:fixed;left:50%;bottom:2rem;transform:translateX(-50%);background:#00d4ff;color:#0a0e27;font-weight:700;padding:.7rem 1.2rem;border-radius:99px;display:none;z-index:99;max-width:90vw;text-align:center}
+</style>
+<link rel="canonical" href="https://lewislunora.onrender.com/personal-tools.html">
+</head>
+<body>
+<div class="wrap">
+  <a class="back" href="index.html">← 返回翔川 Neo</a>
+  <header>
+    <h1>個人工具箱</h1>
+    <div class="sub">計算・筆記・提醒・語音辨識 — 網站與 Telegram <code>@ailunora_bot</code> 都能用</div>
+  </header>
+
+  <div class="panel">
+    <div class="tabs">
+      <div class="tab active" data-tool="calc">🧮 安全計算</div>
+      <div class="tab" data-tool="notes">📝 個人筆記</div>
+      <div class="tab" data-tool="reminders">⏰ 個人提醒</div>
+      <div class="tab" data-tool="voice">🎤 語音辨識</div>
+    </div>
+
+    <div id="tool-calc">
+      <label>運算式（支援 + - * / % ^、** 與 sqrt/log/sin/cos/pi/e）</label>
+      <input type="text" id="expr" placeholder="例：(1+2)*3、sqrt(16)、pi*2">
+      <div class="chips"><span class="chip" data-expr>(1+2)*3</span><span class="chip" data-expr>sqrt(16)+pi</span><span class="chip" data-expr>round(10/3, 2)</span></div>
+    </div>
+
+    <div id="tool-notes" style="display:none">
+      <label>新的筆記</label>
+      <textarea id="noteText" placeholder="記下想法、待辦、靈感…"></textarea>
+      <label>標籤（選擇性，逗號分隔）</label>
+      <input type="text" id="noteTags" placeholder="例：工作,靈感">
+      <label>搜尋既有筆記</label>
+      <input type="text" id="noteQuery" placeholder="輸入關鍵字後按「列出筆記」">
+      <div class="chips"><span class="chip" id="listNotes">📋 列出筆記</span></div>
+    </div>
+
+    <div id="tool-reminders" style="display:none">
+      <div class="row">
+        <div><label>時間</label><input type="text" id="dueAt" placeholder="30分鐘後 或 2026-11-28 10:00"></div>
+        <div><label>提醒內容</label><input type="text" id="remindText" placeholder="例：喝水、開會"></div>
+      </div>
+      <div class="chips"><span class="chip" id="listReminders">📋 列出提醒</span></div>
+    </div>
+
+    <div id="tool-voice" style="display:none">
+      <label>上傳音訊（mp3 / m4a / ogg / wav，上限 25MB）</label>
+      <input type="file" id="audioFile" accept="audio/*">
+      <div class="note">🎤 優先使用站台設定的 Groq Whisper；沒有 Groq 金鑰時改用 OpenAI。每日免費 10 次。</div>
+    </div>
+
+    <button class="btn" id="runBtn">🚀 開始計算</button>
+    <div class="status" id="planStatus" style="font-size:.8rem;color:rgba(255,255,255,.4);margin-top:.6rem;text-align:center">計算免登入；其他功能需登入</div>
+  </div>
+
+  <div class="loginbar" id="loginBar">檢查登入狀態…</div>
+  <div class="loading" id="loading">⏳ 處理中…</div>
+  <div class="output" id="output"></div>
+
+  <div class="note">
+    💡 <strong> Bot 用法：</strong>私聊 <code>@ailunora_bot</code> 或對內群組輸入
+    <code>/計算 (1+2)*3</code>、<code>/筆記 內容</code>、<code>/提醒 30分鐘後 喝水</code>；直接傳語音訊息會回文字。
+    <code>/筆記 列表</code>、<code>/提醒 列表</code> 可查看；<code>/help</code> 看完整白名單。<br>
+    🔒 筆記、提醒、語音僅供登入會員／對內群組使用，不會互相看到彼此的內容。
+  </div>
+</div>
+<div id="toast"></div>
+
+<script>
+const API = 'https://lewislunora.onrender.com/api';
+let tool = 'calc';
+let loggedIn = false;
+
+function toast(msg){
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.style.display = 'block';
+  setTimeout(() => { t.style.display = 'none'; }, 4000);
+  if(window.Notification && Notification.permission === 'granted') new Notification('翔川提醒', {body: msg});
+}
+function showError(msg, status){
+  const out = document.getElementById('output');
+  out.textContent = msg; out.classList.add('show');
+  if(status === 401) checkLogin();
+}
+async function checkLogin(){
+  const bar = document.getElementById('loginBar');
+  try{
+    const r = await fetch(API + '/license/status', {credentials:'include'});
+    const d = await r.json();
+    loggedIn = !!d.logged_in;
+    if(loggedIn){
+      const u = (d.usage && d.usage.tool) || {};
+      const stt = u.ai_transcribe ? ` ｜ 語音 ${u.ai_transcribe.used}/${u.ai_transcribe.limit}` : '';
+      bar.innerHTML = `✅ 已登入：<b>${d.name}</b> ｜ ${d.plan==='free'?'免費版':d.plan.toUpperCase()}${stt}`
+        + ' ｜ <a href="pricing.html#activate" style="color:#ffd34d">🔓 升級</a>';
+    }else{
+      bar.innerHTML = '⚠️ 筆記／提醒／語音需<strong>註冊／登入</strong>（計算可直接用）。'
+        + '<button class="btn" style="margin-top:.6rem" onclick="quickLogin()">🚀 立即登入 / 註冊</button>';
+    }
+    document.getElementById('runBtn').disabled = (tool !== 'calc' && !loggedIn);
+  }catch(e){ bar.textContent = '⚠️ 無法讀取狀態（請確認站台連線）'; }
+}
+function quickLogin(){
+  const email = prompt('Email（沒有帳號的話，輸入後連同密碼送出即完成註冊）：');
+  if(!email) return;
+  const password = prompt('密碼（至少 6 字）：');
+  if(!password) return;
+  fetch(API + '/auth/login', {
+    method:'POST', headers:{'Content-Type':'application/json'},
+    body: JSON.stringify({email, password}), credentials:'include'
+  }).then(async r=>{
+    const d = await r.json();
+    if(d.token){ document.cookie='token='+d.token+';path=/;max-age=7779000;SameSite=Lax'; checkLogin(); }
+    else if(r.status===401){
+      const reg = await fetch(API + '/auth/register', {
+        method:'POST', headers:{'Content-Type':'application/json'},
+        body: JSON.stringify({email, password}), credentials:'include'
+      });
+      const rd = await reg.json();
+      if(rd.token || reg.ok){ document.cookie='token='+(rd.token||'')+';path=/;max-age=7779000;SameSite=Lax'; checkLogin(); }
+      else alert('註冊失敗：'+(rd.detail||'未知錯誤'));
+    } else alert(d.detail||'登入失敗');
+  });
+}
+
+document.querySelectorAll('.tab').forEach(t => t.addEventListener('click', () => {
+  document.querySelectorAll('.tab').forEach(x => x.classList.remove('active'));
+  t.classList.add('active');
+  tool = t.dataset.tool;
+  ['calc','notes','reminders','voice'].forEach(k => {
+    document.getElementById('tool-'+k).style.display = (k===tool) ? 'block' : 'none';
+  });
+  document.getElementById('output').classList.remove('show');
+  document.getElementById('runBtn').textContent = {
+    calc:'🚀 開始計算', notes:'💾 新增筆記', reminders:'⏰ 新增提醒', voice:'🎤 開始辨識'
+  }[tool];
+  document.getElementById('runBtn').disabled = (tool !== 'calc' && !loggedIn);
+}));
+document.querySelectorAll('#tool-calc .chip').forEach(c => c.addEventListener('click', () => {
+  document.getElementById('expr').value = c.textContent;
+}));
+document.getElementById('listNotes').addEventListener('click', () => renderNotes(document.getElementById('noteQuery').value.trim()));
+document.getElementById('listReminders').addEventListener('click', renderReminders);
+
+async function call(path, options={}){
+  const r = await fetch(API + path, Object.assign({credentials:'include'}, options));
+  if(!r.ok){
+    const d = await r.json().catch(()=>({}));
+    const err = new Error(d.detail || r.statusText);
+    err.status = r.status;
+    throw err;
+  }
+  return r.json();
+}
+function jsonPost(path, body){
+  return call(path, {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(body)});
+}
+function renderList(items, textOf, deletePath, emptyText){
+  const out = document.getElementById('output');
+  out.innerHTML = '';
+  if(!items || !items.length){ out.textContent = emptyText; out.classList.add('show'); return; }
+  items.forEach(it => {
+    const row = document.createElement('div'); row.className = 'item';
+    const body = document.createElement('div'); body.className = 'body';
+    const main = document.createElement('div'); main.textContent = textOf(it);
+    const meta = document.createElement('div'); meta.className = 'meta';
+    meta.textContent = it.due_at || it.created_at || '';
+    body.appendChild(main); body.appendChild(meta);
+    const btn = document.createElement('button'); btn.className = 'btn small'; btn.textContent = '✕';
+    btn.addEventListener('click', async () => {
+      try{ await call(deletePath + it.id, {method:'DELETE'}); row.remove(); toast('已刪除'); }
+      catch(e){ showError('⚠️ ' + e.message); }
+    });
+    row.appendChild(body); row.appendChild(btn);
+    out.appendChild(row);
+  });
+  out.classList.add('show');
+}
+async function renderNotes(q){
+  if(!loggedIn) return showError('🔒 請先登入。', 401);
+  const d = await call('/tools/notes' + (q ? '?q=' + encodeURIComponent(q) : ''));
+  renderList(d.items, it => it.content, '/tools/notes/', '📝 還沒有筆記。');
+}
+async function renderReminders(){
+  if(!loggedIn) return showError('🔒 請先登入。', 401);
+  const d = await call('/tools/reminders');
+  renderList(d.items, it => it.text + '（' + it.status + '）', '/tools/reminders/', '⏰ 還沒有提醒。');
+}
+
+document.getElementById('runBtn').addEventListener('click', async () => {
+  const out = document.getElementById('output');
+  const loading = document.getElementById('loading');
+  const btn = document.getElementById('runBtn');
+  out.classList.remove('show'); loading.classList.add('show'); btn.disabled = true;
+  try{
+    if(tool === 'calc'){
+      const expression = document.getElementById('expr').value.trim();
+      if(!expression) throw new Error('請輸入運算式。');
+      const d = await jsonPost('/tools/calculate', {expression});
+      out.textContent = `🧮 ${expression} = ${d.result}`;
+    }else if(tool === 'notes'){
+      const content = document.getElementById('noteText').value.trim();
+      if(!content) throw new Error('請輸入筆記內容。');
+      await jsonPost('/tools/notes', {content, tags:document.getElementById('noteTags').value.trim()});
+      document.getElementById('noteText').value = '';
+      await renderNotes('');
+      toast('📝 已記錄');
+      return;
+    }else if(tool === 'reminders'){
+      const text = document.getElementById('remindText').value.trim();
+      const due_at = document.getElementById('dueAt').value.trim();
+      if(!text || !due_at) throw new Error('請輸入時間與提醒內容。');
+      await jsonPost('/tools/reminders', {text, due_at});
+      document.getElementById('remindText').value = '';
+      await renderReminders();
+      toast('⏰ 已設定');
+      return;
+    }else{
+      const f = document.getElementById('audioFile').files[0];
+      if(!f) throw new Error('請選擇音訊檔。');
+      const form = new FormData(); form.append('file', f);
+      const d = await call('/tools/transcribe', {method:'POST', body:form});
+      out.textContent = '🎤 ' + (d.text || '（沒有辨識到文字）');
+    }
+    out.classList.add('show');
+  }catch(e){
+    if(e.status === 401) showError('🔒 請先登入再使用。', 401);
+    else if(e.status === 402) showError('📈 今日額度已用完。<a href="pricing.html#activate" style="color:#ffd34d">用開通碼升級 →</a>', 402);
+    else if(e.status === 503) showError('⚠️ 站台尚未設定語音辨識金鑰（' + e.message + '）。', 503);
+    else showError('⚠️ 失敗：' + e.message);
+  }finally{
+    loading.classList.remove('show');
+    btn.disabled = (tool !== 'calc' && !loggedIn);
+  }
+});
+
+// 網站提醒由前端輪詢通知（到期的提醒會被標為已通知）。
+setInterval(async () => {
+  if(!loggedIn || document.hidden) return;
+  try{
+    const d = await call('/tools/reminders/due');
+    (d.items || []).forEach(it => toast('⏰ ' + it.text));
+  }catch(e){ /* 輪詢失敗不打擾使用者 */ }
+}, 5000);
+if(window.Notification && Notification.permission === 'default') Notification.requestPermission().catch(()=>{});
+
+checkLogin();
+</script>
+<script src="analytics-beacon.js" defer></script>
+</body>
+</html>

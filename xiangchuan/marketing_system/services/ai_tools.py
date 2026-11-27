@@ -1,7 +1,7 @@
-"""共用 AI 工具：翻譯、生圖、資料搜尋。
+"""共用 AI 工具：翻譯、生圖、資料搜尋、語音辨識。
 
 網站 API 與 Telegram bot 都呼叫這裡，避免兩邊行為不一致。
-翻譯用既有 Groq（文字模型）；生圖需另外設定 OPENAI_API_KEY。
+翻譯與語音辨識用既有 Groq；生圖需另外設定 OPENAI_API_KEY。
 """
 import base64
 import json
@@ -142,3 +142,44 @@ def search(q: str, scope: str = "all", limit: int = 5):
             logger.warning(f"web search failed: {e}")
 
     return items[:limit]
+
+
+def stt_available() -> bool:
+    return bool(os.getenv("GROQ_API_KEY") or os.getenv("OPENAI_API_KEY"))
+
+
+def transcribe(audio: bytes, filename: str = "voice.ogg", language: str = "") -> str:
+    """語音轉文字：優先 Groq Whisper，沒有 Groq 金鑰時改用 OpenAI。"""
+    audio = audio or b""
+    if not audio:
+        raise ValueError("請上傳音訊檔")
+    if len(audio) > 25 * 1024 * 1024:
+        raise ValueError("音訊檔過大（上限 25MB）")
+    key = os.getenv("GROQ_API_KEY", "") or os.getenv("OPENAI_API_KEY", "")
+    if not key:
+        raise RuntimeError("需要設定 GROQ_API_KEY 或 OPENAI_API_KEY 才能語音辨識")
+
+    import requests
+    if os.getenv("GROQ_API_KEY", ""):
+        url = "https://api.groq.com/openai/v1/audio/transcriptions"
+        model = os.getenv("GROQ_STT_MODEL", "whisper-large-v3")
+    else:
+        url = "https://api.openai.com/v1/audio/transcriptions"
+        model = os.getenv("OPENAI_STT_MODEL", "whisper-1")
+    files = {"file": (filename or "voice.ogg", audio, "application/octet-stream")}
+    data = {"model": model}
+    if language:
+        data["language"] = language
+    resp = requests.post(
+        url,
+        headers={"Authorization": f"Bearer {key}"},
+        files=files,
+        data=data,
+        timeout=120,
+    )
+    if not resp.ok:
+        raise RuntimeError(f"語音辨識失敗（{resp.status_code}）: {resp.text[:200]}")
+    text = (resp.json().get("text") or "").strip()
+    if not text:
+        raise RuntimeError("語音辨識沒有回傳文字")
+    return text

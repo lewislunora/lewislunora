@@ -28,15 +28,23 @@ ALL_COMMANDS = frozenset({
     "翻譯", "translate",
     "搜尋", "search",
     "生圖", "image",
+    "計算", "calc",
+    "筆記", "note",
+    "提醒", "remind",
+    "語音", "voice",
     "自動化", "auto",
     "部署", "deploy",
     "狀態", "status",
 })
 
-# 翻譯/搜尋成本低可對外開放；生圖會花 OpenAI 費用，僅對內。
-PUBLIC_COMMANDS = frozenset({"start", "help", "靈感", "idea", "翻譯", "translate", "搜尋", "search"})
+# 翻譯/搜尋/計算成本低可對外開放；生圖、語音會花 API 費用，個人資料僅對內。
+PUBLIC_COMMANDS = frozenset({
+    "start", "help", "靈感", "idea", "翻譯", "translate",
+    "搜尋", "search", "計算", "calc",
+})
 INTERNAL_ONLY_COMMANDS = frozenset({
     "自動化", "auto", "部署", "deploy", "狀態", "status", "生圖", "image",
+    "筆記", "note", "提醒", "remind", "語音", "voice",
 })
 
 GROUP_TYPES = frozenset({"group", "supergroup", "channel"})

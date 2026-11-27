@@ -38,6 +38,14 @@ COMMANDS = {
     "search": "🔍 Search (gov data, knowledge base, web)",
     "生圖": "🎨 AI 生圖（僅對內，需 OPENAI_API_KEY）",
     "image": "🎨 Generate image (internal only)",
+    "計算": "🧮 安全計算（/計算 (1+2)*3、sqrt(16)）",
+    "calc": "🧮 Calculator (/calc (1+2)*3)",
+    "筆記": "📝 個人筆記（/筆記 內容、/筆記 列表、/筆記 刪除 3；僅對內）",
+    "note": "📝 Personal notes (internal only)",
+    "提醒": "⏰ 個人提醒（/提醒 30分鐘後 喝水；僅對內）",
+    "remind": "⏰ Reminders (internal only)",
+    "語音": "🎤 直接傳語音訊息即轉文字（僅對內）",
+    "voice": "🎤 Send a voice message to transcribe (internal only)",
     "自動化": "⚙️ 觸發 AI 自動化內容生成",
     "部署": "🚀 觸發部署（網站更新）",
     "deploy": "🚀 Trigger deployment",
@@ -68,9 +76,9 @@ def _cmd_start():
     return (
         "🤖 *OpenClaw AI 助手已啟動！*\n\n"
         "我是你的 AI 個人助理，可以幫你：\n"
-        "💡 產生內容靈感\n"
-        "🌐 翻譯文字／🔍 整合搜尋／🎨 AI 生圖\n"
-        "🚀 觸發網站部署\n"
+        "💡 產生內容靈感／🌐 翻譯／🔍 整合搜尋\n"
+        "🧮 計算／📝 筆記／⏰ 提醒／🎤 語音轉文字\n"
+        "🎨 AI 生圖／🚀 觸發網站部署\n"
         "📊 查看系統狀態\n\n"
         "輸入 /help 查看所有指令。"
     )
@@ -213,6 +221,110 @@ def _cmd_image(args="", chat_id=None):
     return {"photo": png, "caption": f"🎨 {revised[:600]}"}
 
 
+# ── 個人工具：計算 / 筆記 / 提醒 / 語音 ──────────────────────────────
+def _cmd_calc(args=""):
+    expr = (args or "").strip()
+    if not expr:
+        return "🧮 用法：/計算 (1+2)*3、sqrt(16)、pi*2\n可用 + - * / % ^ ** 與 sqrt/log/sin/cos 等函數"
+    try:
+        from .personal_tools import calculate
+        return f"🧮 {_md_safe(expr)} = *{calculate(expr)}*"
+    except ValueError as e:
+        return f"⚠️ {e}"
+
+
+def _cmd_notes(args="", chat_id=None):
+    from .personal_tools import add_note, delete_note, list_notes, owner_for_chat
+    owner = owner_for_chat(chat_id)
+    raw = (args or "").strip()
+    if not raw or raw.lower() in ("列表", "list", "列出"):
+        rows = list_notes(owner, limit=10)
+        if not rows:
+            return "📝 還沒有筆記。用 /筆記 想記的事 新增。"
+        lines = ["📝 *我的筆記*"]
+        for row in rows:
+            lines.append(f"#{row['id']} {_md_safe(row['content'][:200])}")
+        return "\n".join(lines)
+    m = re.match(r"^(刪除|delete|del)\s+(\d+)$", raw, re.I)
+    if m:
+        ok = delete_note(owner, int(m.group(2)))
+        return f"📝 已刪除 #{m.group(2)}" if ok else "⚠️ 找不到該筆記（或已被刪除）。"
+    item = add_note(owner, raw)
+    return f"📝 已記錄（#{item['id']}）：{_md_safe(item['content'][:200])}"
+
+
+def _cmd_remind(args="", chat_id=None):
+    from .personal_tools import add_reminder, cancel_reminder, list_reminders, owner_for_chat
+    owner = owner_for_chat(chat_id)
+    raw = (args or "").strip()
+    if not raw or raw.lower() in ("列表", "list", "列出"):
+        rows = list_reminders(owner, limit=10)
+        if not rows:
+            return "⏰ 還沒有提醒。用 /提醒 30分鐘後 喝水 新增。"
+        lines = ["⏰ *我的提醒*"]
+        for row in rows:
+            lines.append(f"#{row['id']} [{row['status']}] {row['due_at']} {_md_safe(row['text'][:100])}")
+        return "\n".join(lines)
+    m = re.match(r"^(取消|cancel)\s+(\d+)$", raw, re.I)
+    if m:
+        ok = cancel_reminder(owner, int(m.group(2)))
+        return f"⏰ 已取消 #{m.group(2)}" if ok else "⚠️ 找不到待觸發的提醒。"
+    # 先認絕對時間（含空白），再認「30分鐘後」等相對時間
+    m = re.match(r"^(\d{4}-\d{2}-\d{2}(?:[ T]\d{2}:\d{2}(?::\d{2})?)?)\s+(.+)$", raw)
+    if not m:
+        m = re.match(r"^(\d+\s*(?:秒|分鐘|分|小時|時|天|日|週)\s*後?)\s+(.+)$", raw)
+    if not m:
+        return "⏰ 用法：/提醒 30分鐘後 喝水，或 /提醒 2026-11-28 10:00 開會"
+    due_raw, text = m.group(1), m.group(2).strip()
+    if not text:
+        return "⚠️ 請輸入提醒內容。"
+    try:
+        item = add_reminder(owner, text, due_raw, chat_id=str(chat_id or ""))
+    except ValueError as e:
+        return f"⚠️ {e}"
+    return f"⏰ 已設定（#{item['id']}）：{item['due_at']} — {_md_safe(text[:120])}"
+
+
+def _download_telegram_file(file_id) -> bytes:
+    info = requests.post(
+        f"https://api.telegram.org/bot{BOT_TOKEN}/getFile",
+        json={"file_id": file_id}, timeout=20,
+    ).json()
+    path = (info.get("result") or {}).get("file_path", "")
+    if not path:
+        raise RuntimeError("取得語音檔失敗")
+    resp = requests.get(f"https://api.telegram.org/bot{BOT_TOKEN}/{path}", timeout=60)
+    resp.raise_for_status()
+    return resp.content
+
+
+def process_voice(message):
+    """語音訊息轉文字（僅對內，避免外部群組產生 OpenAI/Groq 費用）。"""
+    chat = message.get("chat") or {}
+    chat_id = chat.get("id")
+    voice = message.get("voice") or {}
+    file_id = voice.get("file_id")
+    if not chat_id or not file_id or not policy.is_internal(chat_id):
+        return None
+    if _throttled(chat_id, "voice", 10):
+        return "⏳ 語音請 10 秒後再試。"
+    try:
+        from .ai_tools import transcribe
+        text = transcribe(_download_telegram_file(file_id), voice.get("file_name") or "voice.ogg")
+        return f"🎤 *語音轉文字*\n{_md_safe(text[:4000])}"
+    except Exception as e:
+        return f"⚠️ {e}"
+
+
+def wants_capabilities(text: str) -> bool:
+    """「列出功能」類問題直接回指令表，不讓 AI 自由編造能力。"""
+    s = (text or "").strip().lower()
+    return any(k in s for k in (
+        "列出所有可執行功能", "列出功能", "有哪些功能", "有什麼功能",
+        "能做什麼", "你會什麼", "有哪些指令", "all commands", "what can you do",
+    ))
+
+
 def _shorten(text: str, limit: int = 60) -> str:
     """把回覆壓成短句：目標約 15 字，最長 limit 字。"""
     clean = " ".join((text or "").split())
@@ -236,7 +348,10 @@ def short_answer(text: str) -> str:
         {
             "prompt": (
                 "你是翔川 Neo 的客服助理。請用繁體中文回答下面的問題，"
-                "答案盡量 15 個字左右，直接給答案，不要條列、不要標題、不要多餘說明。\n"
+                "答案盡量 15 個字左右，直接給答案，不要條列、不要標題、不要多餘說明。"
+                "只能提及已實作的功能：AI 客服、內容生成、翻譯、生圖、整合搜尋、計算、筆記、提醒、語音辨識。"
+                "絕對不要承諾未列出的功能（例如個人日曆、語音撥打、購物）。"
+                "若被問「有哪些功能／能做什麼」，請回答「輸入 /help 查看指令」。\n"
                 f"問題：{text}"
             )
         },
@@ -307,7 +422,7 @@ def _cmd_help(chat_id=None):
         if cmd.lower() in allowed:
             lines.append(f"/{cmd} — {desc}")
     if chat_id is not None and policy.is_external(chat_id):
-        lines.append("\n🔒 自動化 / 部署 / 狀態 / 生圖僅供對內群組使用。")
+        lines.append("\n🔒 自動化 / 部署 / 狀態 / 生圖 / 筆記 / 提醒 / 語音僅供對內群組使用。")
     return "\n".join(lines)
 
 
@@ -322,6 +437,14 @@ def _handle_command(chat_id, cmd, args=""):
         return _cmd_search(args)
     elif cmd in ("生圖", "image"):
         return _cmd_image(args, chat_id)
+    elif cmd in ("計算", "calc"):
+        return _cmd_calc(args)
+    elif cmd in ("筆記", "note"):
+        return _cmd_notes(args, chat_id)
+    elif cmd in ("提醒", "remind"):
+        return _cmd_remind(args, chat_id)
+    elif cmd in ("語音", "voice"):
+        return "🎤 直接在私聊或對內群組傳語音訊息，我就會回文字（10 秒冷卻）。"
     elif cmd in ("自動化", "auto"):
         return _cmd_auto(args)
     elif cmd in ("部署", "deploy"):
@@ -342,11 +465,21 @@ def _process_update(update):
     chat_id = chat.get("id")
     text = (message.get("text") or "").strip()
 
+    # 語音訊息沒有 text，需先於 should_respond 處理（僅對內）。
+    if message.get("voice"):
+        reply = process_voice(message)
+        if reply:
+            _send_result(chat_id, reply, message.get("message_id"))
+        return
+
     # 對外群組未 @bot 或未 opt-in → 靜默忽略，不回「未授權」洗版
     if not policy.should_respond(message):
         return
 
     clean = policy.clean_text(text, chat.get("type", "private"))
+    if wants_capabilities(clean):
+        _send_message(chat_id, _cmd_help(chat_id))
+        return
     if clean.startswith("/"):
         parts = clean[1:].split(maxsplit=1)
         cmd = parts[0].lower()

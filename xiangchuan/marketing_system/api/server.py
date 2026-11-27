@@ -8,7 +8,7 @@ import threading
 import time
 import logging
 from datetime import datetime, timedelta
-from fastapi import FastAPI, HTTPException, Request
+from fastapi import FastAPI, HTTPException, Request, UploadFile, File, Form
 from fastapi.responses import HTMLResponse, JSONResponse, Response, RedirectResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.middleware.cors import CORSMiddleware
@@ -44,13 +44,15 @@ from ..services.openclaw_agent import (
     _handle_command as openclaw_handle,
     _shorten as shorten_reply,
     short_answer as openclaw_short_answer,
+    wants_capabilities as openclaw_wants_capabilities,
+    process_voice as openclaw_voice,
 )
 from ..services import telegram_policy as tg_policy
 from ..services.knowledge_base import get_kb_reply, save_unanswered, get_pending, auto_learn
 from ..services.analytics import track_async, summary as analytics_summary
 from ..services.story_generator import AIStoryGenerator
 from ..services.serial_novel import SerialNovelEngine, free_chapter_limit
-from ..services import ai_tools
+from ..services import ai_tools, personal_tools as personal
 
 app = FastAPI(
     title="翔川 Neo｜曜科技 行銷自動化系統",
@@ -228,6 +230,9 @@ def startup():
     init_db()
     StudentDatabase.init_db()
     _sync_scheduler_connectors()
+    # 到期的 Telegram 提醒由既有排程迴圈送出（約每分鐘一次）。
+    if not any(name == "reminders" for _, name, _ in scheduler.hooks):
+        scheduler.add_hook(1, "reminders", lambda: personal.dispatch_due())
     scheduler.start()
     # Render 磁碟是臨時的：每次重啟 govdata 目錄都會歸零，啟動時自動補回。
     if os.getenv("RENDER") or os.getenv("GOVDATA_AUTOSEED"):
@@ -687,6 +692,108 @@ def ai_search(data: AISearchRequest):
     return {"items": ai_tools.search(data.q, data.scope, data.limit)}
 
 
+# ── 個人工具：計算 / 筆記 / 提醒 / 語音辨識 ─────────────────────────
+class CalcRequest(BaseModel):
+    expression: str = ""
+
+
+class NoteRequest(BaseModel):
+    content: str = ""
+    tags: str = ""
+
+
+class ReminderRequest(BaseModel):
+    text: str = ""
+    due_at: str = ""
+
+
+def _my_owner(request: Request):
+    u = _require_user(request)
+    return u, personal.owner_for_user(u["id"])
+
+
+@app.post("/api/tools/calculate")
+def tools_calculate(data: CalcRequest):
+    """公開、免登入：白名單 AST 計算，不使用 eval。"""
+    try:
+        return {"result": personal.calculate(data.expression)}
+    except ValueError as e:
+        raise HTTPException(400, str(e))
+
+
+@app.get("/api/tools/notes")
+def tools_notes_list(request: Request, q: str = "", limit: int = 20):
+    _, owner = _my_owner(request)
+    return {"items": personal.list_notes(owner, q, limit)}
+
+
+@app.post("/api/tools/notes")
+def tools_notes_add(request: Request, data: NoteRequest):
+    _, owner = _my_owner(request)
+    try:
+        return {"item": personal.add_note(owner, data.content, data.tags)}
+    except ValueError as e:
+        raise HTTPException(400, str(e))
+
+
+@app.delete("/api/tools/notes/{note_id}")
+def tools_notes_delete(request: Request, note_id: int):
+    _, owner = _my_owner(request)
+    if not personal.delete_note(owner, note_id):
+        raise HTTPException(404, "找不到該筆記")
+    return {"ok": True}
+
+
+@app.get("/api/tools/reminders/due")
+def tools_reminders_due(request: Request):
+    """前端輪詢：取出已到期的網站提醒並標為已通知。"""
+    _, owner = _my_owner(request)
+    return {"items": personal.take_due(owner)}
+
+
+@app.get("/api/tools/reminders")
+def tools_reminders_list(request: Request, limit: int = 20):
+    _, owner = _my_owner(request)
+    return {"items": personal.list_reminders(owner, limit)}
+
+
+@app.post("/api/tools/reminders")
+def tools_reminders_add(request: Request, data: ReminderRequest):
+    _, owner = _my_owner(request)
+    try:
+        # 網站提醒由前端輪詢通知；只有 Telegram 提醒需要 chat_id 讓背景排程推送。
+        return {"item": personal.add_reminder(owner, data.text, data.due_at)}
+    except ValueError as e:
+        raise HTTPException(400, str(e))
+
+
+@app.delete("/api/tools/reminders/{reminder_id}")
+def tools_reminders_cancel(request: Request, reminder_id: int):
+    _, owner = _my_owner(request)
+    if not personal.cancel_reminder(owner, reminder_id):
+        raise HTTPException(404, "找不到待觸發的提醒")
+    return {"ok": True}
+
+
+@app.post("/api/tools/transcribe")
+async def tools_transcribe(
+    request: Request,
+    file: UploadFile = File(...),
+    language: str = Form(""),
+):
+    """語音轉文字；需登入與 GROQ_API_KEY（或 OPENAI_API_KEY）。"""
+    u = _require_user(request)
+    _check_quota(u["id"], "ai_transcribe")
+    raw = await file.read()
+    try:
+        text = ai_tools.transcribe(raw, file.filename or "voice.ogg", language)
+    except Exception as e:
+        code = 503 if "需要設定" in str(e) else 400
+        raise HTTPException(code, str(e))
+    _bump_usage(u["id"], "ai_transcribe")
+    return {"text": text}
+
+
 @app.post("/api/accounts")
 def create_account(request: Request, data: AccountCreate):
     _require_admin(request)
@@ -907,8 +1014,9 @@ async def telegram_webhook(request: Request):
     cid = chat.get("id")
     text = (msg.get("text") or "").strip()
     chat_type = chat.get("type", "private")
+    voice = msg.get("voice")
 
-    if not cid or not text:
+    if not cid or (not text and not voice):
         return {"ok": True}
 
     # 先記錄群組/頻道資訊（即使稍後因政策不回覆）
@@ -918,39 +1026,48 @@ async def telegram_webhook(request: Request):
             ["telegram_chat", chat.get("title", str(cid)), json.dumps({"chat_id": cid, "type": chat_type})],
         )
 
-    # 對外群組未 @bot / 未 opt-in → 靜默忽略
-    if not tg_policy.should_respond(msg):
-        return {"ok": True}
-
-    clean = tg_policy.clean_text(text, chat_type)
     is_ai_reply = False
-
-    if clean.startswith("/"):
-        parts = clean[1:].split(maxsplit=1)
-        cmd = parts[0].lower()
-        cmd_args = parts[1] if len(parts) > 1 else ""
-        if tg_policy.command_internal_only(cmd) and not tg_policy.is_internal(cid):
-            reply = "🔒 此指令僅供對內群組使用。"
-        elif cmd in ("start", "help") and not tg_policy.is_internal(cid):
-            reply = TELEGRAM_PUBLIC_WELCOME
-        elif cmd in tg_policy.allowed_commands(cid):
-            reply = openclaw_handle(cid, cmd, cmd_args)
-            is_ai_reply = cmd not in ("start", "help")
-        else:
+    if voice:
+        # 語音僅對內處理，避免外部群組產生 API 費用；對外靜默忽略。
+        if not tg_policy.is_internal(cid):
             return {"ok": True}
-    elif tg_policy.is_internal(cid):
-        # 私人工作群：已 @bot，才給完整 AI 回覆（可控制伺服器）
-        reply = openclaw_handle(cid, "靈感", clean)
+        reply = openclaw_voice(msg) or "⚠️ 語音處理失敗。"
         is_ai_reply = True
     else:
-        # 對外 Group/Channel + 私聊：只互動，回覆一律壓成約 15 字
-        reply = get_kb_reply(clean)
-        if reply:
-            reply = shorten_reply(reply, 60)
-        else:
-            save_unanswered(clean, "zh-TW")
-            reply = openclaw_short_answer(clean)
+        # 對外群組未 @bot / 未 opt-in → 靜默忽略
+        if not tg_policy.should_respond(msg):
+            return {"ok": True}
+
+        clean = tg_policy.clean_text(text, chat_type)
+        if openclaw_wants_capabilities(clean):
+            # 「列出功能」走白名單，不讓 AI 自由編造不存在的服務。
+            reply = openclaw_handle(cid, "help", "")
+        elif clean.startswith("/"):
+            parts = clean[1:].split(maxsplit=1)
+            cmd = parts[0].lower()
+            cmd_args = parts[1] if len(parts) > 1 else ""
+            if tg_policy.command_internal_only(cmd) and not tg_policy.is_internal(cid):
+                reply = "🔒 此指令僅供對內群組使用。"
+            elif cmd in ("start", "help") and not tg_policy.is_internal(cid):
+                reply = TELEGRAM_PUBLIC_WELCOME
+            elif cmd in tg_policy.allowed_commands(cid):
+                reply = openclaw_handle(cid, cmd, cmd_args)
+                is_ai_reply = cmd not in ("start", "help")
+            else:
+                return {"ok": True}
+        elif tg_policy.is_internal(cid):
+            # 私人工作群：已 @bot，才給完整 AI 回覆（可控制伺服器）
+            reply = openclaw_handle(cid, "靈感", clean)
             is_ai_reply = True
+        else:
+            # 對外 Group/Channel + 私聊：只互動，回覆一律壓成約 15 字
+            reply = get_kb_reply(clean)
+            if reply:
+                reply = shorten_reply(reply, 60)
+            else:
+                save_unanswered(clean, "zh-TW")
+                reply = openclaw_short_answer(clean)
+                is_ai_reply = True
 
     msg_id = msg.get("message_id")
     token = TELEGRAM_BOT_TOKEN
@@ -1123,9 +1240,9 @@ def auth_me(request: Request, token: str = ""):
 
 
 PLAN_LIMITS = {
-    "free": {"ai_story": 3, "ai_generate": 10, "ai_translate": 20, "ai_image": 3},
-    "pro": {"ai_story": 100, "ai_generate": 500, "ai_translate": 500, "ai_image": 200},
-    "enterprise": {"ai_story": 100000, "ai_generate": 1000000, "ai_translate": 100000, "ai_image": 100000},
+    "free": {"ai_story": 3, "ai_generate": 10, "ai_translate": 20, "ai_image": 3, "ai_transcribe": 10},
+    "pro": {"ai_story": 100, "ai_generate": 500, "ai_translate": 500, "ai_image": 200, "ai_transcribe": 200},
+    "enterprise": {"ai_story": 100000, "ai_generate": 1000000, "ai_translate": 100000, "ai_image": 100000, "ai_transcribe": 100000},
 }
 
 
@@ -1250,7 +1367,7 @@ def license_status(request: Request, token: str = ""):
                     "used": _usage_today(u["id"], t),
                     "limit": PLAN_LIMITS.get(plan, PLAN_LIMITS["free"]).get(t),
                 }
-                for t in ("ai_story", "ai_translate", "ai_image")
+                for t in ("ai_story", "ai_translate", "ai_image", "ai_transcribe")
             },
             # 向後相容：既有 ai-story.html 讀這兩個欄位
             "ai_story": _usage_today(u["id"], "ai_story"),
@@ -1751,7 +1868,7 @@ def serve_sitemap():
         ("/", "1.0"), ("/pricing.html", "0.9"), ("/novels.html", "0.8"),
         ("/proposals/ops-managed.html", "0.9"), ("/proposals/ai-customer-service.html", "0.9"),
         ("/index.html", "0.8"), ("/ai-story.html", "0.7"), ("/ai-chat.html", "0.7"),
-        ("/ai-tools.html", "0.7"),
+        ("/ai-tools.html", "0.7"), ("/personal-tools.html", "0.7"),
         ("/thoughts/", "0.8"), ("/guides/", "0.7"), ("/community/", "0.7"),
         ("/affiliate.html", "0.6"), ("/support.html", "0.6"),
         ("/govdata", "0.8"), ("/product/", "0.9"), ("/social/", "0.7"),

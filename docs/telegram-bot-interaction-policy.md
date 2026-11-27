@@ -26,6 +26,10 @@
 | 內容靈感 `/靈感` | ✅ | ✅（公開安全 prompt） |
 | 翻譯 `/翻譯`、`/translate` | ✅ | ✅（每 chat 5 秒冷卻） |
 | 整合搜尋 `/搜尋`、`/search` | ✅ | ✅（政府資料＋知識庫，可加 `web:`） |
+| 安全計算 `/計算`、`/calc` | ✅ | ✅（白名單 AST，不用 `eval`） |
+| 個人筆記 `/筆記`、`/note` | ✅（依 chat_id 隔離） | 🔒 拒絕（個人資料） |
+| 個人提醒 `/提醒`、`/remind` | ✅（到點由 bot 私訊） | 🔒 拒絕（個人資料） |
+| 語音辨識（直接傳語音） | ✅（需 STT 金鑰，10 秒冷卻） | 🔒 靜默忽略（會產生 API 費用） |
 | AI 生圖 `/生圖`、`/image` | ✅（需 `OPENAI_API_KEY`） | 🔒 拒絕（會產生 OpenAI 費用） |
 | AI 自動化 `/自動化` | ✅ | 🔒 拒絕：「僅供對內群組使用」 |
 | 觸發部署 `/部署` | ✅ | 🔒 拒絕，不碰 deploy hook |
@@ -41,6 +45,10 @@
 | `/靈感 [主題]`、`/idea` | ✅ | ✅ | 行銷創意，公開安全 |
 | `/翻譯 [語言:]文字`、`/translate` | ✅ | ✅ | `en:` / `zh-TW:` 等；省略時依文字自動判斷 |
 | `/搜尋 [scope:]關鍵字`、`/search` | ✅ | ✅ | scope=`all`/`gov`/`kb`/`web` |
+| `/計算 運算式`、`/calc` | ✅ | ✅ | 例：`/計算 (1+2)*3`、`sqrt(16)` |
+| `/筆記 [內容\|列表\|刪除 id]`、`/note` | ✅ | 🔒 | `chat:<id>` 隔離，列表/刪除只動自己的 |
+| `/提醒 [時間 內容\|列表\|取消 id]`、`/remind` | ✅ | 🔒 | 例：`/提醒 30分鐘後 喝水` |
+| 直接傳語音訊息 | ✅ | 🔒 | 回文字；`/語音`、`/voice` 顯示用法 |
 | `/生圖 [尺寸] 描述`、`/image` | ✅ | 🔒 | 直接回 sendPhoto；10 秒冷卻 |
 | `/自動化 [主題]`、`/auto` | ✅ | 🔒 | 觸發 AI 自動化任務 |
 | `/部署`、`/deploy` | ✅ | 🔒 | 觸發 Render deploy hook |
@@ -62,11 +70,15 @@ getUpdates → _process_update
 ```
 Telegram POST → telegram_webhook
   → should_respond? （對內群組強制 @；對外群組自動判斷提問）
+      ├─ 語音（無文字）→ 僅對內 → process_voice → transcribe
       ├─ 指令 → 白名單檢查 → openclaw_handle
-      └─ 自由文字 → 對內：openclaw_handle("靈感")（完整）
+      └─ 自由文字 → 「列出功能／能做什麼」→ /help 白名單（不讓 AI 編造）
+                    對內：openclaw_handle("靈感")（完整）
                     對外：get_kb_reply → shorten → fallback short_answer（約 15 字）
   → sendMessage（AI 回覆用 Markdown；KB 回覆用 HTML）
 ```
+
+> 2026-11-27 修正：先前有人問「列出所有可執行功能」，落入客服 fallback 後模型自行列了「計算、提醒、筆記、語音辨識」等當時不存在的能力。現在這類問題直接回 `/help` 白名單，且客服 prompt 明確禁止承諾未實作功能；上述四項也已補齊並白名單化。
 
 ## 6. 安全邊界
 
@@ -124,4 +136,4 @@ Telegram POST → telegram_webhook
 
 > Render 必須設 `TELEGRAM_WEBHOOK_SECRET`，否則 webhook 端點會拒絕所有請求（`setWebhook` 也會略過）。本機 poller 不受影響。
 
-測試：`tests/test_security_permissions.py`（webhook 密鑰、外部群控制指令、匿名改配置/操作、冷卻繞過、憑證外洩掃描），全套 363 passed（含新增 `tests/test_ai_tools.py` 的翻譯／生圖／搜尋路徑）。
+測試：`tests/test_security_permissions.py`（webhook 密鑰、外部群控制指令、匿名改配置/操作、冷卻繞過、憑證外洩掃描），全套 385 passed（含 `tests/test_ai_tools.py` 的翻譯／生圖／搜尋，以及 `tests/test_personal_tools.py` 的計算／筆記／提醒／語音路徑）。

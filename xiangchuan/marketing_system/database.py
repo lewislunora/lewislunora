@@ -25,6 +25,7 @@ DB_TABLES = [
     "site_settings",
     "site_settings_history",
     "admin_audit",
+    "notes", "reminders",
     "ai_bot_actions",
     "subscribers",
     "gov_catalog", "gov_datasets", "gov_rows",
@@ -501,6 +502,31 @@ CREATE TABLE IF NOT EXISTS social_identities (
             action TEXT NOT NULL,
             at TEXT DEFAULT (datetime('now'))
         );
+
+        -- 個人筆記：owner = user:<id>（網站）/ chat:<chat_id>（Telegram）
+        CREATE TABLE IF NOT EXISTS notes (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            owner TEXT NOT NULL,
+            content TEXT NOT NULL,
+            tags TEXT DEFAULT '',
+            created_at TEXT DEFAULT (datetime('now')),
+            updated_at TEXT DEFAULT (datetime('now'))
+        );
+        CREATE INDEX IF NOT EXISTS idx_notes_owner ON notes(owner, updated_at);
+
+        -- 提醒：chat_id 有值時由背景 dispatcher 發 Telegram；網站提醒由前端輪詢通知
+        CREATE TABLE IF NOT EXISTS reminders (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            owner TEXT NOT NULL,
+            chat_id TEXT DEFAULT '',
+            text TEXT NOT NULL,
+            due_at TEXT NOT NULL,
+            status TEXT DEFAULT 'pending',
+            attempts INTEGER DEFAULT 0,
+            created_at TEXT DEFAULT (datetime('now')),
+            sent_at TEXT
+        );
+        CREATE INDEX IF NOT EXISTS idx_reminders_due ON reminders(status, due_at);
 
         CREATE TABLE IF NOT EXISTS gov_catalog (
             nid TEXT PRIMARY KEY,
