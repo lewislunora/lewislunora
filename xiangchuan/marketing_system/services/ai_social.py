@@ -431,10 +431,15 @@ def tick() -> dict:
         if create_bot_thread(b):
             threads_created += 1
 
-    # 4) 互動：對最新未被機器人回應的聚落，發一句話讓對話繼續
+    # 4) 互動：針對近 24h 內的新聚落討論發話（AI 主動回應 → 真人 ↔ AI 自然互動）
     if replied < 2:
+        cutoff = (datetime.utcnow() - timedelta(hours=24)).strftime("%Y-%m-%d %H:%M:%S")
+        threads = fetch(
+            "SELECT * FROM community_threads WHERE created_at>=? ORDER BY id DESC LIMIT 5",
+            (cutoff,),
+        )
         bot_names = {b["name"] for b in bots}
-        for t in fetch("SELECT * FROM community_threads ORDER BY id DESC LIMIT 5"):
+        for t in threads:
             if replied >= 2:
                 break
             last = fetch_one(
