@@ -16,7 +16,11 @@ from ..config import TELEGRAM_BOT_TOKEN, GROQ_API_KEY
 logger = logging.getLogger(__name__)
 
 BOT_TOKEN = TELEGRAM_BOT_TOKEN
-ALLOWED_CHAT_ID = os.getenv("TELEGRAM_NOTIFY_CHAT_ID", "626453598")
+ALLOWED_CHAT_IDS = [
+    c.strip()
+    for c in os.getenv("TELEGRAM_ALLOWED_CHAT_IDS", "").split(",")
+    if c.strip()
+] or [os.getenv("TELEGRAM_NOTIFY_CHAT_ID", "626453598")]
 DEPLOY_HOOK_URL = os.getenv("RENDER_DEPLOY_HOOK", "")
 
 ai_gen = AIContentGenerator()
@@ -47,7 +51,7 @@ def _send_message(chat_id, text):
 
 
 def _is_authorized(chat_id):
-    return str(chat_id) == ALLOWED_CHAT_ID
+    return str(chat_id) in ALLOWED_CHAT_IDS
 
 
 def _cmd_start():
