@@ -2,7 +2,7 @@
 # 開發助理啟動腳本
 # 自動關閉 Webhook → 啟用 Polling 模式
 cd "$(dirname "$0")"
-TOKEN="${TELEGRAM_BOT_TOKEN:-8653211794:AAG08xDDj0UDkX18TE60BQSVs-bwwVh8AH8}"
+TOKEN="${TELEGRAM_BOT_TOKEN:-8653211794:AAGWq9an_vkfHIMqbS3nO2uzZNRwnBFl8h4}"
 
 echo "🔌 關閉 Webhook，切換至 Polling 模式..."
 curl -s "https://api.telegram.org/bot$TOKEN/deleteWebhook" | python3 -m json.tool

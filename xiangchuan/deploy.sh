@@ -9,7 +9,7 @@ echo "AI 虛擬推廣行銷助手 - k3s 部署"
 echo "=================================================="
 
 # 配置
-BOT_TOKEN="${TELEGRAM_TOKEN:-8653211794:AAG08xDDj0UDkX18TE60BQSVs-bwwVh8AH8}"
+BOT_TOKEN="${TELEGRAM_TOKEN:-8653211794:AAGWq9an_vkfHIMqbS3nO2uzZNRwnBFl8h4}"
 IMAGE_NAME="telegram-bot"
 IMAGE_TAG="latest"
 NAMESPACE="default"

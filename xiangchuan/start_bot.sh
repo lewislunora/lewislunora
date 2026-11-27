@@ -5,7 +5,7 @@
 cd "$(dirname "$0")"
 
 # 設定 Token（請替換為你的實際 Token 或使用環境變數）
-TELEGRAM_TOKEN="${TELEGRAM_TOKEN:-8653211794:AAG08xDDj0UDkX18TE60BQSVs-bwwVh8AH8}"
+TELEGRAM_TOKEN="${TELEGRAM_TOKEN:-8653211794:AAGWq9an_vkfHIMqbS3nO2uzZNRwnBFl8h4}"
 
 echo "=== 啟動 Telegram Bot @ailunora_bot ==="
 
