@@ -12,15 +12,17 @@ import requests
 
 from ..ai.generator import AIContentGenerator
 from ..config import TELEGRAM_BOT_TOKEN, GROQ_API_KEY
+from . import telegram_policy as policy
 
 logger = logging.getLogger(__name__)
 
 BOT_TOKEN = TELEGRAM_BOT_TOKEN
-ALLOWED_CHAT_IDS = [
-    c.strip()
-    for c in os.getenv("TELEGRAM_ALLOWED_CHAT_IDS", "").split(",")
-    if c.strip()
-] or [os.getenv("TELEGRAM_NOTIFY_CHAT_ID", "626453598")]
+ALLOWED_CHAT_IDS = sorted(
+    policy.INTERNAL_CHAT_IDS
+    | policy.LINKED_CHANNEL_IDS
+    | {os.getenv("TELEGRAM_NOTIFY_CHAT_ID", "626453598")}
+    | {c.strip() for c in os.getenv("TELEGRAM_ALLOWED_CHAT_IDS", "").split(",") if c.strip()}
+)
 DEPLOY_HOOK_URL = os.getenv("RENDER_DEPLOY_HOOK", "")
 
 ai_gen = AIContentGenerator()
@@ -140,10 +142,14 @@ def _cmd_status():
     )
 
 
-def _cmd_help():
+def _cmd_help(chat_id=None):
     lines = ["📋 *OpenClaw 指令列表*\n"]
+    allowed = policy.allowed_commands(chat_id) if chat_id is not None else policy.ALL_COMMANDS
     for cmd, desc in COMMANDS.items():
-        lines.append(f"/{cmd} — {desc}")
+        if cmd.lower() in allowed:
+            lines.append(f"/{cmd} — {desc}")
+    if chat_id is not None and policy.is_external(chat_id):
+        lines.append("\n🔒 自動化 / 部署 / 狀態僅供對內群組使用。")
     return "\n".join(lines)
 
 
@@ -159,7 +165,7 @@ def _handle_command(chat_id, cmd, args=""):
     elif cmd in ("狀態", "status"):
         return _cmd_status()
     elif cmd in ("幫助", "help"):
-        return _cmd_help()
+        return _cmd_help(chat_id)
     return f"❌ 未知指令：`/{cmd}`\n請輸入 /help 查看可用指令"
 
 
@@ -167,25 +173,30 @@ def _process_update(update):
     message = update.get("message")
     if not message:
         return
-    chat_id = message.get("chat", {}).get("id")
-    text = message.get("text", "").strip()
 
-    if not text or not chat_id:
+    chat = message.get("chat", {})
+    chat_id = chat.get("id")
+    text = (message.get("text") or "").strip()
+
+    # 對外群組未 @bot 或未 opt-in → 靜默忽略，不回「未授權」洗版
+    if not policy.should_respond(message):
         return
-    if not _is_authorized(chat_id):
-        _send_message(chat_id, "⛔ 未授權的使用者。請使用指定的 Telegram 帳號操作。")
-        logger.warning(f"Unauthorized access from chat {chat_id}")
+    if chat.get("type", "private") in policy.GROUP_TYPES and not _is_authorized(chat_id):
+        logger.warning(f"Unauthorized group access from chat {chat_id}")
         return
 
-    if text.startswith("/"):
-        parts = text[1:].split(maxsplit=1)
+    clean = policy.clean_text(text, chat.get("type", "private"))
+    if clean.startswith("/"):
+        parts = clean[1:].split(maxsplit=1)
         cmd = parts[0].lower()
         args = parts[1] if len(parts) > 1 else ""
-        response = _handle_command(chat_id, cmd, args)
-        _send_message(chat_id, response)
+        if policy.command_internal_only(cmd) and not policy.is_internal(chat_id):
+            response = "🔒 此指令僅供對內群組使用。"
+        else:
+            response = _handle_command(chat_id, cmd, args)
     else:
-        response = _handle_command(chat_id, "靈感", text)
-        _send_message(chat_id, response)
+        response = _handle_command(chat_id, "靈感", clean)
+    _send_message(chat_id, response)
 
 
 def run_poller():

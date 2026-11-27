@@ -6,6 +6,7 @@ from unittest.mock import patch, MagicMock
 from fastapi.testclient import TestClient
 from marketing_system.api.server import app
 from marketing_system.database import execute, fetch, fetch_one, init_db
+from marketing_system.services import telegram_policy as tg_policy
 
 
 @pytest.fixture(autouse=True)
@@ -172,7 +173,8 @@ class TestWebhookFullFlow:
         assert len(rows) == 1
         assert rows[0]["status"] == "pending"
 
-    def test_webhook_group_mention(self, client):
+    def test_webhook_group_mention(self, client, monkeypatch):
+        monkeypatch.setattr(tg_policy, "EXTERNAL_CHAT_IDS", {"-100123"})
         execute(
             "INSERT INTO kb_entries (keywords, answer, language) VALUES (?, ?, ?)",
             [json.dumps(["方案介紹"]), "方案介紹回答", "zh-TW"],

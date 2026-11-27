@@ -40,7 +40,8 @@ from ..services.social_auth import (
     is_configured, configured_providers, authorize_url, exchange_and_profile,
     verify_telegram, encode_next, decode_next, PROVIDER_LABELS, TELEGRAM_BOT_USERNAME,
 )
-from ..services.openclaw_agent import _handle_command as openclaw_handle, _is_authorized as openclaw_authorized
+from ..services.openclaw_agent import _handle_command as openclaw_handle
+from ..services import telegram_policy as tg_policy
 from ..services.knowledge_base import get_kb_reply, save_unanswered, get_pending, auto_learn
 from ..services.analytics import track_async, summary as analytics_summary
 from ..services.story_generator import AIStoryGenerator
@@ -787,6 +788,21 @@ def telegram_broadcast(text: str = None):
     return {"broadcast": results, "total": len(results)}
 
 
+TELEGRAM_PUBLIC_WELCOME = (
+    "🤖 歡迎使用 @ailunora_bot！\n\n"
+    "你可以問我：\n"
+    "• 方案與價格\n"
+    "• 功能介紹\n"
+    "• 平台支援\n"
+    "• 如何開始\n"
+    "• 其他行銷相關問題\n\n"
+    "💡 *OpenClaw 指令*\n"
+    "• /靈感 [主題] — 產生內容靈感\n"
+    "• /幫助 — 顯示可用指令\n\n"
+    "或在群組中 @ailunora_bot 你的問題"
+)
+
+
 @app.post("/api/telegram/webhook")
 async def telegram_webhook(request: Request):
     body = await request.json()
@@ -799,68 +815,54 @@ async def telegram_webhook(request: Request):
     if not cid or not text:
         return {"ok": True}
 
-    is_bot_command = text.startswith("/")
-    is_group = chat_type in ("group", "supergroup", "channel")
-    bot_username = "ailunora_bot"
-
-    mentioned = bot_username in text.lower() if is_group else True
-
-    if is_group:
+    # 先記錄群組/頻道資訊（即使稍後因政策不回覆）
+    if chat_type in tg_policy.GROUP_TYPES:
         execute(
             "INSERT OR IGNORE INTO accounts (platform, label, credentials) VALUES (?, ?, ?)",
             ["telegram_chat", chat.get("title", str(cid)), json.dumps({"chat_id": cid, "type": chat_type})],
         )
 
-    if is_bot_command:
-        cmd_parts = text[1:].split(maxsplit=1)
-        cmd = cmd_parts[0].lower()
-        cmd_args = cmd_parts[1] if len(cmd_parts) > 1 else ""
+    # 對外群組未 @bot / 未 opt-in → 靜默忽略
+    if not tg_policy.should_respond(msg):
+        return {"ok": True}
 
-        if cmd in ("start", "help"):
-            reply = (
-                "🤖 歡迎使用 @ailunora_bot！\n\n"
-                "你可以問我：\n"
-                "• 方案與價格\n"
-                "• 功能介紹\n"
-                "• 平台支援\n"
-                "• 如何開始\n"
-                "• 其他行銷相關問題\n\n"
-                "💡 *OpenClaw 指令*\n"
-                "• /靈感 [主題] — 產生內容靈感\n"
-                "• /部署 — 觸發網站部署\n"
-                "• /狀態 — 查看系統狀態\n\n"
-                "或在群組中 @ailunora_bot 你的問題"
-            )
-        elif cmd in ("靈感", "idea", "部署", "deploy", "狀態", "status"):
-            if openclaw_authorized(cid):
-                reply = openclaw_handle(cid, cmd, cmd_args)
-            else:
-                reply = "⛔ 未授權的使用者。"
+    clean = tg_policy.clean_text(text, chat_type)
+    is_ai_reply = False
+
+    if clean.startswith("/"):
+        parts = clean[1:].split(maxsplit=1)
+        cmd = parts[0].lower()
+        cmd_args = parts[1] if len(parts) > 1 else ""
+        if tg_policy.command_internal_only(cmd) and not tg_policy.is_internal(cid):
+            reply = "🔒 此指令僅供對內群組使用。"
+        elif cmd in ("start", "help") and not tg_policy.is_internal(cid):
+            reply = TELEGRAM_PUBLIC_WELCOME
+        elif cmd in tg_policy.allowed_commands(cid):
+            reply = openclaw_handle(cid, cmd, cmd_args)
+            is_ai_reply = cmd not in ("start", "help")
         else:
             return {"ok": True}
-    elif not mentioned:
-        return {"ok": True}
+    elif tg_policy.is_internal(cid) or tg_policy.is_linked_channel(cid):
+        # 對內：任何成員自由文字直接觸發 AI
+        reply = openclaw_handle(cid, "靈感", clean)
+        is_ai_reply = True
     else:
-        clean = text.replace(f"@{bot_username}", "").strip() if is_group else text
+        # 對外/私聊：知識庫優先，找不到再 fallback 到公開安全的 AI
         reply = get_kb_reply(clean)
         if not reply:
             save_unanswered(clean, "zh-TW")
-            reply = (
-                "🤖 抱歉，這個問題我還不太會回答，已記錄給管理員學習。\n\n"
-                "你可以問我：\n"
-                "• 方案與價格\n"
-                "• 功能介紹\n"
-                "• 平台支援\n"
-                "• 如何開始\n"
-                "• 其他行銷相關問題"
-            )
+            reply = openclaw_handle(cid, "靈感", clean)
+            is_ai_reply = True
 
     msg_id = msg.get("message_id")
-
     token = TELEGRAM_BOT_TOKEN
     try:
         import requests as req
-        payload = {"chat_id": cid, "text": reply, "parse_mode": "HTML"}
+        payload = {
+            "chat_id": cid,
+            "text": reply,
+            "parse_mode": "Markdown" if is_ai_reply else "HTML",
+        }
         if msg_id:
             payload["reply_to_message_id"] = msg_id
         req.post(
