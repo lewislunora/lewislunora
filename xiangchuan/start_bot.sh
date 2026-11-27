@@ -4,8 +4,8 @@
 
 cd "$(dirname "$0")"
 
-# 設定 Token（請替換為你的實際 Token 或使用環境變數）
-TELEGRAM_TOKEN="${TELEGRAM_TOKEN:-8653211794:AAGWq9an_vkfHIMqbS3nO2uzZNRwnBFl8h4}"
+# Token 只從環境變數讀取，禁止寫入版本控制
+TELEGRAM_TOKEN="${TELEGRAM_TOKEN:?請先設定 TELEGRAM_TOKEN 環境變數}"
 
 echo "=== 啟動 Telegram Bot @ailunora_bot ==="
 

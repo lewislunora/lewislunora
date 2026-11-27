@@ -143,6 +143,7 @@ GMAIL_CLIENT_ID / GMAIL_CLIENT_SECRET / GMAIL_REFRESH_TOKEN / GMAIL_USER
 # SMTP（僅備援，Render 免費版封鎖出站 587）
 SMTP_HOST / SMTP_PORT / SMTP_USER / SMTP_PASS
 # Webhook 驗證 token
+TELEGRAM_WEBHOOK_SECRET              # Telegram X-Telegram-Bot-Api-Secret-Token，未設則 webhook 端點全數拒絕
 FB_WEBHOOK_VERIFY_TOKEN
 X_WEBHOOK_VERIFY_TOKEN
 # 平台發文憑證

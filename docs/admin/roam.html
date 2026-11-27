@@ -89,7 +89,7 @@ function search(){
   if(!q)return;
   var el=document.getElementById('searchResults');
   el.innerHTML='<div class="loading">🔍 搜尋中...</div>';
-  fetch(api('/api/roam/search?query='+encodeURIComponent(q))).then(function(r){return r.json()}).then(function(d){
+  fetch(api('/api/roam/search?query='+encodeURIComponent(q)), {credentials:'include'}).then(function(r){return r.json()}).then(function(d){
     if(!d.results||d.results.length===0){
       el.innerHTML='<div class="empty">沒有找到相關結果</div>';return;
     }
@@ -123,7 +123,7 @@ function visitSite(url, btn){
   var resultDiv=card.querySelector('.visit-result');
   resultDiv.innerHTML='<div class="loading">載入中...</div>';
   btn.disabled=true;btn.textContent='⏳ 檢查中';
-  fetch(api('/api/roam/visit'),{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({url:url})})
+  fetch(api('/api/roam/visit'),{method:'POST',credentials:'include',headers:{'Content-Type':'application/json'},body:JSON.stringify({url:url})})
   .then(function(r){return r.json()}).then(function(info){
     btn.disabled=false;btn.textContent='👁️ 重新檢查';
     var html='';
@@ -151,7 +151,7 @@ function generateReply(url, title, content, btn){
   var section=btn.closest('.card').querySelector('.reply-section');
   section.innerHTML='<div class="loading">🤖 AI 生成中...</div>';
   btn.disabled=true;btn.textContent='⏳ 生成中';
-  fetch(api('/api/roam/generate'),{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({url:url,title:title,content:content})})
+  fetch(api('/api/roam/generate'),{method:'POST',credentials:'include',headers:{'Content-Type':'application/json'},body:JSON.stringify({url:url,title:title,content:content})})
   .then(function(r){return r.json()}).then(function(d){
     btn.disabled=false;btn.textContent='🧠 重新生成';
     var html='<div class="reply-box">'+escapeHtml(d.reply)+'</div>';
@@ -171,7 +171,7 @@ function postReply(url, btn){
   var status=section.querySelector('.post-status');
   btn.disabled=true;btn.textContent='⏳ 張貼中...';
   status.textContent='';
-  fetch(api('/api/roam/post'),{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({url:url,reply:reply})})
+  fetch(api('/api/roam/post'),{method:'POST',credentials:'include',headers:{'Content-Type':'application/json'},body:JSON.stringify({url:url,reply:reply})})
   .then(function(r){return r.json()}).then(function(d){
     btn.disabled=false;btn.textContent='📨 訪客留言';
     if(d.ok){
@@ -193,7 +193,7 @@ function runRoam(){
   var results=document.getElementById('roamResults');
   status.textContent='⏳ 搜尋中...';
   results.innerHTML='';
-  fetch(api('/api/roam/run'),{method:'POST'}).then(function(r){return r.json()}).then(function(d){
+  fetch(api('/api/roam/run'),{method:'POST',credentials:'include'}).then(function(r){return r.json()}).then(function(d){
     status.textContent='✅ 完成！搜尋詞：「'+d.query+'」，找到 '+d.total_found+' 個網站，成功張貼 '+d.posted_count+' 篇';
     var html='';
     d.results.forEach(function(r){

@@ -10,6 +10,8 @@ os.environ["GROQ_API_KEY"] = ""
 os.environ["SMTP_USER"] = "test@example.com"
 os.environ["SMTP_PASS"] = "test_pass"
 os.environ["TELEGRAM_BOT_TOKEN"] = ""
+os.environ["TELEGRAM_WEBHOOK_SECRET"] = "test-webhook-secret"
+WEBHOOK_HEADERS = {"X-Telegram-Bot-Api-Secret-Token": "test-webhook-secret"}
 os.environ["LINE_CHANNEL_ACCESS_TOKEN"] = ""
 os.environ["FACEBOOK_PAGE_TOKEN"] = ""
 
@@ -43,6 +45,19 @@ def setup_db():
 @pytest.fixture
 def client():
     return TestClient(app)
+
+
+@pytest.fixture
+def admin_client(client):
+    """通過管理員驗證的 client，供管理端 API 測試使用。"""
+    execute(
+        "INSERT OR REPLACE INTO users "
+        "(username, email, password_hash, salt, token, is_admin, is_active) "
+        "VALUES (?, ?, ?, ?, ?, 1, 1)",
+        ["sec_admin", "sec_admin@test.com", "x", "s", "sec-admin-token"],
+    )
+    client.cookies.set("token", "sec-admin-token")
+    return client
 
 
 @pytest.fixture

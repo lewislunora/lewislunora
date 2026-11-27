@@ -100,3 +100,22 @@ Telegram POST → telegram_webhook
 | 私人工作群 | `-1003739611959` | 自動化維護機器人（訊息查驗） | 🔧 我是自動化維護機器人，負責訊息查驗。在這個私人工作群，請 @ailunora_bot 才會處理，避免誤吃一般聊天。可用 /狀態、/自動化、/部署 等維護指令。 |
 
 > 兩個 chat 互為 linked chat（Channel 的討論群）；網站邀請連結 `t.me/+QgAyWlVyIxFjNmRl` 即指向該 Channel，目前沒有其他已登記的對外群組 ID。新的對外群組第一次發訊息後，可再補發第一列通知。
+
+## 10. 安全加固（2026-11-27）
+
+滲透測試發現身份政策本身安全，但 HTTP 層可绕过，已修復：
+
+| 風險 | 修復 |
+|---|---|
+| `/api/telegram/webhook` 可偽造 `chat.id`（例如站長私聊）觸發 `/部署` | 改為**失敗關閉**：必須帶 `X-Telegram-Bot-Api-Secret-Token` 且符合 `TELEGRAM_WEBHOOK_SECRET`，否則 403；`setWebhook` 時一併帶 `secret_token` |
+| `accounts / content / kb / pages / telegram.broadcast` 匿名可改配置 | 全部補上 `_require_admin(request)`；管理面板的 `api()` 已帶 `credentials: 'include'` |
+| `auto-promote / roam/*` 匿名可產生內容並對外發文（耗用 Groq 額度、寫入外部網站） | 補上 `_require_admin(request)`；`admin/promo.html`、`admin/roam.html` 的 fetch 攜帶 cookie |
+| `DELETE /api/comments/{id}` 匿名可刪除任意留言 | 補上 `_require_admin(request)` |
+| `/api/govdata/ingest` 匿名可用 `force=true` 繞過 10 分鐘冷卻反覆下載 | 公開端點固定走冷卻，不再接受 `force` |
+| Bot token 寫死在公開 repo 的 `deploy.sh`、`run_dev_bot.sh`、`start_bot.sh`、`bot_test.log` | 改為只讀環境變數（缺少即終止），log 內 token 已遮罩 |
+
+**仍需人工處理：** 到 @BotFather 執行 `/revoke` 作廢舊 token。舊 token 已公開在 git history，單純改檔案不夠；作廢後才更安全。
+
+> Render 必須設 `TELEGRAM_WEBHOOK_SECRET`，否則 webhook 端點會拒絕所有請求（`setWebhook` 也會略過）。本機 poller 不受影響。
+
+測試：`tests/test_security_permissions.py`（webhook 密鑰、外部群控制指令、匿名改配置/操作、冷卻繞過、憑證外洩掃描），全套 340 passed。

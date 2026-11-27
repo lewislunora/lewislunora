@@ -4,6 +4,7 @@ import json
 import pytest
 from unittest.mock import patch, MagicMock
 from fastapi.testclient import TestClient
+WEBHOOK_HEADERS = {"X-Telegram-Bot-Api-Secret-Token": "test-webhook-secret"}
 from marketing_system.api.server import app
 from marketing_system.database import execute, fetch, fetch_one, init_db
 
@@ -145,7 +146,7 @@ class TestWebhookFullFlow:
         )
         with patch("requests.post") as mock_post:
             mock_post.return_value.json.return_value = {"ok": True}
-            resp = client.post("/api/telegram/webhook", json={
+            resp = client.post("/api/telegram/webhook", headers=WEBHOOK_HEADERS, json={
                 "message": {
                     "chat": {"id": 12345, "type": "private"},
                     "text": "請問方案價格多少？",
@@ -161,7 +162,7 @@ class TestWebhookFullFlow:
     def test_webhook_no_match_saves_pending(self, client):
         with patch("requests.post") as mock_post:
             mock_post.return_value.json.return_value = {"ok": True}
-            client.post("/api/telegram/webhook", json={
+            client.post("/api/telegram/webhook", headers=WEBHOOK_HEADERS, json={
                 "message": {
                     "chat": {"id": 999, "type": "private"},
                     "text": "今天天氣如何？",
@@ -179,7 +180,7 @@ class TestWebhookFullFlow:
         )
         with patch("requests.post") as mock_post:
             mock_post.return_value.json.return_value = {"ok": True}
-            resp = client.post("/api/telegram/webhook", json={
+            resp = client.post("/api/telegram/webhook", headers=WEBHOOK_HEADERS, json={
                 "message": {
                     "chat": {"id": -100123, "type": "group", "title": "Test Group"},
                     "text": "@ailunora_bot 請問方案介紹",
@@ -194,7 +195,7 @@ class TestWebhookFullFlow:
     def test_webhook_external_group_cannot_control_server(self, client):
         with patch("requests.post") as mock_post:
             mock_post.return_value.json.return_value = {"ok": True}
-            resp = client.post("/api/telegram/webhook", json={
+            resp = client.post("/api/telegram/webhook", headers=WEBHOOK_HEADERS, json={
                 "message": {
                     "chat": {"id": -100123, "type": "group", "title": "Test Group"},
                     "text": "@ailunora_bot /部署",
@@ -207,7 +208,7 @@ class TestWebhookFullFlow:
 
     def test_webhook_group_no_mention_ignored(self, client):
         with patch("requests.post") as mock_post:
-            resp = client.post("/api/telegram/webhook", json={
+            resp = client.post("/api/telegram/webhook", headers=WEBHOOK_HEADERS, json={
                 "message": {
                     "chat": {"id": -100456, "type": "group"},
                     "text": "無關內容未提及Bot",
@@ -222,7 +223,7 @@ class TestWebhookFullFlow:
              patch("marketing_system.services.openclaw_agent.ai_gen.is_available", return_value=True), \
              patch("marketing_system.services.openclaw_agent.ai_gen.generate", return_value="約十五字左右的答案"):
             mock_post.return_value.json.return_value = {"ok": True}
-            resp = client.post("/api/telegram/webhook", json={
+            resp = client.post("/api/telegram/webhook", headers=WEBHOOK_HEADERS, json={
                 "message": {
                     "chat": {"id": -100123, "type": "group", "title": "Test Group"},
                     "text": "請問如何開始？",
@@ -236,7 +237,7 @@ class TestWebhookFullFlow:
 
     def test_webhook_private_work_group_needs_mention(self, client):
         with patch("requests.post") as mock_post:
-            client.post("/api/telegram/webhook", json={
+            client.post("/api/telegram/webhook", headers=WEBHOOK_HEADERS, json={
                 "message": {
                     "chat": {"id": -1003739611959, "type": "supergroup", "title": "工作群"},
                     "text": "大家早，今天天氣不錯",
@@ -248,7 +249,7 @@ class TestWebhookFullFlow:
     def test_webhook_start_command(self, client):
         with patch("requests.post") as mock_post:
             mock_post.return_value.json.return_value = {"ok": True}
-            client.post("/api/telegram/webhook", json={
+            client.post("/api/telegram/webhook", headers=WEBHOOK_HEADERS, json={
                 "message": {
                     "chat": {"id": 777, "type": "private"},
                     "text": "/start",
@@ -260,7 +261,7 @@ class TestWebhookFullFlow:
 
     def test_webhook_unknown_command_returns_ok(self, client):
         with patch("requests.post") as mock_post:
-            resp = client.post("/api/telegram/webhook", json={
+            resp = client.post("/api/telegram/webhook", headers=WEBHOOK_HEADERS, json={
                 "message": {
                     "chat": {"id": 888, "type": "private"},
                     "text": "/unknown_cmd_xyz",
@@ -274,7 +275,7 @@ class TestWebhookFullFlow:
         """Channel posts should trigger chat_id auto-save"""
         with patch("requests.post") as mock_post:
             mock_post.return_value.json.return_value = {"ok": True}
-            resp = client.post("/api/telegram/webhook", json={
+            resp = client.post("/api/telegram/webhook", headers=WEBHOOK_HEADERS, json={
                 "channel_post": {
                     "chat": {"id": -100999, "type": "channel", "title": "Test Channel"},
                     "text": "Hello channel!",
@@ -286,18 +287,18 @@ class TestWebhookFullFlow:
         assert any("Test Channel" in r["label"] for r in rows)
 
     def test_webhook_empty_body(self, client):
-        resp = client.post("/api/telegram/webhook", json={})
+        resp = client.post("/api/telegram/webhook", headers=WEBHOOK_HEADERS, json={})
         assert resp.status_code == 200
 
     def test_webhook_missing_chat(self, client):
-        resp = client.post("/api/telegram/webhook", json={"message": {"text": "no chat"}})
+        resp = client.post("/api/telegram/webhook", headers=WEBHOOK_HEADERS, json={"message": {"text": "no chat"}})
         assert resp.status_code == 200
 
 
 class TestBroadcastFullFlow:
     """Broadcast with real accounts in DB"""
 
-    def test_broadcast_to_all_accounts(self, client):
+    def test_broadcast_to_all_accounts(self, admin_client):
         execute(
             "INSERT INTO accounts (platform, label, credentials) VALUES (?, ?, ?)",
             ["telegram_chat", "Group1", json.dumps({"chat_id": "-100111"})],
@@ -308,15 +309,15 @@ class TestBroadcastFullFlow:
         )
         with patch("requests.post") as mock_post:
             mock_post.return_value.json.return_value = {"ok": True}
-            resp = client.post("/api/telegram/broadcast?text=hello+world")
+            resp = admin_client.post("/api/telegram/broadcast?text=hello+world")
             assert resp.status_code == 200
             data = resp.json()
             assert data["total"] == 2
             assert mock_post.call_count == 2
 
-    def test_broadcast_without_accounts(self, client):
+    def test_broadcast_without_accounts(self, admin_client):
         with patch("requests.post") as mock_post:
-            resp = client.post("/api/telegram/broadcast?text=hi")
+            resp = admin_client.post("/api/telegram/broadcast?text=hi")
             assert resp.status_code == 200
             data = resp.json()
             assert data["total"] == 0
@@ -351,12 +352,12 @@ class TestKBFullFlow:
         resp = client.post("/api/kb/query", json={"text": ""})
         assert resp.status_code == 400
 
-    def test_update_and_verify(self, client):
+    def test_update_and_verify(self, admin_client):
         cid = execute(
             "INSERT INTO kb_entries (keywords, answer, language) VALUES (?, ?, ?)",
             [json.dumps(["舊"]), "舊答案", "zh-TW"],
         )
-        client.put(f"/api/kb/{cid}", json={
+        admin_client.put(f"/api/kb/{cid}", json={
             "keywords": ["新"],
             "answer": "新答案",
             "language": "en",
@@ -365,57 +366,57 @@ class TestKBFullFlow:
         assert row["answer"] == "新答案"
         assert row["language"] == "en"
 
-    def test_delete_kb(self, client):
+    def test_delete_kb(self, admin_client):
         cid = execute(
             "INSERT INTO kb_entries (keywords, answer, language) VALUES (?, ?, ?)",
             [json.dumps(["del"]), "刪除", "zh-TW"],
         )
-        resp = client.delete(f"/api/kb/{cid}")
+        resp = admin_client.delete(f"/api/kb/{cid}")
         assert resp.status_code == 200
         assert fetch_one("SELECT id FROM kb_entries WHERE id=?", [cid]) is None
 
-    def test_pending_suggest(self, client):
+    def test_pending_suggest(self, admin_client):
         pid = execute(
             "INSERT INTO kb_pending (question, language, count) VALUES (?, ?, ?)",
             ["What is price?", "en", 3],
         )
-        resp = client.post(f"/api/kb/pending/{pid}/suggest")
+        resp = admin_client.post(f"/api/kb/pending/{pid}/suggest")
         assert resp.status_code == 200
         data = resp.json()
         assert data["question"] == "What is price?"
         assert data["ai_suggest"] == ""  # No GROQ_API_KEY
 
-    def test_pending_reject(self, client):
+    def test_pending_reject(self, admin_client):
         pid = execute(
             "INSERT INTO kb_pending (question, language, count) VALUES (?, ?, ?)",
             ["Bad question", "zh-TW", 1],
         )
-        client.post(f"/api/kb/pending/{pid}/reject")
+        admin_client.post(f"/api/kb/pending/{pid}/reject")
         row = fetch_one("SELECT status FROM kb_pending WHERE id=?", [pid])
         assert row["status"] == "rejected"
 
-    def test_pending_nonexistent_suggest(self, client):
-        resp = client.post("/api/kb/pending/99999/suggest")
+    def test_pending_nonexistent_suggest(self, admin_client):
+        resp = admin_client.post("/api/kb/pending/99999/suggest")
         assert resp.status_code == 404
 
-    def test_auto_learn_endpoint(self, client):
-        resp = client.post("/api/kb/pending/auto-learn")
+    def test_auto_learn_endpoint(self, admin_client):
+        resp = admin_client.post("/api/kb/pending/auto-learn")
         assert resp.status_code == 200
 
 
 class TestContentEdgeCases:
     """Content CRUD with edge cases"""
 
-    def test_empty_platforms(self, client):
-        resp = client.post("/api/content", json={
+    def test_empty_platforms(self, admin_client):
+        resp = admin_client.post("/api/content", json={
             "title": "No Platform",
             "body": "Body",
             "platforms": [],
         })
         assert resp.status_code == 200
 
-    def test_scheduled_content(self, client):
-        resp = client.post("/api/content", json={
+    def test_scheduled_content(self, admin_client):
+        resp = admin_client.post("/api/content", json={
             "title": "Scheduled",
             "body": "Body",
             "platforms": ["telegram"],
@@ -436,7 +437,7 @@ class TestContentEdgeCases:
         data = resp.json()
         assert all(c["status"] == "published" for c in data["items"])
 
-    def test_delete_with_schedules(self, client):
+    def test_delete_with_schedules(self, admin_client):
         cid = execute(
             "INSERT INTO contents (title, body, platforms) VALUES (?, ?, ?)",
             ["ToDelete", "Body", "[]"],
@@ -445,7 +446,7 @@ class TestContentEdgeCases:
             "INSERT INTO schedules (content_id, platform, scheduled_at, status) VALUES (?, ?, '2030-01-01', 'pending')",
             [cid, "telegram"],
         )
-        resp = client.delete(f"/api/content/{cid}")
+        resp = admin_client.delete(f"/api/content/{cid}")
         assert resp.status_code == 200
         schedules = fetch("SELECT * FROM schedules WHERE content_id=?", [cid])
         assert len(schedules) == 0

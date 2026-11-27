@@ -3,6 +3,7 @@ import json
 import pytest
 from unittest.mock import patch, MagicMock
 from marketing_system.database import execute, fetch, fetch_one
+WEBHOOK_HEADERS = {"X-Telegram-Bot-Api-Secret-Token": "test-webhook-secret"}
 
 
 class TestStatus:
@@ -116,14 +117,14 @@ class TestContact:
 
 
 class TestContent:
-    def test_create_content(self, client, sample_content):
-        resp = client.post("/api/content", json=sample_content)
+    def test_create_content(self, admin_client, sample_content):
+        resp = admin_client.post("/api/content", json=sample_content)
         assert resp.status_code == 200
         data = resp.json()
         assert data["status"] == "created"
 
-    def test_create_content_saves_title(self, client, sample_content):
-        create = client.post("/api/content", json=sample_content).json()
+    def test_create_content_saves_title(self, admin_client, sample_content):
+        create = admin_client.post("/api/content", json=sample_content).json()
         row = fetch_one("SELECT title FROM contents WHERE id=?", [create["id"]])
         assert row["title"] == "Test Post"
 
@@ -131,16 +132,16 @@ class TestContent:
         resp = client.post("/api/content", json={"body": "no title", "platforms": ["telegram"]})
         assert resp.status_code == 422
 
-    def test_list_contents(self, client, sample_content):
-        client.post("/api/content", json=sample_content)
-        resp = client.get("/api/content")
+    def test_list_contents(self, admin_client, sample_content):
+        admin_client.post("/api/content", json=sample_content)
+        resp = admin_client.get("/api/content")
         assert resp.status_code == 200
         data = resp.json()
         assert data["total"] >= 1
 
-    def test_get_single_content(self, client, sample_content):
-        create = client.post("/api/content", json=sample_content).json()
-        resp = client.get(f"/api/content/{create['id']}")
+    def test_get_single_content(self, admin_client, sample_content):
+        create = admin_client.post("/api/content", json=sample_content).json()
+        resp = admin_client.get(f"/api/content/{create['id']}")
         assert resp.status_code == 200
         assert resp.json()["title"] == "Test Post"
 
@@ -148,33 +149,33 @@ class TestContent:
         resp = client.get("/api/content/99999")
         assert resp.status_code == 404
 
-    def test_delete_content(self, client, sample_content):
-        create = client.post("/api/content", json=sample_content).json()
-        resp = client.delete(f"/api/content/{create['id']}")
+    def test_delete_content(self, admin_client, sample_content):
+        create = admin_client.post("/api/content", json=sample_content).json()
+        resp = admin_client.delete(f"/api/content/{create['id']}")
         assert resp.status_code == 200
         assert resp.json()["status"] == "deleted"
 
-    def test_delete_nonexistent_content(self, client):
-        resp = client.delete("/api/content/99999")
+    def test_delete_nonexistent_content(self, admin_client):
+        resp = admin_client.delete("/api/content/99999")
         assert resp.status_code == 200
 
     @patch("marketing_system.api.server._build_connector")
-    def test_publish_content(self, mock_build, client, sample_content):
+    def test_publish_content(self, mock_build, admin_client, sample_content):
         mock_conn = MagicMock()
         mock_conn.post.return_value = {"success": True, "post_url": "https://t.me/test"}
         mock_build.return_value = mock_conn
-        create = client.post("/api/content", json=sample_content).json()
-        resp = client.post(f"/api/content/{create['id']}/publish")
+        create = admin_client.post("/api/content", json=sample_content).json()
+        resp = admin_client.post(f"/api/content/{create['id']}/publish")
         assert resp.status_code == 200
         assert "results" in resp.json()
 
     @patch("marketing_system.api.server._build_connector")
-    def test_publish_updates_status_to_published(self, mock_build, client, sample_content):
+    def test_publish_updates_status_to_published(self, mock_build, admin_client, sample_content):
         mock_conn = MagicMock()
         mock_conn.post.return_value = {"success": True, "post_url": "https://t.me/test"}
         mock_build.return_value = mock_conn
-        create = client.post("/api/content", json=sample_content).json()
-        client.post(f"/api/content/{create['id']}/publish")
+        create = admin_client.post("/api/content", json=sample_content).json()
+        admin_client.post(f"/api/content/{create['id']}/publish")
         row = fetch_one("SELECT status FROM contents WHERE id=?", [create["id"]])
         assert row["status"] == "published"
 
@@ -188,45 +189,45 @@ class TestContent:
 
 
 class TestAccounts:
-    def test_create_account(self, client, sample_account):
-        resp = client.post("/api/accounts", json=sample_account)
+    def test_create_account(self, admin_client, sample_account):
+        resp = admin_client.post("/api/accounts", json=sample_account)
         assert resp.status_code == 200
         assert resp.json()["status"] == "created"
 
-    def test_list_accounts(self, client, sample_account):
-        client.post("/api/accounts", json=sample_account)
-        resp = client.get("/api/accounts")
+    def test_list_accounts(self, admin_client, sample_account):
+        admin_client.post("/api/accounts", json=sample_account)
+        resp = admin_client.get("/api/accounts")
         assert resp.status_code == 200
         data = resp.json()
         assert len(data["items"]) >= 1
 
-    def test_delete_account(self, client, sample_account):
-        create = client.post("/api/accounts", json=sample_account).json()
-        resp = client.delete(f"/api/accounts/{create['id']}")
+    def test_delete_account(self, admin_client, sample_account):
+        create = admin_client.post("/api/accounts", json=sample_account).json()
+        resp = admin_client.delete(f"/api/accounts/{create['id']}")
         assert resp.status_code == 200
         assert resp.json()["status"] == "deleted"
 
-    def test_delete_nonexistent_account(self, client):
-        resp = client.delete("/api/accounts/99999")
+    def test_delete_nonexistent_account(self, admin_client):
+        resp = admin_client.delete("/api/accounts/99999")
         assert resp.status_code == 200
 
     @patch("marketing_system.api.server._build_connector")
-    def test_verify_account(self, mock_build, client, sample_account):
+    def test_verify_account(self, mock_build, admin_client, sample_account):
         mock_conn = MagicMock()
         mock_conn.verify.return_value = True
         mock_build.return_value = mock_conn
-        create = client.post("/api/accounts", json=sample_account).json()
-        resp = client.post(f"/api/accounts/{create['id']}/verify")
+        create = admin_client.post("/api/accounts", json=sample_account).json()
+        resp = admin_client.post(f"/api/accounts/{create['id']}/verify")
         assert resp.status_code == 200
         assert resp.json().get("verified") is True
 
     @patch("marketing_system.api.server._build_connector")
-    def test_verify_invalid_account(self, mock_build, client, sample_account):
+    def test_verify_invalid_account(self, mock_build, admin_client, sample_account):
         mock_conn = MagicMock()
         mock_conn.verify.return_value = False
         mock_build.return_value = mock_conn
-        create = client.post("/api/accounts", json=sample_account).json()
-        resp = client.post(f"/api/accounts/{create['id']}/verify")
+        create = admin_client.post("/api/accounts", json=sample_account).json()
+        resp = admin_client.post(f"/api/accounts/{create['id']}/verify")
         assert resp.status_code == 200
         assert resp.json().get("verified") is False
 
@@ -272,8 +273,8 @@ class TestAnalytics:
 
 
 class TestKnowledgeBase:
-    def test_create_kb_entry(self, client, sample_kb_entry):
-        resp = client.post("/api/kb", json=sample_kb_entry)
+    def test_create_kb_entry(self, admin_client, sample_kb_entry):
+        resp = admin_client.post("/api/kb", json=sample_kb_entry)
         assert resp.status_code == 200
         data = resp.json()
         assert data["status"] == "created"
@@ -292,10 +293,10 @@ class TestKnowledgeBase:
         for item in data["items"]:
             assert item["language"] == "zh-TW"
 
-    def test_update_kb_entry(self, client, sample_kb_entry):
-        create = client.post("/api/kb", json=sample_kb_entry).json()
+    def test_update_kb_entry(self, admin_client, sample_kb_entry):
+        create = admin_client.post("/api/kb", json=sample_kb_entry).json()
         kid = create["id"]
-        resp = client.put(f"/api/kb/{kid}", json={
+        resp = admin_client.put(f"/api/kb/{kid}", json={
             "keywords": ["方案", "價格", "費用", "更新"],
             "answer": "Updated answer",
             "language": "zh-TW",
@@ -304,10 +305,10 @@ class TestKnowledgeBase:
         row = fetch_one("SELECT answer FROM kb_entries WHERE id=?", [kid])
         assert row["answer"] == "Updated answer"
 
-    def test_delete_kb_entry(self, client, sample_kb_entry):
-        create = client.post("/api/kb", json=sample_kb_entry).json()
+    def test_delete_kb_entry(self, admin_client, sample_kb_entry):
+        create = admin_client.post("/api/kb", json=sample_kb_entry).json()
         kid = create["id"]
-        resp = client.delete(f"/api/kb/{kid}")
+        resp = admin_client.delete(f"/api/kb/{kid}")
         assert resp.status_code == 200
         row = fetch_one("SELECT * FROM kb_entries WHERE id=?", [kid])
         assert row is None
@@ -332,7 +333,7 @@ class TestKnowledgeBase:
         assert "items" in data
 
     @patch("marketing_system.ai.generator.AIContentGenerator")
-    def test_suggest_pending(self, mock_gen, client):
+    def test_suggest_pending(self, mock_gen, admin_client):
         pid = execute(
             "INSERT INTO kb_pending (question, language, count) VALUES (?,?,?)",
             ["What is the price?", "en", 5],
@@ -340,23 +341,23 @@ class TestKnowledgeBase:
         mock_instance = MagicMock()
         mock_instance.generate.return_value = "The price is $10"
         mock_gen.return_value = mock_instance
-        resp = client.post(f"/api/kb/pending/{pid}/suggest")
+        resp = admin_client.post(f"/api/kb/pending/{pid}/suggest")
         assert resp.status_code == 200
         data = resp.json()
         assert data["ai_suggest"] == "The price is $10"
 
-    def test_reject_pending(self, client):
+    def test_reject_pending(self, admin_client):
         pid = execute(
             "INSERT INTO kb_pending (question, language, count) VALUES (?,?,?)",
             ["Ignore me", "en", 1],
         )
-        resp = client.post(f"/api/kb/pending/{pid}/reject")
+        resp = admin_client.post(f"/api/kb/pending/{pid}/reject")
         assert resp.status_code == 200
         row = fetch_one("SELECT * FROM kb_pending WHERE id=?", [pid])
         assert row["status"] == "rejected"
 
-    def test_auto_learn_endpoint(self, client):
-        resp = client.post("/api/kb/pending/auto-learn")
+    def test_auto_learn_endpoint(self, admin_client):
+        resp = admin_client.post("/api/kb/pending/auto-learn")
         assert resp.status_code == 200
 
 
@@ -383,16 +384,16 @@ class TestBackup:
 
 
 class TestTelegram:
-    def test_broadcast_requires_text(self, client):
-        resp = client.post("/api/telegram/broadcast")
+    def test_broadcast_requires_text(self, admin_client):
+        resp = admin_client.post("/api/telegram/broadcast")
         assert resp.status_code == 400
 
-    def test_broadcast_with_text(self, client):
-        resp = client.post("/api/telegram/broadcast?text=hello")
+    def test_broadcast_with_text(self, admin_client):
+        resp = admin_client.post("/api/telegram/broadcast?text=hello")
         assert resp.status_code == 200
 
     def test_webhook_empty(self, client):
-        resp = client.post("/api/telegram/webhook", json={})
+        resp = client.post("/api/telegram/webhook", headers=WEBHOOK_HEADERS, json={})
         assert resp.status_code == 200
 
 

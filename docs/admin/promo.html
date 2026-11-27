@@ -61,7 +61,7 @@ function generate(){
   btn.textContent='⏳ 產生中...';btn.disabled=true;
   showResult('AI 正在產生貼文...','success');
   var api=location.hostname.includes('github.io')?'https://lewislunora.onrender.com/api/auto-promote':'/api/auto-promote';
-  fetch(api).then(function(r){return r.json()}).then(function(d){
+  fetch(api, {credentials:'include'}).then(function(r){return r.json()}).then(function(d){
     btn.textContent='✨ 立即產生一篇';btn.disabled=false;
     if(d.ok){
       showResult('✅ 已產生新貼文','success');
@@ -78,7 +78,7 @@ function postPromo(id){
   if(!confirm('確定發布這篇到 Threads？'))return;
   var btn=event.target;btn.textContent='⏳';btn.disabled=true;
   var api=location.hostname.includes('github.io')?'https://lewislunora.onrender.com/api/auto-promote/post/'+id:'/api/auto-promote/post/'+id;
-  fetch(api,{method:'POST'}).then(function(r){return r.json()}).then(function(d){
+  fetch(api,{method:'POST', credentials:'include'}).then(function(r){return r.json()}).then(function(d){
     if(d.ok){
       showResult('✅ 已發布到 Threads！','success');
       loadQueue();
@@ -95,7 +95,7 @@ function loadQueue(){
   var el=document.getElementById('queue');
   el.innerHTML='<div class="loading">載入中...</div>';
   var api=location.hostname.includes('github.io')?'https://lewislunora.onrender.com/api/auto-promote/queue':'/api/auto-promote/queue';
-  fetch(api).then(function(r){return r.json()}).then(function(d){
+  fetch(api, {credentials:'include'}).then(function(r){return r.json()}).then(function(d){
     if(!d.items||d.items.length===0){
       el.innerHTML='<div class="empty">還沒有產生任何貼文。點擊「立即產生一篇」開始。</div>';
       return;

@@ -241,9 +241,20 @@ def startup():
         # 僅在正式部署環境（有 RENDER_EXTERNAL_URL）才設定 Telegram webhook，
         # 避免本機啟動 server / 跑測試時把 bot 的 webhook 搶指到 localhost。
         base = os.getenv("RENDER_EXTERNAL_URL", "")
-        if base and TELEGRAM_BOT_TOKEN:
+        webhook_secret = os.getenv("TELEGRAM_WEBHOOK_SECRET", "")
+        if base and TELEGRAM_BOT_TOKEN and webhook_secret:
             webhook_url = f"{base}/api/telegram/webhook"
-            http.get(f"https://api.telegram.org/bot{TELEGRAM_BOT_TOKEN}/setWebhook?url={webhook_url}", timeout=10)
+            http.post(
+                f"https://api.telegram.org/bot{TELEGRAM_BOT_TOKEN}/setWebhook",
+                json={
+                    "url": webhook_url,
+                    "secret_token": webhook_secret,
+                    "allowed_updates": ["message", "channel_post"],
+                },
+                timeout=10,
+            )
+        elif base and TELEGRAM_BOT_TOKEN:
+            logger.warning("TELEGRAM_WEBHOOK_SECRET 未設定，略過 setWebhook（webhook 端點將拒絕所有請求）")
     except Exception:
         pass
 
@@ -507,7 +518,8 @@ def delete_contact(request: Request, cid: int):
 
 
 @app.post("/api/content")
-def create_content(data: ContentCreate):
+def create_content(request: Request, data: ContentCreate):
+    _require_admin(request)
     cid = execute(
         "INSERT INTO contents (title, body, platforms, scheduled_at, status, language, category, media_urls) VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
         [data.title, data.body, json.dumps(data.platforms), data.scheduled_at or datetime.now().strftime("%Y-%m-%d %H:%M"), "scheduled" if data.scheduled_at else "draft", data.language, data.category, json.dumps(data.media_urls)]
@@ -540,7 +552,8 @@ def get_content(content_id: int):
 
 
 @app.delete("/api/content/{content_id}")
-def delete_content(content_id: int):
+def delete_content(request: Request, content_id: int):
+    _require_admin(request)
     execute("DELETE FROM schedules WHERE content_id=?", [content_id])
     execute("DELETE FROM analytics WHERE content_id=?", [content_id])
     execute("DELETE FROM contents WHERE id=?", [content_id])
@@ -548,7 +561,8 @@ def delete_content(content_id: int):
 
 
 @app.put("/api/content/{content_id}")
-def update_content(content_id: int, data: ContentCreate):
+def update_content(request: Request, content_id: int, data: ContentCreate):
+    _require_admin(request)
     existing = fetch_one("SELECT id FROM contents WHERE id=?", [content_id])
     if not existing:
         raise HTTPException(404, "Content not found")
@@ -562,7 +576,8 @@ def update_content(content_id: int, data: ContentCreate):
 
 
 @app.post("/api/content/{content_id}/publish")
-def publish_now(content_id: int):
+def publish_now(request: Request, content_id: int):
+    _require_admin(request)
     item = fetch_one("SELECT * FROM contents WHERE id=?", [content_id])
     if not item:
         raise HTTPException(404, "Content not found")
@@ -614,7 +629,8 @@ def ai_story(data: StoryRequest, request: Request):
 
 
 @app.post("/api/accounts")
-def create_account(data: AccountCreate):
+def create_account(request: Request, data: AccountCreate):
+    _require_admin(request)
     cid = execute(
         "INSERT INTO accounts (platform, label, credentials) VALUES (?, ?, ?)",
         [data.platform, data.label, json.dumps(data.credentials)]
@@ -638,14 +654,16 @@ def list_accounts(request: Request):
 
 
 @app.delete("/api/accounts/{account_id}")
-def delete_account(account_id: int):
+def delete_account(request: Request, account_id: int):
+    _require_admin(request)
     execute("DELETE FROM accounts WHERE id=?", [account_id])
     _sync_scheduler_connectors()
     return {"status": "deleted"}
 
 
 @app.put("/api/accounts/{account_id}")
-def update_account(account_id: int, data: AccountCreate):
+def update_account(request: Request, account_id: int, data: AccountCreate):
+    _require_admin(request)
     existing = fetch_one("SELECT id FROM accounts WHERE id=?", [account_id])
     if not existing:
         raise HTTPException(404, "Account not found")
@@ -658,7 +676,8 @@ def update_account(account_id: int, data: AccountCreate):
 
 
 @app.post("/api/accounts/{account_id}/verify")
-def verify_account(account_id: int):
+def verify_account(request: Request, account_id: int):
+    _require_admin(request)
     connector = get_connectors(account_id)
     ok = connector.verify()
     return {"verified": ok}
@@ -701,7 +720,8 @@ def list_kb(language: str = None):
 
 
 @app.post("/api/kb")
-def create_kb(data: KBEntryCreate):
+def create_kb(request: Request, data: KBEntryCreate):
+    _require_admin(request)
     cid = execute(
         "INSERT INTO kb_entries (keywords, answer, language) VALUES (?, ?, ?)",
         [json.dumps(data.keywords, ensure_ascii=False), data.answer, data.language],
@@ -710,7 +730,8 @@ def create_kb(data: KBEntryCreate):
 
 
 @app.put("/api/kb/{kid}")
-def update_kb(kid: int, data: KBEntryCreate):
+def update_kb(request: Request, kid: int, data: KBEntryCreate):
+    _require_admin(request)
     execute(
         "UPDATE kb_entries SET keywords=?, answer=?, language=?, updated_at=datetime('now') WHERE id=?",
         [json.dumps(data.keywords, ensure_ascii=False), data.answer, data.language, kid],
@@ -719,7 +740,8 @@ def update_kb(kid: int, data: KBEntryCreate):
 
 
 @app.delete("/api/kb/{kid}")
-def delete_kb(kid: int):
+def delete_kb(request: Request, kid: int):
+    _require_admin(request)
     execute("DELETE FROM kb_entries WHERE id=?", [kid])
     return {"status": "deleted"}
 
@@ -730,14 +752,16 @@ def list_pending(page: int = 1):
 
 
 @app.post("/api/kb/pending/auto-learn")
-def trigger_auto_learn():
+def trigger_auto_learn(request: Request):
+    _require_admin(request)
     from ..services.knowledge_base import auto_learn
     auto_learn()
     return {"status": "ok"}
 
 
 @app.post("/api/kb/pending/{pid}/suggest")
-def suggest_pending(pid: int):
+def suggest_pending(request: Request, pid: int):
+    _require_admin(request)
     row = fetch_one("SELECT * FROM kb_pending WHERE id=?", [pid])
     if not row:
         raise HTTPException(404, "Not found")
@@ -766,13 +790,15 @@ async def kb_query(request: Request):
 
 
 @app.post("/api/kb/pending/{pid}/reject")
-def reject_pending(pid: int):
+def reject_pending(request: Request, pid: int):
+    _require_admin(request)
     execute("UPDATE kb_pending SET status='rejected' WHERE id=?", [pid])
     return {"status": "rejected"}
 
 
 @app.post("/api/telegram/broadcast")
-def telegram_broadcast(text: str = None):
+def telegram_broadcast(request: Request, text: str = None):
+    _require_admin(request)
     if not text:
         raise HTTPException(400, "Missing text")
     groups = fetch("SELECT * FROM accounts WHERE platform='telegram_chat'")
@@ -809,6 +835,13 @@ TELEGRAM_PUBLIC_WELCOME = (
 
 @app.post("/api/telegram/webhook")
 async def telegram_webhook(request: Request):
+    # Telegram 只會帶這個 header；缺少或不符一律拒絕，
+    # 避免任何人偽造 chat.id（例如冒充站長私聊）觸發控制指令。
+    expected_secret = os.getenv("TELEGRAM_WEBHOOK_SECRET", "")
+    provided_secret = request.headers.get("x-telegram-bot-api-secret-token", "")
+    if not expected_secret or not hmac.compare_digest(provided_secret, expected_secret):
+        raise HTTPException(403, "Invalid webhook secret")
+
     body = await request.json()
     msg = body.get("message") or body.get("channel_post") or {}
     chat = msg.get("chat", {})
@@ -1814,7 +1847,8 @@ def list_comments(path: str = ""):
 
 
 @app.delete("/api/comments/{comment_id}")
-def delete_comment(comment_id: int):
+def delete_comment(request: Request, comment_id: int):
+    _require_admin(request)
     execute("DELETE FROM comments WHERE id=?", [comment_id])
     return {"status": "deleted"}
 
@@ -2531,7 +2565,8 @@ def _promo_landing(topic):
     return PROMO_LANDING["reference"]
 
 @app.get("/api/auto-promote")
-def auto_promote():
+def auto_promote(request: Request):
+    _require_admin(request)
     from ..config import GROQ_API_KEY, GROQ_MODEL
     import random
     topic = random.choice(PROMO_TOPICS)
@@ -2582,8 +2617,9 @@ def promo_queue(page: int = 1, per_page: int = 20):
 
 
 @app.post("/api/auto-promote/post/{promo_id}")
-def post_promo(promo_id: int):
+def post_promo(request: Request, promo_id: int):
     """Post a generated promo to Threads (if credentials configured)."""
+    _require_admin(request)
     from ..config import GROQ_API_KEY
     row = fetch_one("SELECT * FROM promo_queue WHERE id=?", [promo_id])
     if not row:
@@ -2799,6 +2835,7 @@ def roam_search(query: str = ""):
 
 @app.post("/api/roam/visit")
 async def roam_visit(request: Request):
+    _require_admin(request)
     body = await request.json()
     url = body.get("url", "")
     if not url:
@@ -2811,6 +2848,7 @@ async def roam_visit(request: Request):
 
 @app.post("/api/roam/generate")
 async def roam_generate(request: Request):
+    _require_admin(request)
     body = await request.json()
     from ..services.web_roamer import WebRoamer
     roamer = WebRoamer(data_dir=DATA_DIR)
@@ -2827,6 +2865,7 @@ async def roam_generate(request: Request):
 
 @app.post("/api/roam/post")
 async def roam_post(request: Request):
+    _require_admin(request)
     body = await request.json()
     url = body.get("url", "")
     reply = body.get("reply", "")
@@ -2837,8 +2876,9 @@ async def roam_post(request: Request):
 
 
 @app.post("/api/roam/run")
-def roam_run():
+def roam_run(request: Request):
     """Full roam cycle: search → visit → generate → post."""
+    _require_admin(request)
     from ..services.web_roamer import WebRoamer
     from ..config import GROQ_API_KEY, GROQ_MODEL
     roamer = WebRoamer(data_dir=DATA_DIR)
@@ -3067,7 +3107,8 @@ def get_page_by_slug(slug: str):
 
 
 @app.post("/api/pages")
-def create_page(data: PageCreate):
+def create_page(request: Request, data: PageCreate):
+    _require_admin(request)
     existing = fetch_one("SELECT id FROM pages WHERE slug=?", [data.slug])
     if existing:
         raise HTTPException(409, "Slug already exists")
@@ -3079,7 +3120,8 @@ def create_page(data: PageCreate):
 
 
 @app.put("/api/pages/{page_id}")
-def update_page(page_id: int, data: PageCreate):
+def update_page(request: Request, page_id: int, data: PageCreate):
+    _require_admin(request)
     existing = fetch_one("SELECT id FROM pages WHERE id=?", [page_id])
     if not existing:
         raise HTTPException(404, "Page not found")
@@ -3094,13 +3136,15 @@ def update_page(page_id: int, data: PageCreate):
 
 
 @app.delete("/api/pages/{page_id}")
-def delete_page(page_id: int):
+def delete_page(request: Request, page_id: int):
+    _require_admin(request)
     execute("DELETE FROM pages WHERE id=?", [page_id])
     return {"status": "deleted"}
 
 
 @app.post("/api/pages/{page_id}/publish")
-def publish_page(page_id: int):
+def publish_page(request: Request, page_id: int):
+    _require_admin(request)
     item = fetch_one("SELECT id FROM pages WHERE id=?", [page_id])
     if not item:
         raise HTTPException(404, "Page not found")
@@ -3109,7 +3153,8 @@ def publish_page(page_id: int):
 
 
 @app.post("/api/pages/{page_id}/unpublish")
-def unpublish_page(page_id: int):
+def unpublish_page(request: Request, page_id: int):
+    _require_admin(request)
     item = fetch_one("SELECT id FROM pages WHERE id=?", [page_id])
     if not item:
         raise HTTPException(404, "Page not found")
@@ -3144,15 +3189,60 @@ def get_site_settings(key: str):
 
 @app.put("/api/site-settings")
 def put_site_settings(request: Request, body: SiteSettingsBody):
-    _require_admin(request)
-    if not body.key.strip():
+    u = _require_admin(request)
+    key = body.key.strip()
+    if not key:
         raise HTTPException(400, "key required")
+    actor = u.get("email") or u.get("username") or ""
+    existing = fetch_one("SELECT value FROM site_settings WHERE key=?", (key,))
+    if existing and existing["value"] != body.value:
+        execute(
+            "INSERT INTO site_settings_history(key, value, changed_by) VALUES(?, ?, ?)",
+            [key, existing["value"], actor],
+        )
     execute(
         "INSERT INTO site_settings(key, value, updated_at) VALUES(?, ?, datetime('now')) "
         "ON CONFLICT(key) DO UPDATE SET value=excluded.value, updated_at=excluded.updated_at",
-        [body.key.strip(), body.value],
+        [key, body.value],
     )
-    return {"status": "ok", "key": body.key.strip()}
+    return {"status": "ok", "key": key}
+
+
+@app.get("/api/site-settings/{key}/history")
+def site_settings_history(request: Request, key: str, limit: int = 20):
+    _require_admin(request)
+    rows = fetch(
+        "SELECT * FROM site_settings_history WHERE key=? ORDER BY id DESC LIMIT ?",
+        [key, min(max(limit, 1), 100)],
+    )
+    return {"items": rows, "current": fetch_one("SELECT * FROM site_settings WHERE key=?", (key,))}
+
+
+@app.post("/api/site-settings/{key}/rollback")
+def rollback_site_settings(request: Request, key: str, history_id: int = None):
+    """誤改設定時還原：預設回到上一版，也可指定 history_id。"""
+    u = _require_admin(request)
+    if history_id is None:
+        row = fetch_one(
+            "SELECT * FROM site_settings_history WHERE key=? ORDER BY id DESC LIMIT 1", (key,)
+        )
+    else:
+        row = fetch_one(
+            "SELECT * FROM site_settings_history WHERE key=? AND id=?", (key, history_id)
+        )
+    if not row:
+        raise HTTPException(404, "沒有可還原的版本")
+    current = fetch_one("SELECT value FROM site_settings WHERE key=?", (key,))
+    if current and current["value"] != row["value"]:
+        execute(
+            "INSERT INTO site_settings_history(key, value, changed_by) VALUES(?, ?, ?)",
+            [key, current["value"], u.get("email") or u.get("username") or ""],
+        )
+    execute(
+        "UPDATE site_settings SET value=?, updated_at=datetime('now') WHERE key=?",
+        [row["value"], key],
+    )
+    return {"status": "ok", "key": key, "value": row["value"]}
 
 
 @app.post("/api/admin/set-admin")
@@ -3164,7 +3254,21 @@ def set_admin(request: Request, email: str = "", is_admin: bool = True):
     if not target:
         raise HTTPException(404, "User not found")
     execute("UPDATE users SET is_admin=? WHERE id=?", [1 if is_admin else 0, target["id"]])
+    execute(
+        "INSERT INTO admin_audit(actor, target, action) VALUES(?, ?, ?)",
+        [u.get("email") or u.get("username") or "", email, "grant" if is_admin else "revoke"],
+    )
     return {"status": "ok", "email": email, "is_admin": is_admin}
+
+
+@app.get("/api/admin/audit")
+def admin_audit_log(request: Request, limit: int = 50):
+    _require_admin(request)
+    return {
+        "items": fetch(
+            "SELECT * FROM admin_audit ORDER BY id DESC LIMIT ?", [min(max(limit, 1), 200)]
+        )
+    }
 
 
 @app.middleware("http")
@@ -3232,10 +3336,11 @@ async def govdata_ingest(request: Request):
     from ..services.govdata import ingest
     body = await request.json() or {}
     nid = str(body.get("nid", "")).strip()
-    force = bool(body.get("force"))
     if not nid:
         raise HTTPException(400, "缺少 nid")
-    return ingest(nid, force=force)
+    # 公開端點一律走 10 分鐘冷卻；force 只能由背景/管理流程使用，
+    # 避免匿名使用者反复觸發大型下載造成 DoS。
+    return ingest(nid)
 
 
 @app.get("/api/govdata/datasets/{nid}")

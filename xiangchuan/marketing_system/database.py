@@ -23,6 +23,8 @@ DB_TABLES = [
     "novels", "novel_chapters",
     "seo_articles",
     "site_settings",
+    "site_settings_history",
+    "admin_audit",
     "ai_bot_actions",
     "subscribers",
     "gov_catalog", "gov_datasets", "gov_rows",
@@ -480,6 +482,24 @@ CREATE TABLE IF NOT EXISTS social_identities (
             key TEXT PRIMARY KEY,
             value TEXT DEFAULT '',
             updated_at TEXT DEFAULT (datetime('now'))
+        );
+
+        -- 設定改動保留前一版，誤改可從 /api/site-settings/{key}/history 還原
+        CREATE TABLE IF NOT EXISTS site_settings_history (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            key TEXT NOT NULL,
+            value TEXT NOT NULL,
+            changed_at TEXT DEFAULT (datetime('now')),
+            changed_by TEXT DEFAULT ''
+        );
+
+        -- 管理員權限變動 audit trail；本機 ops_rollback.py 可 break-glass 修復
+        CREATE TABLE IF NOT EXISTS admin_audit (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            actor TEXT DEFAULT '',
+            target TEXT NOT NULL,
+            action TEXT NOT NULL,
+            at TEXT DEFAULT (datetime('now'))
         );
 
         CREATE TABLE IF NOT EXISTS gov_catalog (
