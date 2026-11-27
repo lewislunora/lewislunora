@@ -217,6 +217,34 @@ class TestWebhookFullFlow:
             assert resp.status_code == 200
             mock_post.assert_not_called()
 
+    def test_webhook_external_group_answers_question_shortly(self, client):
+        with patch("requests.post") as mock_post, \
+             patch("marketing_system.services.openclaw_agent.ai_gen.is_available", return_value=True), \
+             patch("marketing_system.services.openclaw_agent.ai_gen.generate", return_value="約十五字左右的答案"):
+            mock_post.return_value.json.return_value = {"ok": True}
+            resp = client.post("/api/telegram/webhook", json={
+                "message": {
+                    "chat": {"id": -100123, "type": "group", "title": "Test Group"},
+                    "text": "請問如何開始？",
+                    "message_id": 7,
+                }
+            })
+            assert resp.status_code == 200
+            sent = mock_post.call_args[1]["json"]
+            assert sent["text"] == "約十五字左右的答案"
+            assert "內容靈感" not in sent["text"]
+
+    def test_webhook_private_work_group_needs_mention(self, client):
+        with patch("requests.post") as mock_post:
+            client.post("/api/telegram/webhook", json={
+                "message": {
+                    "chat": {"id": -1003739611959, "type": "supergroup", "title": "工作群"},
+                    "text": "大家早，今天天氣不錯",
+                    "message_id": 8,
+                }
+            })
+            mock_post.assert_not_called()
+
     def test_webhook_start_command(self, client):
         with patch("requests.post") as mock_post:
             mock_post.return_value.json.return_value = {"ok": True}

@@ -23,20 +23,30 @@ def test_internal_and_linked_recognized():
     assert tp.is_external(EXTERNAL) is True
 
 
-def test_internal_group_free_text_does_not_need_mention():
-    assert tp.should_respond(_msg(INTERNAL, "測試 AI 回覆")) is True
-    assert tp.requires_mention(INTERNAL, "supergroup") is False
+def test_internal_group_requires_mention():
+    assert tp.requires_mention(INTERNAL, "supergroup") is True
+    assert tp.should_respond(_msg(INTERNAL, "測試 AI 回覆")) is False
+    assert tp.should_respond(_msg(INTERNAL, "@ailunora_bot 測試")) is True
 
 
-def test_external_group_interacts_on_mention_by_default(monkeypatch):
+def test_external_group_answers_questions_without_mention(monkeypatch):
     monkeypatch.setattr(tp, "EXTERNAL_CHAT_IDS", set())
-    assert tp.should_respond(_msg(EXTERNAL, "你好")) is False
+    assert tp.requires_mention(EXTERNAL, "supergroup") is False
+    assert tp.should_respond(_msg(EXTERNAL, "方案是多少錢？")) is True
+    assert tp.should_respond(_msg(EXTERNAL, "今天天氣不錯")) is False
     assert tp.should_respond(_msg(EXTERNAL, "@ailunora_bot 你好")) is True
+    assert tp.should_respond(_msg(EXTERNAL, "/help")) is True
 
     # 可選白名單：設了就只回覆名單內的對外 chat
     monkeypatch.setattr(tp, "EXTERNAL_CHAT_IDS", {"-111111"})
-    assert tp.should_respond(_msg(EXTERNAL, "@ailunora_bot 你好")) is False
-    assert tp.should_respond(_msg("-111111", "@ailunora_bot 你好")) is True
+    assert tp.should_respond(_msg(EXTERNAL, "方案是多少錢？")) is False
+    assert tp.should_respond(_msg("-111111", "方案是多少錢？")) is True
+
+
+def test_question_detection():
+    assert tp.looks_like_question("請問方案多少錢") is True
+    assert tp.looks_like_question("How do I start?") is True
+    assert tp.looks_like_question("random chatter") is False
 
 
 def test_private_chat_keeps_kb_service():

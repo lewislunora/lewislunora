@@ -86,6 +86,37 @@ def _cmd_idea(topic=""):
     return f"💡 *內容靈感*\n主題：{prompt}\n\n{result}"
 
 
+def _shorten(text: str, limit: int = 60) -> str:
+    """把回覆壓成短句：目標約 15 字，最長 limit 字。"""
+    clean = " ".join((text or "").split())
+    if not clean:
+        return ""
+    for sep in ("\n", "。", "！", "？", ". ", "! "):
+        if sep in clean:
+            clean = clean.split(sep, 1)[0].strip()
+            break
+    if len(clean) > limit:
+        clean = clean[:limit].rstrip() + "…"
+    return clean
+
+
+def short_answer(text: str) -> str:
+    """對外群組/頻道的簡短回覆（目標約 15 字）。"""
+    if not ai_gen.is_available():
+        return "⚠️ AI 未啟用"
+    result = ai_gen.generate(
+        "",
+        {
+            "prompt": (
+                "你是翔川 Neo 的客服助理。請用繁體中文回答下面的問題，"
+                "答案盡量 15 個字左右，直接給答案，不要條列、不要標題、不要多餘說明。\n"
+                f"問題：{text}"
+            )
+        },
+    )
+    return _shorten(result)
+
+
 def _cmd_deploy():
     if DEPLOY_HOOK_URL:
         try:
@@ -191,8 +222,12 @@ def _process_update(update):
             response = "🔒 此指令僅供對內群組使用。"
         else:
             response = _handle_command(chat_id, cmd, args)
-    else:
+    elif policy.is_internal(chat_id):
+        # 私人工作群：已 @bot，可給完整 AI 回覆（含控制指令能力）
         response = _handle_command(chat_id, "靈感", clean)
+    else:
+        # 對外群組/頻道：自動判斷提問，只回簡短訊息
+        response = short_answer(clean)
     _send_message(chat_id, response)
 
 

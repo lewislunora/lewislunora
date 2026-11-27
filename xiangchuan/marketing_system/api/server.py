@@ -40,7 +40,11 @@ from ..services.social_auth import (
     is_configured, configured_providers, authorize_url, exchange_and_profile,
     verify_telegram, encode_next, decode_next, PROVIDER_LABELS, TELEGRAM_BOT_USERNAME,
 )
-from ..services.openclaw_agent import _handle_command as openclaw_handle
+from ..services.openclaw_agent import (
+    _handle_command as openclaw_handle,
+    _shorten as shorten_reply,
+    short_answer as openclaw_short_answer,
+)
 from ..services import telegram_policy as tg_policy
 from ..services.knowledge_base import get_kb_reply, save_unanswered, get_pending, auto_learn
 from ..services.analytics import track_async, summary as analytics_summary
@@ -843,15 +847,17 @@ async def telegram_webhook(request: Request):
         else:
             return {"ok": True}
     elif tg_policy.is_internal(cid):
-        # 私人工作群：任何成員自由文字直接觸發 AI（可控制伺服器）
+        # 私人工作群：已 @bot，才給完整 AI 回覆（可控制伺服器）
         reply = openclaw_handle(cid, "靈感", clean)
         is_ai_reply = True
     else:
-        # 網站進來的 Group/Channel + 私聊：只互動，知識庫優先，再 fallback 公開 AI
+        # 對外 Group/Channel + 私聊：只互動，回覆一律壓成約 15 字
         reply = get_kb_reply(clean)
-        if not reply:
+        if reply:
+            reply = shorten_reply(reply, 60)
+        else:
             save_unanswered(clean, "zh-TW")
-            reply = openclaw_handle(cid, "靈感", clean)
+            reply = openclaw_short_answer(clean)
             is_ai_reply = True
 
     msg_id = msg.get("message_id")

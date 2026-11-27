@@ -11,17 +11,18 @@
 | 身份 | 判定方式 | 預設值 |
 |---|---|---|
 | **對內（私人工作群）**（internal） | chat_id 在 `TELEGRAM_INTERNAL_CHAT_IDS` 或站長私聊 | `-1003739611959`（翔川 Neo \| 曜科技 ｜Ai）、`626453598` |
-| **對外（網站進來的 Group/Channel）** | 以上皆非，包含連動頻道 | 任何由網站連入的群組／頻道，需 `@ailunora_bot` 才回覆 |
+| **對外（網站進來的 Group/Channel）** | 以上皆非，包含連動頻道 | 任何由網站連入的群組／頻道，不用 @，自動判斷提問後回短訊 |
 
-> 核心原則：**私人的工作群可以互動並控制伺服器；網站來的 Group/Channel 只能互動，不能控制伺服器。**
+> 核心原則：**私人的工作群要 @ 才處理並可控制伺服器；網站來的 Group/Channel 不用 @、只回約 15 字短訊，不能控制伺服器。**
 > 目前 bot 在對內群組是**管理員**（可管理聊天、刪訊息、邀請、置頂），但 `can_change_info=false`，不能改群組設定。
 
 ## 3. 行為矩陣
 
 | 行為 | 對內（私人工作群／站長私聊） | 對外（網站 Group/Channel，含連動頻道） |
 |---|---|---|
-| 自由文字是否自動回覆 | ✅ 任何成員發言即觸發 AI | ⚠️ 必須 `@ailunora_bot` 或 `/指令@ailunora_bot` |
-| 未 @ 的訊息 | AI 回覆 | 靜默忽略（不回「未授權」洗版） |
+| 自由文字是否自動回覆 | ⚠️ 必須 `@ailunora_bot` 才觸發（避免誤吃聊天） | ✅ 不用 @，判斷為提問就自動回覆 |
+| 回覆長度 | 完整 AI 回覆 | 約 15 字短訊（最長 60 字，可分段） |
+| 非提問的聊天 | 靜默忽略 | 靜默忽略 |
 | 內容靈感 `/靈感` | ✅ | ✅（公開安全 prompt） |
 | AI 自動化 `/自動化` | ✅ | 🔒 拒絕：「僅供對內群組使用」 |
 | 觸發部署 `/部署` | ✅ | 🔒 拒絕，不碰 deploy hook |
@@ -54,10 +55,10 @@ getUpdates → _process_update
 
 ```
 Telegram POST → telegram_webhook
-  → should_respond? （對外群組強制 @）
+  → should_respond? （對內群組強制 @；對外群組自動判斷提問）
       ├─ 指令 → 白名單檢查 → openclaw_handle
-      └─ 自由文字 → 對內：openclaw_handle("靈感")
-                    對外：get_kb_reply → fallback openclaw_handle("靈感")
+      └─ 自由文字 → 對內：openclaw_handle("靈感")（完整）
+                    對外：get_kb_reply → shorten → fallback short_answer（約 15 字）
   → sendMessage（AI 回覆用 Markdown；KB 回覆用 HTML）
 ```
 
@@ -86,7 +87,7 @@ Telegram POST → telegram_webhook
 
 | 時間 | 訊息 | 結果 |
 |---|---|---|
-| 13:16:55 | `測試 AI 回覆`（自由文字） | ✅ 3 秒內 AI 回覆 |
-| 13:17:12 | `/自動化 AI 行銷` | ✅ 4 秒內回覆自動化任務規劃 |
+| 13:16:55 | `測試 AI 回覆`（自由文字） | ✅ 3 秒內 AI 回覆（舊規則，現已改為需 @） |
+| 13:17:12 | `/自動化 AI 行銷` | ✅ 4 秒內回覆自動化任務規劃（舊規則，現已改為需 @） |
 
-該次測試走本地 poller；webhook 路徑已於本次同步為相同政策，待 Render env + `setWebhook` 後生效。
+新規則已有自動化測試覆蓋：對內未 @ 不回、對外提問免 @ 且回約 15 字、控制指令僅對內可用。webhook 路徑與 poller 共用政策，待 Render env + `setWebhook` 後生效。

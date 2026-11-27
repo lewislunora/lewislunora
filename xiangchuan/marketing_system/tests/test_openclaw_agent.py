@@ -37,7 +37,7 @@ def _update(chat_id, text, chat_type="supergroup"):
     return {"message": {"message_id": 1, "chat": {"id": chat_id, "type": chat_type}, "text": text}}
 
 
-def test_process_update_ignores_external_group_without_mention(monkeypatch):
+def test_process_update_ignores_non_question_in_external_group(monkeypatch):
     sent = []
     monkeypatch.setattr(oa, "_send_message", lambda chat_id, text: sent.append((chat_id, text)))
     monkeypatch.setattr(oa, "ALLOWED_CHAT_IDS", [INTERNAL, EXTERNAL])
@@ -54,10 +54,19 @@ def test_process_update_internal_group_auto_replies(monkeypatch):
     monkeypatch.setattr(oa.ai_gen, "generate", lambda system, payload: "創意點子")
     monkeypatch.setattr(oa, "ALLOWED_CHAT_IDS", [INTERNAL])
 
-    oa._process_update(_update(INTERNAL, "測試 AI 回覆"))
+    oa._process_update(_update(INTERNAL, "@ailunora_bot 測試 AI 回覆"))
     assert len(sent) == 1
     assert "內容靈感" in sent[0][1]
     assert "創意點子" in sent[0][1]
+
+
+def test_process_update_internal_group_ignores_chat_without_mention(monkeypatch):
+    sent = []
+    monkeypatch.setattr(oa, "_send_message", lambda chat_id, text: sent.append((chat_id, text)))
+    monkeypatch.setattr(oa.policy, "EXTERNAL_CHAT_IDS", set())
+
+    oa._process_update(_update(INTERNAL, "大家早，今天天氣不錯"))
+    assert sent == []
 
 
 def test_process_update_blocks_internal_only_command_in_external(monkeypatch):
@@ -71,17 +80,23 @@ def test_process_update_blocks_internal_only_command_in_external(monkeypatch):
     assert "僅供對內群組" in sent[0][1]
 
 
-def test_process_update_external_group_can_interact_with_ai(monkeypatch):
+def test_process_update_external_group_gives_short_answer_without_mention(monkeypatch):
     sent = []
     monkeypatch.setattr(oa, "_send_message", lambda chat_id, text: sent.append((chat_id, text)))
     monkeypatch.setattr(oa.ai_gen, "is_available", lambda: True)
-    monkeypatch.setattr(oa.ai_gen, "generate", lambda system, payload: "公開創意")
+    monkeypatch.setattr(oa.ai_gen, "generate", lambda system, payload: "這是一個很長很長的示範回答，後面還有一大堆不需要的說明文字。")
     monkeypatch.setattr(oa.policy, "EXTERNAL_CHAT_IDS", set())
 
-    oa._process_update(_update(EXTERNAL, "@ailunora_bot 給我一點靈感"))
+    oa._process_update(_update(EXTERNAL, "方案是多少錢？"))
     assert len(sent) == 1
-    assert "內容靈感" in sent[0][1]
-    assert "公開創意" in sent[0][1]
+    assert len(sent[0][1]) <= 60
+    assert "內容靈感" not in sent[0][1]
+
+
+def test_short_answer_trims_to_one_short_sentence(monkeypatch):
+    monkeypatch.setattr(oa.ai_gen, "is_available", lambda: True)
+    monkeypatch.setattr(oa.ai_gen, "generate", lambda system, payload: "第一步先註冊。第二步再設定。第三步才上線。")
+    assert oa.short_answer("怎麼開始？") == "第一步先註冊"
 
 
 def test_linked_channel_cannot_control_server(monkeypatch):

@@ -75,10 +75,28 @@ def command_internal_only(cmd: str) -> bool:
 
 
 def requires_mention(chat_id, chat_type: str) -> bool:
-    """對外群組必須 @bot 才回覆；對內群組與私聊不用。"""
+    """私人工作群必須 @bot 才處理（避免誤吃聊天）；對外群組/頻道不用。"""
     if chat_type not in GROUP_TYPES:
         return False
-    return is_external(chat_id)
+    return is_internal(chat_id)
+
+
+_QUESTION_MARKS = ("?", "？")
+_QUESTION_WORDS = (
+    "嗎", "呢", "什麼", "怎麼", "如何", "為什麼", "哪裡", "哪位", "誰",
+    "是否", "能不能", "可不可以", "有沒有", "多少", "幾點", "請問",
+    "help", "how", "what", "why", "where", "when", "which", "can you",
+)
+
+
+def looks_like_question(text: str) -> bool:
+    """對外群組用輕量規則判斷是否為提問，避免每句話都回。"""
+    lower = (text or "").strip().lower()
+    if not lower:
+        return False
+    if lower.endswith(_QUESTION_MARKS) or any(m in lower for m in _QUESTION_MARKS):
+        return True
+    return any(w in lower for w in _QUESTION_WORDS)
 
 
 def _mentioned(text: str, chat_type: str) -> bool:
@@ -99,8 +117,15 @@ def should_respond(message: dict) -> bool:
         return False
     if not is_allowed(chat_id, chat_type):
         return False
-    if requires_mention(chat_id, chat_type) and not _mentioned(text, chat_type):
-        return False
+
+    if requires_mention(chat_id, chat_type):
+        # 私人工作群：一定要 @bot
+        if not _mentioned(text, chat_type):
+            return False
+    elif chat_type in GROUP_TYPES:
+        # 對外群組/頻道：不用 @，但只在提問、明確指令或 @ 時回覆
+        if not text.startswith("/") and not _mentioned(text, chat_type) and not looks_like_question(text):
+            return False
     return True
 
 
