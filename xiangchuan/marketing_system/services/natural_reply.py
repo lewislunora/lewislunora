@@ -81,10 +81,10 @@ def reply(text: str, *, chat_id=None, history=None, kb_answer: str = "",
           generator=None, persona: str = "") -> str:
     """自然回覆：KB 命中就直接回，其餘交給模型但限字數與能力範圍。"""
     max_lines, max_chars = reply_budget(text, chat_id)
-    if kb_answer:
-        return polish(kb_answer, max_lines, max_chars)
     if _CAPABILITY_RE.search(text or ""):
         return "計算、翻譯、搜尋這些我都會，想先試哪個？"
+    if kb_answer:
+        return polish(kb_answer, max_lines, max_chars)
     gen = generator or _DEFAULT_GEN
     if not gen.is_available():
         return "我現在有點卡住，稍後再問我一次好嗎？"

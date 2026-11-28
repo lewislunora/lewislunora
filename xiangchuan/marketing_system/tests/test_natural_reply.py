@@ -59,7 +59,8 @@ def test_reply_uses_kb_answer_directly():
 
 def test_capability_question_uses_fixed_short_whitelist():
     gen = FakeGen("主要功能包括：\n• 客服\n• 發文\n• 生圖")
-    out = nr.reply("你能做什麼？", generator=gen)
+    out = nr.reply("你能做什麼？", generator=gen,
+                   kb_answer="主要功能包括：\n• 客服\n• 發文\n• 生圖")
     assert "想先試哪個" in out
     assert "•" not in out
     assert len(out) <= 30

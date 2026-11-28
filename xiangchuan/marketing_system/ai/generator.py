@@ -39,6 +39,7 @@ class AIContentGenerator:
                 model=GROQ_MODEL,
                 messages=[{"role": "user", "content": prompt}],
                 max_tokens=GROQ_MAX_TOKENS,
+                timeout=20,  # 模型卡住時不要讓請求一直掛著
             )
             return response.choices[0].message.content.strip()
         except Exception as e:
