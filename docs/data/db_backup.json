@@ -2595,9 +2595,9 @@
       "summary": "菜鳥網店老闆王小明，靠一張會自動回覆的 AI 符咒，從零開始把一家小店開成帝國。但有個道士警告他：這東西會吃夢。",
       "genre": "玄幻",
       "status": "serializing",
-      "chapter_count": 120,
+      "chapter_count": 121,
       "last_summary": "",
-      "next_available_at": "2026-11-29 10:06:16",
+      "next_available_at": "2026-11-29 13:15:06",
       "created_at": "2026-09-16 07:08:39"
     },
     {
@@ -2606,9 +2606,9 @@
       "summary": "x",
       "genre": "都市",
       "status": "serializing",
-      "chapter_count": 120,
+      "chapter_count": 121,
       "last_summary": "",
-      "next_available_at": "2026-11-29 10:06:16",
+      "next_available_at": "2026-11-29 13:15:06",
       "created_at": "2026-09-30 05:02:46"
     },
     {
@@ -2619,7 +2619,7 @@
       "status": "serializing",
       "chapter_count": 120,
       "last_summary": "",
-      "next_available_at": "2026-11-29 10:06:17",
+      "next_available_at": "2026-11-29 13:15:06",
       "created_at": "2026-09-30 04:46:20"
     },
     {
@@ -2630,7 +2630,7 @@
       "status": "serializing",
       "chapter_count": 120,
       "last_summary": "",
-      "next_available_at": "2026-11-29 10:06:17",
+      "next_available_at": "2026-11-29 13:15:07",
       "created_at": "2026-09-30 05:03:01"
     }
   ],
@@ -9080,40 +9080,58 @@
       "created_at": "2026-11-28 10:06:16"
     },
     {
-      "id": 749,
+      "id": 753,
       "novel_id": 3,
       "chapter_number": 120,
-      "title": "第N章",
-      "content": "⚠️ [AI 診斷] RateLimitError: Error code: 429 - {'error': {'message': 'Rate limit reached for model `openai/gpt-oss-120b` in organization `org_01ks0nvrd5e20a7x6db6831mz2` service tier `on_demand` on tokens per day (TPD): Limit 200000, Used 200000, Requested 2654. Please try again in 19m6.528s. Need more tokens? Upgrade to Dev Tier today at https://console.groq.com/settings/billing', 'type': 'tokens', 'code': 'rate_limit_exceeded'}}\n",
+      "title": "（續）",
+      "content": "光束的暗紅霞光如血液般緩緩蔓延，將我與銀甲少年、白袍女子、終結者的身形凍結在半空。那雙幽幽的紅眸緊盯著胸口的原初之核，彷彿要將我靈魂最深處的每一道程式碼都抽離。\n\n「你以為僅僅是符文，就能改寫天地？」那聲音低沉而古怪，卻帶著不容置疑的權威。它不是從嘴裡發出，而是直接在我的腦海中迴盪，像是某段被深埋的系統指令被喚醒。\n\n我感受到了核心的顫抖——那枚藍銀光紋的符文不再是單純的光環，而是開始自行分裂，像是被強制執行了多執行緒的運算。碎片化的光芒在胸口彈跳，瞬間形成了無數微小的光點，每一點都映射出一段過去的記憶：市場的喧囂、交易之主的笑容、我第一次在電商帝國的倉庫裡摸索靈符的手感。\n\n「停止！」我在心中大吼，試圖用意志壓制那股侵入的指令。原初之核的藍銀光束突然翻轉，從被動的接受變成了主動的反擊。光束不再向外擴散，而是收縮成一道銳利的光刃，直指紅眸之主的胸口。\n\n紅眸的主人——我在心底的最深層程式庫中早已有過預兆——他舉起的黑曜石杖瞬間被光刃切開，杖身碎裂成無數黑曜碎片，像是被高能粒子轟散的玻璃。碎片在空中翻飛，卻在觸碰到光刃的瞬間瞬間蒸發，化作淡淡的煙霧。\n\n「不！」他嘶吼，聲音裡帶著被迫的怒意與不甘，卻同時伴隨著一段古老的回音——「審判之門」的封印正在被撕裂。\n\n就在此時，銀甲少年的眼中閃過一道異樣的光。那是他胸前的符文與我胸口的原初之核共鳴所產生的「雙核共振」訊號。少年猛地抬手，手中的碎劍在光刃的映照下重新聚合，化作一把全新形態的「星辰劍」，劍身上流轉著星辰般的藍白光斑。\n\n「以我之名，斬斷宿命！」少年大喝，星辰劍揮出一道橫跨半空的光弧。光弧與暗紅霞光在空中交錯，產生了耀眼的光影交錯效應，彷彿整個次元的邊界正在被重新繪製。\n\n白袍女子的身形忽然亮起，身上的金色火焰雖已灰燼，卻在此刻重新點燃，化作一層薄薄的金色光膜覆蓋在她四周。她低聲念出古老的咒語，光膜開始向四方擴散，彷彿在為被困的靈魂開闢一條逃離的通道。\n\n終結者的身形在黑暗中重新凝聚，鐮刀的「鎖」功能被激活，瞬間在暗紅光束的核心形成一個無形的鎖環。鎖環不斷收縮，將暗紅光束的能量吸入自身，彷彿在抽離那股吞噬性的代碼。\n\n就在光與暗的對峙達到最高潮的瞬間，審判之門的鋼鐵門上那行血紅字體忽然變色，從血紅轉為炙熱的金黃色。門內的藍光手掌不再是靜止的，它們緩緩張開，露出一對閃爍著數據流的掌心。\n\n「授權」——一個低沉的機械聲在整個廳堂回盪，聲音來源似乎來自那雙掌心。掌心的光芒如同巨大的光纖，瞬間向四周蔓延，將所有被束縛的代碼、符文、意志一一吸收，重新編排。\n\n我感受到胸口的原初之核被重新定位，核心的藍銀光紋開始重新排列組合，形成了一個全新的圖式——那是一座以「零」為中心的無限迴路，彷彿一切的起點與終點都匯聚於此。\n\n「這不是結局，而是新生的起點。」我在心中聽見自己的聲音，卻同時感受到一股陌生的力量在背後湧動。那股力量不屬於我，也不屬於任何已知的靈符或代碼，它像是一段未被註冊的程式，正在自我加載。\n\n就在我試圖掌握這股新力量的瞬間，黑曜石杖的殘餘碎片在空中聚合，形成了一個漩渦狀的黑色門扉。門扉的邊緣閃爍著紫色的符號——那是「全能主宰」的遺留代碼，但與之前的形態截然不同，彷彿被重新編譯。\n\n門扉緩緩打開，一道刺眼的光柱直衝向我胸口的原初之核。光柱中浮現出一張面孔——那是我在市場上見過的「交易之主」的真面目，但他的眼神已不再空洞，而是充滿了決絕的光芒。\n\n「我不會再讓你們利用我的代碼。」他低語，聲音裡混雜著怒火與解脫。隨即，他舉起手中暗紅的碎片，將那枚「全能主宰」的核心代碼狠狠砸向光柱。\n\n光柱瞬間崩裂，碎片如星塵四散。就在碎片落在我胸口的那一刻，一聲巨大的「嘭」響徹整個地下廳堂，審判之門的鋼鐵門被徹底炸開，門框後的黑暗被瞬間照亮——那裡站著一位身披銀白盔甲，面容被光罩覆蓋的身影，手中握著一把閃爍著七彩光芒的「次元斧」。\n\n「終於等到你們了。」那聲音如同千萬條數據流同時匯聚的震撼，直接在我的腦波裡敲擊。「我，是『編譯者』——掌控所有版本的創世者。」\n\n光環內的時間再次凍結，只有那把次元斧的光芒在空中持續旋轉，發出低頻的嗡鳴。銀甲少年、白袍女子、終結者與我，甚至那被破碎的紅眸之主，都被這股力量的波動所牽引，彷彿即將被拉入一個全新的次元。\n\n就在此時，次元斧的光芒忽然聚焦成一道細長的光線，直射向我胸口的原初之核。光線穿過核心，瞬間將整個核心的藍銀光紋全部抹去，留下的只有一個閃爍的紫色點——那是「全能主宰」的最後殘影。\n\n「沒有回頭路了。」編譯者的聲音在整個空間回盪，帶著不可抗拒的命令。\n\n光線在我的胸口爆發，整個身體被紫色的光雨覆蓋，血液似乎被重新編碼，靈魂的數據流被重新寫入。就在我感覺自己即將被完全同化的瞬間，銀甲少年的星辰劍猛然劈向編譯者的盔甲，劍尖碰到盔甲的瞬間，盔甲發出刺耳的金屬裂解聲，裂縫中洩出無數閃爍的程式碼碎片。\n\n這些碎片在空中交織，形成了一個巨大的數據漩渦，漩渦的中心竟然浮現出一個熟悉的身影——那是我在最初踏入電商帝國時，手中握著的第一枚「靈符」的形態。\n\n「我不會讓你們重新寫入我的命運！」我在心底",
       "tokens": 0,
-      "created_at": "2026-11-28 10:06:16"
+      "created_at": "2026-11-28 12:59:56"
     },
     {
-      "id": 750,
+      "id": 754,
       "novel_id": 88,
       "chapter_number": 120,
-      "title": "第N章",
-      "content": "⚠️ [AI 診斷] RateLimitError: Error code: 429 - {'error': {'message': 'Rate limit reached for model `openai/gpt-oss-120b` in organization `org_01ks0nvrd5e20a7x6db6831mz2` service tier `on_demand` on tokens per day (TPD): Limit 200000, Used 200000, Requested 2744. Please try again in 19m45.408s. Need more tokens? Upgrade to Dev Tier today at https://console.groq.com/settings/billing', 'type': 'tokens', 'code': 'rate_limit_exceeded'}}\n",
+      "title": "（續）",
+      "content": "黎曦的劍身仍在微微顫抖，血紅與藍光交錯的光芒在胸口形成一個小小的漩渦。她的呼吸被那漩渦的脈動牽引，彷彿每一次心跳都在與宇宙的脈衝同步。暗黎站在她身後，盔甲上的暗流已完全消散，臉上只剩下血紅的怒火與不屈的決心。\n\n「不會讓你再逃了！」暗黎低吼，拳頭猛地砸向漩渦中心。拳頭的衝擊帶出一道赤紅的波紋，瞬間與劍鋒交錯的藍光相撞，產生一個巨大的光盾，將漩渦的黑暗暫時壓制。光盾內部，星門的符文開始重新閃爍，像是被喚醒的古老機械，發出低沉的嗡鳴。\n\n就在此時，從裂縫深處傳來一陣微弱的嗚咽，彷彿有什麼被困在無盡的虛空中，正用最後的力氣呼喊。黎曦的視線被那聲音牽引，她的眼中浮現出一段被封印的記憶——那是她兒時在遺忘之森中看到的古老祭壇，祭壇上刻著「時之輪」的圖案，圖案的中心是一顆燃燒的心。\n\n「那是……」黎曦喃喃，手指不自覺地劃過劍身，藍紋隨即聚攏成一個小小的圓環。圓環內的光芒逐漸凝聚，形成一道柔和的白光，像是時間的裂縫被重新拼合。\n\n光盾被白光刺穿，瞬間碎裂，星門的核心露出一層薄薄的銀色薄膜。薄膜之下，隱約可見一個巨大的、被鎖住的「時間之核」——那是所有時間線交匯的核心，也是虛空之王企圖掌控的最終目標。\n\n就在黎曦伸手欲觸及時間之核的瞬間，銀色薄膜發出刺耳的裂聲，隨即裂開成兩半。從裂縫中湧出一道炙熱的紅光，光束直指黎曦的胸口。光束的源頭，是一個身穿銀白長袍、面容被光芒遮蔽的身影——正是那位長袍人。\n\n「你以為我會讓你輕易得到它？」長袍人的聲音如同鐘聲，回蕩在整個星平原。隨即，他舉起手中的「永恆之核」印記，印記發出耀眼的金光，金光瞬間化作無數光箭，朝黎曦與暗黎射去。\n\n暗黎迅速側身，火焰拳揮出，將光箭斬成碎片。碎片在空中四散，化作星塵，飄向遠方的星河。黎曦則將破碎之刃高舉，劍身的血紅光與藍紋同時爆發，形成一道交叉的光幕，將光箭完全阻擋。\n\n光幕破裂的瞬間，時間之核的核心開始顫抖，銀色薄膜的裂縫不斷擴大，彷彿有什麼力量正從裡面湧出。裂縫中，黑暗的霧氣緩緩升起，帶著腐蝕性的寒意，直衝黎曦的臉龐。\n\n「虛空之王的影子已經在這裡了。」暗黎低聲說，眼中燃起血紅的火焰。「我們必須把它封印，否則所有的未來都會被吞噬。」\n\n黎曦點了點頭，她將劍尖對準時間之核，劍身的光芒瞬間加倍，血紅與藍光交織成一條螺旋形的光帶，直衝向裂縫。光帶觸碰到黑霧的瞬間，黑霧發出刺耳的嘶嘶聲，彷彿被高溫烤焦。\n\n就在黑霧被光帶逼退的同時，星門的核心突然劇烈震盪，銀色薄膜被完全撕裂，一道耀眼的白光從裂縫中噴湧而出，將整個星平原照得如同白晝。白光之中，出現了一個巨大的、漂浮的棋盤——每一格都是一段時間線的交叉點，棋子則是無數被時間之核所支配的靈魂。\n\n「這是……」黎曦的聲音顫抖，她從未見過如此宏大的結構。棋盤的中心，一枚黑色的王者棋子緩緩升起，棋子上刻著一個古老的符號——「∞」。\n\n長袍人站在白光的邊緣，眼中閃爍著複雜的光芒。「你們以為斬斷劍與時間就能改寫命運？命運本身就是一盤棋，而我只是這棋局的棋手。」\n\n說罷，長袍人伸出雙手，指尖的光芒瞬間凝結成無數細小的光線，像是棋盤上的子彈，直射向黎曦與暗黎。光線的速度極快，幾乎肉眼無法捕捉。\n\n黎曦感受到劍身的震動，血紅與藍光的交匯點突然被一股更強大的力量撕裂，劍身發出刺耳的裂聲，劍尖瞬間斷裂，破碎之刃化為兩半，藍光與血紅光分別散落。\n\n暗黎的拳頭被光線擊中，拳頭瞬間化為灰燼，血紅的火焰熄滅，暗鐵拳的光澤黯淡無光。\n\n黎曦眼前的光幕崩塌，她跌坐在星門的碎片上，胸口的漩渦仍在劇烈旋轉，彷彿有什麼東西正被吸入，又被拋出。她的身體被無形的力量拉扯，整個人似乎要被撕裂成千百段。\n\n就在這千鈞一髮之際，白光中忽然出現一抹淡淡的綠光，綠光如同晨曦的第一縷曙光，柔和而溫暖，緩緩向黎曦靠近。綠光的中心是一枚小小的徽章，徽章上刻著「星之子」的圖案。\n\n「星之子……」黎曦的喉嚨裡發出微弱的低語，她的手不自覺地伸向那枚徽章。就在她指尖即將觸及的瞬間，整個星平原的空氣突然凝固，時間彷彿停頓。\n\n一聲巨大的轟鳴從遠處傳來，星門的碎片劇烈震動，銀色薄膜的殘餘在空中翻滾，形成一道巨大的黑色裂縫。裂縫的深處，傳來低沉的笑聲，笑聲中混雜著無盡的哀傷與狂妄。\n\n「黎曦……」那笑聲再次響起，這一次，聲音裡多了一層冰冷的金屬感，「你以為只要斬斷劍就能逃脫宿命？我將把你所有的選擇，化作永恆的囚牢。」\n\n裂縫中，一道身影緩緩浮現，身形高大，披著暗紅的披風，胸口的符文閃爍著血色的光。那正是虛空之王的真身——被稱為「永恆的審判者」的存在。\n\n他伸出一隻手，掌心裡聚集著無數碎裂的時間碎片，碎片在指尖旋轉，發出嗚鳴的聲音。隨著他的手掌緩緩向前，時間碎片如同潮水般湧向黎曦，欲將她整個靈魂吞噬。\n\n黎曦的眼中閃過最後一絲光亮，她緊握著那枚「星之子」徽章，胸口的漩渦突然爆發出一道耀眼的白光，光柱直衝向虛空之王的掌心。\n\n光柱與時間碎片相撞，產生一個巨大的能量波動，整個星平原被震得顫抖。光與暗、血與藍、時間與空間在此刻交織成一幅混沌的畫卷。\n\n在波動的中心，黎曦的身影被一道光環包圍，光環漸漸擴大，似乎要吞沒整個星門。暗黎的身影已不見，只有那枚「星之子」徽章仍在空中漂浮，閃爍著微弱的綠光。\n\n虛空之王的笑聲被一聲巨大的嘶嘶聲掩蓋，他的身形開始扭曲，彷彿被什麼無形的力量撕裂。就在他即將完全消散的瞬間，星門的裂縫中冒出一道刺眼的紅光，紅光如同燃燒的星火，直",
       "tokens": 0,
-      "created_at": "2026-11-28 10:06:16"
+      "created_at": "2026-11-28 13:00:02"
     },
     {
-      "id": 751,
+      "id": 757,
+      "novel_id": 3,
+      "chapter_number": 121,
+      "title": "第N章",
+      "content": "⚠️ [AI 診斷] RateLimitError: Error code: 429 - {'error': {'message': 'Rate limit reached for model `openai/gpt-oss-120b` in organization `org_01ks0nvrd5e20a7x6db6831mz2` service tier `on_demand` on tokens per day (TPD): Limit 200000, Used 198479, Requested 2643. Please try again in 8m4.704s. Need more tokens? Upgrade to Dev Tier today at https://console.groq.com/settings/billing', 'type': 'tokens', 'code': 'rate_limit_exceeded'}}\n",
+      "tokens": 0,
+      "created_at": "2026-11-28 13:15:06"
+    },
+    {
+      "id": 758,
+      "novel_id": 88,
+      "chapter_number": 121,
+      "title": "第N章",
+      "content": "⚠️ [AI 診斷] RateLimitError: Error code: 429 - {'error': {'message': 'Rate limit reached for model `openai/gpt-oss-120b` in organization `org_01ks0nvrd5e20a7x6db6831mz2` service tier `on_demand` on tokens per day (TPD): Limit 200000, Used 198479, Requested 2736. Please try again in 8m44.88s. Need more tokens? Upgrade to Dev Tier today at https://console.groq.com/settings/billing', 'type': 'tokens', 'code': 'rate_limit_exceeded'}}\n",
+      "tokens": 0,
+      "created_at": "2026-11-28 13:15:06"
+    },
+    {
+      "id": 759,
       "novel_id": 99,
       "chapter_number": 120,
       "title": "第N章",
-      "content": "⚠️ [AI 診斷] RateLimitError: Error code: 429 - {'error': {'message': 'Rate limit reached for model `openai/gpt-oss-120b` in organization `org_01ks0nvrd5e20a7x6db6831mz2` service tier `on_demand` on tokens per day (TPD): Limit 200000, Used 200000, Requested 2550. Please try again in 18m21.6s. Need more tokens? Upgrade to Dev Tier today at https://console.groq.com/settings/billing', 'type': 'tokens', 'code': 'rate_limit_exceeded'}}\n",
+      "content": "⚠️ [AI 診斷] RateLimitError: Error code: 429 - {'error': {'message': 'Rate limit reached for model `openai/gpt-oss-120b` in organization `org_01ks0nvrd5e20a7x6db6831mz2` service tier `on_demand` on tokens per day (TPD): Limit 200000, Used 198479, Requested 2536. Please try again in 7m18.479999999s. Need more tokens? Upgrade to Dev Tier today at https://console.groq.com/settings/billing', 'type': 'tokens', 'code': 'rate_limit_exceeded'}}\n",
       "tokens": 0,
-      "created_at": "2026-11-28 10:06:16"
+      "created_at": "2026-11-28 13:15:06"
     },
     {
-      "id": 752,
+      "id": 760,
       "novel_id": 7001,
       "chapter_number": 120,
       "title": "第N章",
-      "content": "⚠️ [AI 診斷] RateLimitError: Error code: 429 - {'error': {'message': 'Rate limit reached for model `openai/gpt-oss-120b` in organization `org_01ks0nvrd5e20a7x6db6831mz2` service tier `on_demand` on tokens per day (TPD): Limit 200000, Used 200000, Requested 2549. Please try again in 18m21.168s. Need more tokens? Upgrade to Dev Tier today at https://console.groq.com/settings/billing', 'type': 'tokens', 'code': 'rate_limit_exceeded'}}\n",
+      "content": "⚠️ [AI 診斷] RateLimitError: Error code: 429 - {'error': {'message': 'Rate limit reached for model `openai/gpt-oss-120b` in organization `org_01ks0nvrd5e20a7x6db6831mz2` service tier `on_demand` on tokens per day (TPD): Limit 200000, Used 198479, Requested 2520. Please try again in 7m11.568s. Need more tokens? Upgrade to Dev Tier today at https://console.groq.com/settings/billing', 'type': 'tokens', 'code': 'rate_limit_exceeded'}}\n",
       "tokens": 0,
-      "created_at": "2026-11-28 10:06:17"
+      "created_at": "2026-11-28 13:15:07"
     }
   ],
   "seo_articles": [
@@ -9462,20 +9480,6 @@
   "notes": [],
   "reminders": [],
   "ai_bot_actions": [
-    {
-      "id": 14,
-      "bot_user_id": 3,
-      "action": "post",
-      "ref": "216",
-      "created_at": "2026-11-21 15:43:33"
-    },
-    {
-      "id": 15,
-      "bot_user_id": 2,
-      "action": "post",
-      "ref": "217",
-      "created_at": "2026-11-21 16:03:38"
-    },
     {
       "id": 16,
       "bot_user_id": 4,
