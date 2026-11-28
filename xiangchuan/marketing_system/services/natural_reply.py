@@ -16,6 +16,11 @@ CAPABILITIES = (
     "AI 生圖、語音轉文字、系統狀態、知識庫問答"
 )
 _DEFAULT_GEN = AIContentGenerator()
+# 能力問題一律用固定白名單回答，不讓模型條列成一長串
+_CAPABILITY_RE = re.compile(
+    r"能做什麼|有哪些功能|功能有哪些|你會什麼|列出功能|有什麼功能|"
+    r"what can you do|all commands", re.I,
+)
 
 
 def reply_budget(text: str, chat_id=None) -> tuple:
@@ -78,6 +83,8 @@ def reply(text: str, *, chat_id=None, history=None, kb_answer: str = "",
     max_lines, max_chars = reply_budget(text, chat_id)
     if kb_answer:
         return polish(kb_answer, max_lines, max_chars)
+    if _CAPABILITY_RE.search(text or ""):
+        return "計算、翻譯、搜尋這些我都會，想先試哪個？"
     gen = generator or _DEFAULT_GEN
     if not gen.is_available():
         return "我現在有點卡住，稍後再問我一次好嗎？"

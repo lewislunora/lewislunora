@@ -57,6 +57,14 @@ def test_reply_uses_kb_answer_directly():
     assert len(out) <= 45
 
 
+def test_capability_question_uses_fixed_short_whitelist():
+    gen = FakeGen("主要功能包括：\n• 客服\n• 發文\n• 生圖")
+    out = nr.reply("你能做什麼？", generator=gen)
+    assert "想先試哪個" in out
+    assert "•" not in out
+    assert len(out) <= 30
+
+
 def test_reply_prompt_forces_natural_short_answer():
     gen = FakeGen("身為 AI，以下是說明：我可以幫你算數。要不要也試試翻譯？")
     out = nr.reply("你能幹嘛", generator=gen)

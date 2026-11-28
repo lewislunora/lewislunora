@@ -301,7 +301,7 @@ def status():
         "scheduler": scheduler.get_status_summary(),
         "auto_engine": scheduler.auto_status(),
         "platforms": {k: (k in scheduler.connectors) for k in PLATFORMS},
-        "build_fingerprint": "natural-chat-2026-11-28c",
+        "build_fingerprint": "natural-chat-2026-11-28d",
     }
 
 
