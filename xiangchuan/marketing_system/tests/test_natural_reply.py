@@ -23,7 +23,7 @@ def test_reply_budget_is_short_and_bounded(monkeypatch):
     monkeypatch.setattr(nr.bot_learning, "reply_budget", lambda chat_id: (3, 60))
     lines, chars = nr.reply_budget("計算 (1+2)*3")
     assert 1 <= lines <= 3
-    assert 20 <= chars <= 45  # 對方寫得短，不能回得像作文
+    assert 30 <= chars <= 45  # 對方寫得短，不能回得像作文，也不能截成半句
 
     lines, chars = nr.reply_budget("想問的是" + "很多事情" * 40)
     assert (lines, chars) == (3, 60)  # 寫很長也只到硬上限 60 字
@@ -35,6 +35,13 @@ def test_polish_removes_boilerplate_and_caps_length():
     assert "以下是" not in out
     assert not out.startswith("•")
     assert len(out) <= 15
+
+
+def test_clip_never_ends_with_a_dangling_separator():
+    out = nr.polish("嗨，我是翔川 Neo 助理，能算、筆記、翻譯、搜尋等等", 1, 20)
+    assert len(out) <= 20
+    assert not out.endswith(("、", "，", ","))
+    assert out.endswith("…")
 
 
 def test_reply_uses_kb_answer_directly():

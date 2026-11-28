@@ -127,7 +127,7 @@ def reply_budget(chat_id) -> tuple:
         return 2, 45
     avg_chars = float(data.get("avg_chars") or 0)
     avg_lines = float(data.get("avg_lines") or 1)
-    max_chars = max(20, min(60, round(avg_chars * 1.5)))
+    max_chars = max(30, min(60, round(avg_chars * 1.5)))
     max_lines = max(1, min(3, round(avg_lines)))
     return max_lines, max_chars
 

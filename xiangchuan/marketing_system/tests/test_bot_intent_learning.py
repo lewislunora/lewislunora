@@ -118,7 +118,7 @@ def test_reply_budget_learns_from_group_habit():
         learning.observe(EXTERNAL, "短\n兩行", force=True)
     max_lines, max_chars = learning.reply_budget(EXTERNAL)
     assert 1 <= max_lines <= 3
-    assert 20 <= max_chars <= 60
+    assert 30 <= max_chars <= 60
     assert max_lines >= 2  # 學到群組常用兩句
 
 

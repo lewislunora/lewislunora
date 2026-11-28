@@ -19,12 +19,28 @@ _DEFAULT_GEN = AIContentGenerator()
 
 
 def reply_budget(text: str, chat_id=None) -> tuple:
-    """依對方訊息長度與群組習慣決定 (句數, 字數)，20–60 字、最多 3 句。"""
+    """依對方訊息長度與群組習慣決定 (句數, 字數)，30–60 字、最多 3 句。"""
     lines, chars = bot_learning.reply_budget(chat_id)
     user_len = len((text or "").strip())
-    # 對方寫得短就別回得像作文；寫得長最多也只放寬到 60 字。
-    mirrored = max(20, min(60, round(user_len * 1.2) + 10))
-    return lines, max(20, min(60, min(chars, mirrored)))
+    # 對方寫得短也至少留 30 字，才不會把人話截成半句；上限 60 字。
+    mirrored = max(30, min(60, round(user_len * 1.2) + 10))
+    return lines, max(30, min(60, min(chars, mirrored)))
+
+
+def _clip(part: str, room: int) -> str:
+    """超長時在完整子句收尾，不留下「、，」這種斷頭結尾。"""
+    if len(part) <= room:
+        return part
+    cut = part[:room]
+    for sep in "。！？!?":
+        idx = cut.rfind(sep)
+        if idx >= max(8, room // 2):
+            return cut[:idx + 1]
+    for sep in "，,、；;：:":
+        idx = cut.rfind(sep)
+        if idx >= max(10, int(room * 0.6)):
+            return cut[:idx].rstrip() + "…"
+    return cut.rstrip("，,、；;：: —-") + "…"
 
 
 def polish(text: str, max_lines: int = 2, max_chars: int = 45) -> str:
@@ -46,7 +62,7 @@ def polish(text: str, max_lines: int = 2, max_chars: int = 45) -> str:
         if room <= 0:
             break
         if len(part) > room:
-            part = part[:room].rstrip() + "…"
+            part = _clip(part, room)
         out.append(part)
         total += len(part)
         if total >= max_chars:
@@ -77,7 +93,8 @@ def reply(text: str, *, chat_id=None, history=None, kb_answer: str = "",
         + "對方說：" + (text or "") + "\n\n"
         + "請直接回覆：先回答，必要時最多再問一句。"
         + f"最多 {max_lines} 句、全段 {max_chars} 字以內，口語自然，"
-        + "不要條列、不要標題、不要 emoji 轟炸、不要說「身為 AI」。\n"
+        + "不要條列、不要一口氣列舉功能、不要標題、不要 emoji 轟炸、不要說「身為 AI」。\n"
+        + "被問身份就簡單說自己是誰，再反問對方需要什麼。\n"
         + f"只能提到已實作的功能：{CAPABILITIES}。不會的就直說不會，不要編造。\n"
         + "需要登入的功能請提醒對方先登入，不要說已經幫他做好了。\n"
         + "只輸出回覆內容。"
