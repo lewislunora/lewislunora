@@ -45,7 +45,9 @@ def _clip(part: str, room: int) -> str:
 
 def polish(text: str, max_lines: int = 2, max_chars: int = 45) -> str:
     """把模型輸出修成口語短回覆，去掉制式感。"""
-    s = re.sub(r"\s+", " ", str(text or "")).strip()
+    # 模型偶爾回傳字面 "\n"，先還原成換行再壓成空白，條列才會被清掉
+    s = str(text or "").replace("\\n", "\n")
+    s = re.sub(r"\s+", " ", s).strip()
     s = s.replace("**", "").replace("__", "").strip()
     s = re.sub(r"^(?:作為|身為)\s*AI[，,、]?\s*", "", s)
     s = re.sub(r"^(?:以下是|回覆：|答案：|好的[，,]\s*)+", "", s)
@@ -95,6 +97,7 @@ def reply(text: str, *, chat_id=None, history=None, kb_answer: str = "",
         + f"最多 {max_lines} 句、全段 {max_chars} 字以內，口語自然，"
         + "不要條列、不要一口氣列舉功能、不要標題、不要 emoji 轟炸、不要說「身為 AI」。\n"
         + "被問身份就簡單說自己是誰，再反問對方需要什麼。\n"
+        + "被問「能做什麼」時用一句話帶過、反問想試哪個，不要條列或列舉超過三項。\n"
         + f"只能提到已實作的功能：{CAPABILITIES}。不會的就直說不會，不要編造。\n"
         + "需要登入的功能請提醒對方先登入，不要說已經幫他做好了。\n"
         + "只輸出回覆內容。"

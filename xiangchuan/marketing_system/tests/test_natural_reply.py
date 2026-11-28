@@ -37,6 +37,13 @@ def test_polish_removes_boilerplate_and_caps_length():
     assert len(out) <= 15
 
 
+def test_polish_handles_escaped_newlines_and_bullets():
+    out = nr.polish("主要功能包括：\\n• AI 智能客服\\n• 自動發文", 2, 30)
+    assert "\\n" not in out
+    assert "•" not in out
+    assert len(out) <= 30
+
+
 def test_clip_never_ends_with_a_dangling_separator():
     out = nr.polish("嗨，我是翔川 Neo 助理，能算、筆記、翻譯、搜尋等等", 1, 20)
     assert len(out) <= 20

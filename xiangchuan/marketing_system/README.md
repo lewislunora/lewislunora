@@ -23,7 +23,7 @@ cd marketing_system
 
 「列出功能／能做什麼」直接回白名單，不交給 AI 自由生成，避免承諾未實作能力。
 
-自然聊天的規則由 `natural_reply.py` 統一：先回答、必要時最多再問一句，**最多 3 句、30～60 字（預設 45 字）**，不條列、不標題、不長篇；能力範圍寫死在 prompt，需要登入的功能只提醒、不假裝已完成。Telegram bot 與網站精靈共用這套規則，匿名聊天每 IP 每分鐘上限 12 則。`GET /api/status` 的 `build_fingerprint` 可用來確認線上是哪一版（`natural-chat-2026-11-28b`）。測試：`tests/test_spirit.py`、`tests/test_natural_reply.py`。
+自然聊天的規則由 `natural_reply.py` 統一：先回答、必要時最多再問一句，**最多 3 句、30～60 字（預設 45 字）**，不條列、不標題、不長篇；能力範圍寫死在 prompt，需要登入的功能只提醒、不假裝已完成。Telegram bot 與網站精靈共用這套規則，匿名聊天每 IP 每分鐘上限 12 則。`GET /api/status` 的 `build_fingerprint` 可用來確認線上是哪一版（`natural-chat-2026-11-28c`）。測試：`tests/test_spirit.py`、`tests/test_natural_reply.py`。
 
 ## 設定環境變數
 
