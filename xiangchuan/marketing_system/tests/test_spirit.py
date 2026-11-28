@@ -3,7 +3,7 @@ from marketing_system.config import DOCS_DIR
 
 
 def test_status_exposes_current_build(client):
-    assert client.get("/api/status").json()["build_fingerprint"] == "intent-learning-2026-11-27"
+    assert client.get("/api/status").json()["build_fingerprint"] == "natural-chat-2026-11-28"
 
 
 def test_spirit_script_is_served(client):

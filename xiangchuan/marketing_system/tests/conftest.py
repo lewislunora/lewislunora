@@ -36,9 +36,10 @@ def setup_db():
         if p.exists():
             p.unlink()
     init_db()
-    # 重置諮詢表單頻率限制，避免同 IP 連續測試（127.0.0.1）互相干擾
-    from marketing_system.api.server import _contact_hits
+    # 重置頻率限制，避免同 IP 連續測試（127.0.0.1）互相干擾
+    from marketing_system.api.server import _assistant_hits, _contact_hits
     _contact_hits.clear()
+    _assistant_hits.clear()
     yield
 
 

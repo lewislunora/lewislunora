@@ -29,7 +29,7 @@
     return c[0] + ' ' + c[1];
   }).join('\n');
 
-  var S = { panel: null, open: false, busy: false, status: null, statusAt: 0 };
+  var S = { panel: null, open: false, busy: false, status: null, statusAt: 0, history: [] };
 
   var CSS = [
     '#spiritBubble{position:fixed;bottom:1.5rem;right:1.5rem;z-index:10001;width:52px;height:52px;border-radius:50%;',
@@ -163,6 +163,12 @@
     }
     box.appendChild(div);
     box.scrollTop = box.scrollHeight;
+    var t = String(text == null ? '' : text).trim();
+    // 只記正常對話；錯誤提示不進脈絡，避免污染回覆
+    if (t && !/^[⚠🔒]/.test(t)) {
+      S.history.push({ role: role === 'me' ? 'user' : 'ai', text: t.slice(0, 200) });
+      if (S.history.length > 12) S.history = S.history.slice(-12);
+    }
   }
 
   function say(text, image) { msg('ai', text, image); }
@@ -340,10 +346,12 @@
     },
 
     fallback: function (r) {
-      return post('/api/kb/query', { text: r.q }).then(function (j) {
-        if (j.reply) return j.reply;
-        return '我還不會這項。輸入 /help 看我實際會的功能。';
-      });
+      // 交給後端共用引擎：先查知識庫，再用模型接話，一樣限制句數與字數。
+      return post('/api/assistant/chat', { text: r.q, history: S.history.slice(-6) })
+        .then(function (j) {
+          if (j.reply) return j.reply;
+          return '我還不會這項。輸入 /help 看我實際會的功能。';
+        });
     }
   };
 

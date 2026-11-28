@@ -56,8 +56,8 @@ def test_process_update_internal_group_auto_replies(monkeypatch):
 
     oa._process_update(_update(INTERNAL, "@ailunora_bot 測試 AI 回覆"))
     assert len(sent) == 1
-    assert "內容靈感" in sent[0][1]
     assert "創意點子" in sent[0][1]
+    assert "💡" not in sent[0][1]  # 自然回覆不再加制式標籤
 
 
 def test_process_update_internal_group_ignores_chat_without_mention(monkeypatch):
@@ -93,10 +93,13 @@ def test_process_update_external_group_gives_short_answer_without_mention(monkey
     assert "內容靈感" not in sent[0][1]
 
 
-def test_short_answer_trims_to_one_short_sentence(monkeypatch):
+def test_short_answer_stays_natural_and_short(monkeypatch):
     monkeypatch.setattr(oa.ai_gen, "is_available", lambda: True)
     monkeypatch.setattr(oa.ai_gen, "generate", lambda system, payload: "第一步先註冊。第二步再設定。第三步才上線。")
-    assert oa.short_answer("怎麼開始？") == "第一步先註冊"
+    reply = oa.short_answer("怎麼開始？")
+    assert "第一步先註冊" in reply and "第二步再設定" in reply
+    assert "第三步" not in reply  # 最多兩句，不長篇
+    assert len(reply) <= 45
 
 
 def test_linked_channel_cannot_control_server(monkeypatch):

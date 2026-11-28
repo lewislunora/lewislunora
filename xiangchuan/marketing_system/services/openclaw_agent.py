@@ -15,6 +15,7 @@ from ..ai.generator import AIContentGenerator
 from ..config import TELEGRAM_BOT_TOKEN, GROQ_API_KEY
 from . import telegram_policy as policy
 from . import bot_learning as learning
+from . import natural_reply
 from .knowledge_base import get_kb_reply, save_unanswered
 
 logger = logging.getLogger(__name__)
@@ -379,7 +380,7 @@ _INTENT_ARGS = {
 _INTENT_PROMPT = (
     "你是意圖分類器，不是問答機器人。只輸出一行代號："
     "help/stop/calc/translate/search/note/remind/image/status/deploy/idea/unsupported/faq。"
-    "若代號是 faq，第二行才可直接給繁體中文簡短回答（10 字內）。"
+    "若代號是 faq，第二行才可直接給繁體中文自然回答（45 字內、像聊天、不要條列）。"
     "絕對不要輸出代號表以外的功能，也不要承諾未列出的能力。"
     "stop=使用者想關閉或停用助手；unsupported=要求未實作功能或改程式。\n"
     "訊息："
@@ -437,11 +438,7 @@ def classify_intent(text, chat_id=None):
 
 
 def _cmd_stop():
-    return (
-        "🤖 *關閉助手*\n"
-        "• 對內群：@ 我才會回覆\n"
-        "• 完全停用：私訊站長"
-    )
+    return "想讓我安靜啊？在群組別 @ 我就不會回；真的要停用，跟站長說一聲就好。"
 
 
 def route_natural_language(text, chat_id=None):
@@ -455,20 +452,20 @@ def route_natural_language(text, chat_id=None):
         return "🔒 此功能僅供對內群組使用。"
     if intent == "unsupported":
         _remember_unanswered(text)
-        return "⚠️ 這功能還沒實作。\n輸入 /help 查看可用指令。"
+        return "這我還不會耶～目前會的是計算、翻譯、搜尋這些，打 /help 我列給你。"
     if intent == "faq":
         _remember_unanswered(text)
-        if policy.is_internal(chat_id):
-            return _cmd_idea(text)  # 對內沿用既有「靈感／一般 AI 回覆」行為
-        return _shorten(hint, chat_id=chat_id) if hint else short_answer(text, chat_id)
+        if hint:
+            return _shorten(hint, chat_id=chat_id)
+        return short_answer(text, chat_id)
     pattern = _INTENT_ARGS.get(intent)
     args = re.sub(pattern, "", (text or "").strip(), flags=re.I).strip() if pattern else (text or "").strip()
     return _handle_command(chat_id, intent, args)
 
 
 def _shorten(text: str, limit: int = 60, chat_id=None) -> str:
-    """依群組習慣壓短：最多 3 行、每行 10 字（預設 1 行）。"""
-    max_lines, max_chars = learning.reply_budget(chat_id) if chat_id is not None else (1, 10)
+    """依群組習慣壓短：最多 3 句 / 60 字（預設 2 句 / 45 字）。"""
+    max_lines, max_chars = learning.reply_budget(chat_id)
     clean = " ".join((text or "").split())
     if not clean:
         return ""
@@ -484,23 +481,8 @@ def _shorten(text: str, limit: int = 60, chat_id=None) -> str:
 
 
 def short_answer(text: str, chat_id=None) -> str:
-    """對外群組/頻道的簡短回覆（依該群習慣，上限 3 行、每行 10 字）。"""
-    if not ai_gen.is_available():
-        return "⚠️ AI 未啟用"
-    result = ai_gen.generate(
-        "",
-        {
-            "prompt": (
-                "你是翔川 Neo 的客服助理。請用繁體中文回答下面的問題，"
-                "答案盡量 15 個字左右，直接給答案，不要條列、不要標題、不要多餘說明。"
-                "只能提及已實作的功能：AI 客服、內容生成、翻譯、生圖、整合搜尋、計算、筆記、提醒、語音辨識。"
-                "絕對不要承諾未列出的功能（例如個人日曆、語音撥打、購物）。"
-                "若被問「有哪些功能／能做什麼」，請回答「輸入 /help 查看指令」。\n"
-                f"問題：{text}"
-            )
-        },
-    )
-    return _shorten(result, chat_id=chat_id)
+    """自然但不囉嗦的客服回覆（與網站共用同一套語氣與字數規則）。"""
+    return natural_reply.reply(text, chat_id=chat_id, generator=ai_gen)
 
 
 def _cmd_deploy():

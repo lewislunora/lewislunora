@@ -57,14 +57,14 @@ def test_close_assistant_gets_fixed_whitelist_not_idea(monkeypatch):
     called = []
     monkeypatch.setattr(oa, "_cmd_idea", lambda text: called.append(text) or "不該出現")
     reply = oa.route_natural_language("我要怎麼關閉OpenClaw AI 助手", INTERNAL)
-    assert "關閉助手" in reply
+    assert "安靜" in reply and "站長" in reply  # 口語但仍給出確切做法
     assert called == []
 
 
 def test_sentiment_request_is_refused_without_ai(monkeypatch):
     monkeypatch.setattr(oa.ai_gen, "is_available", lambda: (_ for _ in ()).throw(AssertionError("不該呼叫 AI")))
     reply = oa.route_natural_language("情感分析 分析Wesley Lee情感狀態", EXTERNAL)
-    assert "還沒實作" in reply
+    assert "還不會" in reply
     assert "/help" in reply
 
 
@@ -118,21 +118,20 @@ def test_reply_budget_learns_from_group_habit():
         learning.observe(EXTERNAL, "短\n兩行", force=True)
     max_lines, max_chars = learning.reply_budget(EXTERNAL)
     assert 1 <= max_lines <= 3
-    assert 6 <= max_chars <= 10
-    assert max_lines >= 2  # 學到群組常用兩行
+    assert 20 <= max_chars <= 60
+    assert max_lines >= 2  # 學到群組常用兩句
 
 
-def test_short_reply_never_exceeds_three_lines_or_ten_chars():
+def test_short_reply_never_exceeds_three_sentences_or_sixty_chars():
     text = "第一步先註冊。第二步再設定。第三步才上線。第四步會超標。"
     shortened = oa._shorten(text, chat_id=EXTERNAL)
-    lines = shortened.split("\n")
-    assert len(lines) <= 3
-    assert all(len(line) <= 11 for line in lines)  # 10 字 + 省略號
+    assert len(shortened) <= 60
+    assert len(shortened.split("\n")) <= 3
 
 
 def test_learning_failure_degrades_to_safe_default(monkeypatch):
     monkeypatch.setattr(learning, "fetch_one", lambda *a, **k: (_ for _ in ()).throw(RuntimeError("db down")))
-    assert learning.reply_budget(EXTERNAL) == (1, 10)
+    assert learning.reply_budget(EXTERNAL) == (2, 45)
     assert learning.observe(EXTERNAL, "你好", force=True) is None
 
 

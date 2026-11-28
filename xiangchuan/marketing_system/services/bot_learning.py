@@ -2,7 +2,7 @@
 
 設計原則：
 - 只存統計（平均字數、行數、提問率、關鍵詞次數），**不存訊息原文**。
-- 回覆長度由該群習慣決定，但永遠不超過「3 行、每行 10 字」上限。
+- 回覆長度由該群習慣決定，但永遠不超過「3 句、60 字」上限。
 - 任何 DB 異常都不能讓 bot 崩潰，全部降級為預設值。
 """
 import json
@@ -117,13 +117,17 @@ def profile(chat_id) -> dict:
 
 
 def reply_budget(chat_id) -> tuple:
-    """回 (最多幾行, 每行最多幾個字)。依群組習慣調整，上限 3 行 / 10 字。"""
+    """回 (最多幾句, 整段最多幾個字)。
+
+    目標是「像人聊天但不長篇」：預設 2 句 / 45 字，
+    再依照該群平常的訊息長度與行數微調，硬上限 3 句 / 60 字。
+    """
     data = profile(chat_id)
     if not data or int(data.get("samples") or 0) < MIN_SAMPLES:
-        return 1, 10
+        return 2, 45
     avg_chars = float(data.get("avg_chars") or 0)
     avg_lines = float(data.get("avg_lines") or 1)
-    max_chars = max(6, min(10, round(avg_chars / 2)))
+    max_chars = max(20, min(60, round(avg_chars * 1.5)))
     max_lines = max(1, min(3, round(avg_lines)))
     return max_lines, max_chars
 

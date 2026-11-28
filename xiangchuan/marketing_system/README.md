@@ -13,7 +13,7 @@ cd marketing_system
 
 ## AI 精靈（全站浮動助理）
 
-`docs/spirit.js` 是單檔、零依賴的助理：所有頁面只用一行 `<script defer src="spirit.js">` 掛載，DOM 在首次點擊才建立；意圖由前端關鍵字判讀，不額外呼叫 LLM，全部复用既有 API。舊版 💬 客服氣泡會自動隱藏，由 ✨ 精靈取代。
+`docs/spirit.js` 是單檔、零依賴的助理：所有頁面只用一行 `<script defer src="spirit.js">` 掛載，DOM 在首次點擊才建立；明確的工具指令（計算、翻譯…）由前端關鍵字判讀、复用既有 API，不浪費模型呼叫。其餘一般聊天走 `POST /api/assistant/chat`，由後端共用引擎 `services/natural_reply.py` 接話。舊版 💬 客服氣泡會自動隱藏，由 ✨ 精靈取代。
 
 | 能力 | 用法 | 登入 |
 |---|---|---|
@@ -21,7 +21,9 @@ cd marketing_system
 | 筆記、提醒、翻譯、生圖 | `/筆記`、`/提醒`、`/翻譯`、`/生圖` | 需 |
 | 語音轉文字 | 點精靈面板的 💿 上傳音訊 | 需 |
 
-「列出功能／能做什麼」直接回白名單，不交給 AI 自由生成，避免承諾未實作能力。`GET /api/status` 的 `build_fingerprint` 可用來確認線上是哪一版（`intent-learning-2026-11-27`）。測試：`tests/test_spirit.py`。
+「列出功能／能做什麼」直接回白名單，不交給 AI 自由生成，避免承諾未實作能力。
+
+自然聊天的規則由 `natural_reply.py` 統一：先回答、必要時最多再問一句，**最多 3 句、45～60 字**，不條列、不標題、不長篇；能力範圍寫死在 prompt，需要登入的功能只提醒、不假裝已完成。Telegram bot 與網站精靈共用這套規則，匿名聊天每 IP 每分鐘上限 12 則。`GET /api/status` 的 `build_fingerprint` 可用來確認線上是哪一版（`natural-chat-2026-11-28`）。測試：`tests/test_spirit.py`、`tests/test_natural_reply.py`。
 
 ## 設定環境變數
 

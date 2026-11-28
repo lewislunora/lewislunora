@@ -48,6 +48,7 @@ from ..services.openclaw_agent import (
 )
 from ..services import telegram_policy as tg_policy
 from ..services import bot_learning as tg_learning
+from ..services import natural_reply
 from ..services.knowledge_base import get_kb_reply, get_pending, auto_learn
 from ..services.analytics import track_async, summary as analytics_summary
 from ..services.story_generator import AIStoryGenerator
@@ -82,6 +83,23 @@ connectors = {}
 
 # 諮詢表單頻率限制：ip -> 上次成功送出的時間戳
 _contact_hits = {}
+# 公開自然聊天：匿名 IP 每分鐘最多 12 則，避免 LLM 成本被刷爆
+_assistant_hits = {}
+
+
+def _rate_limited(store, key, limit: int, window: int = 60) -> bool:
+    """簡易滑動窗口頻率限制；順便清掉過期 key，避免記憶體無限長。"""
+    now = time.time()
+    hits = [t for t in store.get(key, []) if now - t < window]
+    if len(hits) >= limit:
+        store[key] = hits
+        return True
+    hits.append(now)
+    store[key] = hits
+    if len(store) > 1000:
+        for old in list(store)[:500]:
+            store.pop(old, None)
+    return False
 
 
 def _is_user_input_spam(text: str) -> bool:
@@ -283,7 +301,7 @@ def status():
         "scheduler": scheduler.get_status_summary(),
         "auto_engine": scheduler.auto_status(),
         "platforms": {k: (k in scheduler.connectors) for k in PLATFORMS},
-        "build_fingerprint": "intent-learning-2026-11-27",
+        "build_fingerprint": "natural-chat-2026-11-28",
     }
 
 
@@ -953,6 +971,31 @@ async def kb_query(request: Request):
     from ..services.knowledge_base import get_kb_reply
     reply = get_kb_reply(text)
     return {"reply": reply}
+
+
+@app.post("/api/assistant/chat")
+async def assistant_chat(request: Request):
+    """公開自然對話：網站精靈與 Telegram bot 共用同一套語氣／字數引擎。"""
+    try:
+        body = await request.json()
+    except Exception:
+        body = {}
+    text = str(body.get("text") or "").strip()[:500]
+    if not text:
+        raise HTTPException(400, "Missing text")
+    if _is_user_input_spam(text):
+        return {"reply": "這則訊息我沒辦法處理，換個說法試試？", "filtered": True}
+    ip = request.client.host if request.client else "unknown"
+    if _rate_limited(_assistant_hits, ip, 12):
+        return {"reply": "我現在有點忙，稍等一下再來找我好嗎？", "limited": True}
+
+    history = body.get("history")
+    history = [h for h in history[-6:] if isinstance(h, dict)] if isinstance(history, list) else []
+    u = _current_user(request)
+    name = (u["name"] or u["username"]) if u else ""
+    persona = f"你是翔川 Neo 的助理，用繁體中文像朋友一樣和 {name} 聊天。" if name else ""
+    kb = get_kb_reply(text) or ""
+    return {"reply": natural_reply.reply(text, history=history, kb_answer=kb, persona=persona)}
 
 
 @app.post("/api/kb/pending/{pid}/reject")
